@@ -22,9 +22,9 @@ const LoginRegister = () => {
   const [userName, setUsername] = useState("");
   const [passWord, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const hiddenPassword = () => {
-    console.log("hidden password");
-  };
+  // const hiddenPassword = () => {
+  //   console.log("hidden password");
+  // };
   return (
     <div className={`wrapper${action}`}>
       {/* form login */}

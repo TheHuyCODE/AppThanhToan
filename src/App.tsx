@@ -1,14 +1,13 @@
-
 import LoginRegister from "./components/Register/LoginRegister";
+import { Route, Routes } from "react-router-dom";
+import Header from "./components/header/Header";
 
+// import managementCatalogProduct from "./components/listitem/managementCatalogProduct";
 
 function App() {
-  // const [count, setCount] = useState(0)
-
   return (
-    <>
-      <LoginRegister/>
-    </>
+    <Header>
+      </Header>
   );
 }
 

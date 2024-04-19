@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+
+.roboto-light {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+h1 {
+  font-size: 30px;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.header {
+  width: 90%;
+  height: auto;
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 10px;
+
+  margin-left: 20px;
+}
+input[type="text"] {
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 5px 5px 5px 35px;
+  width: 200px;
+  height: 26px;
+  outline: none;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+}
+.header-top .icon {
+  position: absolute;
+  left: 42px;
+  top: 10%;
+  translate: 0 -24%;
+  font-size: 20px;
+}
+.header-btn {
+  display: flex;
+  justify-content: space-between;
+}
+.header-btn button {
+  margin-right: 21px;
+  outline: none;
+  border: 1px solid grey;
+  border-radius: 8px;
+  font-size: 13px;
+  color: white;
+  background: #3072db;
+  font-weight: 300;
+  padding: 7px;
+  cursor: pointer;
+}
+.header-bot {
+  margin-top: 21px;
+}
+
+.header-bot thead th {
+  border-bottom: 0.5px solid lightgrey;
+  width: 15%;
+  height: 39px;
+}
+
+.header-bot tbody td {
+  border-bottom: 1px solid lightgrey; /* Bottom border with 1px thickness and black color */
+}
+.header-bot .icon {
+  color: #3072db
+}
