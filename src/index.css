@@ -7,11 +7,20 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'poppins', sans-serif;
+  font-family: "poppins", sans-serif;
   list-style: none;
   outline: none;
   border: none;
 }
 .side-bar {
-  color: #fff
+  color: #fff;
+}
+.toogle-theme-btn {
+  position: absolute;
+  left: 18px;
+  bottom: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
 }

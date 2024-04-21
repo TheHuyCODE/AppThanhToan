@@ -5,9 +5,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
     color: #fff;
-    padding: 10px
+    padding: 10px;
+    margin-top: 20px;
 }
 .logo-icon {
     width: 40px;
@@ -18,6 +18,12 @@
     font-size: 1.5rem;
     border-radius: 50%;
     background: lightgrey;
-
-
+}
+.Title-sidebar {
+    font-size: 13px;
+    padding: 5px;
+    margin-top: 10px ;
+}
+.dark-color {
+    color: black;
 }

@@ -1,44 +1,61 @@
 import React from "react";
 import { Menu } from "antd";
 import { MdDashboard } from "react-icons/md";
-import { FaCartShopping } from "react-icons/fa6";
+import { FaCartShopping, FaChartColumn } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { IoIosSettings, IoIosAdd } from "react-icons/io";
-const MenuList = () => {
+import { RiListSettingsFill } from "react-icons/ri";
+import { FaLock, FaPercent } from "react-icons/fa";
+import "./MenuList.css";
+const MenuList = ({ darkTheme }) => {
   return (
     <div>
-      <Menu theme="dark" mode="inline">
-        <Menu.Item key="dashboard" icon={<MdDashboard />}>
+      <Menu
+        theme={darkTheme ? "dark" : "light"}
+        mode="inline"
+        className="menu-bar"
+      >
+        <Menu.Item key="dashboard" icon={<FaChartColumn />}>
           Thống kê
         </Menu.Item>
-        <Menu.Item key="dasgboard1" icon={<FaCartShopping />}>
+        <Menu.Item key="order-management" icon={<FaCartShopping />}>
           Quản lí đơn hàng
         </Menu.Item>
-        <Menu.Item key="dasgboard2" icon={<IoPerson />}>
+        <Menu.Item key="Usermanagement" icon={<IoPerson />}>
           Quản lí người dùng
         </Menu.Item>
         <Menu.SubMenu
           key="Product_management"
-          icon={<IoPerson />}
+          icon={<RiListSettingsFill />}
           title="Quản lí sản phẩm"
         >
-          <Menu.Item key="Task1" icon={<IoIosAdd />}>
+          <Menu.Item key="Product_management_child" icon={<IoIosAdd />}>
             Quản lí sản phẩm
           </Menu.Item>
-          <Menu.Item key="Task2" icon={<IoIosAdd />}>
+          <Menu.Item key="Product_catalog_management_child" icon={<IoIosAdd />}>
             Quản lí danh mục sản phẩm
           </Menu.Item>
-          <Menu.Item key="Task3" icon={<IoIosAdd />}>
+          <Menu.Item
+            key="Manage_manufacturers_models_child"
+            icon={<IoIosAdd />}
+          >
             Quản lí hãng sản xuất và model
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item key="dasgboard3" icon={<MdDashboard />}>
+        {/* <Menu.Item key="dasgboard3" icon={<MdDashboard />}>
           Quản lí tin tức sự kiện
-        </Menu.Item>
-        <Menu.Item key="dasgboard4" icon={<MdDashboard />}>
+        </Menu.Item> */}
+        <Menu.Item
+          key="
+          admin_management"
+          icon={<FaLock />}
+        >
           Quản lí quản trị viên
         </Menu.Item>
-        <Menu.Item key="dasgboard5" icon={<IoIosSettings />}>
+        <Menu.Item key="percent" icon={<FaPercent />}>
+          Quản lí mã giảm giá
+        </Menu.Item>
+        <Menu.Item key="setting" icon={<IoIosSettings />}>
           Cài đặt
         </Menu.Item>
       </Menu>
