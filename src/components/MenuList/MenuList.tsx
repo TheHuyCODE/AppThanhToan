@@ -7,6 +7,7 @@ import { IoIosSettings, IoIosAdd } from "react-icons/io";
 import { RiListSettingsFill } from "react-icons/ri";
 import { FaLock, FaPercent } from "react-icons/fa";
 import "./MenuList.css";
+import { Link } from "react-router-dom";
 const MenuList = ({ darkTheme }) => {
   return (
     <div>
@@ -15,14 +16,14 @@ const MenuList = ({ darkTheme }) => {
         mode="inline"
         className="menu-bar"
       >
-        <Menu.Item key="dashboard" icon={<FaChartColumn />}>
-          Thống kê
+        <Menu.Item key="Dashboard" icon={<FaChartColumn />}>
+          <Link to="/">Thống kê</Link>
         </Menu.Item>
-        <Menu.Item key="order-management" icon={<FaCartShopping />}>
-          Quản lí đơn hàng
+        <Menu.Item key="Order_management" icon={<FaCartShopping />}>
+          <Link to="/ordermanagement">Quản lí đơn hàng</Link>
         </Menu.Item>
-        <Menu.Item key="Usermanagement" icon={<IoPerson />}>
-          Quản lí người dùng
+        <Menu.Item key="User_management" icon={<IoPerson />}>
+          <Link to="/usermanagement">Quản lí người dùng</Link>
         </Menu.Item>
         <Menu.SubMenu
           key="Product_management"
@@ -30,15 +31,20 @@ const MenuList = ({ darkTheme }) => {
           title="Quản lí sản phẩm"
         >
           <Menu.Item key="Product_management_child" icon={<IoIosAdd />}>
-            Quản lí sản phẩm
+            <Link to="/productmanagement">Quản lí sản phẩm</Link>
           </Menu.Item>
           <Menu.Item key="Product_catalog_management_child" icon={<IoIosAdd />}>
-            Quản lí danh mục sản phẩm
+            <Link to="/productcatalogmanagement">
+              Quản lí danh mục sản phẩm
+            </Link>
           </Menu.Item>
           <Menu.Item
             key="Manage_manufacturers_models_child"
             icon={<IoIosAdd />}
           >
+            <Link to="/managemanufacturersmodels">
+              Quản lí hãng sản xuất và model
+            </Link>
             Quản lí hãng sản xuất và model
           </Menu.Item>
         </Menu.SubMenu>
@@ -47,7 +53,7 @@ const MenuList = ({ darkTheme }) => {
         </Menu.Item> */}
         <Menu.Item
           key="
-          admin_management"
+          Admin_management"
           icon={<FaLock />}
         >
           Quản lí quản trị viên
@@ -55,8 +61,10 @@ const MenuList = ({ darkTheme }) => {
         <Menu.Item key="percent" icon={<FaPercent />}>
           Quản lí mã giảm giá
         </Menu.Item>
-        <Menu.Item key="setting" icon={<IoIosSettings />}>
+        <Menu.Item key="Setting" icon={<IoIosSettings />}>
+          <Link to="/login">
           Cài đặt
+          </Link>
         </Menu.Item>
       </Menu>
     </div>
