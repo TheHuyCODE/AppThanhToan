@@ -2,11 +2,11 @@
   position: relative;
   width: 420px;
   height: 500px;
-  background-color: transparent;
+  background-color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(25px);
   border-radius: 10px;
-  color: #fff;
+  color: black;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +14,7 @@
 }
 .wrapper.active {
   height: 670px;
-  width: 750px;
+  width: 800px;
 }
 .wrapper .form-box {
   width: 100%;
@@ -22,7 +22,7 @@
 }
 .wrapper.active .form-box.login {
   transition: none;
-  translate: -710px;
+  translate: -810px;
 }
 .wrapper .form-box.register {
   position: absolute;
@@ -45,8 +45,11 @@ form .input-box {
   position: relative;
   width: 100%;
   height: 50px;
-  margin: 30px 0;
+  margin: 30px 0px;
   /* background: blue; */
+}
+.input-box.resgister {
+  margin-right: 10px;
 }
 .input-box input {
   width: 100% !important;
@@ -57,11 +60,11 @@ form .input-box {
   border: 1px solid rgb(211, 210, 210) !important;
   border-radius: 40px !important;
   font-size: 16px;
-  color: #fff;
+  color: black;
   padding: 20px 45px 20px 20px !important;
 }
 .input-box input::placeholder {
-  color: #fff;
+  color: grey;
 }
 .input-box .icon {
   position: absolute;
@@ -89,8 +92,8 @@ form .form-box.register {
   margin-top: 15px;
   margin-bottom: 16px;
 }
-.remember-forgot label input {
-  accent-color: #fff;
+.remember-forgot label {
+  accent-color: #1976d2;
   margin-right: 5px;
 }
 .form-box.register label input {
@@ -98,12 +101,13 @@ form .form-box.register {
   margin-right: 5px;
 }
 .remember-forgot a {
-  color: #fff;
+  color: #1976d2;
   text-decoration: none;
 }
 .remember-forgot a:hover {
   text-decoration: underline;
 }
+
 form button {
   width: 100%;
   height: 45px;
@@ -114,11 +118,16 @@ form button {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   font-size: 16px;
-  color: #333;
+  color: #fff;
   font-weight: 700;
+  background-color: #1976d2;
   &.active {
-    background-color: #33ffff;
+    background-color: #1976d2;
   }
+}
+.button-resgister {
+  margin-top: 60px;
+  height: 50px;
 }
 button:disabled,
 button[disabled] {
@@ -130,9 +139,9 @@ form .register-link {
   margin: 20px 0 15px;
 }
 .register-link p a {
-  color: #fff;
+  color: #1976d2;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 300;
 }
 .register-link p a:hover {
   text-decoration: underline;
@@ -146,4 +155,7 @@ form .register-link {
   display: flex;
   width: auto;
   justify-content: space-evenly;
+}
+.title-header {
+  color: black;
 }
