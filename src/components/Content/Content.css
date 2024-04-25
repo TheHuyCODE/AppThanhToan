@@ -5,10 +5,11 @@
   font-weight: 300;
   font-style: normal;
 }
-h1 {
+
+h1.list-item {
   font-size: 30px;
+  margin-left: 98px;
   margin-top: 20px;
-  margin-left: 20px;
 }
 * {
   margin: 0;
@@ -16,14 +17,13 @@ h1 {
   box-sizing: border-box;
 }
 .header {
-  width: 90%;
+  width: 80%;
   height: auto;
   border: 1px solid rgb(0, 0, 0);
   border-radius: 10px;
   padding: 15px;
-  margin-top: 10px;
-
-  margin-left: 20px;
+  /* margin-top: 30px;
+  margin-left: 100px; */
 }
 input[type="text"] {
   border: 1px solid grey;
@@ -39,9 +39,9 @@ input[type="text"] {
 }
 .header-top .icon {
   position: absolute;
-  left: 42px;
-  top: 10%;
-  translate: 0 -24%;
+  left: 124px;
+  top: 119px;
+  translate: 0 -18%;
   font-size: 20px;
 }
 .header-btn {
@@ -65,6 +65,7 @@ input[type="text"] {
 }
 
 .header-bot thead th {
+
   border-bottom: 0.5px solid lightgrey;
   width: 15%;
   height: 39px;
@@ -74,5 +75,42 @@ input[type="text"] {
   border-bottom: 1px solid lightgrey; /* Bottom border with 1px thickness and black color */
 }
 .header-bot .icon {
-  color: #3072db
+  color: black;
+  margin-left: 5px;
+}
+.header-bot tr {
+  width: auto;
+  height: 50px;;
+}
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+/* Ẩn input[type="file"] */
+
+.preview {
+  max-width: 200px;
+  max-height: 200px;
+  margin-top: 10px;
+}
+.title-addItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+.name-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+.name-item label {
+  margin-left: 20px;
 }

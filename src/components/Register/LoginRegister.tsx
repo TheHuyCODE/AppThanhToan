@@ -17,12 +17,14 @@ import { IoMdHome } from "react-icons/io";
 import { LuStore } from "react-icons/lu";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 const LoginRegister = () => {
   const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
-  const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] = useState(false);
+  const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] =
+    useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false);
@@ -39,7 +41,19 @@ const LoginRegister = () => {
     const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
     return regex.test(email);
   };
-
+  const validateLoginInputs = () => {
+    if (
+      data.store_code === "" ||
+      data.email === "" ||
+      data.password === "" ||
+      !validateEmail(data.email) ||
+      data.password.length < 8 ||
+      data.store_code.length < 3
+    ) {
+      return false;
+    }
+    return true;
+  };
   // const [checkInput, setCheckInput] = useState('');
   const registerLink = () => {
     setAction(" active");
@@ -61,7 +75,7 @@ const LoginRegister = () => {
       if (data.store_code === "") {
         setIsEmptyMessageVisible(true);
         setIsShortCodeMessageVisible(false);
-      } else if (data.store_code.length < 4) {
+      } else if (data.store_code.length < 3) {
         setIsEmptyMessageVisible(false);
         setIsShortCodeMessageVisible(true);
       } else {
@@ -107,10 +121,8 @@ const LoginRegister = () => {
     full_name: "",
     phone: "",
   });
-
-
   const handleChange = (fieldName) => (e) => {
-    const value = e.target.value;
+    const value = e.target.value.trim();
     console.log("value", value);
     setData({
       ...data,
@@ -118,7 +130,7 @@ const LoginRegister = () => {
     });
   };
   const handleChangeRegister = (fieldName) => (e) => {
-    const value = e.target.value;
+    const value = e.target.value.trim();
     console.log("value", value);
     setDataRegister({
       ...dataRegister,
@@ -165,7 +177,7 @@ const LoginRegister = () => {
         // Redirect to dashboard
         console.log("res", res);
         toast.success("Loggin success!");
-      
+
         setTimeout(() => {
           navigateToLoginSuccess();
         }, 2000);
@@ -207,7 +219,7 @@ const LoginRegister = () => {
               )}
               {isShortCodeMessageVisible && (
                 <p className="message-error">
-                  Mã cửa hàng phải lớn hơn 4 ký tự!
+                  Mã cửa hàng phải lớn hơn 3 ký tự!
                 </p>
               )}
             </div>
@@ -262,7 +274,10 @@ const LoginRegister = () => {
                 <a href="#">Quên mật khẩu</a>
               </label>
             </div>
-            <button type="submit" disabled={isLoading} >
+            <button
+              type="submit"
+              disabled={isLoading || !validateLoginInputs()}
+            >
               {isLoading ? (
                 <span>
                   <FontAwesomeIcon icon={faCircleNotch} spin />
@@ -276,6 +291,7 @@ const LoginRegister = () => {
             <div className="register-link">
               <p>
                 Bạn chưa có tài khoản?{" "}
+          
                 <a href="#" onClick={registerLink}>
                   Đăng kí
                 </a>
@@ -351,17 +367,21 @@ const LoginRegister = () => {
                   value={dataRegister.password}
                   onChange={handleChangeRegister("password")}
                 />
-                 {showPasswordRegister ? (
-                <FaEye
-                  className="icon password"
-                  onClick={() => setShowPasswordRegister(!showPasswordRegister)}
-                />
-              ) : (
-                <FaEyeSlash
-                  className="icon password"
-                  onClick={() => setShowPasswordRegister(!showPasswordRegister)}
-                />
-              )}
+                {showPasswordRegister ? (
+                  <FaEye
+                    className="icon password"
+                    onClick={() =>
+                      setShowPasswordRegister(!showPasswordRegister)
+                    }
+                  />
+                ) : (
+                  <FaEyeSlash
+                    className="icon password"
+                    onClick={() =>
+                      setShowPasswordRegister(!showPasswordRegister)
+                    }
+                  />
+                )}
               </div>
             </div>
             <div className="input-box-form">
@@ -385,16 +405,24 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("confirm_password")}
                 />
                 {showConfirmPasswordRegister ? (
-                <FaEye
-                  className="icon password"
-                  onClick={() => setshowConfirmPasswordRegister(!showConfirmPasswordRegister)}
-                />
-              ) : (
-                <FaEyeSlash
-                  className="icon password"
-                  onClick={() => setshowConfirmPasswordRegister(!showConfirmPasswordRegister)}
-                />
-              )}
+                  <FaEye
+                    className="icon password"
+                    onClick={() =>
+                      setshowConfirmPasswordRegister(
+                        !showConfirmPasswordRegister
+                      )
+                    }
+                  />
+                ) : (
+                  <FaEyeSlash
+                    className="icon password"
+                    onClick={() =>
+                      setshowConfirmPasswordRegister(
+                        !showConfirmPasswordRegister
+                      )
+                    }
+                  />
+                )}
               </div>
             </div>
 
@@ -403,10 +431,12 @@ const LoginRegister = () => {
             </button>
             <div className="register-link">
               <p>
-                Return to page Login?{" "}
-                <a href="#" onClick={loginLink}>
-                  Login
-                </a>
+                Return to Login page?{" "}
+               
+                  <a href="#" onClick={loginLink}>
+                    Login
+                  </a>
+               
               </p>
             </div>
           </form>

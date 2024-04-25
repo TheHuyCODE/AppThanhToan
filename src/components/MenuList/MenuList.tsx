@@ -10,7 +10,7 @@ import "./MenuList.css";
 import { Link } from "react-router-dom";
 const MenuList = ({ darkTheme }) => {
   return (
-    <div>
+    <div className="sidebar-left">
       <Menu
         theme={darkTheme ? "dark" : "light"}
         mode="inline"
