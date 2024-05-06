@@ -14,6 +14,8 @@
   height: auto;
   display: flex;
   flex-direction: column;
+  margin-right: 97%;
+  background: white;
 }
 .ant-layout-has-sider {
   display: flex;

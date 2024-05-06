@@ -1,0 +1,28 @@
+.search-category {
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 5px 5px 5px 35px;
+    width: 150px;
+    height: 26px;
+    outline: none;
+}
+.search-category:focus {
+    border-color: black;
+}
+.header-left-top {
+    display: flex;
+}
+.input-manufacturer {
+    position: relative
+}
+.form-input {
+    border: 1px solid grey;
+    border-radius: 6.5px;
+    width: 150px;
+    height: 26px;
+    outline: none;
+    transition: 0.25s ease;
+}
+.form-input:focus {
+    border-color: black;
+}

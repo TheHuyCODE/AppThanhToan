@@ -1,7 +1,8 @@
 import LoginRegister from "./components/Register/LoginRegister";
 import { Route, Routes, useLocation } from "react-router-dom";
-import Headermain from "./components/Content/Content";
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
+import CatalogManagement from "./components/Content/CatalogManagement";
+import ProductMangement from "./components/Content/ProductMangement";
 import { Layout, Button, theme } from "antd";
 import Logo from "./components/Logo/Logo";
 const { Sider, Header, Content } = Layout;
@@ -14,7 +15,7 @@ import Home from "./components/home/Home";
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
   const [collapsedTheme, setCollapsedTheme] = useState(false);
-  const [hiddenTitle, setHiddenTitle] = useState(true);
+  const [hiddenTitle, setIsHiddenTitle] = useState(true);
   const [isLoginButton, setLoginButton] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -66,7 +67,7 @@ function App() {
             style={{
               margin: !isLoginRoute ? "24px 16px" : "0px",
               padding: !isLoginRoute ? 24 : 0,
-              
+
               minHeight: 280,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
@@ -86,7 +87,16 @@ function App() {
                 path="/productmanagement"
                 element={
                   <Layout>
-                    <Headermain />
+                    <ProductMangement/>
+                    <Outlet />
+                  </Layout>
+                }
+              />
+                 <Route
+                path="/productcatalogmanagement"
+                element={
+                  <Layout>
+                    <CatalogManagement/>
                     <Outlet />
                   </Layout>
                 }

@@ -45,12 +45,8 @@ const MenuList = ({ darkTheme }) => {
             <Link to="/managemanufacturersmodels">
               Quản lí hãng sản xuất và model
             </Link>
-            Quản lí hãng sản xuất và model
           </Menu.Item>
         </Menu.SubMenu>
-        {/* <Menu.Item key="dasgboard3" icon={<MdDashboard />}>
-          Quản lí tin tức sự kiện
-        </Menu.Item> */}
         <Menu.Item
           key="
           Admin_management"
@@ -62,9 +58,7 @@ const MenuList = ({ darkTheme }) => {
           Quản lí mã giảm giá
         </Menu.Item>
         <Menu.Item key="Setting" icon={<IoIosSettings />}>
-          <Link to="/login">
-          Cài đặt
-          </Link>
+          <Link to="/login">Cài đặt</Link>
         </Menu.Item>
       </Menu>
     </div>

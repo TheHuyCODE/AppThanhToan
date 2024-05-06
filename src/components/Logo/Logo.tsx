@@ -7,7 +7,7 @@ const Logo = ({collapedTheme, darkTheme}) => {
             <div className="logo-icon">
                 <IoPerson/>
             </div>
-            <h1  hidden={collapedTheme} className={`Title-sidebar ${!darkTheme ? 'dark-color' : ''}`}>Quản trị viên cao cấp</h1>
+            <h1 hidden={collapedTheme} className={`Title-sidebar ${!darkTheme ? 'dark-color' : ''}`}>Quản trị viên cao cấp</h1>
         </div>
     )
 }

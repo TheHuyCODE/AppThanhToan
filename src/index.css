@@ -20,10 +20,11 @@
   justify-content: center;
   align-items: center;
 }
-.content {
+/* .content {
   width: 100%;
   height: auto;
-}
+  margin-right: 10px;
+} */
 * {
   margin: 0;
   padding: 0;
