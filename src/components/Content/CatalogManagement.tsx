@@ -3,7 +3,7 @@ import { FaArrowDown, FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./CatalogManagement.css";
 import { Input } from "antd";
 import { Space, Table, Tag } from 'antd';
-import category from "../../configs/category";
+import uploadApiImage from "../../configs/uploadApiImage";
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "antd";
@@ -18,18 +18,33 @@ const CatalogManagement = () => {
     setIsOpenPopups(false);
   };
   const onFileUploadHandler = (e) => {
-    setIsPicture(Array.from(e.target.files));
+    e.preventDefault();
+    if (e.target) {
+      const formData = new FormData(e.target);
+      // Define your async function correctly
+      files.forEach((file) => {
+        formData.append('file', file);
+      });
+      uploadApiImage.postMessage(formData).then((res) => {
+        if (res.code === 200) {
+          console.log('res', res);
+        } else {
+          console.log('error', res);
+        }
+      });
+    }
   };
-  useEffect(() => {
-    const fetchDataCategory = async () => {
-      const data = await category.getAll();
-      setDataCategory(data);
-    };
-    fetchDataCategory();
-  }, []);
-  useEffect(() => {
-    console.log(dataCategory)
-  }, [dataCategory])
+  
+  // useEffect(() => {
+  //   const fetchDataCategory = async () => {
+  //     const data = await category.getAll();
+  //     setDataCategory(data);
+  //   };
+  //   fetchDataCategory();
+  // }, []);
+  // useEffect(() => {
+  //   console.log(dataCategory)
+  // }, [dataCategory])
   const showPicture = () => {
     return picture.map((item) => (
       <div className="show-picture">
@@ -143,7 +158,7 @@ const CatalogManagement = () => {
                   multiple
                   accept="image/*"
                   // style={{display: "none"}}
-                  onChange={onFileUploadHandler}
+                  onSubmit={onFileUploadHandler}
                 />
               </div>
               {showPicture()}

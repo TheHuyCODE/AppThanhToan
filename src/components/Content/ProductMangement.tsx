@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
-import { Select } from "antd";
+import uploadApiImage from "../../configs/uploadApiImage";
+import { Select, Button } from "antd";
+import { FaArrowAltCircleDown , FaArrowAltCircleUp  } from "react-icons/fa";
 import { Option } from "antd/es/mentions";
 const ProductMangement = () => {
   const nameProduct = [{name: 'Máy nổ 1', value: 1}, {name: 'Máy nổ 1', value: 2}, {name: 'Máy nổ 1', value: 3}];
   const [selectedValue, setSelectedValue] = useState(null);
 
   const handleSelectChange = (e) => {
+    uploadApiImage.postMessage()
     setSelectedValue(e.target.value);
     console.log('setSelectedValue', selectedValue);
   }
+  
   return (
     <div className="content">
       <h1>Quản lí sản phẩm</h1>
@@ -55,10 +59,20 @@ const ProductMangement = () => {
                 value: item,
               }))}
             />
+            <input type="checkbox"/>
+            <label htmlFor="">Sản phẩm bán chạy</label>
           </div>
-          <div className="header-left-bottom"></div>
         </div>
-        <div className="header-right"></div>
+        <div className="header-right">
+        <Button type="primary">Hướng dẫn sử dụng</Button>
+        <Button type="primary">
+          <FaArrowAltCircleUp />
+          Export</Button>
+        <Button type="primary">
+          <FaArrowAltCircleDown/>
+          Import</Button>
+        <Button type="primary">Thêm sản phẩm</Button>
+        </div>
       </div>
     </div>
   );

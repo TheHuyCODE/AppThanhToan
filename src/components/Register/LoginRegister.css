@@ -6,7 +6,7 @@
   background-color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(50px);
-  border-radius: 10px;
+  border-radius:  10px;
   color: black;
   display: flex;
   align-items: center;
@@ -60,14 +60,40 @@ form .input-box {
   border: none;
   outline: none;
   border: 1px solid rgb(211, 210, 210) !important;
-  border-radius: 40px !important;
+  border-radius: 10px !important;
   font-size: 16px;
   color: black;
   padding: 20px 45px 20px 20px !important;
+  transition: 0.25s ease;
 }
 .input-box input::placeholder {
   color: grey;
 }
+.input-box input:focus {
+  border-color: black !important;
+}
+.form-email {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 21px;
+  user-select: none;
+  color: #999;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+.input-box input:not(:placeholder-shown) + .form-email,
+.input-box input:focus + .form-email {
+  top: 0; 
+  padding: 0 8px ;
+  display: inline-block ;
+  background-color: #fff ;
+  color: black;
+}
+
+/* :placeholder-shown */
+
 .input-box .icon {
   position: absolute;
   right: 22px;

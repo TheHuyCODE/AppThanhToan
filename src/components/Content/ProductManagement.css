@@ -1,4 +1,4 @@
-.search-category {
+/* .search-category {
     border: 1px solid grey;
     border-radius: 5px;
     padding: 5px 5px 5px 35px;
@@ -9,8 +9,18 @@
 .search-category:focus {
     border-color: black;
 }
+.header {
+    display: flex;
+}
+.header-left {
+    display: flex;
+    flex-direction: column;
+}
 .header-left-top {
     display: flex;
+    justify-content: space-around;
+    align-items: center;
+    
 }
 .input-manufacturer {
     position: relative
@@ -25,4 +35,4 @@
 }
 .form-input:focus {
     border-color: black;
-}
+} */

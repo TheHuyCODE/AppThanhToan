@@ -43,12 +43,11 @@ const LoginRegister = () => {
   };
   const validateLoginInputs = () => {
     if (
-      data.store_code === "" ||
+      
       data.email === "" ||
       data.password === "" ||
       !validateEmail(data.email) ||
-      data.password.length < 8 ||
-      data.store_code.length < 3
+      data.password.length < 8 
     ) {
       return false;
     }
@@ -67,21 +66,11 @@ const LoginRegister = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
-    store_code: "",
   });
   useEffect(() => {
     console.log("inputClicked", inputClicked);
     if (inputClicked) {
-      if (data.store_code === "") {
-        setIsEmptyMessageVisible(true);
-        setIsShortCodeMessageVisible(false);
-      } else if (data.store_code.length < 3) {
-        setIsEmptyMessageVisible(false);
-        setIsShortCodeMessageVisible(true);
-      } else {
-        setIsEmptyMessageVisible(false);
-        setIsShortCodeMessageVisible(false);
-      }
+
       if (data.email === "") {
         setIsEmptyMessageEmail(true);
         setIsShortCodeMessageEmail(false);
@@ -110,11 +99,10 @@ const LoginRegister = () => {
       setIsEmptyMessagePassword(false);
       setIsShortCodeMessagePassword(false);
     }
-  }, [data.store_code, inputClicked, data.email, data.password]);
+  }, [inputClicked, data.email, data.password]);
   const [dataRegister, setDataRegister] = useState({
     email: "",
     password: "",
-    store_code: "",
     confirm_password: "",
     store_name: "",
     address: "",
@@ -143,12 +131,12 @@ const LoginRegister = () => {
       email: dataRegister.email,
       password: dataRegister.password,
       confirm_password: dataRegister.confirm_password,
-      store_code: dataRegister.store_code,
       store_name: dataRegister.store_name,
       address: dataRegister.address,
       full_name: dataRegister.full_name,
       phone: dataRegister.phone,
     };
+    setIsLoading(true);
     loginApi.postMessageRegister(userData).then((response) => {
       if (response.code === 200) {
         // Redirect to dashboard
@@ -157,9 +145,10 @@ const LoginRegister = () => {
         // console.log("Đăng nhập thành công");
       } else {
         // setCheckInPut(!checkInput);
-        toast.error("Create account access");
+        toast.error("Not create account access");
       }
     });
+    setIsLoading(false);
   };
   const handleSubmitLogin = (event) => {
     event.preventDefault();
@@ -168,12 +157,14 @@ const LoginRegister = () => {
     const userData = {
       email: data.email,
       password: data.password,
-      store_code: data.store_code,
     };
     setIsLoading(true);
     loginApi.postMessage(userData).then((res) => {
       console.log("res", res);
       if (res.code === 200) {
+        localStorage.setItem('access_token', res.data.access_token);
+        localStorage.setItem('refresh_token', res.data.refresh_token);
+        sessionStorage.setItem
         // Redirect to dashboard
         console.log("res", res);
         toast.success("Loggin success!");
@@ -201,38 +192,44 @@ const LoginRegister = () => {
         <div className="form-box login">
           <form onSubmit={handleSubmitLogin}>
             <h1 className="title-header">Đăng nhập</h1>
-            <div className="input-box">
+            {/* <div className="input-box">
               <input
                 type="text"
                 value={data.store_code}
-                placeholder="Mã gian hàng"
+                placeholder=" "
                 required
                 onChange={handleChange("store_code")}
                 onFocus={() => setInputClicked(!inputClicked)}
                 onBlur={handleBlur}
+                
               />
+              <label htmlFor="storeCode" className="form-email">Mã gian hàng</label>
               <IoMdHome className="icon home" />
               {isEmptyMessageVisible && (
                 <p className="message-error">
                   Mã cửa hàng không được để trống!
                 </p>
-              )}
+              )} 
               {isShortCodeMessageVisible && (
                 <p className="message-error">
                   Mã cửa hàng phải lớn hơn 3 ký tự!
                 </p>
               )}
-            </div>
+            </div> */}
             <div className="input-box">
               <input
                 type="text"
                 value={data.email}
-                placeholder="Tên đăng nhập"
+                placeholder=" "
                 onChange={handleChange("email")}
                 required
                 onFocus={() => setInputClicked(!inputClicked)}
                 onBlur={handleBlur}
               />
+              <label htmlFor="Email" className="form-email">
+                Email
+              </label>
+
               <FaUser className="icon" />
               {isEmptyMessageEmail && (
                 <p className="message-error">Email không được để trống!</p>
@@ -245,12 +242,16 @@ const LoginRegister = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={data.password}
-                placeholder="Mật khẩu"
+                placeholder=" "
                 onChange={handleChange("password")}
                 required
                 onFocus={() => setInputClicked(!inputClicked)}
                 onBlur={handleBlur}
               />
+              <label htmlFor="Password" className="form-email">
+                Password
+              </label>
+
               {showPassword ? (
                 <FaEye
                   className="icon password"
@@ -291,7 +292,6 @@ const LoginRegister = () => {
             <div className="register-link">
               <p>
                 Bạn chưa có tài khoản?{" "}
-          
                 <a href="#" onClick={registerLink}>
                   Đăng kí
                 </a>
@@ -305,7 +305,7 @@ const LoginRegister = () => {
           <form action="" onSubmit={handleSubmitRegister}>
             <h1 className="title-header">Đăng kí tài khoản</h1>
             <div className="input-box-form">
-              <div className="input-box resgister">
+              {/* <div className="input-box resgister">
                 <input
                   type="text"
                   placeholder="Mã cửa hàng"
@@ -314,37 +314,46 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("store_code")}
                 />
                 <FaStore className="icon" />
-              </div>
+              </div> */}
               <div className="input-box resgister">
                 <input
                   type="text"
-                  placeholder="Họ và Tên"
+                  placeholder=" "
                   required
-                  value={dataRegister.full_name}
-                  onChange={handleChangeRegister("full_name")}
+                  value={dataRegister.store_name}
+                  onChange={handleChangeRegister("store_name")}
                 />
-                <FaUser className="icon" />
+                <label htmlFor="store_name" className="form-email">
+                Tên cửa hàng
+              </label>
+                <LuStore className="icon" />
               </div>
             </div>
             <div className="input-box-form">
               <div className="input-box resgister">
                 <input
                   type="text"
-                  placeholder="Tên cửa hàng"
+                  placeholder=" "
                   required
-                  value={dataRegister.store_name}
-                  onChange={handleChangeRegister("store_name")}
+                  value={dataRegister.full_name}
+                  onChange={handleChangeRegister("full_name")}
                 />
-                <LuStore className="icon" />
+                <label htmlFor="full_name" className="form-email">
+                Họ và tên
+              </label>
+                <FaUser className="icon" />
               </div>
               <div className="input-box resgister">
                 <input
                   type="text"
-                  placeholder="Email"
+                  placeholder=" "
                   required
                   value={dataRegister.email}
                   onChange={handleChangeRegister("email")}
                 />
+                <label htmlFor="Email" className="form-email">
+                Email
+              </label>
                 <FaEnvelope className="icon" />
               </div>
             </div>
@@ -352,21 +361,27 @@ const LoginRegister = () => {
               <div className="input-box resgister">
                 <input
                   type="text"
-                  placeholder="Địa chỉ"
+                  placeholder=" "
                   required
                   value={dataRegister.address}
                   onChange={handleChangeRegister("address")}
                 />
+                <label htmlFor="address" className="form-email">
+                Address
+              </label>
                 <FaRegAddressCard className="icon" />
               </div>
               <div className="input-box resgister">
                 <input
                   type={showPasswordRegister ? "text" : "password"}
-                  placeholder="Password"
+                  placeholder=" "
                   required
                   value={dataRegister.password}
                   onChange={handleChangeRegister("password")}
                 />
+                <label htmlFor="password" className="form-email">
+                Password
+              </label>
                 {showPasswordRegister ? (
                   <FaEye
                     className="icon password"
@@ -388,22 +403,28 @@ const LoginRegister = () => {
               <div className="input-box resgister">
                 <input
                   type="text"
-                  placeholder="Số điện thoại"
+                  placeholder=" "
                   required
                   value={dataRegister.phone}
                   onChange={handleChangeRegister("phone")}
                 />
+                <label htmlFor="phone" className="form-email">
+                Phone
+              </label>
                 <FaPhone className="icon" />
               </div>
 
               <div className="input-box resgister">
                 <input
                   type={showConfirmPasswordRegister ? "text" : "password"}
-                  placeholder="Comfirm Password"
+                  placeholder=" "
                   required
                   value={dataRegister.confirm_password}
                   onChange={handleChangeRegister("confirm_password")}
                 />
+                <label htmlFor="confirm_password" className="form-email">
+                Confirm Password
+              </label>
                 {showConfirmPasswordRegister ? (
                   <FaEye
                     className="icon password"
@@ -426,17 +447,21 @@ const LoginRegister = () => {
               </div>
             </div>
 
-            <button type="submit" className="button-resgister">
-              Đăng kí
+            <button type="submit" className="button-resgister" disabled={isLoading}>
+            {isLoading ? (
+                <span>
+                  <FontAwesomeIcon icon={faCircleNotch} spin />
+                </span>
+              ) : (
+                <span>Đăng nhập</span>
+              )}
             </button>
             <div className="register-link">
               <p>
                 Return to Login page?{" "}
-               
-                  <a href="#" onClick={loginLink}>
-                    Login
-                  </a>
-               
+                <a href="#" onClick={loginLink}>
+                  Login
+                </a>
               </p>
             </div>
           </form>
