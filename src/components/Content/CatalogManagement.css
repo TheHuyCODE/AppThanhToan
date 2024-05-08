@@ -109,7 +109,7 @@ h1.title-category {
   justify-content: space-around;
   padding: 5px;
   font-size: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   margin-top: 30px;
 }
 .input-name-category {
@@ -130,7 +130,7 @@ h1.title-category {
   margin-top: 30px;
 }
 label.title-picture {
-    margin-right: 21px;
+    margin-right: 43px;
 } 
 .show-picture {
   display: flex;
@@ -143,4 +143,9 @@ label.title-picture {
 }
 label > span {
   color: red;
+}
+.errorPopup {
+  color: red;
+  font-size: 13px;
+  margin-left: 13rem;
 }

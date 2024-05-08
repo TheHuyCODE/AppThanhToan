@@ -68,7 +68,7 @@ const LoginRegister = () => {
     password: "",
   });
   useEffect(() => {
-    console.log("inputClicked", inputClicked);
+    // console.log("inputClicked", inputClicked);
     if (inputClicked) {
 
       if (data.email === "") {
@@ -111,7 +111,7 @@ const LoginRegister = () => {
   });
   const handleChange = (fieldName) => (e) => {
     const value = e.target.value.trim();
-    console.log("value", value);
+    // console.log("value", value);
     setData({
       ...data,
       [fieldName]: value,

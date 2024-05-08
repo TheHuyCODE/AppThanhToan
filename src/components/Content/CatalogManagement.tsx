@@ -2,39 +2,90 @@ import { CiSearch } from "react-icons/ci";
 import { FaArrowDown, FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./CatalogManagement.css";
 import { Input } from "antd";
-import { Space, Table, Tag } from 'antd';
+import { Space, Table, Tag } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
+import { toast, ToastContainer } from "react-toastify";
+
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 const CatalogManagement = () => {
   const [isOpenPopups, setIsOpenPopups] = useState(false);
-  const [picture, setIsPicture] = useState([]);
-  const [dataCategory, setDataCategory] = useState('')
-  const togglePopup = () => {
+  const [image, setIsImage] = useState("");
+  const [dataCategory, setDataCategory] = useState({
+    name: "",
+  });
+  const [resImage, setResImage] = useState("");
+  const [errorMessageCategories, setErrorMessageCategories] = useState('')
+
+  const setHandleInput = (fileName) => (e) => {
+    const value = e.target.value.trim();
+    console.log("value", value);
+    setDataCategory({
+      ...dataCategory,
+      [fileName]: value,
+    });
+  };
+
+  const clickAddItemCategory = (event) => {
+    event.preventDefault();
     setIsOpenPopups(!isOpenPopups);
-  };
-  const handleClose = () => {
-    setIsOpenPopups(false);
-  };
-  const onFileUploadHandler = (e) => {
-    e.preventDefault();
-    if (e.target) {
-      const formData = new FormData(e.target);
-      // Define your async function correctly
-      files.forEach((file) => {
-        formData.append('file', file);
-      });
-      uploadApiImage.postMessage(formData).then((res) => {
-        if (res.code === 200) {
-          console.log('res', res);
+    const accessToken = localStorage.getItem("access_token");
+    const userDataCategory = {
+      name: dataCategory.name,
+      file_url: resImage,
+      parent_id: null,
+    };
+    uploadApiImage
+      .postAddImageCategory(userDataCategory, accessToken)
+      .then((response) => {
+        if (response.code === 200) {
+          console.log("res", response);
+          toast.success("Đã thêm danh mục thành công!");
         } else {
-          console.log('error', res);
+          console.log("error", response);
+          toast.error("Thêm danh mục không thành công!");
+          const errorMessage = response.data.message.text
+          setErrorMessageCategories(errorMessage)
+          console.log(errorMessage)
+          setIsOpenPopups(isOpenPopups);
         }
       });
-    }
   };
-  
+  const handleImage = (e) => {
+    e.preventDefault();
+    const fileImage = e.target.files[0];
+    setIsImage(fileImage);
+    console.log(image);
+  };
+  const changeCategories = () => {
+    console.log("changeCategories");
+  };
+  useEffect(() => {
+    if (image) {
+      console.log("image:", image);
+      const formData = new FormData();
+      const prefixImage = "category";
+      formData.append("file", image);
+      console.log("formData:", [...formData]);
+      uploadApiImage
+        .postImage(formData, prefixImage)
+        .then((res) => {
+          if (res.code === 200) {
+            console.log("Success:", res);
+            const fileUrl = res.data.file_url;
+            setResImage(fileUrl);
+          } else {
+            console.log("Error:", res);
+          
+          }
+        })
+        .catch((error) => {
+          console.error("Error occurred while uploading:", error);
+        });
+    }
+  }, [image]);
+
   // useEffect(() => {
   //   const fetchDataCategory = async () => {
   //     const data = await category.getAll();
@@ -45,76 +96,81 @@ const CatalogManagement = () => {
   // useEffect(() => {
   //   console.log(dataCategory)
   // }, [dataCategory])
-  const showPicture = () => {
-    return picture.map((item) => (
-      <div className="show-picture">
-        <img
-          src={URL.createObjectURL(item)}
-          alt=""
-          width="100px"
-          height="100px"
-        />
-      </div>
-    ));
-  };
+  // const showPicture = () => {
+  //   return picture.map((item) => (
+  //     <div className="show-picture">
+  //       <img
+  //         src={URL.createObjectURL(item)}
+  //         alt=""
+  //         width="100px"
+  //         height="100px"
+  //       />
+  //     </div>
+  //   ));
+  // };
   const columns = [
     {
-      title: 'STT',
-      dataIndex: 'Stt',
-      key: 'Stt',
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
     },
     {
-      title: 'Tên danh mục cấp 1',
-      dataIndex: 'Danhmuc',
-      key: 'Danhmuc',
+      title: "Tên danh mục cấp 1",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Só lượng danh mục cấp 2',
-      dataIndex: 'Soluong',
-      key: 'Soluong',
+      title: "Só lượng danh mục cấp 2",
+      dataIndex: "Soluong",
+      key: "Soluong",
     },
     {
-      title: 'Ngày tạo',
-      key: 'Date',
-      dataIndex: 'Date',
+      title: "Ngày tạo",
+      dataIndex: "Date",
+      key: "Date",
     },
     {
-      title: 'Thao tác',
-      key: 'action',
+      title: "Thao tác",
+      key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a><FaPencilAlt/></a>
-          <a><FaTrash/></a>
+          <a onClick={changeCategories}>
+            <FaPencilAlt />
+          </a>
+          <a>
+            <FaTrash />
+          </a>
         </Space>
       ),
     },
   ];
   const data = [
     {
-      key: '1',
-      Stt: '1',
-      Danhmuc: 'Mayno',
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "1",
+      name: "Giày dép",
       Soluong: 6,
-      Date: '14/02/2024',
+      Date: "14/02/2024",
     },
     {
-      key: '2',
-      Stt: '2',
-      Danhmuc: 'Mayno',
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "2",
+      name: "Giày dép",
       Soluong: 6,
-      Date: '14/02/2024',
+      Date: "14/02/2024",
     },
     {
-      key: '3',
-      Stt: '3',
-      Danhmuc: 'Mayno',
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
       Soluong: 6,
-      Date: '14/02/2024',
+      Date: "14/02/2024",
     },
   ];
   return (
     <div className="content">
-      <h1 className="title-category">Quản lí danh mục sản phẩm</h1>
+      <ToastContainer />
+      <h1 className="title-category">Quản lí danh mục sản phẩm </h1>
       <div className="header">
         <div className="header-top">
           <div className="header-top right">
@@ -139,15 +195,20 @@ const CatalogManagement = () => {
               // height={500}
               centered
               open={isOpenPopups}
-              onOk={() => setIsOpenPopups(!isOpenPopups)}
+              onOk={clickAddItemCategory}
               onCancel={() => setIsOpenPopups(!isOpenPopups)}
               okText="Thêm"
               cancelText="Hủy bỏ"
             >
               <h1 className="title-addItem">Thêm danh mục cấp 1</h1>
               <div className="name-item">
-              <label htmlFor="">Tên danh mục (<span>*</span>)</label>
-                <Input className="input-name-category" />
+                <label htmlFor="">
+                  Tên danh mục 1 (<span>*</span>)
+                </label>
+                <Input
+                  className="input-name-category"
+                  onChange={setHandleInput("name")}
+                />
               </div>
               <div className="picture-item">
                 <label htmlFor="" className="title-picture">
@@ -157,23 +218,60 @@ const CatalogManagement = () => {
                   type="file"
                   multiple
                   accept="image/*"
+                  name="file"
                   // style={{display: "none"}}
-                  onSubmit={onFileUploadHandler}
+                  onChange={handleImage}
                 />
               </div>
-              {showPicture()}
+              {/* {showPicture()} */}
             </Modal>
+            <Modal
+              className="modalDialog-addITems"
+              width={600}
+              // height={500}
+              centered
+              open={isOpenPopups}
+              onOk={clickAddItemCategory}
+              onCancel={() => setIsOpenPopups(!isOpenPopups)}
+              okText="Thêm"
+              cancelText="Hủy bỏ"
+            >
+              <h1 className="title-addItem">Thêm danh mục cấp 1</h1>
+              <div className="name-item">
+                <label htmlFor="">
+                  Tên danh mục 1 (<span>*</span>)
+                </label>
+                <Input
+                  className="input-name-category"
+                  onChange={setHandleInput("name")}
+                />
+              </div>
+                <label htmlFor="errorPopup" className="errorPopup">{errorMessageCategories}</label>
+              <div className="picture-item">
+                <label htmlFor="" className="title-picture">
+                  Ảnh danh mục(<span>*</span>)
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  name="file"
+                  // style={{display: "none"}}
+                  onChange={handleImage}
+                />
+              </div>
+              {/* {showPicture()} */}
+            </Modal>
+            
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>
         </div>
         <div className="header-bot">
-        <Table columns={columns} dataSource={data} />
-
+          <Table columns={columns} dataSource={data} />
         </div>
       </div>
       {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}
     </div>
   );
 };
-
 export default CatalogManagement;

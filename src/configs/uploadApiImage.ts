@@ -1,5 +1,3 @@
-
-
 import axiosClient from "./axiosClient";
 
 const uploadApiImage = {
@@ -7,13 +5,21 @@ const uploadApiImage = {
     const url = "/api/v1/upload_file";
     return axiosClient.get(url);
   },
-  postMessage: () => {
-    const url = "/api/v1/upload_file";
-    return axiosClient.post(url);
+  postImage: (data, prefix) => {
+    const url = `/api/v1/upload_file?prefix=${prefix}`;
+    return axiosClient.post(url, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
-//   postMessageRegister: (params) => {
-//     const url = "/api/v1/auth/register";
-//     return axiosClient.post(url, params);
-//   }
+    postAddImageCategory: (data, token) => {
+      const url = "api/v1/manage/category";
+      return axiosClient.post(url, data, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
 };
 export default uploadApiImage;
