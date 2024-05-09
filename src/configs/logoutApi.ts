@@ -11,20 +11,22 @@ const logoutApi = {
     const url = "/api/v1/auth/logout";
     return axiosClient.post(url);
   },
-  // delete: () => {
-
-  // }
-//   postMessageRegister: (params) => {
-//     const url = "/api/v1/auth/register";
-//     return axiosClient.post(url, params);
-//   }
-postAddImageCategory: (data, token) => {
-  const url = "api/v1/manage/category";
-  return axiosClient.post(url, data, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-}
+  postAddImageCategory: (data, token) => {
+    const url = "api/v1/manage/category";
+    return axiosClient.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  },
+  deleteTokenLogout: (token) => {
+    const url = "api/v1/auth/logout";
+    return axiosClient.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
 };
+
 export default logoutApi;

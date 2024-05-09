@@ -3,6 +3,7 @@
 .image-background {
   display: flex;
   flex-direction: column;
+  margin-top: -35px;
 }
 .logo-image img {
   width: 150px; /* Đặt chiều rộng mong muốn của hình ảnh */

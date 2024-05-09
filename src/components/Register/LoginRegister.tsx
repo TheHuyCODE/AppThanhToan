@@ -4,12 +4,12 @@ import "./LoginRegister.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
-import logo from"../../assets/img/logo.png";
+import logo from "../../assets/img/logo.png";
+import { Modal } from "antd";
 import {
   FaUser,
   FaEnvelope,
   FaPhone,
-  FaStore,
   FaRegAddressCard,
   FaEye,
   FaEyeSlash,
@@ -36,19 +36,30 @@ const LoginRegister = () => {
   const [isEmptyMessagePassword, setIsEmptyMessagePassword] = useState(false);
   const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] =
     useState(false);
+  const [isErrorRegisterEmail, setIsErrorRegisterEmail] = useState("");
   const [inputClicked, setInputClicked] = useState(false);
   const validateEmail = (email) => {
     // Regular expression for email validation
     const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
     return regex.test(email);
   };
+  // const success = (success: string) => {
+  //   Modal.success({
+  //     content: success,
+  //   });
+  // };
+  const error = (error: string) => {
+    Modal.error({
+      title: "This is an error message",
+      content: error,
+    });
+  };
   const validateLoginInputs = () => {
     if (
-      
       data.email === "" ||
       data.password === "" ||
       !validateEmail(data.email) ||
-      data.password.length < 8 
+      data.password.length < 8
     ) {
       return false;
     }
@@ -71,7 +82,6 @@ const LoginRegister = () => {
   useEffect(() => {
     // console.log("inputClicked", inputClicked);
     if (inputClicked) {
-
       if (data.email === "") {
         setIsEmptyMessageEmail(true);
         setIsShortCodeMessageEmail(false);
@@ -141,12 +151,17 @@ const LoginRegister = () => {
     loginApi.postMessageRegister(userData).then((response) => {
       if (response.code === 200) {
         // Redirect to dashboard
-        console.log("res", response);
+        // const textSuccess = response.data.message.text;
+        // console.log(textSuccess)
+        // success(textSuccess);
         toast.success("Register success!");
         // console.log("Đăng nhập thành công");
       } else {
         // setCheckInPut(!checkInput);
-        toast.error("Not create account access");
+        console.log(response);
+        const res = response.data.message.text;
+        error(res);
+        // toast.error(res);
       }
     });
     setIsLoading(false);
@@ -163,16 +178,16 @@ const LoginRegister = () => {
     loginApi.postMessage(userData).then((res) => {
       console.log("res", res);
       if (res.code === 200) {
-        localStorage.setItem('access_token', res.data.access_token);
-        localStorage.setItem('refresh_token', res.data.refresh_token);
-        sessionStorage.setItem
+        localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refresh_token);
+        sessionStorage.setItem;
         // Redirect to dashboard
         console.log("res", res);
         toast.success("Loggin success!");
 
         setTimeout(() => {
           navigateToLoginSuccess();
-        }, 2000);
+        }, 1000);
         // console.log("Đăng nhập thành công");
       } else {
         toast.error("Not found User!");
@@ -328,8 +343,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("store_name")}
                 />
                 <label htmlFor="store_name" className="form-email">
-                Tên cửa hàng
-              </label>
+                  Tên cửa hàng
+                </label>
                 <LuStore className="icon" />
               </div>
             </div>
@@ -343,8 +358,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("full_name")}
                 />
                 <label htmlFor="full_name" className="form-email">
-                Họ và tên
-              </label>
+                  Họ và tên
+                </label>
                 <FaUser className="icon" />
               </div>
               <div className="input-box resgister">
@@ -356,8 +371,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("email")}
                 />
                 <label htmlFor="Email" className="form-email">
-                Email
-              </label>
+                  Email
+                </label>
                 <FaEnvelope className="icon" />
               </div>
             </div>
@@ -371,8 +386,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("address")}
                 />
                 <label htmlFor="address" className="form-email">
-                Address
-              </label>
+                  Address
+                </label>
                 <FaRegAddressCard className="icon" />
               </div>
               <div className="input-box resgister">
@@ -384,8 +399,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("password")}
                 />
                 <label htmlFor="password" className="form-email">
-                Password
-              </label>
+                  Password
+                </label>
                 {showPasswordRegister ? (
                   <FaEye
                     className="icon password"
@@ -413,8 +428,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("phone")}
                 />
                 <label htmlFor="phone" className="form-email">
-                Phone
-              </label>
+                  Phone
+                </label>
                 <FaPhone className="icon" />
               </div>
 
@@ -427,8 +442,8 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("confirm_password")}
                 />
                 <label htmlFor="confirm_password" className="form-email">
-                Confirm Password
-              </label>
+                  Confirm Password
+                </label>
                 {showConfirmPasswordRegister ? (
                   <FaEye
                     className="icon password"
@@ -451,13 +466,17 @@ const LoginRegister = () => {
               </div>
             </div>
 
-            <button type="submit" className="button-resgister" disabled={isLoading}>
-            {isLoading ? (
+            <button
+              type="submit"
+              className="button-resgister"
+              disabled={isLoading}
+            >
+              {isLoading ? (
                 <span>
                   <FontAwesomeIcon icon={faCircleNotch} spin />
                 </span>
               ) : (
-                <span>Đăng nhập</span>
+                <span>Đăng kí</span>
               )}
             </button>
             <div className="register-link">

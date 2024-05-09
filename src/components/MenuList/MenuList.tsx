@@ -23,27 +23,16 @@ const MenuList = ({ darkTheme }) => {
       // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
       const token = localStorage.getItem("access_token");
       if (token) {
-        axios
-          .delete(
-            "https://0db2-113-190-145-5.ngrok-free.app/api/v1/auth/logout",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((response) => {
-            // Xử lý phản hồi từ backend (nếu cần)
-            // Sau khi xử lý xong, chuyển hướng đến trang đăng nhập
+        logoutApi.deleteTokenLogout(token).then((response) => {
+          if(response.code === 200) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("refresh_token");
             window.location.href = "/login";
-          })
-          .catch((error) => {
-            // Xử lý lỗi nếu có
-          });
-      } else {
-        // Xử lý trường hợp không có token trong local storage
+          }
+          else {
+            console.log('error', response)
+          }
+        })
       }
     }
   };
