@@ -5,7 +5,9 @@ const category = {
     const url = "api/v1/manage/category/get";
     return axiosClient.get(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}` 
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
       }
     });
   },

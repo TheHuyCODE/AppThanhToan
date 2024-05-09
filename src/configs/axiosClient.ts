@@ -2,7 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 
 const axiosClient = axios.create({
-  baseURL: "https://0db2-113-190-145-5.ngrok-free.app",
+  baseURL: "https://0db2-113-190-145-5.ngrok-free.app/",
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("access_token")}`,

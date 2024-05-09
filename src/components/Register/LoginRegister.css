@@ -1,7 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+.image-background {
+  display: flex;
+  flex-direction: column;
+}
+.logo-image img {
+  width: 150px; /* Đặt chiều rộng mong muốn của hình ảnh */
+  height: auto; /* Đảm bảo tỷ lệ khung hình được duy trì */
+}
 .wrapper {
   position: relative;
-  width: 420px;
+  width: 440px;
   height: 500px;
   background-color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -13,6 +22,7 @@
   justify-content: center;
   overflow: hidden;
   font-family: "Poppins", sans-serif;
+  box-shadow: 8px 19px 45px 23px lightgrey;
 }
 .wrapper.active {
   height: 670px;
@@ -32,11 +42,11 @@
   transition: none;
 }
 .wrapper .form-box.login {
-  transition: translate 0.18s ease;
+  transition:  0.25s ease;
   translate: 0;
 }
 .wrapper.active .form-box.register {
-  transition: translate 0.18s ease;
+  transition:  0.25s ease;
   translate: 0;
 }
 form h1 {

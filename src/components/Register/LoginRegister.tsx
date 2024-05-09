@@ -4,6 +4,7 @@ import "./LoginRegister.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import logo from"../../assets/img/logo.png";
 import {
   FaUser,
   FaEnvelope,
@@ -186,6 +187,9 @@ const LoginRegister = () => {
 
   return (
     <div className="image-background">
+      <div className="logo-image">
+        <img src={logo} alt="logo" />
+      </div>
       <ToastContainer />
       <div className={`wrapper${action}`}>
         {/* form login */}
