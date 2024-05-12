@@ -215,8 +215,7 @@ const CatalogManagement = () => {
                   Ảnh danh mục(<span>*</span>)
                 </label>
                 <input
-                  type="file"
-                  multiple
+                  type="file" 
                   accept="image/*"
                   name="file"
                   // style={{display: "none"}}

@@ -50,7 +50,7 @@ const LoginRegister = () => {
   // };
   const error = (error: string) => {
     Modal.error({
-      title: "This is an error message",
+      title: "Đã xảy ra lỗi đăng kí tài khoản",
       content: error,
     });
   };
@@ -176,7 +176,7 @@ const LoginRegister = () => {
     };
     setIsLoading(true);
     loginApi.postMessage(userData).then((res) => {
-      console.log("res", res);
+      console.log("res", res); 
       if (res.code === 200) {
         localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("refresh_token", res.data.refresh_token);

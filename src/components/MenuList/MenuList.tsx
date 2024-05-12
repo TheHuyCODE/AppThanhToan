@@ -11,31 +11,33 @@ import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
 import category from "../../configs/category";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 const MenuList = ({ darkTheme }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [backPageLogin, setBackPageLogin] = useState(false);
-  const handleOK = () => {
-    setBackPageLogin(!backPageLogin);
-    console.log("backPageLogin", backPageLogin);
-    // Chuyển hướng đến trang đăng nhập khi hủy modal
-    if (backPageLogin) {
-      // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
-      const token = localStorage.getItem("access_token");
-      if (token) {
-        logoutApi.deleteTokenLogout(token).then((response) => {
-          if(response.code === 200) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
-            window.location.href = "/login";
-          }
-          else {
-            console.log('error', response)
-          }
-        })
-      }
-    }
-  };
+  const navigate = useNavigate()
+  // const handleOK = () => {
+  //   setBackPageLogin(!backPageLogin);
+  //   console.log("backPageLogin", backPageLogin);
+  //   // Chuyển hướng đến trang đăng nhập khi hủy modal
+  //   if (backPageLogin) {
+  //     // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
+  //     const token = localStorage.getItem("access_token");
+  //     if (token) {
+  //       logoutApi.deleteTokenLogout(token).then((response) => {
+  //         if(response.code === 200) {
+  //           localStorage.removeItem("access_token");
+  //           localStorage.removeItem("refresh_token");
+  //           navigate('/login')
+  //         }
+  //         else {
+  //           console.log('error', response)
+  //         }
+  //       })
+  //     }
+  //   }
+  // };
   // const handleDataCategories = async () => {
   //   try {
   //     const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
@@ -121,7 +123,7 @@ const MenuList = ({ darkTheme }) => {
             // height={500}
             centered
             open={isOpenModal}
-            onOk={handleOK}
+            onOk={() => navigate('/login')}
             onCancel={() => setIsOpenModal(!isOpenModal)}
             okText="Đăng xuất"
             cancelText="Hủy bỏ"
@@ -129,7 +131,7 @@ const MenuList = ({ darkTheme }) => {
             <h1>Đăng xuất</h1>
             <span>Bạn có muốn đăng xuất khỏi hệ thống không?</span>
           </Modal>
-          <Link to="">Đăng xuất</Link>
+          Đăng xuất
         </Menu.Item>
       </Menu>
     </div>
