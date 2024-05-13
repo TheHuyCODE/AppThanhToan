@@ -1,7 +1,7 @@
 import { CiSearch } from "react-icons/ci";
 import { FaArrowDown, FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./CatalogManagement.css";
-import { Input } from "antd";
+import { Input, Select } from "antd";
 import { Space, Table, Tag } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
@@ -16,7 +16,7 @@ const CatalogManagement = () => {
     name: "",
   });
   const [resImage, setResImage] = useState("");
-  const [errorMessageCategories, setErrorMessageCategories] = useState('')
+  const [errorMessageCategories, setErrorMessageCategories] = useState("");
 
   const setHandleInput = (fileName) => (e) => {
     const value = e.target.value.trim();
@@ -45,22 +45,27 @@ const CatalogManagement = () => {
         } else {
           console.log("error", response);
           toast.error("Thêm danh mục không thành công!");
-          const errorMessage = response.data.message.text
-          setErrorMessageCategories(errorMessage)
-          console.log(errorMessage)
+          const errorMessage = response.data.message.text;
+          setErrorMessageCategories(errorMessage);
+          console.log(errorMessage);
           setIsOpenPopups(isOpenPopups);
         }
       });
   };
+  const onDeleteCategories = () => {
+    console.log('deleteCategories')
+  }
+  const onChangeCategories = () => {
+    console.log('changeCategories')
+  }
+  
   const handleImage = (e) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
     setIsImage(fileImage);
     console.log(image);
   };
-  const changeCategories = () => {
-    console.log("changeCategories");
-  };
+
   useEffect(() => {
     if (image) {
       console.log("image:", image);
@@ -77,7 +82,6 @@ const CatalogManagement = () => {
             setResImage(fileUrl);
           } else {
             console.log("Error:", res);
-          
           }
         })
         .catch((error) => {
@@ -85,29 +89,6 @@ const CatalogManagement = () => {
         });
     }
   }, [image]);
-
-  // useEffect(() => {
-  //   const fetchDataCategory = async () => {
-  //     const data = await category.getAll();
-  //     setDataCategory(data);
-  //   };
-  //   fetchDataCategory();
-  // }, []);
-  // useEffect(() => {
-  //   console.log(dataCategory)
-  // }, [dataCategory])
-  // const showPicture = () => {
-  //   return picture.map((item) => (
-  //     <div className="show-picture">
-  //       <img
-  //         src={URL.createObjectURL(item)}
-  //         alt=""
-  //         width="100px"
-  //         height="100px"
-  //       />
-  //     </div>
-  //   ));
-  // };
   const columns = [
     {
       title: "STT",
@@ -132,13 +113,13 @@ const CatalogManagement = () => {
     {
       title: "Thao tác",
       key: "action",
-      render: (_, record) => (
+      render: () => (
         <Space size="middle">
-          <a onClick={changeCategories}>
+          <a onClick={onChangeCategories}>
             <FaPencilAlt />
           </a>
-          <a>
-            <FaTrash />
+          <a onClick={onDeleteCategories}>
+            <FaTrash style={{color: 'red'}} />
           </a>
         </Space>
       ),
@@ -215,7 +196,7 @@ const CatalogManagement = () => {
                   Ảnh danh mục(<span>*</span>)
                 </label>
                 <input
-                  type="file" 
+                  type="file"
                   accept="image/*"
                   name="file"
                   // style={{display: "none"}}
@@ -245,7 +226,9 @@ const CatalogManagement = () => {
                   onChange={setHandleInput("name")}
                 />
               </div>
-                <label htmlFor="errorPopup" className="errorPopup">{errorMessageCategories}</label>
+              <label htmlFor="errorPopup" className="errorPopup">
+                {errorMessageCategories}
+              </label>
               <div className="picture-item">
                 <label htmlFor="" className="title-picture">
                   Ảnh danh mục(<span>*</span>)
@@ -261,12 +244,20 @@ const CatalogManagement = () => {
               </div>
               {/* {showPicture()} */}
             </Modal>
-            
+
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>
         </div>
-        <div className="header-bot">
-          <Table columns={columns} dataSource={data} />
+        <div className="table-container">
+          <Table
+            columns={columns}
+            dataSource={data}
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: () => {console.log(record,rowIndex)}, // click row
+              };
+            }}
+          />
         </div>
       </div>
       {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}

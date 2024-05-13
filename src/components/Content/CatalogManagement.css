@@ -58,29 +58,12 @@ h1.title-category {
   font-weight: 300;
   cursor: pointer;
 }
-.header-bot {
+.table-container {
   margin-top: 30px;
   width: 100%;
   height: auto;
 }
 
-/* .header-bot thead th {
-  border-bottom: 0.5px solid lightgrey;
-  width: 15%;
-  height: 39px;
-}
-
-.header-bot tbody td {
-  border-bottom: 1px solid lightgrey; /* Bottom border with 1px thickness and black color */
-/* }
-.header-bot .icon {
-  color: black;
-  margin-left: 5px;
-} */
-  /* .header-bot tr {
-    width: auto;
-    height: 50px;;
-  }  */
 .custom-file-upload {
   border: 1px solid #ccc;
   display: inline-block;
