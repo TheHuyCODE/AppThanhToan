@@ -1,5 +1,11 @@
 import { CiSearch } from "react-icons/ci";
-import { FaArrowDown, FaPencilAlt, FaTrash } from "react-icons/fa";
+import {
+  FaArrowDown,
+  FaPencilAlt,
+  FaTrash,
+  FaArrowAltCircleDown,
+  FaArrowAltCircleUp,
+} from "react-icons/fa";
 import "./CatalogManagement.css";
 import { Input, Select } from "antd";
 import { Space, Table, Tag } from "antd";
@@ -17,6 +23,8 @@ const CatalogManagement = () => {
   });
   const [resImage, setResImage] = useState("");
   const [errorMessageCategories, setErrorMessageCategories] = useState("");
+  const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
+  const [isOpenModalModify, setIsOpenModalModify] = useState(false);
 
   const setHandleInput = (fileName) => (e) => {
     const value = e.target.value.trim();
@@ -53,12 +61,19 @@ const CatalogManagement = () => {
       });
   };
   const onDeleteCategories = () => {
-    console.log('deleteCategories')
-  }
+    console.log("deleteCategories");
+    setIsOpenModalDelete(!isOpenModalDetele);
+  };
+  const clickDeleteCategory = () => {
+    //call api delete
+  };
   const onChangeCategories = () => {
-    console.log('changeCategories')
+    setIsOpenModalModify(!isOpenModalModify)
+  };
+  const clickChangeCategory = () => {
+    //call api change
   }
-  
+
   const handleImage = (e) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
@@ -98,28 +113,54 @@ const CatalogManagement = () => {
     {
       title: "Tên danh mục cấp 1",
       dataIndex: "name",
+      align: "center",
+      editTable: true,
       key: "name",
+      onFilter: (value, record) => {
+        return record.name === value;
+      },
     },
     {
-      title: "Só lượng danh mục cấp 2",
+      title: "Số lượng danh mục cấp 2",
+      // title: (titleProps) => {
+      //   const sortedColumn = titleProps.sortColumns?.find(({ column }) => column.key === "name");
+
+      //   return (
+      //     <div style={{ display: "flex", justifyContent: "spaceBetween" }}>
+      //      some title
+      //      {sortedColumn?.order === 'ascend' ? <SortUpIcon /> : <SortDownIcon />}
+      //    </div>
+      //   )
+      // }
       dataIndex: "Soluong",
       key: "Soluong",
+      align: "center",
+      editTable: true,
+      sorter: (record1, record2) => {
+        return record1.Soluong > record2.Soluong;
+      },
+
+      // sortIcon: ({sortOrder}) =><FaArrowAltCircleDown order={sortOrder}/>
     },
     {
       title: "Ngày tạo",
       dataIndex: "Date",
       key: "Date",
+      align: "center",
+      editTable: true,
     },
     {
       title: "Thao tác",
       key: "action",
+      align: "center",
+      editTable: true,
       render: () => (
         <Space size="middle">
           <a onClick={onChangeCategories}>
             <FaPencilAlt />
           </a>
           <a onClick={onDeleteCategories}>
-            <FaTrash style={{color: 'red'}} />
+            <FaTrash style={{ color: "red" }} />
           </a>
         </Space>
       ),
@@ -137,6 +178,27 @@ const CatalogManagement = () => {
       id: "27bad62b-d417-4bc9-bf18-309e246424b01",
       stt: "2",
       name: "Giày dép",
+      Soluong: 7,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 8,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 9,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
       Soluong: 6,
       Date: "14/02/2024",
     },
@@ -145,6 +207,118 @@ const CatalogManagement = () => {
       stt: "3",
       name: "Giày dép",
       Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 6,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "3",
+      name: "Giày dép",
+      Soluong: 100,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "33",
+      name: "Giày dép",
+      Soluong: 1,
+      Date: "14/02/2024",
+    },
+    {
+      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
+      stt: "34",
+      name: "Giày dép",
+      Soluong: 8,
       Date: "14/02/2024",
     },
   ];
@@ -159,7 +333,7 @@ const CatalogManagement = () => {
             <input
               type="text"
               placeholder="Tìm danh mục"
-              className="search-category"
+              className="search-categories"
             />
           </div>
           <div className="header-btn">
@@ -170,6 +344,8 @@ const CatalogManagement = () => {
             >
               Thêm danh mục cấp 1
             </Button>
+            {/* Modal add product */}
+
             <Modal
               className="modalDialog-addITems"
               width={600}
@@ -205,14 +381,16 @@ const CatalogManagement = () => {
               </div>
               {/* {showPicture()} */}
             </Modal>
+
+            {/* Modal Modify product */}
             <Modal
               className="modalDialog-addITems"
               width={600}
               // height={500}
               centered
-              open={isOpenPopups}
-              onOk={clickAddItemCategory}
-              onCancel={() => setIsOpenPopups(!isOpenPopups)}
+              open={isOpenModalModify}
+              onOk={clickChangeCategory}
+              onCancel={() => setIsOpenModalModify(!isOpenModalModify)}
               okText="Thêm"
               cancelText="Hủy bỏ"
             >
@@ -244,7 +422,21 @@ const CatalogManagement = () => {
               </div>
               {/* {showPicture()} */}
             </Modal>
+            {/* Modal Delete product */}
 
+            <Modal
+              okButtonProps={{ style: { backgroundColor: 'red' } }} 
+              width={600}
+              centered
+              open={isOpenModalDetele}
+              onOk={clickDeleteCategory}
+              onCancel={() => setIsOpenModalDelete(!isOpenModalDetele)}
+              okText="Xóa"
+              cancelText="Hủy bỏ"
+            >
+              <h1>Xóa sản phẩm</h1>
+              <span>Bạn chắc chắn muốn xóa sản phẩm này không?</span>
+            </Modal>
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>
         </div>
@@ -254,7 +446,9 @@ const CatalogManagement = () => {
             dataSource={data}
             onRow={(record, rowIndex) => {
               return {
-                onClick: () => {console.log(record,rowIndex)}, // click row
+                onClick: () => {
+                  console.log(record, rowIndex);
+                }, // click row
               };
             }}
           />

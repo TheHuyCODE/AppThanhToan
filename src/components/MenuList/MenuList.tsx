@@ -50,14 +50,15 @@ const MenuList = ({ darkTheme }) => {
   //     // Xử lý lỗi ở đây
   //   }
   // };
-  useEffect(() => {
-    const fetchDataCategory = async () => {
-      const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
-      const data = await category.getAll(accessToken);
-      console.log("data", data);
-    };
-    fetchDataCategory();
-  }, []);
+  // useEffect(() => {
+  //   const fetchDataCategory = async () => {
+  //     const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
+  //     const data = await category.getAll(accessToken);
+  //     console.log("data", data);
+  //   };
+  //   fetchDataCategory();
+  // }, []);
+
   return (
     <div className="sidebar-left">
       <Menu

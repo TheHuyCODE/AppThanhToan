@@ -54,21 +54,29 @@ const ProductMangement = () => {
       title: "Hãng sản xuất gốc",
       dataIndex: "Hangsanxuatgoc",
       key: "Hangsanxuatgoc",
+      align: 'center',
+      editTable: true,
     },
     {
       title: "Danh mục sản phẩm",
       dataIndex: "Danhmucsanpham",
       key: "Danhmucsanpham",
+      align: 'center',
+      editTable: true,
     },
     {
       title: "Đơn giá",
       dataIndex: "Dongia",
       key: "Dongia",
+      align: 'center',
+      editTable: true,
     },
     {
       title: "Đơn giá sau giảm",
       dataIndex: "Dongiasaugiam",
       key: "Dongiasaugiam",
+      align: 'center',
+      editTable: true,
     },
     {
       title: "Số lượng tồn",
@@ -84,6 +92,8 @@ const ProductMangement = () => {
       title: "Ngày tạo",
       dataIndex: "Date",
       key: "Date",
+      align: 'center',
+      editTable: true,
     },
     {
       title: "Thao tác",
@@ -227,6 +237,10 @@ const ProductMangement = () => {
                 console.log(record, rowIndex);
               }, // click row
             };
+          }}
+          pagination={{
+            current: 1,
+            pageSize: 10,
           }}
         ></Table>
       </div>
