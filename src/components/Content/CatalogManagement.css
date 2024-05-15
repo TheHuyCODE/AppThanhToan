@@ -37,6 +37,7 @@ a.title-category {
   display: flex;
   justify-content: space-between;
   position: relative;
+  margin-top: 10px;
 }
 .header-top .icon {
   position: absolute;
@@ -62,6 +63,7 @@ a.title-category {
   margin-top: 30px;
   width: 100%;
   height: auto;
+  position: relative;
 }
 
 .custom-file-upload {
@@ -95,12 +97,15 @@ a.title-category {
   margin-top: 30px;
 }
 .input-name-category {
-    border: 1px solid grey;
-    border-radius: 5px;
-    padding: 5px 5px 5px 10px;
-    width: 320px;
-    height: 26px;
-    outline: none;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 5px 5px 5px 10px;
+  width: 320px;
+  height: 26px;
+  outline: none;
+}
+.input-name-category:focus {
+  border: 1px solid blue;
 }
 .picture-item {
   display: flex;
@@ -112,8 +117,8 @@ a.title-category {
   margin-top: 30px;
 }
 label.title-picture {
-    margin-right: 43px;
-} 
+  margin-right: 43px;
+}
 .show-picture {
   display: flex;
   align-items: center;
@@ -130,4 +135,11 @@ label > span {
   color: red;
   font-size: 13px;
   margin-left: 13rem;
+}
+span.total-items {
+  position: absolute;
+  bottom: -2px;
+  margin-bottom: 25px;
+  margin-left: 87%;
+  z-index: 1000;
 }

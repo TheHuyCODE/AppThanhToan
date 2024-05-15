@@ -7,7 +7,7 @@ import {
   FaArrowAltCircleUp,
 } from "react-icons/fa";
 import "./CatalogManagement.css";
-import { Input, Select } from "antd";
+import { Input, Select, Pagination } from "antd";
 import { Space, Table, Tag } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
@@ -15,60 +15,57 @@ import category from "../../configs/category";
 import { format } from "date-fns";
 import { IoIosArrowForward } from "react-icons/io";
 // import PopupAdditem from "../listitem/PopupAddItem";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal } from "antd";
 const CatalogManagement = () => {
+  const nameRef = useRef(null);
+  const fileRef = useRef(null);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [image, setIsImage] = useState("");
+  const [isClearInput, setIsClearInput] = useState("");
   const [dataCategory, setDataCategory] = useState({
     name: "",
   });
+
   const [resImage, setResImage] = useState("");
   const [errorMessageCategories, setErrorMessageCategories] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
   const [isDataCategory, setIsDataCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [idDeleteItems, setIdDeteleItem] = useState("");
+  const [isValueSearch, setIsValueSearch] = useState("");
   const setHandleInput = (fileName) => (e) => {
     const value = e.target.value.trim();
+    setIsClearInput(value);
     console.log("value", value);
     setDataCategory({
       ...dataCategory,
       [fileName]: value,
     });
   };
-
-  const clickAddItemCategory = (event) => {
-    event.preventDefault();
-    setIsOpenPopups(!isOpenPopups);
-    const accessToken = localStorage.getItem("access_token");
-    const userDataCategory = {
-      name: dataCategory.name,
-      file_url: resImage,
-      parent_id: null,
-    };
-    uploadApiImage
-      .postAddImageCategory(userDataCategory, accessToken)
-      .then((response) => {
-        if (response.code === 200) {
-          console.log("res", response);
-          toast.success("Đã thêm danh mục thành công!");
-        } else {
-          console.log("error", response);
-          toast.error("Thêm danh mục không thành công!");
-          const errorMessage = response.data.message.text;
-          setErrorMessageCategories(errorMessage);
-          console.log(errorMessage);
-          setIsOpenPopups(isOpenPopups);
-        }
-      });
-  };
+  useEffect(() => {
+    console.log(isValueSearch);
+  }, [isValueSearch]);
   const onDeleteCategories = () => {
     console.log("deleteCategories");
     setIsOpenModalDelete(!isOpenModalDetele);
   };
-  const clickDeleteCategory = () => {
-    //call api delete
+  const clickDeleteCategory = async () => {
+    // call api delete
+    const accessToken = localStorage.getItem("access_token");
+    if (idDeleteItems && idDeleteItems.length > 0 && accessToken) {
+      const res = await category.deleteCategory(idDeleteItems, accessToken);
+      if (res.code === 200) {
+        console.log("res:", res);
+        setIsOpenModalDelete(!isOpenModalDetele);
+        toast.success("Đã xóa sản phẩm thành công"); // Fetch the updated data after deletion
+        await fetchDataCategory();
+      } else {
+        console.log("error:", res);
+        toast.error("Error deleting category");
+      }
+    }
   };
   const onChangeCategories = () => {
     setIsOpenModalModify(!isOpenModalModify);
@@ -122,8 +119,19 @@ const CatalogManagement = () => {
       align: "center",
       editTable: true,
       key: "name",
+      filteredValue: [isValueSearch],
       onFilter: (value, record) => {
-        return record.name === value;
+        return (
+          String(record.name)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.created_date)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.number_children)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase())
+        );
       },
     },
     {
@@ -171,18 +179,59 @@ const CatalogManagement = () => {
       ),
     },
   ];
-
-  useEffect(() => {
-    const fetchDataCategory = async () => {
-      const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
-      const res = await category.getAll(accessToken);
-      setIsDataCategory(res.data);
-      console.log("data category", isDataCategory.items);
-      console.log(dataTable);
+  //Clear value categories
+  const clearInputs = () => {
+    if (nameRef.current) {
+      nameRef.current.value = "";
+    }
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+  };
+  const clickAddItemCategory = async (event) => {
+    event.preventDefault();
+    setIsOpenPopups(!isOpenPopups);
+    const accessToken = localStorage.getItem("access_token");
+    const userDataCategory = {
+      name: dataCategory.name,
+      file_url: resImage,
+      parent_id: null,
     };
+    try {
+      const response = await uploadApiImage.postAddImageCategory(
+        userDataCategory,
+        accessToken
+      );
+      if (response.code === 200) {
+        console.log("res", response);
+        toast.success("Đã thêm danh mục thành công!");
+        await fetchDataCategory();
+        clearInputs();
+      } else {
+        console.log("error", response);
+        toast.error("Thêm danh mục không thành công!");
+        const errorMessage = response.data.message.text;
+        setErrorMessageCategories(errorMessage);
+        console.log(errorMessage);
+        setIsOpenPopups(isOpenPopups);
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+      toast.error("Có lỗi xảy ra khi thêm danh mục!");
+      setIsOpenPopups(isOpenPopups);
+    }
+  };
+
+  const fetchDataCategory = async () => {
+    const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
+    const res = await category.getAll(accessToken);
+    setIsDataCategory(res.data);
+    console.log("data category", res.data.items);
+    console.log(res.data);
+  };
+  useEffect(() => {
     fetchDataCategory();
   }, []);
-
   const dataTable = isDataCategory.items?.map((item, index) => ({
     stt: index + 1,
     key: item.id,
@@ -206,6 +255,7 @@ const CatalogManagement = () => {
               type="text"
               placeholder="Tìm danh mục"
               className="search-categories"
+              onChange={(e) => setIsValueSearch(e.target.value)}
             />
           </div>
           <div className="header-btn">
@@ -220,7 +270,7 @@ const CatalogManagement = () => {
 
             <Modal
               className="modalDialog-addITems"
-              width={600}
+              width={500}
               // height={500}
               centered
               open={isOpenPopups}
@@ -234,9 +284,10 @@ const CatalogManagement = () => {
                 <label htmlFor="">
                   Tên danh mục 1 (<span>*</span>)
                 </label>
-                <Input
+                <input
                   className="input-name-category"
                   onChange={setHandleInput("name")}
+                  ref={nameRef}
                 />
               </div>
               <div className="picture-item">
@@ -249,6 +300,7 @@ const CatalogManagement = () => {
                   name="file"
                   // style={{display: "none"}}
                   onChange={handleImage}
+                  ref={fileRef}
                 />
               </div>
               {/* {showPicture()} */}
@@ -257,7 +309,7 @@ const CatalogManagement = () => {
             {/* Modal Modify product */}
             <Modal
               className="modalDialog-addITems"
-              width={600}
+              width={500}
               // height={500}
               centered
               open={isOpenModalModify}
@@ -273,7 +325,9 @@ const CatalogManagement = () => {
                 </label>
                 <Input
                   className="input-name-category"
+                  id="InputNameCategory"
                   onChange={setHandleInput("name")}
+                  value={isClearInput}
                 />
               </div>
               <label htmlFor="errorPopup" className="errorPopup">
@@ -313,24 +367,30 @@ const CatalogManagement = () => {
           </div>
         </div>
         <div className="table-container">
-          
-            <Table
-              columns={columns}
-              dataSource={dataTable}
-              onRow={(record, rowIndex) => {
-                return {
-                  onClick: () => {
-                    console.log(record, rowIndex);
-                    const name = record.name;
-                    setSelectedCategory(name);
-                    
-                  },
-                };
-              }}
-            />
-         
-
-          {/* {selectedCategory === "category2" && <Table />} */}
+          <Table
+            columns={columns}
+            dataSource={dataTable}
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: () => {
+                  console.log(record, rowIndex);
+                  const name = record.name;
+                  setSelectedCategory(name);
+                  const idItem = record.key;
+                  console.log("idItem", idItem);
+                  setIdDeteleItem(idItem);
+                },
+              };
+            }}
+            // rowKey={(record) => record.data_index}q
+            pagination={{
+              position: ["bottomCenter"],
+              defaultPageSize: 15,
+              showSizeChanger: true,
+              pageSizeOptions: ["10", "20", "30"],
+            }}
+          />
+          <span className="total-items">{`${isDataCategory.total} items`}</span>
         </div>
       </div>
       {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}

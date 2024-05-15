@@ -25,5 +25,15 @@ const category = {
       },
     });
   },
+  deleteCategory: (idItems, accessToken) => {
+    const url = `api/v1/manage/category/${idItems}`;
+    return axiosClient.delete(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
+  }
 };
 export default category;
