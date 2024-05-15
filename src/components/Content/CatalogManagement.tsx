@@ -12,7 +12,8 @@ import { Space, Table, Tag } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
 import category from "../../configs/category";
-import { format } from 'date-fns'
+import { format } from "date-fns";
+import { IoIosArrowForward } from "react-icons/io";
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "antd";
@@ -27,6 +28,7 @@ const CatalogManagement = () => {
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
   const [isDataCategory, setIsDataCategory] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const setHandleInput = (fileName) => (e) => {
     const value = e.target.value.trim();
     console.log("value", value);
@@ -74,7 +76,10 @@ const CatalogManagement = () => {
   const clickChangeCategory = () => {
     //call api change
   };
-
+  // const handleCategoryClick = (record) => {
+  //   setSelectedCategory(record.name);
+  //   console.log("categoryName", selectedCategory);
+  // };
   const handleImage = (e) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
@@ -172,8 +177,8 @@ const CatalogManagement = () => {
       const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
       const res = await category.getAll(accessToken);
       setIsDataCategory(res.data);
-      console.log('data category', isDataCategory.items);
-      console.log(dataTable)
+      console.log("data category", isDataCategory.items);
+      console.log(dataTable);
     };
     fetchDataCategory();
   }, []);
@@ -183,12 +188,16 @@ const CatalogManagement = () => {
     key: item.id,
     name: item.name,
     number_children: item.number_children,
-    created_date: format(new Date(item.created_date*1000), "dd/MM/yyyy")
+    created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
   }));
   return (
     <div className="content">
       <ToastContainer />
-      <h1 className="title-category">Quản lí danh mục sản phẩm </h1>
+      <div>
+        <a className="title-category">Quản lí danh mục sản phẩm </a>
+        <IoIosArrowForward />
+        <a className="title-category">{selectedCategory}</a>
+      </div>
       <div className="header">
         <div className="header-top">
           <div className="header-top right">
@@ -304,17 +313,24 @@ const CatalogManagement = () => {
           </div>
         </div>
         <div className="table-container">
-          <Table
-            columns={columns}
-            dataSource={dataTable}
-            onRow={(record, rowIndex) => {
-              return {
-                onClick: () => {
-                  console.log(record, rowIndex);
-                }, // click row
-              };
-            }}
-          />
+          
+            <Table
+              columns={columns}
+              dataSource={dataTable}
+              onRow={(record, rowIndex) => {
+                return {
+                  onClick: () => {
+                    console.log(record, rowIndex);
+                    const name = record.name;
+                    setSelectedCategory(name);
+                    
+                  },
+                };
+              }}
+            />
+         
+
+          {/* {selectedCategory === "category2" && <Table />} */}
         </div>
       </div>
       {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}

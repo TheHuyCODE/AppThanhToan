@@ -6,9 +6,9 @@
   font-style: normal;
 }
 
-h1.title-category {
-  font-size: 30px;
-  margin-left: 50px;
+a.title-category {
+  font-size: 25px;
+  font-weight: bold;
   margin-top: 20px;
 }
 * {

@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient";
 
 const category = {
-  getAll: async (accessToken) => { 
+  getAll: (accessToken) => { 
     const url = "api/v1/manage/category";
     return axiosClient.get(url, {
       headers: {
