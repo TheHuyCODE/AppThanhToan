@@ -87,16 +87,16 @@ function App() {
                 path="/productmanagement"
                 element={
                   <Layout>
-                    <ProductMangement/>
+                    <ProductMangement />
                     <Outlet />
                   </Layout>
                 }
               />
-                 <Route
+              <Route
                 path="/productcatalogmanagement"
                 element={
                   <Layout>
-                    <CatalogManagement/>
+                    <CatalogManagement />
                     <Outlet />
                   </Layout>
                 }

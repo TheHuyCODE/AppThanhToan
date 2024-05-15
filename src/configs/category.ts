@@ -2,7 +2,7 @@ import axiosClient from "./axiosClient";
 
 const category = {
   getAll: async (accessToken) => { 
-    const url = "api/v1/manage/category/get";
+    const url = "api/v1/manage/category";
     return axiosClient.get(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

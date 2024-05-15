@@ -11,7 +11,8 @@ import { Input, Select } from "antd";
 import { Space, Table, Tag } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
-
+import category from "../../configs/category";
+import { format } from 'date-fns'
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "antd";
@@ -25,7 +26,7 @@ const CatalogManagement = () => {
   const [errorMessageCategories, setErrorMessageCategories] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
-
+  const [isDataCategory, setIsDataCategory] = useState([]);
   const setHandleInput = (fileName) => (e) => {
     const value = e.target.value.trim();
     console.log("value", value);
@@ -68,11 +69,11 @@ const CatalogManagement = () => {
     //call api delete
   };
   const onChangeCategories = () => {
-    setIsOpenModalModify(!isOpenModalModify)
+    setIsOpenModalModify(!isOpenModalModify);
   };
   const clickChangeCategory = () => {
     //call api change
-  }
+  };
 
   const handleImage = (e) => {
     e.preventDefault();
@@ -96,7 +97,7 @@ const CatalogManagement = () => {
             const fileUrl = res.data.file_url;
             setResImage(fileUrl);
           } else {
-            console.log("Error:", res);
+            console.log("Error:");
           }
         })
         .catch((error) => {
@@ -132,20 +133,19 @@ const CatalogManagement = () => {
       //    </div>
       //   )
       // }
-      dataIndex: "Soluong",
-      key: "Soluong",
+      dataIndex: "number_children",
+      key: "number_children",
       align: "center",
       editTable: true,
       sorter: (record1, record2) => {
         return record1.Soluong > record2.Soluong;
       },
-
       // sortIcon: ({sortOrder}) =><FaArrowAltCircleDown order={sortOrder}/>
     },
     {
       title: "Ngày tạo",
-      dataIndex: "Date",
-      key: "Date",
+      dataIndex: "created_date",
+      key: "created_date",
       align: "center",
       editTable: true,
     },
@@ -166,162 +166,25 @@ const CatalogManagement = () => {
       ),
     },
   ];
-  const data = [
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "1",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "2",
-      name: "Giày dép",
-      Soluong: 7,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 8,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 9,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 6,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "3",
-      name: "Giày dép",
-      Soluong: 100,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "33",
-      name: "Giày dép",
-      Soluong: 1,
-      Date: "14/02/2024",
-    },
-    {
-      id: "27bad62b-d417-4bc9-bf18-309e246424b01",
-      stt: "34",
-      name: "Giày dép",
-      Soluong: 8,
-      Date: "14/02/2024",
-    },
-  ];
+
+  useEffect(() => {
+    const fetchDataCategory = async () => {
+      const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
+      const res = await category.getAll(accessToken);
+      setIsDataCategory(res.data);
+      console.log('data category', isDataCategory.items);
+      console.log(dataTable)
+    };
+    fetchDataCategory();
+  }, []);
+
+  const dataTable = isDataCategory.items?.map((item, index) => ({
+    stt: index + 1,
+    key: item.id,
+    name: item.name,
+    number_children: item.number_children,
+    created_date: format(new Date(item.created_date*1000), "dd/MM/yyyy")
+  }));
   return (
     <div className="content">
       <ToastContainer />
@@ -425,7 +288,7 @@ const CatalogManagement = () => {
             {/* Modal Delete product */}
 
             <Modal
-              okButtonProps={{ style: { backgroundColor: 'red' } }} 
+              okButtonProps={{ style: { backgroundColor: "red" } }}
               width={600}
               centered
               open={isOpenModalDetele}
@@ -443,7 +306,7 @@ const CatalogManagement = () => {
         <div className="table-container">
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={dataTable}
             onRow={(record, rowIndex) => {
               return {
                 onClick: () => {
