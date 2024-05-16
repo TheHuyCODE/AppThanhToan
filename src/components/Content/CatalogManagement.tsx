@@ -17,6 +17,8 @@ import { IoIosArrowForward } from "react-icons/io";
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal } from "antd";
+import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const CatalogManagement = () => {
   const nameRef = useRef(null);
   const fileRef = useRef(null);
@@ -26,7 +28,7 @@ const CatalogManagement = () => {
   const [dataCategory, setDataCategory] = useState({
     name: "",
   });
-
+  const navigate = useNavigate()
   const [resImage, setResImage] = useState("");
   const [errorMessageCategories, setErrorMessageCategories] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
@@ -379,6 +381,7 @@ const CatalogManagement = () => {
                   const idItem = record.key;
                   console.log("idItem", idItem);
                   setIdDeteleItem(idItem);
+                  navigate(`/productcatalogmanagement/${idItem}`)
                 },
               };
             }}

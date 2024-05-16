@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
 import CatalogManagement from "./components/Content/CatalogManagement";
 import ProductMangement from "./components/Content/ProductMangement";
+import ChildrenCategory from "./components/Content/Children_catagory";
 import { Layout, Button, theme } from "antd";
 import Logo from "./components/Logo/Logo";
 const { Sider, Header, Content } = Layout;
@@ -24,7 +25,9 @@ function App() {
   const toggleDarkTheme = () => {
     setDarkTheme(!darkTheme);
   };
-
+  const NotFound = () => {
+    return <h1>404 Not Found data with your current URL</h1>;
+  }
   const location = useLocation();
   const isLoginRoute = location.pathname === "/login";
   return (
@@ -102,6 +105,8 @@ function App() {
                 }
               />
               <Route path="/login" element={<LoginRegister />} />
+              <Route path="productcatalogmanagement/:id" element={<ChildrenCategory/>} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Content>
         </Layout>
