@@ -27,7 +27,7 @@ function App() {
   };
   const NotFound = () => {
     return <h1>404 Not Found data with your current URL</h1>;
-  }
+  };
   const location = useLocation();
   const isLoginRoute = location.pathname === "/login";
   return (
@@ -105,8 +105,8 @@ function App() {
                 }
               />
               <Route path="/login" element={<LoginRegister />} />
-              <Route path="productcatalogmanagement/:id" element={<ChildrenCategory/>} />
-              <Route path="*" element={<NotFound />} />
+              {/* <Route path="productcatalogmanagement/:id" element={<ChildrenCategory/>} /> */}
+              {/* <Route path="*" element={<NotFound />} /> */}
             </Routes>
           </Content>
         </Layout>
