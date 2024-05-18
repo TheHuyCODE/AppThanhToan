@@ -23,34 +23,36 @@ import { useNavigate } from "react-router-dom";
 const CatalogManagement = () => {
   const nameRef = useRef(null);
   const fileRef = useRef(null);
+  const reviewImageRef = useRef(null);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [image, setIsImage] = useState("");
   const [previewImage, setIsPreviewImage] = useState("");
-  const [isClearInput, setIsClearInput] = useState("");
-  const [dataCategory, setDataCategory] = useState({
-    name: "",
-  });
-  const navigate = useNavigate();
+  const [dataCategory, setDataCategory] = useState("");
+  // const navigate = useNavigate();
+  const [ErrorMessageCategories, setErrorMessageCategories] = useState("");
   const [resImage, setResImage] = useState("");
-  const [errorMessageCategories, setErrorMessageCategories] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
   const [isDataCategory, setIsDataCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedImage, setSelectedImgae] = useState("");
+
   const [idDeleteItems, setIdDeteleItem] = useState("");
   const [isValueSearch, setIsValueSearch] = useState("");
-  const setHandleInput = (fileName) => (e) => {
-    const value = e.target.value.trim();
-    setIsClearInput(value);
-    console.log("value", value);
-    setDataCategory({
-      ...dataCategory,
-      [fileName]: value,
-    });
-  };
   useEffect(() => {
-    console.log(isValueSearch);
+    console.log("name", selectedCategory);
   }, [isValueSearch]);
+  useEffect(() => {
+    console.log("name", selectedCategory);
+    setDataCategory(selectedCategory);
+    console.log("dataCategory", dataCategory);
+    console.log("selectedImage", selectedImage);
+  }, [idDeleteItems]);
+  const setHandleInput = (e) => {
+    const value = e.target.value.trim();
+    console.log("value", value);
+    setDataCategory(value);
+  };
   const onDeleteCategories = () => {
     console.log("deleteCategories");
     setIsOpenModalDelete(!isOpenModalDetele);
@@ -71,11 +73,28 @@ const CatalogManagement = () => {
       }
     }
   };
-  const onChangeCategories = () => {
+  const onModifyCategories = () => {
     setIsOpenModalModify(!isOpenModalModify);
   };
-  const clickChangeCategory = () => {
+  const clickChangeCategory = async () => {
     //call api change
+    const accessToken = localStorage.getItem("access_token");
+    const dataPutCategory = {
+      name: dataCategory,
+    };
+    const res = await category.putModifyCategory(
+      idDeleteItems,
+      dataPutCategory,
+      accessToken
+    );
+    if (res.code === 200) {
+      console.log("res", res);
+      toast.success("Đã sửa sản phẩm thành công"); // Fetch the updated data after deletion
+      setIsOpenModalModify(!isOpenModalModify);
+    } else {
+      console.log("res", res);
+      toast.error("Error Modify category");
+    }
   };
   // const handleCategoryClick = (record) => {
   //   setSelectedCategory(record.name);
@@ -174,7 +193,7 @@ const CatalogManagement = () => {
       editTable: true,
       render: () => (
         <Space size="middle">
-          <a onClick={onChangeCategories}>
+          <a onClick={onModifyCategories}>
             <FaPencilAlt />
           </a>
           <a onClick={onDeleteCategories}>
@@ -192,18 +211,21 @@ const CatalogManagement = () => {
     if (fileRef.current) {
       fileRef.current.value = "";
     }
+    if (reviewImageRef.current) {
+      reviewImageRef.current.value = "";
+    }
   };
   const clickAddItemCategory = async (event) => {
     event.preventDefault();
     setIsOpenPopups(!isOpenPopups);
     const accessToken = localStorage.getItem("access_token");
     const userDataCategory = {
-      name: dataCategory.name,
+      name: dataCategory,
       file_url: resImage,
       parent_id: null,
     };
     try {
-      const response = await uploadApiImage.postAddImageCategory(
+      const response = await uploadApiImage.postAddItemCategory(
         userDataCategory,
         accessToken
       );
@@ -212,6 +234,7 @@ const CatalogManagement = () => {
         toast.success("Đã thêm danh mục thành công!");
         await fetchDataCategory();
         clearInputs();
+        setIsPreviewImage("");
       } else {
         console.log("error", response);
         toast.error("Thêm danh mục không thành công!");
@@ -243,6 +266,7 @@ const CatalogManagement = () => {
     name: item.name,
     number_children: item.number_children,
     created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
+    image_url: item.image_url,
   }));
   return (
     <div className="content">
@@ -291,7 +315,7 @@ const CatalogManagement = () => {
                 </label>
                 <input
                   className="input-name-category"
-                  onChange={setHandleInput("name")}
+                  onChange={setHandleInput}
                   ref={nameRef}
                 />
               </div>
@@ -318,6 +342,7 @@ const CatalogManagement = () => {
                 {image ? (
                   <img
                     src={previewImage}
+                    ref={reviewImageRef}
                     alt=""
                     style={{ maxHeight: "100%", maxWidth: "100%" }}
                   />
@@ -336,18 +361,17 @@ const CatalogManagement = () => {
               open={isOpenModalModify}
               onOk={clickChangeCategory}
               onCancel={() => setIsOpenModalModify(!isOpenModalModify)}
-              okText="Thêm"
+              okText="Sửa đổi"
               cancelText="Hủy bỏ"
             >
-              <h1 className="title-addItem">Thêm danh mục cấp 1</h1>
+              <h1 className="title-addItem">Sửa danh mục cấp 1</h1>
               <div className="name-item">
                 <label htmlFor="">
                   Tên danh mục 1 (<span>*</span>)
                 </label>
                 <input
                   className="input-name-category"
-                  onChange={setHandleInput("name")}
-                  ref={nameRef}
+                  onChange={setHandleInput}
                 />
               </div>
               <div className="picture-item">
@@ -372,7 +396,7 @@ const CatalogManagement = () => {
               <div className="preview-image">
                 {image ? (
                   <img
-                    src={previewImage}
+                    src={selectedImage}
                     alt=""
                     style={{ maxHeight: "100%", maxWidth: "100%" }}
                   />
@@ -408,7 +432,10 @@ const CatalogManagement = () => {
                 onClick: () => {
                   console.log(record, rowIndex);
                   const name = record.name;
+                  const nameImage = record.image_url;
+                  console.log(name);
                   setSelectedCategory(name);
+                  setSelectedImgae(nameImage);
                   const idItem = record.key;
                   console.log("idItem", idItem);
                   setIdDeteleItem(idItem);

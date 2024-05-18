@@ -13,13 +13,13 @@ const uploadApiImage = {
       },
     });
   },
-    postAddImageCategory: (data, token) => {
-      const url = "api/v1/manage/category";
-      return axiosClient.post(url, data, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
+  postAddItemCategory: (data, token) => {
+    const url = "api/v1/manage/category";
+    return axiosClient.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
 };
 export default uploadApiImage;

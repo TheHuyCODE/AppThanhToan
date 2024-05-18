@@ -1,14 +1,14 @@
 import axiosClient from "./axiosClient";
 
 const category = {
-  getAll: (accessToken) => { 
+  getAll: (accessToken) => {
     const url = "api/v1/manage/category";
     return axiosClient.get(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
     });
   },
   postNameCatalog: () => {
@@ -18,10 +18,10 @@ const category = {
   postImageCatalog: () => {
     const url = "api/v1/upload_file";
     const formData = new FormData();
-    formData.append('file', value1);
+    formData.append("file", value1);
     return axiosClient.post(url, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
   },
@@ -30,10 +30,20 @@ const category = {
     return axiosClient.delete(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
     });
-  }
+  },
+  putModifyCategory: (idItems, accessToken) => {
+    const url = `api/v1/manage/category/${idItems}`;
+    return axiosClient.put(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
 };
 export default category;
