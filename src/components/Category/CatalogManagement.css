@@ -90,7 +90,7 @@ a.title-category {
 .name-item {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
   padding: 5px;
   font-size: 15px;
   margin-bottom: 10px;
@@ -101,7 +101,7 @@ a.title-category {
   border-radius: 5px;
   padding: 5px 5px 5px 10px;
   width: 260px;
-  height: 26px;
+  height: 30px;
   outline: none;
 }
 .input-name-category:focus {
@@ -110,19 +110,17 @@ a.title-category {
 .picture-item {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 5px;
   font-size: 15px;
   margin-bottom: 20px;
   margin-top: 30px;
 }
-label.title-picture {
-  margin-right: 123px;
-}
+
 .show-picture {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   padding: 5px;
   font-size: 15px;
   margin-bottom: 20px;
@@ -167,8 +165,9 @@ label.label-upload {
   border-radius: 5px;
   font-size: 14px;
   padding: 5px;
+  margin-right: 104px;
 }
 
 label.label-upload:hover {
-  border-color: black;
+  border-color: #333333;
 }

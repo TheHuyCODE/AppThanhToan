@@ -5,7 +5,7 @@ const category = {
     const url = "api/v1/manage/category";
     return axiosClient.get(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
@@ -35,7 +35,7 @@ const category = {
       },
     });
   },
-  putModifyCategory: (idItems, accessToken) => {
+  putModifyCategory: (idItems, data, accessToken) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.put(url, {
       headers: {

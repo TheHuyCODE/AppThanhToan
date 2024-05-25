@@ -16,28 +16,27 @@ import { Link, useNavigate } from "react-router-dom";
 const MenuList = ({ darkTheme }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [backPageLogin, setBackPageLogin] = useState(false);
-  const navigate = useNavigate()
-  // const handleOK = () => {
-  //   setBackPageLogin(!backPageLogin);
-  //   console.log("backPageLogin", backPageLogin);
-  //   // Chuyển hướng đến trang đăng nhập khi hủy modal
-  //   if (backPageLogin) {
-  //     // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
-  //     const token = localStorage.getItem("access_token");
-  //     if (token) {
-  //       logoutApi.deleteTokenLogout(token).then((response) => {
-  //         if(response.code === 200) {
-  //           localStorage.removeItem("access_token");
-  //           localStorage.removeItem("refresh_token");
-  //           navigate('/login')
-  //         }
-  //         else {
-  //           console.log('error', response)
-  //         }
-  //       })
-  //     }
-  //   }
-  // };
+  const navigate = useNavigate();
+  const handleOK = () => {
+    setBackPageLogin(!backPageLogin);
+    console.log("backPageLogin", backPageLogin);
+    // Chuyển hướng đến trang đăng nhập khi hủy modal
+    if (backPageLogin) {
+      // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        logoutApi.deleteTokenLogout(token).then((response) => {
+          if (response.code === 200) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            navigate("/login");
+          } else {
+            console.log("error", response);
+          }
+        });
+      }
+    }
+  };
   // const handleDataCategories = async () => {
   //   try {
   //     const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
@@ -124,7 +123,7 @@ const MenuList = ({ darkTheme }) => {
             // height={500}
             centered
             open={isOpenModal}
-            onOk={() => navigate('/login')}
+            onOk={() => handleOK()}
             onCancel={() => setIsOpenModal(!isOpenModal)}
             okText="Đăng xuất"
             cancelText="Hủy bỏ"
