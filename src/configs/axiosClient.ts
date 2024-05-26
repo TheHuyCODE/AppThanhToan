@@ -1,7 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
 
-const BASEURL = process.env.BASE_URL
+const BASEURL = "https://543d-118-70-136-195.ngrok-free.app"
 const access_token = localStorage.getItem('access_token')
 const axiosClient = axios.create({
   baseURL: BASEURL,

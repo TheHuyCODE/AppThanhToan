@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({token, children }) => {
-  console.log("tokenProtected", token);
-  if (!token) {
+const ProtectedRoute = ({isAuthenticated, children }: { isAuthenticated: any, children: React.ReactNode }) => {
+  console.log("tokenProtected", isAuthenticated);
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
