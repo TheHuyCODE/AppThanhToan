@@ -19,6 +19,7 @@ import { LuStore } from "react-icons/lu";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 const LoginRegister = () => {
   const navigate = useNavigate();
   const [action, setAction] = useState("");
@@ -26,7 +27,7 @@ const LoginRegister = () => {
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
   const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] =
     useState(false);
-
+  const { isAuthenticated, accessToken, login, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false);
   const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] =
@@ -176,28 +177,21 @@ const LoginRegister = () => {
     };
     setIsLoading(true);
     loginApi.postMessage(userData).then((res) => {
-      console.log("res", res); 
+      console.log("res", res);
       if (res.code === 200) {
-        localStorage.setItem("access_token", res.data.access_token);
-        localStorage.setItem("refresh_token", res.data.refresh_token);
-        sessionStorage.setItem;
-        // Redirect to dashboard
-        console.log("res", res);
-        toast.success("Loggin success!");
-
+        toast.success("Login success!");
         setTimeout(() => {
-          navigateToLoginSuccess();
+          login(res.data.access_token, res.data.refresh_token);
         }, 1000);
-        // console.log("Đăng nhập thành công");
       } else {
         toast.error("Not found User!");
         console.log("Đăng nhập không thành công");
         setIsLoading(false);
       }
     });
-    const navigateToLoginSuccess = () => {
-      navigate("/");
-    };
+    // const navigateToLoginSuccess = () => {
+    //   navigate("/");
+    // };
   };
 
   return (

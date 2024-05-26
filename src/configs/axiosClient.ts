@@ -1,8 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
-
-const BASEURL = "https://543d-118-70-136-195.ngrok-free.app"
-const access_token = localStorage.getItem('access_token')
+const BASEURL = import.meta.env.VITE_APP_API_URL;
+const access_token = localStorage.getItem("access_token");
 const axiosClient = axios.create({
   baseURL: BASEURL,
   headers: {
@@ -18,7 +17,7 @@ axiosClient.interceptors.response.use(
   async (response) => {
     if (response && response.data) {
       return response.data;
-    }  
+    }
     return response;
   },
   (error) => {

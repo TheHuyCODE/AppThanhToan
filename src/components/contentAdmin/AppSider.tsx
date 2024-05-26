@@ -18,7 +18,7 @@ const AppSider: React.FC<AppSiderProps> = ({
 }) => {
   return (
     <Sider
-      theme={darkTheme ? "dark" : "light"}
+      // theme={}
       className="side-bar"
       collapsed={collapsedTheme}
       collapsible

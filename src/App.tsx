@@ -9,6 +9,7 @@ import CatalogManagement from "./components/Category/CatalogManagement";
 import ProductMangement from "./components/Category/ProductMangement";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
 import AppSider from "./components/contentAdmin/AppSider";
+import PublicRouter from "./components/auth/PublicRouter";
 import Home from "./components/home/Home";
 import AppHeader from "./components/contentAdmin/AppHeader";
 import { TbRuler2 } from "react-icons/tb";
@@ -42,7 +43,7 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRouter isAuthenticated={isAuthenticated}>
+            <ProtectedRouter>
               <AppSider
                 darkTheme={darkTheme}
                 collapsedTheme={collapsedTheme}
@@ -69,7 +70,7 @@ function App() {
         <Route
           path="/productmanagement"
           element={
-            <ProtectedRouter isAuthenticated={isAuthenticated}>
+            <ProtectedRouter>
               <AppSider
                 darkTheme={darkTheme}
                 collapsedTheme={collapsedTheme}
@@ -96,7 +97,7 @@ function App() {
         <Route
           path="/productcatalogmanagement"
           element={
-            <ProtectedRouter isAuthenticated={isAuthenticated}>
+            <ProtectedRouter>
               <AppSider
                 darkTheme={darkTheme}
                 collapsedTheme={collapsedTheme}
@@ -120,7 +121,15 @@ function App() {
             </ProtectedRouter>
           }
         />
-        <Route path="/login" element={<LoginRegister />} />
+
+        <Route
+          path="/login"
+          element={
+            <PublicRouter isAuthenticated={isAuthenticated}>
+              <LoginRegister />
+            </PublicRouter>
+          }
+        />
       </Routes>
     </div>
   );

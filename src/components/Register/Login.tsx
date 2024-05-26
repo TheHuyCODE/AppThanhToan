@@ -8,6 +8,8 @@ import loginApi from "../../configs/loginApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./LoginRegister.css";
+import { useAuth } from "../auth/AuthContext";
+const { isAuthenticated, accessToken, login, logout } = useAuth();
 
 const Login = ({ registerLink }) => {
   const navigate = useNavigate();
@@ -20,11 +22,13 @@ const Login = ({ registerLink }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false);
-  const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] = useState(false);
+  const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] =
+    useState(false);
   const [isEmptyMessageEmail, setIsEmptyMessageEmail] = useState(false);
   const [isShortCodeMessageEmail, setIsShortCodeMessageEmail] = useState(false);
   const [isEmptyMessagePassword, setIsEmptyMessagePassword] = useState(false);
-  const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] = useState(false);
+  const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] =
+    useState(false);
 
   const validateEmail = (email) => {
     const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
@@ -58,7 +62,7 @@ const Login = ({ registerLink }) => {
       if (res.code === 200) {
         toast.success("Đăng nhập thành công!");
         setTimeout(() => {
-        navigate("/");
+          navigate("/");
         }, 2000);
       } else {
         toast.error("Đăng nhập không thành công!");
@@ -129,13 +133,8 @@ const Login = ({ registerLink }) => {
             <p className="message-error">Mật khẩu phải có ít nhất 8 ký tự!</p>
           )}
         </div>
-        <button type="submit" disabled={isLoading} >
-              {isLoading ? (
-                <span>
-                   </span>
-          ) : (
-            <span>Đăng nhập</span>
-          )}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? <span></span> : <span>Đăng nhập</span>}
         </button>
         <div className="register-link">
           <p>

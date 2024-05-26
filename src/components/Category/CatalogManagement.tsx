@@ -73,7 +73,7 @@ const CatalogManagement = () => {
       }
     }
   };
-  const onModifyCategories = () => {
+  const onModifyCategories = (id) => {
     setIsOpenModalModify(!isOpenModalModify);
   };
   const clickChangeCategory = async () => {
@@ -193,7 +193,7 @@ const CatalogManagement = () => {
       editTable: true,
       render: () => (
         <Space size="middle">
-          <a onClick={onModifyCategories}>
+          <a onClick={onModifyCategories()}>
             <FaPencilAlt />
           </a>
           <a onClick={onDeleteCategories}>
