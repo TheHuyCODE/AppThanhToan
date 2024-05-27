@@ -13,6 +13,7 @@ import PublicRouter from "./components/auth/PublicRouter";
 import Home from "./components/home/Home";
 import AppHeader from "./components/contentAdmin/AppHeader";
 import { TbRuler2 } from "react-icons/tb";
+import AppWrapper from "./components/contentAdmin/wrapper";
 
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
@@ -44,26 +45,16 @@ function App() {
           path="/"
           element={
             <ProtectedRouter>
-              <AppSider
+              <AppWrapper
                 darkTheme={darkTheme}
                 collapsedTheme={collapsedTheme}
-                toggleTheme={toggleDarkTheme}
-                setCollapsedTheme={setCollapsedTheme}
-              />
-              <AppHeader
-                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
                 setCollapsedTheme={setCollapsedTheme}
                 colorBgContainer={colorBgContainer}
-              />
-              <Layout
-                style={{
-                  padding: "24px",
-                  background: colorBgContainer,
-                  borderRadius: borderRadiusLG,
-                }}
+                borderRadiusLG={borderRadiusLG}
               >
                 <Home />
-              </Layout>
+              </AppWrapper>
             </ProtectedRouter>
           }
         />
@@ -71,26 +62,16 @@ function App() {
           path="/productmanagement"
           element={
             <ProtectedRouter>
-              <AppSider
+              <AppWrapper
                 darkTheme={darkTheme}
                 collapsedTheme={collapsedTheme}
-                toggleTheme={toggleDarkTheme}
-                setCollapsedTheme={setCollapsedTheme}
-              />
-              <AppHeader
-                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
                 setCollapsedTheme={setCollapsedTheme}
                 colorBgContainer={colorBgContainer}
-              />
-              <Layout
-                style={{
-                  padding: "24px",
-                  background: colorBgContainer,
-                  borderRadius: borderRadiusLG,
-                }}
+                borderRadiusLG={borderRadiusLG}
               >
                 <ProductMangement />
-              </Layout>
+              </AppWrapper>
             </ProtectedRouter>
           }
         />
@@ -98,26 +79,16 @@ function App() {
           path="/productcatalogmanagement"
           element={
             <ProtectedRouter>
-              <AppSider
+              <AppWrapper
                 darkTheme={darkTheme}
                 collapsedTheme={collapsedTheme}
-                toggleTheme={toggleDarkTheme}
-                setCollapsedTheme={setCollapsedTheme}
-              />
-              <AppHeader
-                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
                 setCollapsedTheme={setCollapsedTheme}
                 colorBgContainer={colorBgContainer}
-              />
-              <Layout
-                style={{
-                  padding: "24px",
-                  background: colorBgContainer,
-                  borderRadius: borderRadiusLG,
-                }}
+                borderRadiusLG={borderRadiusLG}
               >
                 <CatalogManagement />
-              </Layout>
+              </AppWrapper>
             </ProtectedRouter>
           }
         />
