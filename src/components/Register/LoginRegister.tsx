@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import loginApi from "../../configs/loginApi";
 import "./LoginRegister.css";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 const LoginRegister = () => {
+  const storeNameRef = useRef(null);
+  const fullNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const adressRef = useRef(null);
+  const passWordRef = useRef(null);
+  const phoneRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+
   const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,15 +52,30 @@ const LoginRegister = () => {
     const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
     return regex.test(email);
   };
-  // const success = (success: string) => {
-  //   Modal.success({
-  //     content: success,
-  //   });
-  // };
+  const clearInputRegister = () => {
+    setDataRegister({
+      email: "",
+      password: "",
+      confirm_password: "",
+      store_name: "",
+      address: "",
+      full_name: "",
+      phone: "",
+    });
+  };
   const error = (error: string) => {
     Modal.error({
       title: "Đã xảy ra lỗi đăng kí tài khoản",
       content: error,
+    });
+  };
+  const success = () => {
+    Modal.success({
+      title: "Đã đăng kí tài khoản thành công ",
+      content: "Bạn có muốn quay về trang login không?",
+      onOk() {
+        setAction("");
+      },
     });
   };
   const validateLoginInputs = () => {
@@ -151,26 +174,20 @@ const LoginRegister = () => {
     setIsLoading(true);
     loginApi.postMessageRegister(userData).then((response) => {
       if (response.code === 200) {
-        // Redirect to dashboard
-        // const textSuccess = response.data.message.text;
-        // console.log(textSuccess)
-        // success(textSuccess);
-        toast.success("Register success!");
-        // console.log("Đăng nhập thành công");
+        clearInputRegister();
+
+        success();
       } else {
-        // setCheckInPut(!checkInput);
         console.log(response);
         const res = response.data.message.text;
         error(res);
-        // toast.error(res);
       }
     });
     setIsLoading(false);
   };
   const handleSubmitLogin = (event) => {
     event.preventDefault();
-    // const myHeaders = new Headers();
-    // myHeaders.append("Content-Type", "application/json");
+
     const userData = {
       email: data.email,
       password: data.password,
@@ -189,9 +206,6 @@ const LoginRegister = () => {
         setIsLoading(false);
       }
     });
-    // const navigateToLoginSuccess = () => {
-    //   navigate("/");
-    // };
   };
 
   return (
@@ -333,6 +347,7 @@ const LoginRegister = () => {
                   type="text"
                   placeholder=" "
                   required
+                  // ref={storeNameRef}
                   value={dataRegister.store_name}
                   onChange={handleChangeRegister("store_name")}
                 />
@@ -348,6 +363,7 @@ const LoginRegister = () => {
                   type="text"
                   placeholder=" "
                   required
+                  // ref={fullNameRef}
                   value={dataRegister.full_name}
                   onChange={handleChangeRegister("full_name")}
                 />
@@ -361,6 +377,7 @@ const LoginRegister = () => {
                   type="text"
                   placeholder=" "
                   required
+                  // ref={emailRef}
                   value={dataRegister.email}
                   onChange={handleChangeRegister("email")}
                 />
@@ -377,6 +394,7 @@ const LoginRegister = () => {
                   placeholder=" "
                   required
                   value={dataRegister.address}
+                  // ref={adressRef}
                   onChange={handleChangeRegister("address")}
                 />
                 <label htmlFor="address" className="form-email">
@@ -389,6 +407,7 @@ const LoginRegister = () => {
                   type={showPasswordRegister ? "text" : "password"}
                   placeholder=" "
                   required
+                  // ref={passWordRef}
                   value={dataRegister.password}
                   onChange={handleChangeRegister("password")}
                 />
@@ -418,6 +437,7 @@ const LoginRegister = () => {
                   type="text"
                   placeholder=" "
                   required
+                  // ref={phoneRef}
                   value={dataRegister.phone}
                   onChange={handleChangeRegister("phone")}
                 />
@@ -432,6 +452,7 @@ const LoginRegister = () => {
                   type={showConfirmPasswordRegister ? "text" : "password"}
                   placeholder=" "
                   required
+                  // ref={confirmPasswordRef}
                   value={dataRegister.confirm_password}
                   onChange={handleChangeRegister("confirm_password")}
                 />
@@ -475,7 +496,7 @@ const LoginRegister = () => {
             </button>
             <div className="register-link">
               <p>
-                Return to Login page?{" "}
+                Quay lại trang login?{" "}
                 <a href="#" onClick={loginLink}>
                   Login
                 </a>
