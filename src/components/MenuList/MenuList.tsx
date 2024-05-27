@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+
 import { Menu, Modal } from "antd";
 import { MdDashboard } from "react-icons/md";
 import { FaCartShopping, FaChartColumn } from "react-icons/fa6";
@@ -11,13 +11,13 @@ import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
 import category from "../../configs/category";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
-const MenuList = ({ darkTheme }) => {
+const MenuList = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const { accessToken, logout } = useAuth();
+  const { accessToken, darkTheme, logout } = useAuth();
   const handleOK = () => {
     console.log("handle OK");
 

@@ -3,30 +3,34 @@ import { Layout } from "antd";
 import MenuList from "../MenuList/MenuList";
 import ToggleThemeButton from "../MenuList/ToggleThemeButton";
 import Logo from "../Logo/Logo";
+import { useAuth } from "../auth/AuthContext";
+
 interface AppSiderProps {
-  darkTheme: boolean;
   collapsedTheme: boolean;
   toggleTheme: () => void;
   setCollapsedTheme: (collapsed: boolean) => void;
 }
+
 const { Sider } = Layout;
+
 const AppSider: React.FC<AppSiderProps> = ({
-  darkTheme,
   collapsedTheme,
   toggleTheme,
   setCollapsedTheme,
 }) => {
+  const { darkTheme } = useAuth(); // Use darkTheme from useAuth
+
   return (
     <Sider
-      // theme={}
+      theme={darkTheme ? "dark" : "light"}
       className="side-bar"
       collapsed={collapsedTheme}
       collapsible
       onCollapse={setCollapsedTheme}
     >
       <Logo collapsedTheme={collapsedTheme} darkTheme={darkTheme} />
-      <MenuList darkTheme={darkTheme} />
-      <ToggleThemeButton darkTheme={darkTheme} toggleTheme={toggleTheme} />
+      <MenuList />
+      <ToggleThemeButton />
     </Sider>
   );
 };

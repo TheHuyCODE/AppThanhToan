@@ -10,9 +10,10 @@ interface AuthContextType {
   isAuthenticated: boolean;
   accessToken: string | null;
   refresh_token: string | null;
-
+  darkTheme: boolean;
   login: (access_token: string, refresh_token: string) => void;
   logout: () => void;
+  colorSidebar: () => void;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -24,6 +25,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // Check local storage for an existing token on initial load
     return localStorage.getItem("access_token");
   });
+  const [darkTheme, setDarkTheme] = useState(false);
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
@@ -34,14 +36,23 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     localStorage.removeItem("refresh_token");
     setAccessToken(null);
   };
-  const colorBgAdmin = (color: string) => {
-    
+  const colorSidebar = () => {
+    // console.log("sidebar_color", sidebar);
+    setDarkTheme(!darkTheme);
   };
   const isAuthenticated = !!accessToken;
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, accessToken, refresh_token, login, logout }}
+      value={{
+        isAuthenticated,
+        accessToken,
+        refresh_token,
+        login,
+        logout,
+        colorSidebar,
+        darkTheme,
+      }}
     >
       {children}
     </AuthContext.Provider>
