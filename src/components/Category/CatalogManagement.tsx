@@ -13,7 +13,7 @@ import { Space, Table, Tag } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
 import category from "../../configs/category";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { IoIosArrowForward } from "react-icons/io";
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState, useRef } from "react";
@@ -39,19 +39,18 @@ const CatalogManagement = () => {
 
   const [idDeleteItems, setIdDeteleItem] = useState("");
   const [isValueSearch, setIsValueSearch] = useState("");
-  useEffect(() => {
-    console.log("name", selectedCategory);
-  }, [isValueSearch]);
-  useEffect(() => {
-    console.log("name", selectedCategory);
-    setDataCategory(selectedCategory);
-    console.log("dataCategory", dataCategory);
-    console.log("selectedImage", selectedImage);
-  }, [idDeleteItems]);
+
+  //editing item
+  const [editItem, setEditItem] = useState<any>();
+
   const setHandleInput = (e) => {
     const value = e.target.value.trim();
     console.log("value", value);
     setDataCategory(value);
+    // change edititem name
+    if (editItem) {
+      setEditItem({ ...editItem, name: value });
+    }
   };
   const onDeleteCategories = () => {
     console.log("deleteCategories");
@@ -73,8 +72,9 @@ const CatalogManagement = () => {
       }
     }
   };
-  const onModifyCategories = () => {
+  const onModifyCategories = (item: any) => {
     setIsOpenModalModify(!isOpenModalModify);
+    setEditItem(item);
   };
   const clickChangeCategory = async () => {
     //call api change
@@ -107,6 +107,19 @@ const CatalogManagement = () => {
     setIsPreviewImage(URL.createObjectURL(fileImage));
     console.log(image);
   };
+
+  useEffect(() => {
+    console.log("name", selectedCategory);
+  }, [isValueSearch]);
+  useEffect(() => {
+    console.log("name", selectedCategory);
+    setDataCategory(selectedCategory);
+    console.log("dataCategory", dataCategory);
+    console.log("selectedImage", selectedImage);
+  }, [idDeleteItems]);
+  useEffect(() => {
+    console.log("editItem:", editItem);
+  }, [editItem]);
 
   useEffect(() => {
     if (image) {
@@ -191,9 +204,9 @@ const CatalogManagement = () => {
       key: "action",
       align: "center",
       editTable: true,
-      render: () => (
+      render: (record: any) => (
         <Space size="middle">
-          <a onClick={onModifyCategories}>
+          <a onClick={() => onModifyCategories(record)}>
             <FaPencilAlt />
           </a>
           <a onClick={onDeleteCategories}>
@@ -372,6 +385,7 @@ const CatalogManagement = () => {
                 <input
                   className="input-name-category"
                   onChange={setHandleInput}
+                  value={editItem?.name || ''}
                 />
               </div>
               <div className="picture-item">
