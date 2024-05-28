@@ -25,21 +25,19 @@ const category = {
       },
     });
   },
-  deleteCategory: (idItems, accessToken) => {
+  deleteCategory: (idItems) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.delete(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
     });
   },
-  putModifyCategory: (idItems, data, accessToken) => {
+  putModifyCategory: (idItems, data) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.put(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },

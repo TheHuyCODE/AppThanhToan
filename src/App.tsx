@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { Layout, theme } from "antd";
+import { theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
 
-import LoginRegister from "./components/Register/LoginRegister";
-import CatalogManagement from "./components/Category/CatalogManagement";
-import ProductMangement from "./components/Category/ProductMangement";
+import LoginRegister from "./components/register/LoginRegister";
+import CatalogManagement from "./components/category/CatalogManagement";
+import ProductMangement from "./components/category/ProductMangement";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
-import AppSider from "./components/contentAdmin/AppSider";
 import PublicRouter from "./components/auth/PublicRouter";
 import Home from "./components/home/Home";
-import AppHeader from "./components/contentAdmin/AppHeader";
 import { TbRuler2 } from "react-icons/tb";
 import AppWrapper from "./components/contentAdmin/wrapper";
 
