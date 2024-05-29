@@ -20,6 +20,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal } from "antd";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import ChildrenCategory from "./Children_catagory";
 const CatalogManagement = () => {
   const nameRef = useRef(null);
   const fileRef = useRef(null);
@@ -36,12 +37,15 @@ const CatalogManagement = () => {
   const [isDataCategory, setIsDataCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedImage, setSelectedImgae] = useState("");
-
   const [idDeleteItems, setIdDeteleItem] = useState("");
   const [isValueSearch, setIsValueSearch] = useState("");
-
+  const [quantityItems, setQuantityItems] = useState(false);
+  const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
+  const [isKeyChild, setIsKeyChild] = useState("");
+  const [viewTable, setViewTable] = useState(true);
   //editing item
   const [editItem, setEditItem] = useState<any>();
+  const [deleteItem, setDeleteItem] = useState<any>();
 
   const setHandleInput = (e) => {
     const value = e.target.value.trim();
@@ -52,15 +56,16 @@ const CatalogManagement = () => {
       setEditItem({ ...editItem, name: value });
     }
   };
-  const onDeleteCategories = () => {
+  const onDeleteCategories = (item: any) => {
     console.log("deleteCategories");
     setIsOpenModalDelete(!isOpenModalDetele);
+    setDeleteItem(item);
   };
   const clickDeleteCategory = async () => {
     // call api delete
-    const accessToken = localStorage.getItem("access_token");
-    if (idDeleteItems && idDeleteItems.length > 0 && accessToken) {
-      const res = await category.deleteCategory(idDeleteItems, accessToken);
+    const keyItem = deleteItem.key;
+    if (keyItem) {
+      const res = await category.deleteCategory(keyItem);
       if (res.code === 200) {
         console.log("res:", res);
         setIsOpenModalDelete(!isOpenModalDetele);
@@ -72,20 +77,38 @@ const CatalogManagement = () => {
       }
     }
   };
+
+  useEffect(() => {
+    // clickDeleteCategory();
+    console.log(deleteItem);
+  }, [deleteItem]);
+  //check number category
+  const checkQuatifyItem = (record) => {
+    console.log("number_children:", record.number_children);
+    const number_category = record.number_children;
+    if (number_category === 0) {
+      setQuantityItems(true);
+    } else {
+      setQuantityItems(false);
+    }
+    setHiddenTitleChild(false);
+  };
   const onModifyCategories = (item: any) => {
     setIsOpenModalModify(!isOpenModalModify);
     setEditItem(item);
+    console.log("item", item.key);
   };
-  const clickChangeCategory = async () => {
+  const changeModifyCategory = async () => {
     //call api change
-    const accessToken = localStorage.getItem("access_token");
     const dataPutCategory = {
       name: dataCategory,
     };
+    console.log("dataPutCategory", dataPutCategory);
+    console.log("idDeleteItems", idDeleteItems);
+
     const res = await category.putModifyCategory(
       idDeleteItems,
-      dataPutCategory,
-      accessToken
+      dataPutCategory
     );
     if (res.code === 200) {
       console.log("res", res);
@@ -96,10 +119,7 @@ const CatalogManagement = () => {
       toast.error("Error Modify category");
     }
   };
-  // const handleCategoryClick = (record) => {
-  //   setSelectedCategory(record.name);
-  //   console.log("categoryName", selectedCategory);
-  // };
+
   const handleImage = (e) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
@@ -110,16 +130,10 @@ const CatalogManagement = () => {
 
   useEffect(() => {
     console.log("name", selectedCategory);
-  }, [isValueSearch]);
-  useEffect(() => {
-    console.log("name", selectedCategory);
     setDataCategory(selectedCategory);
     console.log("dataCategory", dataCategory);
     console.log("selectedImage", selectedImage);
   }, [idDeleteItems]);
-  useEffect(() => {
-    console.log("editItem:", editItem);
-  }, [editItem]);
 
   useEffect(() => {
     if (image) {
@@ -144,6 +158,7 @@ const CatalogManagement = () => {
         });
     }
   }, [image]);
+
   const columns = [
     {
       title: "STT",
@@ -209,13 +224,33 @@ const CatalogManagement = () => {
           <a onClick={() => onModifyCategories(record)}>
             <FaPencilAlt />
           </a>
-          <a onClick={onDeleteCategories}>
+          <a onClick={() => onDeleteCategories(record)}>
             <FaTrash style={{ color: "red" }} />
           </a>
         </Space>
       ),
     },
   ];
+  const columnsWithClick = columns.map((col, index) => {
+    if (index < 4) {
+      return {
+        ...col,
+        onCell: (record) => ({
+          onClick: () => {
+            checkQuatifyItem(record);
+            const name = record.name;
+            console.log(name);
+            const keyChild = record.key;
+            console.log("keyChild: ", keyChild);
+            setSelectedCategory(name);
+            setIsKeyChild(keyChild);
+            setViewTable(false); // Switch to ChildrenCategory view
+          },
+        }),
+      };
+    }
+    return col;
+  });
   //Clear value categories
   const clearInputs = () => {
     if (nameRef.current) {
@@ -231,7 +266,7 @@ const CatalogManagement = () => {
   const clickAddItemCategory = async (event) => {
     event.preventDefault();
     setIsOpenPopups(!isOpenPopups);
-    const accessToken = localStorage.getItem("access_token");
+
     const userDataCategory = {
       name: dataCategory,
       file_url: resImage,
@@ -239,8 +274,7 @@ const CatalogManagement = () => {
     };
     try {
       const response = await uploadApiImage.postAddItemCategory(
-        userDataCategory,
-        accessToken
+        userDataCategory
       );
       if (response.code === 200) {
         console.log("res", response);
@@ -262,7 +296,14 @@ const CatalogManagement = () => {
       setIsOpenPopups(isOpenPopups);
     }
   };
-
+  //show table child when clicked
+  const showTableCategory = () => {
+    setViewTable(true);
+    setHiddenTitleChild(true);
+  };
+  const showTableChildCategory = () => {
+    setViewTable(false);
+  };
   const fetchDataCategory = async () => {
     const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
     const res = await category.getAll(accessToken);
@@ -285,30 +326,50 @@ const CatalogManagement = () => {
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
       <div>
-        <a className="title-category">Quản lí danh mục sản phẩm </a>
-        <IoIosArrowForward />
-        <a className="title-category">{selectedCategory}</a>
+        <a
+          className="title-category"
+          onClick={showTableCategory}
+          style={{ color: "rgb(3,23,110)" }}
+        >
+          Quản lí danh mục sản phẩm{" "}
+        </a>
+        <a
+          hidden={hiddenTitleChild}
+          className="title-category"
+          onClick={showTableChildCategory}
+          style={{ color: "rgb(3,23,110)" }}
+        >
+          <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />
+          {selectedCategory}
+        </a>
       </div>
       <div className="header">
         <div className="header-top">
           <div className="header-top right">
-            <CiSearch className="icon" />
-            <input
-              type="text"
-              placeholder="Tìm danh mục"
-              className="search-categories"
-              onChange={(e) => setIsValueSearch(e.target.value)}
-            />
+            {viewTable && (
+              <>
+                <CiSearch className="icon" />
+                <input
+                  type="text"
+                  placeholder="Tìm danh mục"
+                  className="search-categories"
+                  onChange={(e) => setIsValueSearch(e.target.value)}
+                />
+              </>
+            )}
           </div>
           <div className="header-btn">
-            <Button type="primary">Hướng dẫn sử dụng</Button>
-            <Button
-              type="primary"
-              onClick={() => setIsOpenPopups(!isOpenPopups)}
-            >
-              Thêm danh mục cấp 1
-            </Button>
-
+            {viewTable && (
+              <>
+                <Button type="primary">Hướng dẫn sử dụng</Button>
+                <Button
+                  type="primary"
+                  onClick={() => setIsOpenPopups(!isOpenPopups)}
+                >
+                  Thêm danh mục cấp 1
+                </Button>
+              </>
+            )}
             {/* modal add product */}
             <Modal
               className="modalDialog-addITems"
@@ -372,7 +433,7 @@ const CatalogManagement = () => {
               // height={500}
               centered
               open={isOpenModalModify}
-              onOk={clickChangeCategory}
+              onOk={changeModifyCategory}
               onCancel={() => setIsOpenModalModify(!isOpenModalModify)}
               okText="Sửa đổi"
               cancelText="Hủy bỏ"
@@ -385,7 +446,7 @@ const CatalogManagement = () => {
                 <input
                   className="input-name-category"
                   onChange={setHandleInput}
-                  value={editItem?.name || ''}
+                  value={editItem?.name || ""}
                 />
               </div>
               <div className="picture-item">
@@ -437,36 +498,27 @@ const CatalogManagement = () => {
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>
         </div>
-        <div className="table-container">
-          <Table
-            columns={columns}
-            dataSource={dataTable}
-            onRow={(record, rowIndex) => {
-              return {
-                onClick: () => {
-                  console.log(record, rowIndex);
-                  const name = record.name;
-                  const nameImage = record.image_url;
-                  console.log(name);
-                  setSelectedCategory(name);
-                  setSelectedImgae(nameImage);
-                  const idItem = record.key;
-                  console.log("idItem", idItem);
-                  setIdDeteleItem(idItem);
-                  // navigate(`/productcatalogmanagement/${idItem}`);
-                },
-              };
-            }}
-            // rowKey={(record) => record.data_index}q
-            pagination={{
-              position: ["bottomCenter"],
-              defaultPageSize: 15,
-              showSizeChanger: true,
-              pageSizeOptions: ["10", "20", "30"],
-            }}
+        {viewTable ? (
+          <div className="table-container">
+            <Table
+              columns={columnsWithClick}
+              dataSource={dataTable}
+              pagination={{
+                position: ["bottomCenter"],
+                defaultPageSize: 15,
+                showSizeChanger: true,
+                pageSizeOptions: ["10", "20", "30"],
+              }}
+            />
+            <span className="total-items">{`${dataTable?.length} items`}</span>
+          </div>
+        ) : (
+          <ChildrenCategory
+            quantityItems={quantityItems}
+            setQuantityItems={setQuantityItems}
+            isKeyChild={isKeyChild}
           />
-          <span className="total-items">{`${isDataCategory.total} items`}</span>
-        </div>
+        )}
       </div>
       {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}
     </div>

@@ -10,7 +10,7 @@ import { FaLock, FaPercent } from "react-icons/fa";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
-import category from "../../configs/category";
+// import category from "../../configs/category";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 

@@ -5,7 +5,6 @@ import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/auth/AuthContext";
 
-
 // import listProduct from "./components/header/listProduct.tsx";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

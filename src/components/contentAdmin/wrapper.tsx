@@ -14,7 +14,7 @@ const AppWrapper = ({
 }) => {
   return (
     <>
-      <Layout>
+      <Layout >
         <AppSider
           darkTheme={darkTheme}
           collapsedTheme={collapsedTheme}
