@@ -21,7 +21,9 @@ import { Button, Modal } from "antd";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ChildrenCategory from "./Children_catagory";
+import { useAuth } from "../auth/AuthContext";
 const CatalogManagement = () => {
+  const { isResDataChild, fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
   const fileRef = useRef(null);
   const reviewImageRef = useRef(null);
@@ -231,10 +233,11 @@ const CatalogManagement = () => {
       ),
     },
   ];
-  const columnsWithClick = columns.map((col, index) => {
+  const columnsWithClick = columns?.map((col, index) => {
     if (index < 4) {
       return {
         ...col,
+        key: col.key || `column-${index}`,
         onCell: (record) => ({
           onClick: () => {
             checkQuatifyItem(record);
@@ -244,7 +247,8 @@ const CatalogManagement = () => {
             console.log("keyChild: ", keyChild);
             setSelectedCategory(name);
             setIsKeyChild(keyChild);
-            setViewTable(false); // Switch to ChildrenCategory view
+            setViewTable(false);
+            fetchDataCategoryChild(keyChild);
           },
         }),
       };
@@ -266,7 +270,6 @@ const CatalogManagement = () => {
   const clickAddItemCategory = async (event) => {
     event.preventDefault();
     setIsOpenPopups(!isOpenPopups);
-
     const userDataCategory = {
       name: dataCategory,
       file_url: resImage,
@@ -297,16 +300,16 @@ const CatalogManagement = () => {
     }
   };
   //show table child when clicked
-  const showTableCategory = () => {
+  const showTableCategory = async () => {
     setViewTable(true);
     setHiddenTitleChild(true);
+    await fetchDataCategory();
   };
   const showTableChildCategory = () => {
     setViewTable(false);
   };
   const fetchDataCategory = async () => {
-    const accessToken = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc từ nơi bạn lưu trữ token
-    const res = await category.getAll(accessToken);
+    const res = await category.getAll();
     setIsDataCategory(res.data);
     console.log("data category", res.data.items);
     console.log(res.data);
@@ -492,8 +495,20 @@ const CatalogManagement = () => {
               okText="Xóa"
               cancelText="Hủy bỏ"
             >
-              <h1>Xóa sản phẩm</h1>
-              <span>Bạn chắc chắn muốn xóa sản phẩm này không?</span>
+              <h1
+                style={{
+                  fontFamily: "Arial",
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                  padding: "5px 10px",
+                  marginBottom: "6px",
+                }}
+              >
+                Xóa sản phẩm
+              </h1>
+              <span style={{ fontSize: "15px", padding: "5px 10px" }}>
+                Bạn chắc chắn muốn xóa sản phẩm này không?
+              </span>
             </Modal>
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>
@@ -517,6 +532,8 @@ const CatalogManagement = () => {
             quantityItems={quantityItems}
             setQuantityItems={setQuantityItems}
             isKeyChild={isKeyChild}
+            fetchDataCategory={fetchDataCategory}
+            // fetchDataCategoryChild={fetchDataCategoryChild}
           />
         )}
       </div>

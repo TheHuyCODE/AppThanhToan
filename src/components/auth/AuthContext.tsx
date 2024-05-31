@@ -5,15 +5,18 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import category from "../../configs/category";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   accessToken: string | null;
   refresh_token: string | null;
   darkTheme: boolean;
+  isResDataChild: string;
   login: (access_token: string, refresh_token: string) => void;
   logout: () => void;
   colorSidebar: () => void;
+  fetchDataCategoryChild: (isKeyChild: string) => void;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -26,6 +29,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return localStorage.getItem("access_token");
   });
   const [darkTheme, setDarkTheme] = useState(false);
+  const [isResDataChild, setIsResDataChild] = useState("");
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
@@ -40,6 +44,19 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // console.log("sidebar_color", sidebar);
     setDarkTheme(!darkTheme);
   };
+
+  const fetchDataCategoryChild = async (isKeyChild: string) => {
+    try {
+      const res = await category.getAllChild(isKeyChild);
+      if (res.code === 200) {
+        setIsResDataChild(res.data);
+      } else {
+        console.log("Error", res);
+      }
+    } catch (error) {
+      console.log("Not get data category", error);
+    }
+  };
   const isAuthenticated = !!accessToken;
 
   return (
@@ -52,6 +69,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         logout,
         colorSidebar,
         darkTheme,
+        isResDataChild,
+        fetchDataCategoryChild,
       }}
     >
       {children}

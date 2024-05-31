@@ -84,8 +84,10 @@ a.title-category {
   align-items: center;
   justify-content: center;
   padding: 10px;
-  font-size: 25px;
+  font-size: 30px;
   margin-bottom: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
 }
 .name-item {
   display: flex;
