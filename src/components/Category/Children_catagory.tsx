@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Table, Space, Button, Modal } from "antd";
 import { useParams } from "react-router-dom";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./Children_category.css";
 import { IoIosAdd } from "react-icons/io";
 import uploadApiImage from "../../configs/uploadApiImage";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { CiSearch } from "react-icons/ci";
 import category from "../../configs/category";
 import { format } from "date-fns";
 import { useAuth } from "../auth/AuthContext";
-const ChildrenCategory = ({
-  quantityItems,
-  setQuantityItems,
-  isKeyChild,
-  fetchDataCategory,
-}) => {
+const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   // const params = useParams();
+  const nameRef = useRef(null);
+  const fileRef = useRef(null);
+  const reviewImageRefChild = useRef(null);
   const { isResDataChild, fetchDataCategoryChild } = useAuth();
-
   const [isOpenPopupChild, setIsOpenPopupChild] = useState(false);
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
   const [isImageCategoryChild, setIsImageCategoryChild] = useState("");
@@ -27,10 +24,27 @@ const ChildrenCategory = ({
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
   const [isOpenModalModifyChild, setIsOpenModalModifyChild] = useState(false);
+
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
+  const [modifyItem, setModifyItem] = useState<any>();
+
   // const [isResDataChild, setIsResDataChild] = useState("");
   //add items to category Children
-
+  const clearInputChildren = () => {
+    if (nameRef.current) {
+      nameRef.current.value = "";
+    }
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+    if (reviewImageRefChild.current) {
+      reviewImageRefChild.current.value = "";
+    }
+    setIsInputCategoryChild("");
+    setIsImageCategoryChild("");
+    // setResImageCategoryChild("");
+    setIsPreviewImageChild("");
+  };
   const openModalChildSecond = () => {
     setIsOpenPopupChild(!isOpenPopupChild);
   };
@@ -52,8 +66,7 @@ const ChildrenCategory = ({
         toast.success("Đã thêm danh mục cấp 3 thành công!");
         await fetchDataCategory();
         await fetchDataCategoryChild(isKeyChild);
-        setIsInputCategoryChild("");
-        setIsImageCategoryChild("");
+        clearInputChildren();
       } else {
         console.log("Error:", res);
       }
@@ -61,9 +74,7 @@ const ChildrenCategory = ({
       console.error("Error uploading image:", error);
     }
   };
-  // const clearInputChild = () => {
 
-  // };
   //delete items child category
 
   const onDeleteCategories = (items) => {
@@ -90,12 +101,13 @@ const ChildrenCategory = ({
     }
   };
   //modify items child category
-  const changeModifyCategoryChild = () => {
+  const changeModifyCategoryChild = async () => {
     // call api modify categoryChild
   };
   const onModifyCategories = (record) => {
     console.log("onModifyCategories", record);
     setIsOpenModalModifyChild(!isOpenModalModifyChild);
+    setModifyItem(record);
   };
 
   //get input values and file images ChildrenCategory
@@ -104,6 +116,9 @@ const ChildrenCategory = ({
     const value = event.target.value.trim();
     console.log("value Category 2:", value);
     setIsInputCategoryChild(value);
+    if (modifyItem) {
+      setModifyItem({ ...modifyItem, name: value });
+    }
   };
   const handleImageChild = (event) => {
     event.preventDefault();
@@ -251,12 +266,7 @@ const ChildrenCategory = ({
   // };
   return (
     <>
-      {/* <ToastContainer
-        closeOnClick
-        autoClose={5000}
-        containerId={"CategoryChild"}
-      /> */}
-      {quantityItems ? (
+      {isResDataChild.items == 0 ? (
         <div className="add_children_category">
           <p>Chưa có model cấp 2</p>
           <Button type="primary" onClick={openModalChildSecond}>
@@ -317,7 +327,7 @@ const ChildrenCategory = ({
           <input
             className="input-name-category"
             onChange={setHandleInput}
-            // ref={nameRef}
+            ref={nameRef}
           />
         </div>
         <div className="picture-item">
@@ -333,9 +343,8 @@ const ChildrenCategory = ({
             accept="image/*"
             name="file"
             id="labelUpload"
-            // // style={{display: "none"}}
             onChange={handleImageChild}
-            // ref={fileRef}
+            ref={fileRef}
             hidden
           />
         </div>
@@ -343,7 +352,7 @@ const ChildrenCategory = ({
           {isImageCategoryChild ? (
             <img
               src={isPreviewImageChild}
-              // ref={reviewImageRef}
+              ref={reviewImageRefChild}
               alt=""
               style={{ maxHeight: "100%", maxWidth: "100%" }}
             />
@@ -398,7 +407,7 @@ const ChildrenCategory = ({
           <input
             className="input-name-category"
             onChange={setHandleInput}
-            // value={editItem?.name || ""}
+            value={modifyItem?.name || ""}
           />
         </div>
         <div className="picture-item">

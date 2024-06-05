@@ -87,12 +87,6 @@ const CatalogManagement = () => {
   //check number category
   const checkQuatifyItem = (record) => {
     console.log("number_children:", record.number_children);
-    const number_category = record.number_children;
-    if (number_category === 0) {
-      setQuantityItems(true);
-    } else {
-      setQuantityItems(false);
-    }
     setHiddenTitleChild(false);
   };
   const onModifyCategories = (item: any) => {
@@ -105,11 +99,13 @@ const CatalogManagement = () => {
     const dataPutCategory = {
       name: dataCategory,
     };
+    const idModifyItems = editItem.key;
+    console.log("idModifyItems", idModifyItems);
     console.log("dataPutCategory", dataPutCategory);
     console.log("idDeleteItems", idDeleteItems);
-
+    console.log("editItem", editItem);
     const res = await category.putModifyCategory(
-      idDeleteItems,
+      idModifyItems,
       dataPutCategory
     );
     if (res.code === 200) {
@@ -136,6 +132,7 @@ const CatalogManagement = () => {
     console.log("dataCategory", dataCategory);
     console.log("selectedImage", selectedImage);
   }, [idDeleteItems]);
+  //set quantity children
 
   useEffect(() => {
     if (image) {
@@ -529,11 +526,8 @@ const CatalogManagement = () => {
           </div>
         ) : (
           <ChildrenCategory
-            quantityItems={quantityItems}
-            setQuantityItems={setQuantityItems}
             isKeyChild={isKeyChild}
             fetchDataCategory={fetchDataCategory}
-            // fetchDataCategoryChild={fetchDataCategoryChild}
           />
         )}
       </div>

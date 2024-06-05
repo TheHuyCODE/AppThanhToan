@@ -23,6 +23,15 @@ const AppSider: React.FC<AppSiderProps> = ({
   return (
     <Sider
       theme={darkTheme ? "dark" : "light"}
+      // collapsedWidth="0"
+      // style={{
+      //   overflow: "auto",
+      //   height: "100vh",
+      //   position: "fixed",
+      //   left: 0,
+      //   top: 0,
+      //   bottom: 0,
+      // }}
       className="side-bar"
       collapsed={collapsedTheme}
       collapsible

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Menu, Modal } from "antd";
 import { MdDashboard } from "react-icons/md";
-import { FaCartShopping, FaChartColumn } from "react-icons/fa6";
+import { FaCartShopping, FaChartColumn, FaKey } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { IoIosSettings, IoIosAdd } from "react-icons/io";
 import { RiListSettingsFill } from "react-icons/ri";
@@ -20,14 +20,15 @@ const MenuList = () => {
   const { accessToken, darkTheme, logout } = useAuth();
   const handleOK = () => {
     console.log("handle OK");
-
+    const resAccessToken = accessToken;
+    logout();
     // Chuyển hướng đến trang đăng nhập khi hủy modal
 
     // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
-    if (accessToken) {
-      logoutApi.deleteTokenLogout(accessToken).then((response) => {
+    if (resAccessToken) {
+      logoutApi.deleteTokenLogout(resAccessToken).then((response) => {
         if (response.code === 200) {
-          logout();
+          console.log("/");
         } else {
           console.log("error", response);
         }
@@ -42,13 +43,13 @@ const MenuList = () => {
         className="menu-bar"
       >
         <Menu.Item key="Dashboard" icon={<FaChartColumn />}>
-          <Link to="/">Thống kê</Link>
+          <Link to="admin/dashboard">Thống kê</Link>
         </Menu.Item>
         <Menu.Item key="Order_management" icon={<FaCartShopping />}>
-          <Link to="/ordermanagement">Quản lí đơn hàng</Link>
+          <Link to="admin/ordermanagement">Quản lí đơn hàng</Link>
         </Menu.Item>
         <Menu.Item key="User_management" icon={<IoPerson />}>
-          <Link to="/usermanagement">Quản lí người dùng</Link>
+          <Link to="/admin/users">Quản lí người dùng</Link>
         </Menu.Item>
         <Menu.SubMenu
           key="Product_management"
@@ -56,14 +57,14 @@ const MenuList = () => {
           title="Quản lí sản phẩm"
         >
           <Menu.Item key="Product_management_child" icon={<IoIosAdd />}>
-            <Link to="/productmanagement">Quản lí sản phẩm</Link>
+            <Link to="/admin/productmanagement">Quản lí sản phẩm</Link>
           </Menu.Item>
           <Menu.Item
             key="Product_catalog_management_child"
             icon={<IoIosAdd />}
             // onClick={handleDataCategories}
           >
-            <Link to="/productcatalogmanagement">
+            <Link to="/admin/productcatalogmanagement">
               Quản lí danh mục sản phẩm
             </Link>
           </Menu.Item>
@@ -71,7 +72,7 @@ const MenuList = () => {
             key="Manage_manufacturers_models_child"
             icon={<IoIosAdd />}
           >
-            <Link to="/managemanufacturersmodels">
+            <Link to="/admin/managemanufacturersmodels">
               Quản lí hãng sản xuất và model
             </Link>
           </Menu.Item>
@@ -87,7 +88,10 @@ const MenuList = () => {
           Quản lí mã giảm giá
         </Menu.Item>
         <Menu.Item key="Setting" icon={<IoIosSettings />}>
-          <Link to="/">Cài đặt</Link>
+          <Link to="/admin">Cài đặt</Link>
+        </Menu.Item>
+        <Menu.Item key="setPassword" icon={<FaKey />}>
+          <Link to="/">Đổi mật khẩu</Link>
         </Menu.Item>
         <Menu.Item
           key="Logout"

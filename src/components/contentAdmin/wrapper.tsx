@@ -2,6 +2,7 @@ import React from "react";
 import { Layout } from "antd";
 import AppSider from "./AppSider";
 import AppHeader from "./AppHeader";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 const { Content } = Layout;
 const AppWrapper = ({
   children,
@@ -14,12 +15,13 @@ const AppWrapper = ({
 }) => {
   return (
     <>
-      <Layout >
+      <Layout>
         <AppSider
           darkTheme={darkTheme}
           collapsedTheme={collapsedTheme}
           toggleTheme={toggleDarkTheme}
           setCollapsedTheme={setCollapsedTheme}
+          style={{ width: "500" }}
         />
         <Layout>
           <AppHeader

@@ -9,10 +9,21 @@ import CatalogManagement from "./components/category/CatalogManagement";
 import ProductMangement from "./components/category/ProductMangement";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
 import PublicRouter from "./components/auth/PublicRouter";
+import Users from "./components/Users/Users";
 import Home from "./components/home/Home";
 import { TbRuler2 } from "react-icons/tb";
 import AppWrapper from "./components/contentAdmin/wrapper";
-
+import DetailUsers from "./components/Users/DetailUsers";
+import ModifyUsers from "./components/Users/ModifyUsers";
+const NotFound = () => {
+  return (
+    <div>
+      <h1 style={{ color: "red", marginTop: "50px", marginLeft: "50px" }}>
+        404 Not Found
+      </h1>
+    </div>
+  );
+};
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
   const [collapsedTheme, setCollapsedTheme] = useState(false);
@@ -40,7 +51,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route
-          path="/"
+          path="/admin"
           element={
             <ProtectedRouter>
               <AppWrapper
@@ -57,7 +68,7 @@ function App() {
           }
         />
         <Route
-          path="/productmanagement"
+          path="admin/productmanagement"
           element={
             <ProtectedRouter>
               <AppWrapper
@@ -74,7 +85,7 @@ function App() {
           }
         />
         <Route
-          path="/productcatalogmanagement"
+          path="admin/productcatalogmanagement"
           element={
             <ProtectedRouter>
               <AppWrapper
@@ -90,15 +101,66 @@ function App() {
             </ProtectedRouter>
           }
         />
-
         <Route
-          path="/login"
+          path="admin/users/:userId"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <DetailUsers />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/users/edit/:userId"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <ModifyUsers />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Users />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/login"
           element={
             <PublicRouter isAuthenticated={isAuthenticated}>
               <LoginRegister />
             </PublicRouter>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

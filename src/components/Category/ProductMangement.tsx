@@ -54,28 +54,28 @@ const ProductMangement = () => {
       title: "Hãng sản xuất gốc",
       dataIndex: "Hangsanxuatgoc",
       key: "Hangsanxuatgoc",
-      align: 'center',
+      align: "center",
       editTable: true,
     },
     {
       title: "Danh mục sản phẩm",
       dataIndex: "Danhmucsanpham",
       key: "Danhmucsanpham",
-      align: 'center',
+      align: "center",
       editTable: true,
     },
     {
       title: "Đơn giá",
       dataIndex: "Dongia",
       key: "Dongia",
-      align: 'center',
+      align: "center",
       editTable: true,
     },
     {
       title: "Đơn giá sau giảm",
       dataIndex: "Dongiasaugiam",
       key: "Dongiasaugiam",
-      align: 'center',
+      align: "center",
       editTable: true,
     },
     {
@@ -92,7 +92,7 @@ const ProductMangement = () => {
       title: "Ngày tạo",
       dataIndex: "Date",
       key: "Date",
-      align: 'center',
+      align: "center",
       editTable: true,
     },
     {
@@ -173,6 +173,7 @@ const ProductMangement = () => {
               placeholder="Hãng sản xuất"
               allowClear
               onChange={handleSelectChange}
+              style={{ width: 200 }}
             >
               {nameProduct.map((option) => (
                 <option value={option.value}>{option.name}</option>
