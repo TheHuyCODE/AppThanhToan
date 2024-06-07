@@ -15,6 +15,9 @@ import { TbRuler2 } from "react-icons/tb";
 import AppWrapper from "./components/contentAdmin/wrapper";
 import DetailUsers from "./components/Users/DetailUsers";
 import ModifyUsers from "./components/Users/ModifyUsers";
+import Admins from "./components/Admin/Admins";
+import Groups from "./components/Admin/Groups";
+import Permissions from "./components/Admin/Permissions";
 const NotFound = () => {
   return (
     <div>
@@ -148,6 +151,57 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <Users />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/admins"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Admins />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/groups"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Groups />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/permissions"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Permissions />
               </AppWrapper>
             </ProtectedRouter>
           }

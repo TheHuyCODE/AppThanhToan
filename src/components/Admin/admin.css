@@ -1,0 +1,21 @@
+.header-top-right {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.btn-add {
+  width: 150px;
+  height: 35px;
+  border-radius: 5px;
+  border: 1px solid var(--border-hover-color);
+  background-color: var(--border-hover-color);
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-add:hover {
+  transform: 0.1s linear;
+  background-color: var(--border-focus-color);
+  color: white;
+}

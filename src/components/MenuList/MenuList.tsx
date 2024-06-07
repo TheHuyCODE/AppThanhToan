@@ -77,13 +77,23 @@ const MenuList = () => {
             </Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item
+        <Menu.SubMenu
           key="
           Admin_management"
           icon={<FaLock />}
+          title="Quản lí quản trị viên"
         >
-          Quản lí quản trị viên
-        </Menu.Item>
+          <Menu.Item key="admins" icon={<IoIosAdd />}>
+            <Link to="/admin/admins">Quản lí quản trị viên</Link>
+          </Menu.Item>
+          <Menu.Item key="groups" icon={<IoIosAdd />}>
+            <Link to="/admin/groups">Quản lí nhóm quyền</Link>
+          </Menu.Item>
+          <Menu.Item key="permissions" icon={<IoIosAdd />}>
+            <Link to="/admin/permissions">Danh sách quyền</Link>
+          </Menu.Item>
+        </Menu.SubMenu>
+
         <Menu.Item key="percent" icon={<FaPercent />}>
           Quản lí mã giảm giá
         </Menu.Item>
