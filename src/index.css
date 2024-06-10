@@ -13,7 +13,7 @@
 .image-background {
   width: 100%;
   height: 100vh;
-  background: #F4F5F7;
+  background: #f4f5f7;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -29,7 +29,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "poppins", sans-serif;
+  font-family: "Montserrat", sans-serif;
   list-style: none;
   outline: none;
   border: none;
@@ -46,4 +46,3 @@
   justify-content: center;
   font-size: 2rem;
 }
-

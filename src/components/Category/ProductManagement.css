@@ -2,41 +2,45 @@
   border: 1px solid grey;
   border-radius: 5px;
   padding: 5px 5px 5px 28px;
-  width: 150px;
-  height: 26px;
+  width: 200px;
+  height: 35px;
   outline: none;
 }
+.search-category:hover {
+  border-color: var(--border-hover-color);
+}
 .search-category:focus {
-  border-color: black;
+  border-color: var(--border-hover-color);
+  border-width: 2px;
 }
-.headerProduct {
-    display: flex;
-    width: 100%;
-    height: auto;
-    border: 1px solid lightgrey;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 30px;
-}
-.headerProduct-left {
+/* .headerProduct {
+  display: flex;
+  width: 100%;
+  height: auto;
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 30px;
+} */
+.header-left {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-.headerProduct-right {
-  display: flex;
-  flex-wrap: wrap;
   width: 50%;
   height: auto;
-  justify-content: space-evenly;
-  align-items: center;
-  margin-left: 10rem;
+  gap: 15px;
 }
-.headerProduct-left-top {
+.header-left-top {
   display: flex;
-  justify-content: space-around;
+  flex-wrap: wrap;
   align-items: center;
-  position: relative;
+  justify-content: space-between;
+  gap: 10px;
+}
+.header-left-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -48,19 +52,82 @@
     outline: none;
     transition: 0.25s ease;
 } */
-.form-input:focus {
-  border-color: black;
-}
-.icon-search-product {
-  position: absolute;
-  top: 50%;
-  left: 5px;
-  transform: translateY(-50%);
-  font-size: 19px;
-}
-.headerProduct-left-bottom {
+.btn-header-right {
   display: flex;
-  justify-content: start;
-  gap: 5px;
   align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.btn-header-right:hover {
+  background-color: var(--border-hover-color);
+}
+.btn-header-right:focus {
+  background-color: var(--border-focus-color);
+}
+.footer-add-product {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+  margin-right: 20px;
+}
+.btn-cancel-product {
+  width: 80px;
+  height: 40px;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  font-size: 15px;
+  outline: none;
+  cursor: pointer;
+  font-weight: 400;
+  background-color: transparent;
+}
+.btn-cancel-product:hover {
+  background-color: lightgray;
+}
+.btn-add-product {
+  width: 140px;
+  height: 40px;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  font-size: 15px;
+  outline: none;
+  background-color: var(--border-hover-color);
+  color: white;
+  cursor: pointer;
+  font-weight: 400;
+}
+.btn-add-product:hover {
+  background-color: var(--border-focus-color);
+}
+.btn-header-right {
+  background-color: var(--border-hover-color);
+}
+.btn-header-right:hover {
+  background-color: var(--border-focus-color);
+}
+.overlay-text {
+  position: absolute;
+  padding: 8px;
+  color: #d9d9d9;
+  top: 2;
+  right: 0;
+  z-index: 2;
+}
+.btn-close-image {
+  position: absolute;
+  background: none;
+  border: none;
+  right: 5px;
+  top: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  color: lightgray;
+  font-weight: 400;
+}
+.btn-close-image:hover {
+  color: white;
+}
+.preview-image:hover {
+  background-color: var(--border-hover-color);
 }

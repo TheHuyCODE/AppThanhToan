@@ -39,6 +39,7 @@ const Admins = () => {
   const [dataSource, setDataSource] = useState(dataAdmins);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [isOpenPopupModify, setIsOpenPopupModify] = useState(false);
+  const [isOpenPopupDelete, setIsOpenPopupDelete] = useState(false);
 
   const groupAdmins = [
     {
@@ -118,7 +119,7 @@ const Admins = () => {
             <FaPencilAlt onClick={openModifyAdmin} />
           </a>
           <a>
-            <FaTrash />
+            <FaTrash onClick={clickDeleteAdmins} />
           </a>
         </Space>
       ),
@@ -127,6 +128,12 @@ const Admins = () => {
   const openModifyAdmin = () => {
     setIsOpenPopupModify(!isOpenPopupModify);
     console.log("open modify admin");
+  };
+  const clickAddAdmins = () => {
+    setIsOpenPopups(!isOpenPopups);
+  };
+  const clickDeleteAdmins = () => {
+    setIsOpenPopupDelete(!isOpenPopupDelete);
   };
   const columnsWithClick = columns?.map((col, index) => {
     if (index < 6) {
@@ -150,9 +157,6 @@ const Admins = () => {
     }
     return col;
   });
-  const clickAddAdmins = () => {
-    setIsOpenPopups(!isOpenPopups);
-  };
   const onChangeSearchAdmin = (e) => {
     const currValue = e.target.value;
     console.log("currValue", currValue);
@@ -212,9 +216,7 @@ const Admins = () => {
           />
           <span className="total-items">{`${dataSource?.length} items`}</span>
         </div>
-
         {/* Modal add admins */}
-
         <Modal
           className="modalDialog-addITems"
           width={600}
@@ -297,7 +299,7 @@ const Admins = () => {
         </Modal>
         {/* Modal modify admins */}
         <Modal
-          className="modalDialog-addITems"
+          className=""
           width={600}
           // height={500}
           centered
@@ -381,6 +383,33 @@ const Admins = () => {
                 <label htmlFor="notactivated">Chưa kích hoạt</label>
               </div>
             </div>
+          </div>
+        </Modal>
+        {/* Modal delete admins */}
+        <Modal
+          className=""
+          width={600}
+          // height={500}
+          centered
+          open={isOpenPopupDelete}
+          //   onOk={isOpenPopups}
+          onCancel={() => setIsOpenPopupDelete(!isOpenPopupDelete)}
+          okText="Thêm"
+          cancelText="Hủy bỏ"
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              textTransform: "uppercase",
+              marginBottom: "10px",
+            }}
+          >
+            <h3>Xóa quản trị viên</h3>
+          </div>
+          <div>
+            <p>Bạn có chắc muốn xóa quản trị viên này?</p>
           </div>
         </Modal>
       </div>

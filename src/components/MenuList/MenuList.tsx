@@ -57,7 +57,7 @@ const MenuList = () => {
           title="Quản lí sản phẩm"
         >
           <Menu.Item key="Product_management_child" icon={<IoIosAdd />}>
-            <Link to="/admin/productmanagement">Quản lí sản phẩm</Link>
+            <Link to="/admin/products">Quản lí sản phẩm</Link>
           </Menu.Item>
           <Menu.Item
             key="Product_catalog_management_child"

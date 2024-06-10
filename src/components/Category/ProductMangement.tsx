@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
+import "../styles/valiables.css";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { Select, Button, Table, Space } from "antd";
 import {
@@ -11,7 +12,10 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { Option } from "antd/es/mentions";
+import AddProduct from "./AddProduct";
+import { useNavigate } from "react-router-dom";
 const ProductMangement = () => {
+  const navigate = useNavigate();
   const nameProduct = [
     { name: "Máy nổ 1", value: 1 },
     { name: "Máy nổ 2", value: 2 },
@@ -25,9 +29,12 @@ const ProductMangement = () => {
   const [selectedValue, setSelectedValue] = useState(null);
 
   const handleSelectChange = (e) => {
-    uploadApiImage.postMessage();
+    // uploadApiImage.postMessage();
     setSelectedValue(e.target.value);
     console.log("setSelectedValue", selectedValue);
+  };
+  const addProduct = () => {
+    navigate("/admin/products/add");
   };
   const columns = [
     {
@@ -54,29 +61,21 @@ const ProductMangement = () => {
       title: "Hãng sản xuất gốc",
       dataIndex: "Hangsanxuatgoc",
       key: "Hangsanxuatgoc",
-      align: "center",
-      editTable: true,
     },
     {
       title: "Danh mục sản phẩm",
       dataIndex: "Danhmucsanpham",
       key: "Danhmucsanpham",
-      align: "center",
-      editTable: true,
     },
     {
       title: "Đơn giá",
       dataIndex: "Dongia",
       key: "Dongia",
-      align: "center",
-      editTable: true,
     },
     {
       title: "Đơn giá sau giảm",
       dataIndex: "Dongiasaugiam",
       key: "Dongiasaugiam",
-      align: "center",
-      editTable: true,
     },
     {
       title: "Số lượng tồn",
@@ -88,12 +87,12 @@ const ProductMangement = () => {
       dataIndex: "Sanphambanchay",
       key: "Sanphambanchay",
     },
+
     {
       title: "Ngày tạo",
       dataIndex: "Date",
       key: "Date",
       align: "center",
-      editTable: true,
     },
     {
       title: "Thao tác",
@@ -104,7 +103,7 @@ const ProductMangement = () => {
             <FaEye />
           </a>
           <a>
-            <FaPencilAlt style={{ color: "red" }} />
+            <FaPencilAlt />
           </a>
           <a>
             <FaTrash style={{ color: "red" }} />
@@ -125,7 +124,7 @@ const ProductMangement = () => {
       Dongiasaugiam: 1000000,
       SLton: 100,
       Sanphambanchay: 1,
-      Date: "2021-09-01",
+      Date: "2021/09/01",
     },
     {
       stt: 2,
@@ -138,7 +137,7 @@ const ProductMangement = () => {
       Dongiasaugiam: 1000000,
       SLton: 100,
       Sanphambanchay: 1,
-      Date: "2021-09-01",
+      Date: "2021/09/01",
     },
     {
       stt: 3,
@@ -151,81 +150,128 @@ const ProductMangement = () => {
       Dongiasaugiam: 1000000,
       SLton: 100,
       Sanphambanchay: 1,
-      Date: "2021-09-01",
+      Date: "2021/09/01",
     },
   ];
   return (
     <div className="content">
-      <h1>Quản lí sản phẩm</h1>
-      <div className="headerProduct">
-        <div className="headerProduct-left">
-          <div className="headerProduct-left-top">
-            <div className="search-product">
-              <CiSearch className="icon-search-product" />
+      <h1
+        style={{
+          fontFamily: "poppins, sans-serif",
+          color: "var(--color-tiltle)",
+        }}
+      >
+        Quản lí sản phẩm
+      </h1>
+      <div
+        className="header"
+        style={{ display: "flex", alignItems: "center", border: "none" }}
+      >
+        <div className="header-left">
+          <div className="header-left-top">
+            <div
+              className="search-product"
+              style={{ display: "flex", position: "relative" }}
+            >
+              <CiSearch
+                style={{
+                  position: "absolute",
+                  top: "7px",
+                  left: "5px",
+                  transform: "translateY(5%)",
+                  fontSize: "20px",
+                }}
+              />
               <input
                 type="text"
-                placeholder="Tìm danh mục"
+                placeholder="Tìm sản phẩm"
                 className="search-category"
               />
             </div>
             <Select
-              className="form-input"
               placeholder="Hãng sản xuất"
               allowClear
               onChange={handleSelectChange}
-              style={{ width: 200 }}
+              style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
                 <option value={option.value}>{option.name}</option>
               ))}
             </Select>
             <Select
-              className="form-input"
               placeholder="Danh mục sản phẩm"
               allowClear
               onChange={handleSelectChange}
-            >
-              {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
-              ))}
-            </Select>
-            <Select
-              className="form-input"
-              placeholder="Loại giảm giá"
-              allowClear
-              onChange={handleSelectChange}
+              style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
                 <option value={option.value}>{option.name}</option>
               ))}
             </Select>
           </div>
-          <div className="headerProduct-left-bottom">
+          <div className="header-left-bottom">
             <Select
-              className="form-input"
+              placeholder="Loại giảm giá"
+              allowClear
+              onChange={handleSelectChange}
+              style={{ width: 200, height: 35 }}
+            >
+              {nameProduct.map((option) => (
+                <option value={option.value}>{option.name}</option>
+              ))}
+            </Select>
+
+            <Select
               placeholder="Trạng thái sản phẩm"
               allowClear
               onChange={handleSelectChange}
+              style={{ width: 200, height: 35 }}
             >
               {statusProduct.map((option) => (
                 <option value={option.id}>{option.name}</option>
               ))}
             </Select>
-            <input type="checkbox" />
-            <label htmlFor="">Sản phẩm bán chạy</label>
+            <div
+              style={{
+                width: "200px",
+                height: "35px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <input type="checkbox" />
+              <label htmlFor="">Sản phẩm bán chạy</label>
+            </div>
           </div>
         </div>
-        <div className="headerProduct-right">
-          <Button type="primary">Hướng dẫn sử dụng</Button>
-          <Button type="primary">
-            <FaArrowAltCircleUp />
-            Export
+        <div
+          className="header-right"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            padding: "10px",
+            marginLeft: "80px",
+          }}
+        >
+          <Button className="btn-header-right" type="primary">
+            Hướng dẫn sử dụng
           </Button>
-          <Button type="primary">
-            <FaArrowAltCircleDown />
-            Import
+          <Button type="primary" className="btn-header-right">
+            <FaArrowAltCircleUp /> &nbsp; Export
           </Button>
-          <Button type="primary">Thêm sản phẩm</Button>
+          <Button type="primary" className="btn-header-right">
+            <FaArrowAltCircleDown /> &nbsp; Import
+          </Button>
+          <Button
+            type="primary"
+            onClick={addProduct}
+            className="btn-header-right"
+          >
+            Thêm sản phẩm
+          </Button>
         </div>
       </div>
       <div className="table-container">

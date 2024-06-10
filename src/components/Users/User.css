@@ -3,7 +3,7 @@
   height: 35px;
   border: 1px solid #d9d9d9;
   border-radius: 5px;
-  padding-left: 32px;
+  padding-left: 25px;
   font-size: 15px;
   outline: none;
 }
@@ -84,8 +84,4 @@
 }
 .input-info label {
   font-weight: 500;
-}
-.input-form1:focus {
-  background-color: var(--border-focus-color);
-  border-width: 2px;
 }

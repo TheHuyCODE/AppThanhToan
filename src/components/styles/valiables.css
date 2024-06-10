@@ -2,4 +2,18 @@
   --border-hover-color: #1976d2;
   --border-focus-color: #135597;
   --color-tiltle: #03176e;
+  --cl-primary: #e60000;
+  --cl-secondary: #030303;
+  --cl-orange: #f25c05;
+  --cl-dark: #272928;
+  --cl-gray: #848590;
+  --cl-light-gray: #e8ecf1;
+  --cl-light: #f5f7fb;
+  --cl-bg: #030303;
+  --cl-primary-80: #cd0000;
+  --cl-primary-60: #c30101;
+  --cl-primary-10: rgba(230, 0, 0, 0.10196078431372549);
+  --cl-primary-20: rgba(230, 0, 0, 0.20784313725490197);
+  --cl-green-2: #27ae60;
+  --cl-light-primary: #f66;
 }

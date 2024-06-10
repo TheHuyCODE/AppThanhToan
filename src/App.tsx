@@ -18,6 +18,7 @@ import ModifyUsers from "./components/Users/ModifyUsers";
 import Admins from "./components/Admin/Admins";
 import Groups from "./components/Admin/Groups";
 import Permissions from "./components/Admin/Permissions";
+import AddProduct from "./components/category/AddProduct";
 const NotFound = () => {
   return (
     <div>
@@ -71,7 +72,7 @@ function App() {
           }
         />
         <Route
-          path="admin/productmanagement"
+          path="admin/products"
           element={
             <ProtectedRouter>
               <AppWrapper
@@ -83,6 +84,24 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <ProductMangement />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+
+        <Route
+          path="admin/products/add"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <AddProduct />
               </AppWrapper>
             </ProtectedRouter>
           }
