@@ -1,30 +1,71 @@
 import { Select, Input } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosAdd, IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
 import { CiCircleRemove } from "react-icons/ci";
+import products from "../../configs/products";
+import { useAuth } from "../auth/AuthContext";
+import { CgLayoutGrid } from "react-icons/cg";
 const { TextArea } = Input;
 const AddProduct = () => {
   const navigate = useNavigate();
   const [isImageProduct, setIsImageProduct] = useState("");
   const [previewImageProduct, setPreviewImageProduct] = useState("");
+  const [resImageProduct, setResImageProduct] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const { fetchDataCategory, isCategoryProduct } = useAuth();
 
-  const listCategory = [
-    {
-      name: "Thời trang nam",
-      value: 1,
-    },
-    {
-      name: "Thời trang nam",
-      value: 2,
-    },
-    {
-      name: "Thời trang nam",
-      value: 3,
-    },
-  ];
+  const [inputProduct, setInputProduct] = useState({
+    barcode: "",
+    name: "",
+    description: "",
+    price: "",
+    inventory_number: "",
+    is_activate: "",
+  });
+  const onChangeInput = (fieldName) => (e) => {
+    const value = e.target.value.trim();
+    setInputProduct({
+      ...inputProduct,
+      [fieldName]: value,
+    });
+  };
+  const onClickAddProduct = (e) => {
+    e.preventDefault();
+    const data = {
+      barcode: inputProduct.barcode,
+      name: inputProduct.name,
+      description: inputProduct.description,
+      // category: inputProduct.category,
+      price: inputProduct.price,
+      inventory_number: inputProduct.inventory_number,
+      is_activate: inputProduct.is_activate,
+      image_url: resImageProduct,
+    };
+    console.log("inputProduct", inputProduct);
+  };
+  const listCategory = isCategoryProduct.map((item, index) => ({
+    name: item.name,
+    value: index + 1,
+  }));
+
+  const handleSelectCategory = (value) => {
+    const selectedName = listCategory.find(
+      (item) => item.value === value
+    )?.name;
+
+    // Kiểm tra xem selectedName có tồn tại hay không trước khi sử dụng
+    if (selectedName) {
+      // Thực hiện các thao tác tiếp theo với selectedName
+      console.log("Name tương ứng với value:", selectedName);
+      // Ví dụ: Gọi hàm uploadApiImage.postMessage() với selectedName
+      // uploadApiImage.postMessage(selectedName);
+    } else {
+      console.log("Không tìm thấy name cho giá trị:", value);
+    }
+  };
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
@@ -47,7 +88,30 @@ const AddProduct = () => {
     setIsImageProduct(fileImage);
     setPreviewImageProduct(URL.createObjectURL(fileImage));
     console.log("Linked image", fileImage);
+    console.log("isImageProduct", isImageProduct);
   };
+  useEffect(() => {
+    if (isImageProduct) {
+      console.log("image:", isImageProduct);
+      const formData = new FormData();
+      formData.append("file", isImageProduct);
+      console.log("formData:", [...formData]);
+      products
+        .postImageProduct(formData)
+        .then((res) => {
+          if (res.code === 200) {
+            console.log("Success:", res);
+            const fileUrl = res.data.file_url;
+            setResImageProduct(fileUrl);
+          } else {
+            console.log("Error:");
+          }
+        })
+        .catch((error) => {
+          console.error("Error occurred while uploading:", error);
+        });
+    }
+  }, [isImageProduct]);
   return (
     <>
       <div className="add-product">
@@ -105,17 +169,29 @@ const AddProduct = () => {
               <label htmlFor="">
                 Mã sản phẩm gốc(<span>*</span>)
               </label>
-              <input type="text" className="input-form" />
+              <input
+                type="text"
+                className="input-form"
+                onChange={onChangeInput("barcode")}
+              />
             </div>
             <div className="input-info">
               <label htmlFor="">
                 Tên sản phẩm chính(<span>*</span>)
               </label>
-              <input type="text" className="input-form" />
+              <input
+                type="text"
+                className="input-form"
+                onChange={onChangeInput("name")}
+              />
             </div>
             <div className="input-info">
               <label htmlFor="">Mô tả</label>
-              <TextArea rows={4} style={{ width: "300px" }} />
+              <TextArea
+                rows={4}
+                style={{ width: "300px" }}
+                onChange={onChangeInput("description")}
+              />
             </div>
             <div className="input-info">
               <label htmlFor="">
@@ -124,12 +200,17 @@ const AddProduct = () => {
               <Select
                 placeholder="Danh mục sản phẩm"
                 allowClear
-                // onChange={handleSelectChange}
+                value={selectedCategory}
                 // defaultValue="Giới tính"
                 style={{ width: 302, height: 36 }}
+                onChange={(value) => {
+                  handleSelectCategory(value);
+                }}
               >
                 {listCategory.map((option) => (
-                  <option value={option.value}>{option.name}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.name}
+                  </option>
                 ))}
                 /
               </Select>
@@ -269,7 +350,9 @@ const AddProduct = () => {
           >
             Hủy
           </button>
-          <button className="btn-add-product">Thêm sản phẩm</button>
+          <button className="btn-add-product" onClick={onClickAddProduct}>
+            Thêm sản phẩm
+          </button>
         </div>
       </div>
     </>

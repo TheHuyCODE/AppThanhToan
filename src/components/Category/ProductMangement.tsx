@@ -14,28 +14,95 @@ import {
 import { Option } from "antd/es/mentions";
 import AddProduct from "./AddProduct";
 import { useNavigate } from "react-router-dom";
+import products from "../../configs/products";
+import { useAuth } from "../auth/AuthContext";
+
+const dataProduct = [
+  {
+    stt: 1,
+    Masanphamchinh: "HNAHDF",
+    Tensanpham: "Máy nổ 1",
+    Hangsanxuat: "Hàn Quốc",
+    Hangsanxuatgoc: "Hàn Quốc",
+    Danhmucsanpham: "Máy nổ",
+    Dongia: 1000000,
+    Dongiasaugiam: 1000000,
+    SLton: 100,
+    Sanphambanchay: 1,
+    Date: "2021/09/01",
+    key: "eyjdshashdfsjfhasfdasf",
+  },
+  {
+    stt: 2,
+    Masanphamchinh: "HNAHDF",
+    Tensanpham: "Máy nổ 1",
+    Hangsanxuat: "Hàn Quốc",
+    Hangsanxuatgoc: "Hàn Quốc",
+    Danhmucsanpham: "Máy nổ",
+    Dongia: 1000000,
+    Dongiasaugiam: 1000000,
+    SLton: 100,
+    Sanphambanchay: 1,
+    Date: "2021/09/01",
+    key: "eyjdshash5646dfsjfhasfdasf",
+  },
+  {
+    stt: 3,
+    Masanphamchinh: "HNAHDF",
+    Tensanpham: "Máy nổ 1",
+    Hangsanxuat: "Hàn Quốc",
+    Hangsanxuatgoc: "Hàn Quốc",
+    Danhmucsanpham: "Máy nổ",
+    Dongia: 1000000,
+    Dongiasaugiam: 1000000,
+    SLton: 100,
+    Sanphambanchay: 1,
+    Date: "2021/09/01",
+    key: "eyjdshashdfsjfhas32424fdasf",
+  },
+];
 const ProductMangement = () => {
+  const { fetchDataCategory, isCategoryProduct } = useAuth();
+
   const navigate = useNavigate();
-  const nameProduct = [
-    { name: "Máy nổ 1", value: 1 },
-    { name: "Máy nổ 2", value: 2 },
-    { name: "Máy nổ 3", value: 3 },
-  ];
+  // const [dataProduct, setDataProduct] = useState([]);
+
   const statusProduct = [
     { id: 1, name: "Còn" },
     { id: 2, name: "Còn" },
     { id: 3, name: "Còn" },
   ];
   const [selectedValue, setSelectedValue] = useState(null);
-
-  const handleSelectChange = (e) => {
+  const nameProduct = isCategoryProduct.map((item, index) => ({
+    name: item.name,
+    value: index + 1,
+  }));
+  const handleSelectChange = (value) => {
     // uploadApiImage.postMessage();
-    setSelectedValue(e.target.value);
-    console.log("setSelectedValue", selectedValue);
+    const selectedName = nameProduct.find((item) => item.value === value)?.name;
+    console.log("selectedName", selectedName);
   };
   const addProduct = () => {
     navigate("/admin/products/add");
   };
+  const detailProduct = (record) => {
+    navigate(`/admin/products/${record.key}`);
+  };
+  useEffect(() => {
+    console.log("isCategoryProduct:", isCategoryProduct);
+    fetchDataCategory();
+  }, []);
+  //fet api product
+  // const fetchDataCategory = async () => {
+  //   // const res = await category.getAll();
+  //   // setIsDataCategory(res.data);
+  //   // console.log("data category", res.data.items);
+  //   // console.log(res.data);
+  //   // const res = await products.getCategoryProduct();
+  //   // setIsCategoryProduct(res.data.category);
+  //   // console.log("res: ", isCategoryProduct);
+  // };
+
   const columns = [
     {
       title: "STT",
@@ -51,16 +118,6 @@ const ProductMangement = () => {
       title: "Tên sản phẩm",
       dataIndex: "Tensanpham",
       key: "Tensanpham",
-    },
-    {
-      title: "Hãng sản xuất",
-      dataIndex: "Hangsanxuat",
-      key: "Hangsanxuat",
-    },
-    {
-      title: "Hãng sản xuất gốc",
-      dataIndex: "Hangsanxuatgoc",
-      key: "Hangsanxuatgoc",
     },
     {
       title: "Danh mục sản phẩm",
@@ -97,10 +154,10 @@ const ProductMangement = () => {
     {
       title: "Thao tác",
       key: "action",
-      render: () => (
+      render: (record) => (
         <Space size="middle">
           <a>
-            <FaEye />
+            <FaEye onClick={() => detailProduct(record)} />
           </a>
           <a>
             <FaPencilAlt />
@@ -112,47 +169,7 @@ const ProductMangement = () => {
       ),
     },
   ];
-  const dataProduct = [
-    {
-      stt: 1,
-      Masanphamchinh: "HNAHDF",
-      Tensanpham: "Máy nổ 1",
-      Hangsanxuat: "Hàn Quốc",
-      Hangsanxuatgoc: "Hàn Quốc",
-      Danhmucsanpham: "Máy nổ",
-      Dongia: 1000000,
-      Dongiasaugiam: 1000000,
-      SLton: 100,
-      Sanphambanchay: 1,
-      Date: "2021/09/01",
-    },
-    {
-      stt: 2,
-      Masanphamchinh: "HNAHDF",
-      Tensanpham: "Máy nổ 1",
-      Hangsanxuat: "Hàn Quốc",
-      Hangsanxuatgoc: "Hàn Quốc",
-      Danhmucsanpham: "Máy nổ",
-      Dongia: 1000000,
-      Dongiasaugiam: 1000000,
-      SLton: 100,
-      Sanphambanchay: 1,
-      Date: "2021/09/01",
-    },
-    {
-      stt: 3,
-      Masanphamchinh: "HNAHDF",
-      Tensanpham: "Máy nổ 1",
-      Hangsanxuat: "Hàn Quốc",
-      Hangsanxuatgoc: "Hàn Quốc",
-      Danhmucsanpham: "Máy nổ",
-      Dongia: 1000000,
-      Dongiasaugiam: 1000000,
-      SLton: 100,
-      Sanphambanchay: 1,
-      Date: "2021/09/01",
-    },
-  ];
+
   return (
     <div className="content">
       <h1
@@ -278,13 +295,13 @@ const ProductMangement = () => {
         <Table
           columns={columns}
           dataSource={dataProduct}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: () => {
-                console.log(record, rowIndex);
-              }, // click row
-            };
-          }}
+          // onRow={(record, rowIndex) => {
+          //   return {
+          //     onClick: () => {
+          //       console.log(record, rowIndex);
+          //     }, // click row
+          //   };
+          // }}
           pagination={{
             current: 1,
             pageSize: 10,

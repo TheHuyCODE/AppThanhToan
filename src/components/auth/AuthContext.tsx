@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import category from "../../configs/category";
+import products from "../../configs/products";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -13,10 +14,12 @@ interface AuthContextType {
   refresh_token: string | null;
   darkTheme: boolean;
   isResDataChild: string;
+  isCategoryProduct: object;
   login: (access_token: string, refresh_token: string) => void;
   logout: () => void;
   colorSidebar: () => void;
   fetchDataCategoryChild: (isKeyChild: string) => void;
+  fetchDataCategory: () => void;
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -30,6 +33,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   });
   const [darkTheme, setDarkTheme] = useState(false);
   const [isResDataChild, setIsResDataChild] = useState("");
+  const [isCategoryProduct, setIsCategoryProduct] = useState([]);
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
@@ -57,8 +61,19 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       console.log("Not get data category", error);
     }
   };
+  const fetchDataCategory = async () => {
+    try {
+      const res = await products.getCategoryProduct();
+      if (res.code === 200) {
+        setIsCategoryProduct(res.data.category);
+      } else {
+        console.log("Error", res);
+      }
+    } catch (error) {
+      console.log("Not get data category", error);
+    }
+  };
   const isAuthenticated = !!accessToken;
-
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +86,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         darkTheme,
         isResDataChild,
         fetchDataCategoryChild,
+        isCategoryProduct,
+        fetchDataCategory,
       }}
     >
       {children}
