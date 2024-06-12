@@ -56,7 +56,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route
-          path="/admin"
+          path="admin"
           element={
             <ProtectedRouter>
               <AppWrapper

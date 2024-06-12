@@ -8,60 +8,138 @@ import { CiCircleRemove } from "react-icons/ci";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
 import { CgLayoutGrid } from "react-icons/cg";
+import { ToastContainer, toast } from "react-toastify";
+import category from "../../configs/category";
 const { TextArea } = Input;
 const AddProduct = () => {
   const navigate = useNavigate();
   const [isImageProduct, setIsImageProduct] = useState("");
   const [previewImageProduct, setPreviewImageProduct] = useState("");
   const [resImageProduct, setResImageProduct] = useState("");
+  const [isPriceProduct, setIsPriceProduct] = useState("");
+
+  // const [isCapitalPriceProduct, setIsCapitalPriceProduct] = useState("");
+  // const [isImageCategory, setIsImageCategory] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-
+  const [stateProduct, setStateProduct] = useState("");
+  // const [selectedCategory, setSelectedCategory] = useState('');
   const [inputProduct, setInputProduct] = useState({
     barcode: "",
     name: "",
     description: "",
-    price: "",
-    inventory_number: "",
-    is_activate: "",
+    price: 0,
+    capital_price: 0,
+    inventory_number: 0,
+    is_activate: 0,
+    unit: "",
+    category_id: "",
   });
   const onChangeInput = (fieldName) => (e) => {
-    const value = e.target.value.trim();
+    let value = e.target.value.trim();
+    // If the field is 'inventory_number', convert the value to a number
+    if (fieldName === "inventory_number") {
+      value = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+      value = value === "" ? 0 : parseInt(value, 10); // Convert to number or set to 0 if empty
+    }
     setInputProduct({
       ...inputProduct,
       [fieldName]: value,
     });
   };
-  const onClickAddProduct = (e) => {
+
+  // add product
+  const onClickAddProduct = async (e) => {
     e.preventDefault();
-    const data = {
+    const dataAddProduct = {
       barcode: inputProduct.barcode,
       name: inputProduct.name,
       description: inputProduct.description,
-      // category: inputProduct.category,
+      category_id: inputProduct.category_id,
       price: inputProduct.price,
+      capital_price: inputProduct.capital_price,
       inventory_number: inputProduct.inventory_number,
       is_activate: inputProduct.is_activate,
       image_url: resImageProduct,
+      unit: inputProduct.unit,
     };
+    // console.log("dataProduct:", data);
     console.log("inputProduct", inputProduct);
+    console.log("inputProduct", dataAddProduct);
+
+    console.log(typeof inputProduct.barcode);
+    console.log(typeof inputProduct.price);
+    console.log(typeof inputProduct.capital_price);
+    console.log(typeof inputProduct.inventory_number);
+    try {
+      const response = await products.postAddProduct(dataAddProduct);
+      if (response.code === 200) {
+        console.log("res", response);
+        toast.success("Đã thêm sản phẩm thành công!");
+        // await fetchDataCategory();
+        // clearInputs();
+        // setIsPreviewImage("");
+      } else {
+        console.log("error", response);
+        toast.error("Thêm danh mục không thành công!");
+        const errorMessage = response.data.message.text;
+        // setErrorMessageCategories(errorMessage);
+        console.log(errorMessage);
+        // setIsOpenPopups(isOpenPopups);
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+      toast.error("Có lỗi xảy ra khi thêm danh mục!");
+      // setIsOpenPopups(isOpenPopups);
+    }
   };
-  const listCategory = isCategoryProduct.map((item, index) => ({
+  const listCategory = isCategoryProduct?.map((item, index) => ({
     name: item.name,
     value: index + 1,
+    id: item.id,
   }));
-
+  const unitProduct = [
+    {
+      name: "Cái",
+      value: 1,
+    },
+    {
+      name: "Bộ",
+      value: 2,
+    },
+    {
+      name: "Cặp",
+      value: 3,
+    },
+    {
+      name: "Miếng",
+      value: 4,
+    },
+  ];
   const handleSelectCategory = (value) => {
-    const selectedName = listCategory.find(
-      (item) => item.value === value
-    )?.name;
+    const selectedCategory = listCategory.find((item) => item.value === value);
 
-    // Kiểm tra xem selectedName có tồn tại hay không trước khi sử dụng
+    if (selectedCategory) {
+      console.log("Name tương ứng với value:", selectedCategory);
+      console.log("Name tương ứng với id:", selectedCategory.id);
+      setInputProduct({
+        ...inputProduct,
+        category_id: selectedCategory.id,
+      });
+      // setSelectedCategory(selectedName);
+    } else {
+      console.log("Không tìm thấy name cho giá trị:", value);
+    }
+  };
+  const handleSelectUnit = (value) => {
+    const selectedName = unitProduct.find((item) => item.value === value)?.name;
     if (selectedName) {
-      // Thực hiện các thao tác tiếp theo với selectedName
       console.log("Name tương ứng với value:", selectedName);
-      // Ví dụ: Gọi hàm uploadApiImage.postMessage() với selectedName
-      // uploadApiImage.postMessage(selectedName);
+      setInputProduct({
+        ...inputProduct,
+        unit: selectedName,
+      });
+      // setSelectedCategory(selectedName);
     } else {
       console.log("Không tìm thấy name cho giá trị:", value);
     }
@@ -69,18 +147,56 @@ const AddProduct = () => {
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
-  const onChangeValue = (e) => {
+  const onChangeValuePrice = (e) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9]/g, "");
+    if (value === "") {
+      e.target.value = "";
+      setInputProduct({
+        ...inputProduct,
+        price: 0,
+      });
+      return;
+    }
+    const numericValue = parseInt(value, 10);
+    // Format the value as a locale string
+    e.target.value = numericValue.toLocaleString("vi-VN");
+    setInputProduct({
+      ...inputProduct,
+      price: numericValue,
+    });
+    console.log("value", value);
+  };
+  const onChangeValueCapitalPrice = (e) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
     if (value == "") {
       e.target.value = "";
+      setInputProduct({
+        ...inputProduct,
+        capital_price: 0,
+      });
       return;
     }
-    e.target.value = parseInt(value).toLocaleString("vi-VN");
+    const numericValue = parseInt(value, 10);
+    e.target.value = numericValue.toLocaleString("vi-VN");
+    setInputProduct({
+      ...inputProduct,
+      capital_price: numericValue,
+    });
     console.log("value", value);
   };
   const closePreviewImage = () => {
     setPreviewImageProduct("");
+  };
+  const handleStatusChange = (e) => {
+    const value = e.target.value;
+    // console.log("value:", value);
+    const stateProduct = parseInt(value, 10);
+    setInputProduct({
+      ...inputProduct,
+      is_activate: stateProduct,
+    });
   };
   const handleInputImage = (e) => {
     e.preventDefault();
@@ -112,8 +228,12 @@ const AddProduct = () => {
         });
     }
   }, [isImageProduct]);
+  useEffect(() => {
+    fetchDataCategory();
+  }, []);
   return (
     <>
+      <ToastContainer closeOnClick autoClose={5000} />
       <div className="add-product">
         <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
           <IoIosArrowBack
@@ -200,7 +320,6 @@ const AddProduct = () => {
               <Select
                 placeholder="Danh mục sản phẩm"
                 allowClear
-                value={selectedCategory}
                 // defaultValue="Giới tính"
                 style={{ width: 302, height: 36 }}
                 onChange={(value) => {
@@ -227,7 +346,7 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
-                onChange={onChangeValue}
+                onChange={onChangeValuePrice}
                 style={{
                   position: "relative",
                 }}
@@ -246,7 +365,7 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
-                onChange={onChangeValue}
+                onChange={onChangeValueCapitalPrice}
                 style={{
                   position: "relative",
                 }}
@@ -257,11 +376,36 @@ const AddProduct = () => {
               <label htmlFor="">
                 Số lượng tồn kho(<span>*</span>)
               </label>
-              <input type="text" className="input-form" />
+              <input
+                type="text"
+                className="input-form"
+                onChange={onChangeInput("inventory_number")}
+              />
             </div>
             <div className="input-info">
               <label htmlFor="">
-                Trạn thái sản phẩm(<span>*</span>)
+                Đơn vị tính(<span>*</span>)
+              </label>
+              <Select
+                placeholder="Đơn vị tính"
+                allowClear
+                // defaultValue="Giới tính"
+                style={{ width: 302, height: 36 }}
+                onChange={(value) => {
+                  handleSelectUnit(value);
+                }}
+              >
+                {unitProduct.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.name}
+                  </option>
+                ))}
+                /
+              </Select>
+            </div>
+            <div className="input-info">
+              <label htmlFor="">
+                Trạng thái sản phẩm(<span>*</span>)
               </label>
               <div
                 style={{
@@ -272,10 +416,24 @@ const AddProduct = () => {
                   gap: "10px",
                 }}
               >
-                <input type="radio" id="active" name="status" />
+                <input
+                  type="radio"
+                  id="active"
+                  name="status"
+                  value="0"
+                  // checked={status === "active"}
+                  onChange={handleStatusChange}
+                />
                 <label htmlFor="active">Kích hoạt</label>
-                <input type="radio" id="notactivated" name="status" />
-                <label htmlFor="notactivated">Chưa kích hoạt</label>
+                <input
+                  type="radio"
+                  id="notactivate"
+                  name="status"
+                  value="1"
+                  // checked={status === "notactive"}
+                  onChange={handleStatusChange}
+                />
+                <label htmlFor="notactivate">Chưa kích hoạt</label>
               </div>
             </div>
           </div>

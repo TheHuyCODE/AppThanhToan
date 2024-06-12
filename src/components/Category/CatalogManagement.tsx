@@ -133,7 +133,6 @@ const CatalogManagement = () => {
     console.log("selectedImage", selectedImage);
   }, [idDeleteItems]);
   //set quantity children
-
   useEffect(() => {
     if (image) {
       console.log("image:", image);

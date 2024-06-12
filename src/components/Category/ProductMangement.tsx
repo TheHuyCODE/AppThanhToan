@@ -16,54 +16,11 @@ import AddProduct from "./AddProduct";
 import { useNavigate } from "react-router-dom";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
+import { format } from "date-fns";
 
-const dataProduct = [
-  {
-    stt: 1,
-    Masanphamchinh: "HNAHDF",
-    Tensanpham: "Máy nổ 1",
-    Hangsanxuat: "Hàn Quốc",
-    Hangsanxuatgoc: "Hàn Quốc",
-    Danhmucsanpham: "Máy nổ",
-    Dongia: 1000000,
-    Dongiasaugiam: 1000000,
-    SLton: 100,
-    Sanphambanchay: 1,
-    Date: "2021/09/01",
-    key: "eyjdshashdfsjfhasfdasf",
-  },
-  {
-    stt: 2,
-    Masanphamchinh: "HNAHDF",
-    Tensanpham: "Máy nổ 1",
-    Hangsanxuat: "Hàn Quốc",
-    Hangsanxuatgoc: "Hàn Quốc",
-    Danhmucsanpham: "Máy nổ",
-    Dongia: 1000000,
-    Dongiasaugiam: 1000000,
-    SLton: 100,
-    Sanphambanchay: 1,
-    Date: "2021/09/01",
-    key: "eyjdshash5646dfsjfhasfdasf",
-  },
-  {
-    stt: 3,
-    Masanphamchinh: "HNAHDF",
-    Tensanpham: "Máy nổ 1",
-    Hangsanxuat: "Hàn Quốc",
-    Hangsanxuatgoc: "Hàn Quốc",
-    Danhmucsanpham: "Máy nổ",
-    Dongia: 1000000,
-    Dongiasaugiam: 1000000,
-    SLton: 100,
-    Sanphambanchay: 1,
-    Date: "2021/09/01",
-    key: "eyjdshashdfsjfhas32424fdasf",
-  },
-];
 const ProductMangement = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-
+  const [dataProduct, setDataProduct] = useState([]);
   const navigate = useNavigate();
   // const [dataProduct, setDataProduct] = useState([]);
 
@@ -77,10 +34,10 @@ const ProductMangement = () => {
     name: item.name,
     value: index + 1,
   }));
-  const handleSelectChange = (value) => {
+  const handleSelectChange = (e) => {
     // uploadApiImage.postMessage();
-    const selectedName = nameProduct.find((item) => item.value === value)?.name;
-    console.log("selectedName", selectedName);
+    setSelectedValue(e.target.value);
+    console.log("setSelectedValue", selectedValue);
   };
   const addProduct = () => {
     navigate("/admin/products/add");
@@ -88,21 +45,39 @@ const ProductMangement = () => {
   const detailProduct = (record) => {
     navigate(`/admin/products/${record.key}`);
   };
+  //fet api product
+  const fetchDataProduct = async () => {
+    const res = await products.getAll();
+    setDataProduct(res.data);
+    console.log("data category", res.data.items);
+    console.log(res.data);
+  };
   useEffect(() => {
     console.log("isCategoryProduct:", isCategoryProduct);
     fetchDataCategory();
+    fetchDataProduct();
   }, []);
-  //fet api product
-  // const fetchDataCategory = async () => {
-  //   // const res = await category.getAll();
-  //   // setIsDataCategory(res.data);
-  //   // console.log("data category", res.data.items);
-  //   // console.log(res.data);
-  //   // const res = await products.getCategoryProduct();
-  //   // setIsCategoryProduct(res.data.category);
-  //   // console.log("res: ", isCategoryProduct);
-  // };
 
+  const datatable = dataProduct.items?.map((item, index) => ({
+    stt: index + 1,
+    key: item.id,
+    barcode: item.barcode,
+    name: item.name,
+    description: item.description,
+    created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
+    modified_date: item.description,
+    last_modified_user: item.last_modified_user,
+    store_id: item.store_id,
+    create_user: item.user.full_name,
+    category_id: item.category_id,
+    category: item.category.name,
+    price: item.price,
+    capital_price: item.capital_price,
+    inventory_number: item.inventory_number,
+    unit: item.unit,
+    is_activate: item.is_activate,
+    image_url: item.image_url,
+  }));
   const columns = [
     {
       title: "STT",
@@ -111,45 +86,51 @@ const ProductMangement = () => {
     },
     {
       title: "Mã sản phẩm chính",
-      dataIndex: "Masanphamchinh",
-      key: "Masanphamchinh",
+      dataIndex: "barcode",
+      key: "barcode",
     },
     {
       title: "Tên sản phẩm",
-      dataIndex: "Tensanpham",
-      key: "Tensanpham",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: "Danh mục sản phẩm",
-      dataIndex: "Danhmucsanpham",
-      key: "Danhmucsanpham",
+      dataIndex: "category",
+      key: "category",
     },
     {
-      title: "Đơn giá",
-      dataIndex: "Dongia",
-      key: "Dongia",
+      title: "Giá nhập",
+      dataIndex: "price",
+      key: "price",
     },
     {
-      title: "Đơn giá sau giảm",
-      dataIndex: "Dongiasaugiam",
-      key: "Dongiasaugiam",
+      title: "Giá bán",
+      dataIndex: "capital_price",
+      key: "capital_price",
     },
     {
       title: "Số lượng tồn",
-      dataIndex: "SLton",
-      key: "SLton",
+      dataIndex: "inventory_number",
+      key: "inventory_number",
     },
     {
-      title: "Sản phẩm bán chạy",
-      dataIndex: "Sanphambanchay",
-      key: "Sanphambanchay",
+      title: "Đơn vị tính",
+      dataIndex: "unit",
+      key: "unit",
     },
 
     {
       title: "Ngày tạo",
-      dataIndex: "Date",
-      key: "Date",
-      align: "center",
+      dataIndex: "created_date",
+      key: "created_date",
+      // align: "center",
+    },
+    {
+      title: "Người tạo",
+      dataIndex: "create_user",
+      key: "create_user",
+      // align: "center",
     },
     {
       title: "Thao tác",
@@ -268,6 +249,7 @@ const ProductMangement = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            flexWrap: "wrap",
             gap: "10px",
             padding: "10px",
             marginLeft: "80px",
@@ -294,19 +276,15 @@ const ProductMangement = () => {
       <div className="table-container">
         <Table
           columns={columns}
-          dataSource={dataProduct}
-          // onRow={(record, rowIndex) => {
-          //   return {
-          //     onClick: () => {
-          //       console.log(record, rowIndex);
-          //     }, // click row
-          //   };
-          // }}
+          dataSource={datatable}
           pagination={{
-            current: 1,
-            pageSize: 10,
+            position: ["bottomCenter"],
+            defaultPageSize: 15,
+            showSizeChanger: true,
+            pageSizeOptions: ["10", "20", "30"],
           }}
         ></Table>
+        <span className="total-items">{`${datatable?.length} items`}</span>
       </div>
     </div>
   );

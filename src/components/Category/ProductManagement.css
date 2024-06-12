@@ -131,3 +131,14 @@
 .preview-image:hover {
   background-color: var(--border-hover-color);
 }
+.input-info label {
+  font-weight: 500;
+  font-size: 17px;
+  padding: 5px;
+}
+.input-info p {
+  font-weight: 100;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: var(--cl-gray);
+}
