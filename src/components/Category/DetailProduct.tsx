@@ -20,6 +20,8 @@ const ProductDetail = ({ label, value, unit }) => (
 const DetailProduct = () => {
   const navigate = useNavigate();
   const [dataProductDetail, setDataProductDetail] = useState(null);
+  const [isReviewImage, setIsReviewImage] = useState("");
+
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
@@ -31,6 +33,7 @@ const DetailProduct = () => {
   };
   const params = useParams();
   const idProduct = params.idProduct;
+
   // const isValidDate = (timestamp) => !isNaN(timestamp) && timestamp > 0;
   const fetchDetailProduct = async () => {
     try {
@@ -43,12 +46,14 @@ const DetailProduct = () => {
   };
   useEffect(() => {
     fetchDetailProduct();
-
     console.log("idProduct", idProduct);
   }, [idProduct]);
   useEffect(() => {
     if (dataProductDetail) {
       console.log("Updated dataProductDetail:", dataProductDetail);
+      const reviewPicture = `https://cdtn.boot.ai${dataProductDetail.image_url}`;
+      setIsReviewImage(reviewPicture);
+      console.log("Updated review picture:", reviewPicture);
     }
   }, [dataProductDetail]);
   return (
@@ -87,25 +92,64 @@ const DetailProduct = () => {
         </h2>
       </div>
       <div
-        className="content-add-product"
+        className="detail-product"
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-around",
-
+          justifyContent: "center",
           borderRadius: "10px",
           padding: "20px",
           gap: "5px",
         }}
       >
         <div
+          className="content-add-product-right"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "30%",
+            flexDirection: "column",
+            height: "480px",
+          }}
+        >
+          <div
+            className="picture-item"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              flexDirection: "column",
+              gap: "40px",
+            }}
+          >
+            <label htmlFor="labelUpload" className="title-picture">
+              Ảnh danh mục
+            </label>
+
+            <div
+              className="preview-image"
+              style={{ height: "200px", position: "relative" }}
+            >
+              <img
+                src={isReviewImage}
+                alt="Preview"
+                style={{ maxHeight: "100%", maxWidth: "100%" }}
+              />
+            </div>
+          </div>
+        </div>
+        <div
           className="content-add-product-left"
           style={{
-            width: "50%",
+            width: "35%",
             height: "auto",
             display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             flexDirection: "column",
             marginLeft: "20px",
+            marginTop: "20px",
           }}
         >
           <ProductDetail
@@ -179,66 +223,6 @@ const DetailProduct = () => {
             )}
           </div>
         </div>
-      </div>
-      <div
-        className="content-add-product-right"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "50%",
-          flexDirection: "column",
-          height: "480px",
-        }}
-      >
-        {/* <div
-            className="picture-item"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              gap: "40px",
-            }}
-          >
-            <label htmlFor="labelUpload" className="title-picture">
-              Ảnh danh mục(<span>*</span>)
-            </label>
-            {!previewImageProduct ? (
-              <>
-                <label
-                  htmlFor="labelUpload"
-                  className="label-upload"
-                  style={{ marginRight: 0 }}
-                >
-                  <IoIosAdd />
-                  Upload File Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  name="file"
-                  id="labelUpload"
-                  onChange={handleInputImage}
-                  hidden
-                />
-              </>
-            ) : (
-              <div
-                className="preview-image"
-                style={{ height: "150px", position: "relative" }}
-              >
-                <button className="btn-close-image" onClick={closePreviewImage}>
-                  <CiCircleRemove />
-                </button>
-                <img
-                  src={previewImageProduct}
-                  alt="Preview"
-                  style={{ maxHeight: "100%", maxWidth: "100%" }}
-                />
-              </div>
-            )}
-          </div> */}
       </div>
     </div>
   );

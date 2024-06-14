@@ -7,6 +7,7 @@ import {
   FaArrowAltCircleUp,
 } from "react-icons/fa";
 import "./CatalogManagement.css";
+import "../styles/valiables.css";
 import { IoIosAdd } from "react-icons/io";
 import { Input, Select, Pagination } from "antd";
 import { Space, Table, Tag } from "antd";
@@ -93,16 +94,20 @@ const CatalogManagement = () => {
     setIsOpenModalModify(!isOpenModalModify);
     setEditItem(item);
     console.log("item", item.key);
+    console.log("item", item.image_url);
   };
   const changeModifyCategory = async () => {
     //call api change
+    console.log("editItem", editItem);
     const dataPutCategory = {
-      name: dataCategory,
+      name: editItem.name,
+      file_url: editItem.image_url,
+      parent_id: null,
     };
     const idModifyItems = editItem.key;
     console.log("idModifyItems", idModifyItems);
     console.log("dataPutCategory", dataPutCategory);
-    console.log("idDeleteItems", idDeleteItems);
+
     console.log("editItem", editItem);
     const res = await category.putModifyCategory(
       idModifyItems,
@@ -112,6 +117,7 @@ const CatalogManagement = () => {
       console.log("res", res);
       toast.success("Đã sửa sản phẩm thành công"); // Fetch the updated data after deletion
       setIsOpenModalModify(!isOpenModalModify);
+      await fetchDataCategory();
     } else {
       console.log("res", res);
       toast.error("Error Modify category");
@@ -304,6 +310,7 @@ const CatalogManagement = () => {
   const showTableChildCategory = () => {
     setViewTable(false);
   };
+
   const fetchDataCategory = async () => {
     const res = await category.getAll();
     setIsDataCategory(res.data);
@@ -347,7 +354,15 @@ const CatalogManagement = () => {
           <div className="header-top right">
             {viewTable && (
               <>
-                <CiSearch className="icon" />
+                <CiSearch
+                  style={{
+                    position: "absolute",
+                    top: "7px",
+                    left: "5px",
+                    transform: "translateY(5%)",
+                    fontSize: "20px",
+                  }}
+                />
                 <input
                   type="text"
                   placeholder="Tìm danh mục"
@@ -502,9 +517,17 @@ const CatalogManagement = () => {
               >
                 Xóa sản phẩm
               </h1>
-              <span style={{ fontSize: "15px", padding: "5px 10px" }}>
-                Bạn chắc chắn muốn xóa sản phẩm này không?
-              </span>
+              <p
+                style={{
+                  fontSize: "13px",
+                  padding: "5px 10px",
+                  color: "var(--cl-gray)",
+                  fontFamily: "Montserrat ,sans-serif",
+                }}
+              >
+                Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả
+                danh mục cấp con và sản phẩm đã link với danh mục sẽ bị xóa
+              </p>
             </Modal>
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>

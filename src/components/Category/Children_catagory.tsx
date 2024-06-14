@@ -10,6 +10,7 @@ import { CiSearch } from "react-icons/ci";
 import category from "../../configs/category";
 import { format } from "date-fns";
 import { useAuth } from "../auth/AuthContext";
+import ChildrenThree_catagory from "./ChildrenThree_catagory";
 const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   // const params = useParams();
   const nameRef = useRef(null);
@@ -24,12 +25,9 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
   const [isOpenModalModifyChild, setIsOpenModalModifyChild] = useState(false);
-
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
   const [modifyItem, setModifyItem] = useState<any>();
-
-  // const [isResDataChild, setIsResDataChild] = useState("");
-  //add items to category Children
+  const [IsKeyThreeChild, setIsKeyThreeChild] = useState("");
   const clearInputChildren = () => {
     if (nameRef.current) {
       nameRef.current.value = "";
@@ -113,7 +111,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   //get input values and file images ChildrenCategory
 
   const setHandleInput = (event) => {
-    const value = event.target.value.trim();
+    const value = event.target.value;
     console.log("value Category 2:", value);
     setIsInputCategoryChild(value);
     if (modifyItem) {
@@ -227,10 +225,10 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
             // checkQuatifyItem(record);
             // const name = record.name;
             // console.log(name);
-            // const keyChild = record.key;
-            // console.log("keyChild: ", keyChild);
+            const keyChild = record.key;
+            console.log("keyChild: ", keyChild);
             // setSelectedCategory(name);
-            // setIsKeyChild(keyChild);
+            setIsKeyThreeChild(keyChild);
             // setViewTable(false);
           },
         }),
@@ -238,32 +236,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
     }
     return col;
   });
-  // const dataChildCategory = [
-  //   {
-  //     stt: 1,
-  //     name: "Máy nổ 1",
-  //     number_children: 2,
-  //     created_date: "20/10/2024",
-  //     key: "123245545dsd5",
-  //   },
-  //   {
-  //     stt: 2,
-  //     name: "Máy nổ 2",
-  //     number_children: 3,
-  //     created_date: "21/10/2024",
-  //     key: "12324554fdsfs55",
-  //   },
-  //   {
-  //     stt: 3,
-  //     name: "Máy nổ 3",
-  //     number_children: 1,
-  //     created_date: "22/10/2024",
-  //     key: "123245545sfdsfsf5",
-  //   },
-  // ];
-  // const handleClick = () => {
-  //   fetchDataCategory();
-  // };
+
   return (
     <>
       {isResDataChild.items == 0 ? (
@@ -277,10 +250,18 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
         <div>
           <div className="header-top">
             <div className="header-top-right">
-              <CiSearch className="icon" />
+              <CiSearch
+                style={{
+                  position: "absolute",
+                  top: "7px",
+                  left: "5px",
+                  transform: "translateY(5%)",
+                  fontSize: "20px",
+                }}
+              />
               <input
                 type="text"
-                placeholder="Tìm danh mục"
+                placeholder="Tìm danh mục cấp 2"
                 className="search-categories"
                 onChange={(e) => setIsValueSearchChild(e.target.value)}
               />
@@ -305,6 +286,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
             />
             <span className="total-items">{`${dataTableChild?.length} items`}</span>
           </div>
+          {/* <ChildrenThree_catagory /> */}
         </div>
       )}
       {/* modal add child category */}

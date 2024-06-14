@@ -20,6 +20,7 @@ import Groups from "./components/Admin/Groups";
 import Permissions from "./components/Admin/Permissions";
 import AddProduct from "./components/category/AddProduct";
 import DetailProduct from "./components/category/DetailProduct";
+import ModifyProduct from "./components/category/ModifyProduct";
 const NotFound = () => {
   return (
     <div>
@@ -120,6 +121,23 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <DetailProduct />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/products/edit/:idProduct"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <ModifyProduct />
               </AppWrapper>
             </ProtectedRouter>
           }

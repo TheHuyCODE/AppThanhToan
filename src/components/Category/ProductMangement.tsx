@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
 import uploadApiImage from "../../configs/uploadApiImage";
-import { Select, Button, Table, Space } from "antd";
+import { Select, Button, Table, Space, Modal } from "antd";
 import {
   FaArrowAltCircleDown,
   FaArrowAltCircleUp,
@@ -17,13 +17,20 @@ import { useNavigate } from "react-router-dom";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
 import { format } from "date-fns";
+import { ToastContainer, toast } from "react-toastify";
 
 const ProductMangement = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [dataProduct, setDataProduct] = useState([]);
   const navigate = useNavigate();
+  const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
+  const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
+  const [IsValueSearchProduct, setIsValueSearchProduct] = useState("");
+  const [idSearchCategory, setIdSearchCategory] = useState({
+    id_category: "",
+  });
+  // const [value, setValue] = useState("");
   // const [dataProduct, setDataProduct] = useState([]);
-
   const statusProduct = [
     { id: 1, name: "Còn" },
     { id: 2, name: "Còn" },
@@ -33,6 +40,7 @@ const ProductMangement = () => {
   const nameProduct = isCategoryProduct.map((item, index) => ({
     name: item.name,
     value: index + 1,
+    id: item.id,
   }));
   const handleSelectChange = (e) => {
     // uploadApiImage.postMessage();
@@ -45,19 +53,90 @@ const ProductMangement = () => {
   const detailProduct = (record) => {
     navigate(`/admin/products/${record.key}`);
   };
-  //fet api product
+  const modifyProduct = (record) => {
+    navigate(`/admin/products/edit/${record.key}`);
+  };
+  const deleteProduct = async (record: any) => {
+    setOpenModalDeleteProduct(!openModalDeleteProduct);
+    console.log("deleteProduct", record);
+    setDeleteItemProduct(record);
+  };
+
+  const handleSelectCategory = (value) => {
+    const selectedCategory = nameProduct.find((item) => item.value === value);
+    if (selectedCategory) {
+      console.log("Name tương ứng với value:", selectedCategory);
+      console.log("Name tương ứng với id:", selectedCategory.id);
+      const idSearch = selectedCategory.id;
+      setIdSearchCategory({
+        ...idSearchCategory,
+        id_category: idSearch,
+      });
+      console.log("idSearchCategory", idSearchCategory);
+      // setSelectedCategory(selectedName);
+    } else {
+      console.log("Không tìm thấy name cho giá trị:", value);
+      fetchDataProduct();
+    }
+  };
+  const handleSearchProduct = (e) => {
+    const value = e.target.value.trim();
+    setIsValueSearchProduct(value);
+  };
+  const handleDeleteProduct = async () => {
+    console.log("handleDeleteProduct");
+    const keyItemsProduct = deleteItemProduct.key;
+    if (keyItemsProduct) {
+      const res = await products.deleteProduct(keyItemsProduct);
+      if (res.code === 200) {
+        setOpenModalDeleteProduct(!openModalDeleteProduct);
+        toast.success("Đã xóa sản phẩm thành công");
+        await fetchDataProduct();
+        console.log("error:", res);
+      } else {
+        toast.error("Lỗi! Chưa xóa được sản phẩm");
+        setOpenModalDeleteProduct(!openModalDeleteProduct);
+      }
+    }
+  };
+  //fetch api product
   const fetchDataProduct = async () => {
     const res = await products.getAll();
     setDataProduct(res.data);
     console.log("data category", res.data.items);
     console.log(res.data);
   };
+
   useEffect(() => {
     console.log("isCategoryProduct:", isCategoryProduct);
     fetchDataCategory();
     fetchDataProduct();
   }, []);
 
+  //get api search products for category
+  useEffect(() => {
+    console.log("idSearchCategory", idSearchCategory.id_category);
+    const fetchSearchDataCategory = async () => {
+      if (idSearchCategory.id_category) {
+        // Check if idSearchCategory is not empty
+        const res = await products.getDataSearchProduct(
+          idSearchCategory.id_category
+        );
+        if (res.code === 200) {
+          console.log(res.data);
+          setTimeout(() => {
+            setDataProduct(res.data);
+          }, 1000);
+        } else {
+          console.log(res.data);
+        }
+      }
+      // if (idSearchCategory.id_category === "undefined") {
+      //   await fetchDataProduct();
+      // }
+    };
+    fetchSearchDataCategory();
+  }, [idSearchCategory.id_category]);
   const datatable = dataProduct.items?.map((item, index) => ({
     stt: index + 1,
     key: item.id,
@@ -88,6 +167,23 @@ const ProductMangement = () => {
       title: "Mã sản phẩm chính",
       dataIndex: "barcode",
       key: "barcode",
+      filteredValue: [IsValueSearchProduct],
+      onFilter: (value, record) => {
+        return (
+          String(record.barcode)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.name)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.created_date)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.category)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase())
+        );
+      },
     },
     {
       title: "Tên sản phẩm",
@@ -141,10 +237,13 @@ const ProductMangement = () => {
             <FaEye onClick={() => detailProduct(record)} />
           </a>
           <a>
-            <FaPencilAlt />
+            <FaPencilAlt onClick={() => modifyProduct(record)} />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => deleteProduct(record)}
+            />
           </a>
         </Space>
       ),
@@ -153,6 +252,8 @@ const ProductMangement = () => {
 
   return (
     <div className="content">
+      <ToastContainer closeOnClick autoClose={5000} />
+
       <h1
         style={{
           fontFamily: "poppins, sans-serif",
@@ -184,6 +285,7 @@ const ProductMangement = () => {
                 type="text"
                 placeholder="Tìm sản phẩm"
                 className="search-category"
+                onChange={handleSearchProduct}
               />
             </div>
             <Select
@@ -199,7 +301,9 @@ const ProductMangement = () => {
             <Select
               placeholder="Danh mục sản phẩm"
               allowClear
-              onChange={handleSelectChange}
+              onChange={(value) => {
+                handleSelectCategory(value);
+              }}
               style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
@@ -272,6 +376,31 @@ const ProductMangement = () => {
             Thêm sản phẩm
           </Button>
         </div>
+        <Modal
+          okButtonProps={{ style: { backgroundColor: "red" } }}
+          width={600}
+          centered
+          open={openModalDeleteProduct}
+          onOk={handleDeleteProduct}
+          onCancel={() => setOpenModalDeleteProduct(!openModalDeleteProduct)}
+          okText="Xóa"
+          cancelText="Hủy bỏ"
+        >
+          <h1
+            style={{
+              fontFamily: "Arial",
+              fontSize: "30px",
+              fontWeight: "bold",
+              padding: "5px 10px",
+              marginBottom: "6px",
+            }}
+          >
+            Xóa sản phẩm
+          </h1>
+          <span style={{ fontSize: "15px", padding: "5px 10px" }}>
+            Bạn chắc chắn muốn xóa sản phẩm này không?
+          </span>
+        </Modal>
       </div>
       <div className="table-container">
         <Table

@@ -60,9 +60,7 @@ const category = {
   },
   putModifyCategory: (idItems, data) => {
     const url = `api/v1/manage/category/${idItems}`;
-    const formData = new FormData();
-    formData.append("file", data);
-    return axiosClient.put(url, formData, {
+    return axiosClient.put(url, data, {
       headers: {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",

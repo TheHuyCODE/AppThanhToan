@@ -1,34 +1,229 @@
-import { Select, Input } from "antd";
+import { Select } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
 import { IoIosAdd, IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
-import "./ProductManagement.css";
-import "../styles/valiables.css";
-import { CiCircleRemove } from "react-icons/ci";
+import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
-import { CgLayoutGrid } from "react-icons/cg";
-import { ToastContainer, toast } from "react-toastify";
-import category from "../../configs/category";
-const { TextArea } = Input;
-const AddProduct = () => {
-  const navigate = useNavigate();
-  const [isImageProduct, setIsImageProduct] = useState("");
-  const [previewImageProduct, setPreviewImageProduct] = useState("");
-  const [resImageProduct, setResImageProduct] = useState("");
-  const [isPriceProduct, setIsPriceProduct] = useState("");
+import { CiCircleRemove } from "react-icons/ci";
 
-  // const [isCapitalPriceProduct, setIsCapitalPriceProduct] = useState("");
-  // const [isImageCategory, setIsImageCategory] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+const ModifyProduct = () => {
+  const navigate = useNavigate();
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-  const [stateProduct, setStateProduct] = useState("");
-  // const [selectedCategory, setSelectedCategory] = useState('');
+  const params = useParams();
+  const idProduct = params.idProduct;
+  const [dataProductModify, setDataProductModify] = useState(null);
+  const [isEditable, setIsEditable] = useState(false);
+  const [isActive, setIsActive] = useState("");
+  const [resImageProduct, setResImageProduct] = useState("");
+  const [imgUrl, setImageUrl] = useState("");
+  const domain = "https://cdtn.boot.ai";
+  // const imageUrl = `${domain}/${inputProduct.image_url}`;
+  const [inputProduct, setInputProduct] = useState({
+    barcode: "",
+    name: "",
+    description: "",
+    price: 0,
+    capital_price: 0,
+    inventory_number: 0,
+    is_activate: 0,
+    unit: "",
+    category_id: "",
+    category: "",
+    image_url: "",
+  });
+  const onClickBackPageProduct = () => {
+    navigate("/admin/products/");
+  };
+  const handleStatusChange = (event) => {
+    const value = event.target.id === "active" ? 0 : 1;
+    setInputProduct({
+      ...inputProduct,
+      is_activate: value,
+    });
+  };
+
+  const getDataModifyProduct = async () => {
+    try {
+      const res = await products.getDetailProduct(idProduct);
+      setDataProductModify(res.data);
+      console.log("Fetched product details:", res.data);
+    } catch (error) {
+      console.error("Error fetching product details:", error);
+    }
+  };
+
+  const handleInputImage = (e) => {
+    e.preventDefault();
+    const fileImage = e.target.files[0];
+    // setIsImageProduct(fileImage);
+    if (fileImage) {
+      const url = URL.createObjectURL(fileImage);
+      setInputProduct({
+        ...inputProduct,
+        image_url: fileImage,
+      });
+
+      setImageUrl(url);
+    }
+    // setPreviewImageProduct(URL.createObjectURL(fileImage));
+    console.log("Linked image", fileImage);
+    // console.log("isImageProduct", isImageProduct);
+  };
+
+  const closePreviewImage = () => {
+    setImageUrl("");
+  };
+
+  useEffect(() => {
+    const fileImageModify = inputProduct.image_url;
+    console.log("inputProduct.image_url", fileImageModify);
+    if (fileImageModify) {
+      const formData = new FormData();
+      formData.append("file", fileImageModify);
+      console.log("formData:", [...formData]);
+      products
+        .postImageModifyProduct(formData)
+        .then((res) => {
+          if (res.code === 200) {
+            console.log("Success:", res);
+            const fileUrl = res.data.file_url;
+            setResImageProduct(fileUrl);
+          } else {
+            console.log("Error:");
+          }
+        })
+        .catch((error) => {
+          console.error("Error occurred while uploading:", error);
+        });
+    }
+  }, [inputProduct.image_url]);
+
+  const handleSelectCategory = (value) => {
+    const selectedCategory = listCategory.find((item) => item.value === value);
+    if (selectedCategory) {
+      console.log("Name tương ứng với value:", selectedCategory);
+      console.log("Name tương ứng với id:", selectedCategory.id);
+      setInputProduct({
+        ...inputProduct,
+        category_id: selectedCategory.id,
+        category: selectedCategory.name,
+      });
+      // setSelectedCategory(selectedName);
+    } else {
+      console.log("Không tìm thấy name cho giá trị:", value);
+    }
+  };
+
+  const handleSelectUnit = (value) => {
+    const selectedName = unitProduct.find((item) => item.value === value)?.name;
+    if (selectedName) {
+      console.log("Name tương ứng với value:", selectedName);
+      setInputProduct({
+        ...inputProduct,
+        unit: selectedName,
+      });
+      // setSelectedCategory(selectedName);
+    } else {
+      console.log("Không tìm thấy name cho giá trị:", value);
+    }
+  };
+  const onChangeInput = (fieldName) => (e) => {
+    let value = e.target.value;
+
+    if (fieldName === "inventory_number") {
+      value = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+      value = value === "" ? 0 : parseInt(value, 10); // Convert to number or set to 0 if empty
+    }
+    setInputProduct({
+      ...inputProduct,
+      [fieldName]: value,
+    });
+  };
+  const onClickModifyProduct = async () => {
+    const dataModify = {
+      // barcode: inputProduct.barcode,
+      name: inputProduct.name,
+      description: inputProduct.description,
+      price: inputProduct.price,
+      capital_price: inputProduct.capital_price,
+      inventory_number: inputProduct.inventory_number,
+      category_id: inputProduct.category_id,
+      unit: inputProduct.unit,
+      is_activate: inputProduct.is_activate,
+      image_url: resImageProduct,
+    };
+    console.log("dataModify:", dataModify);
+    try {
+      const response = await products.putModifyProduct(idProduct, dataModify);
+      if (response.code === 200) {
+        console.log("res", response);
+        toast.success("Đã sửa sản phẩm thành công!");
+        setTimeout(() => {
+          onClickBackPageProduct();
+        }, 1000); // Adjust the delay as needed (1000ms = 1 second)
+        // await fetchDataCategory();
+        // clearInputsAddProduct;
+        // setIsPreviewImage("");
+      } else {
+        console.log("error", response);
+        toast.error("Sửa Sản phẩm không thành công!");
+        const errorMessage = response.data.message.text;
+        // setErrorMessageCategories(errorMessage);
+        console.log(errorMessage);
+        // setIsOpenPopups(isOpenPopups);
+      }
+    } catch (error) {
+      console.error("Error adding category:", error);
+      toast.error("Có lỗi xảy ra khi thêm danh mục!");
+      // setIsOpenPopups(isOpenPopups);
+    }
+  };
   const listCategory = isCategoryProduct?.map((item, index) => ({
     name: item.name,
     value: index + 1,
     id: item.id,
   }));
+  const onChangeValuePrice = (e) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9]/g, "");
+    if (value === "") {
+      e.target.value = "";
+      setInputProduct({
+        ...inputProduct,
+        price: 0,
+      });
+      return;
+    }
+    const numericValue = parseInt(value, 10);
+    // Format the value as a locale string
+    e.target.value = numericValue.toLocaleString("vi-VN");
+    setInputProduct({
+      ...inputProduct,
+      price: numericValue,
+    });
+    console.log("value", value);
+  };
+  const onChangeValueCapitalPrice = (e) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9]/g, "");
+    if (value == "") {
+      e.target.value = "";
+      setInputProduct({
+        ...inputProduct,
+        capital_price: 0,
+      });
+      return;
+    }
+    const numericValue = parseInt(value, 10);
+    e.target.value = numericValue.toLocaleString("vi-VN");
+    setInputProduct({
+      ...inputProduct,
+      capital_price: numericValue,
+    });
+    console.log("value", value);
+  };
   const unitProduct = [
     {
       name: "Cái",
@@ -71,210 +266,46 @@ const AddProduct = () => {
       value: 10,
     },
   ];
-  const [inputProduct, setInputProduct] = useState({
-    barcode: "",
-    name: "",
-    description: "",
-    price: 0,
-    capital_price: 0,
-    inventory_number: 0,
-    is_activate: 0,
-    unit: "",
-    category_id: "",
-  });
-
-  const onChangeInput = (fieldName) => (e) => {
-    let value = e.target.value.trim();
-    // If the field is 'inventory_number', convert the value to a number
-    if (fieldName === "inventory_number") {
-      value = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
-      value = value === "" ? 0 : parseInt(value, 10); // Convert to number or set to 0 if empty
-    }
-    setInputProduct({
-      ...inputProduct,
-      [fieldName]: value,
-    });
-  };
-
-  // add product
-  const onClickAddProduct = async (e) => {
-    e.preventDefault();
-    const dataAddProduct = {
-      barcode: inputProduct.barcode,
-      name: inputProduct.name,
-      description: inputProduct.description,
-      category_id: inputProduct.category_id,
-      price: inputProduct.price,
-      capital_price: inputProduct.capital_price,
-      inventory_number: inputProduct.inventory_number,
-      is_activate: inputProduct.is_activate,
-      image_url: resImageProduct,
-      unit: inputProduct.unit,
-    };
-    // console.log("dataProduct:", data);
-    console.log("inputProduct", inputProduct);
-    console.log("inputProduct", dataAddProduct);
-
-    console.log(typeof inputProduct.barcode);
-    console.log(typeof inputProduct.price);
-    console.log(typeof inputProduct.capital_price);
-    console.log(typeof inputProduct.inventory_number);
-    try {
-      const response = await products.postAddProduct(dataAddProduct);
-      if (response.code === 200) {
-        console.log("res", response);
-        toast.success("Đã thêm sản phẩm thành công!");
-        setTimeout(() => {
-          onClickBackPageProduct();
-        }, 1000); // Adjust the delay as needed (1000ms = 1 second)
-        await fetchDataCategory();
-        clearInputsAddProduct;
-        // setIsPreviewImage("");
-      } else {
-        console.log("error", response);
-        toast.error("Thêm danh mục không thành công!");
-        const errorMessage = response.data.message.text;
-        // setErrorMessageCategories(errorMessage);
-        console.log(errorMessage);
-        // setIsOpenPopups(isOpenPopups);
-      }
-    } catch (error) {
-      console.error("Error adding category:", error);
-      toast.error("Có lỗi xảy ra khi thêm danh mục!");
-      // setIsOpenPopups(isOpenPopups);
-    }
-  };
-
-  const clearInputsAddProduct = () => {
-    setInputProduct({
-      barcode: "",
-      name: "",
-      description: "",
-      price: 0,
-      capital_price: 0,
-      inventory_number: 0,
-      is_activate: 0,
-      unit: "",
-      category_id: "",
-    });
-  };
-  const handleSelectCategory = (value) => {
-    const selectedCategory = listCategory.find((item) => item.value === value);
-    if (selectedCategory) {
-      console.log("Name tương ứng với value:", selectedCategory);
-      console.log("Name tương ứng với id:", selectedCategory.id);
-      setInputProduct({
-        ...inputProduct,
-        category_id: selectedCategory.id,
-      });
-      // setSelectedCategory(selectedName);
-    } else {
-      console.log("Không tìm thấy name cho giá trị:", value);
-    }
-  };
-  const handleSelectUnit = (value) => {
-    const selectedName = unitProduct.find((item) => item.value === value)?.name;
-    if (selectedName) {
-      console.log("Name tương ứng với value:", selectedName);
-      setInputProduct({
-        ...inputProduct,
-        unit: selectedName,
-      });
-      // setSelectedCategory(selectedName);
-    } else {
-      console.log("Không tìm thấy name cho giá trị:", value);
-    }
-  };
-  const onClickBackPageProduct = () => {
-    navigate("/admin/products/");
-  };
-  const onChangeValuePrice = (e) => {
-    let value = e.target.value;
-    value = value.replace(/[^0-9]/g, "");
-    if (value === "") {
-      e.target.value = "";
-      setInputProduct({
-        ...inputProduct,
-        price: 0,
-      });
-      return;
-    }
-    const numericValue = parseInt(value, 10);
-    // Format the value as a locale string
-    e.target.value = numericValue.toLocaleString("vi-VN");
-    setInputProduct({
-      ...inputProduct,
-      price: numericValue,
-    });
-    console.log("value", value);
-  };
-  const onChangeValueCapitalPrice = (e) => {
-    let value = e.target.value;
-    value = value.replace(/[^0-9]/g, "");
-    if (value == "") {
-      e.target.value = "";
-      setInputProduct({
-        ...inputProduct,
-        capital_price: 0,
-      });
-      return;
-    }
-    const numericValue = parseInt(value, 10);
-    e.target.value = numericValue.toLocaleString("vi-VN");
-    setInputProduct({
-      ...inputProduct,
-      capital_price: numericValue,
-    });
-    console.log("value", value);
-  };
-  const closePreviewImage = () => {
-    setPreviewImageProduct("");
-  };
-  const handleStatusChange = (e) => {
-    const value = e.target.value;
-    // console.log("value:", value);
-    const stateProduct = parseInt(value, 10);
-    setInputProduct({
-      ...inputProduct,
-      is_activate: stateProduct,
-    });
-  };
-  const handleInputImage = (e) => {
-    e.preventDefault();
-    const fileImage = e.target.files[0];
-    setIsImageProduct(fileImage);
-    setPreviewImageProduct(URL.createObjectURL(fileImage));
-    console.log("Linked image", fileImage);
-    console.log("isImageProduct", isImageProduct);
-  };
-  useEffect(() => {
-    if (isImageProduct) {
-      console.log("image:", isImageProduct);
-      const formData = new FormData();
-      formData.append("file", isImageProduct);
-      console.log("formData:", [...formData]);
-      products
-        .postImageProduct(formData)
-        .then((res) => {
-          if (res.code === 200) {
-            console.log("Success:", res);
-            const fileUrl = res.data.file_url;
-            setResImageProduct(fileUrl);
-          } else {
-            console.log("Error:");
-          }
-        })
-        .catch((error) => {
-          console.error("Error occurred while uploading:", error);
-        });
-    }
-  }, [isImageProduct]);
 
   useEffect(() => {
+    getDataModifyProduct();
     fetchDataCategory();
-  }, []);
+  }, [idProduct]);
+  useEffect(() => {
+    if (dataProductModify?.barcode) {
+      setIsEditable(false);
+    } else {
+      setIsEditable(true);
+    }
+    if (dataProductModify?.is_activate) {
+      setIsActive("notactive");
+    } else {
+      setIsActive("active");
+    }
+    if (dataProductModify) {
+      setInputProduct({
+        barcode: dataProductModify.barcode || "",
+        name: dataProductModify.name || "",
+        description: dataProductModify.description || "",
+        price: dataProductModify.price || "",
+        capital_price: dataProductModify.capital_price || "",
+        inventory_number: dataProductModify.inventory_number || "",
+        // is_activate: dataProductModify.is_activate || "",
+        // unit: dataProductModify.unit || "",
+        category_id: dataProductModify.category_id || "",
+        category: dataProductModify.category.name || "",
+        unit: dataProductModify.unit || "",
+        is_activate: dataProductModify.is_activate ? 0 : 1,
+        image_url: dataProductModify.image_url || "",
+      });
+      if (dataProductModify.image_url) {
+        setImageUrl(`${domain}/${dataProductModify.image_url}`);
+      }
+    }
+  }, [dataProductModify]);
+
   return (
-    <>
+    <div>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="add-product">
         <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
@@ -289,7 +320,7 @@ const AddProduct = () => {
               color: "var(--color-tiltle)",
             }}
           >
-            Thêm sản phẩm
+            Sửa sản phẩm
           </h1>
         </div>
         <div
@@ -334,7 +365,9 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
+                value={inputProduct.barcode}
                 onChange={onChangeInput("barcode")}
+                disabled={!isEditable}
               />
             </div>
             <div className="input-info">
@@ -344,6 +377,7 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
+                value={inputProduct.name}
                 onChange={onChangeInput("name")}
               />
             </div>
@@ -352,6 +386,7 @@ const AddProduct = () => {
               <TextArea
                 rows={4}
                 style={{ width: "300px" }}
+                value={inputProduct.description}
                 onChange={onChangeInput("description")}
               />
             </div>
@@ -364,6 +399,7 @@ const AddProduct = () => {
                 allowClear
                 // defaultValue="Giới tính"
                 style={{ width: 302, height: 36 }}
+                value={inputProduct.category}
                 onChange={(value) => {
                   handleSelectCategory(value);
                 }}
@@ -373,7 +409,6 @@ const AddProduct = () => {
                     {option.name}
                   </option>
                 ))}
-                /
               </Select>
             </div>
             <div
@@ -388,6 +423,7 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
+                value={inputProduct.price}
                 onChange={onChangeValuePrice}
                 style={{
                   position: "relative",
@@ -407,6 +443,7 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
+                value={inputProduct.capital_price}
                 onChange={onChangeValueCapitalPrice}
                 style={{
                   position: "relative",
@@ -421,6 +458,7 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
+                value={inputProduct.inventory_number}
                 onChange={onChangeInput("inventory_number")}
               />
             </div>
@@ -433,6 +471,7 @@ const AddProduct = () => {
                 allowClear
                 // defaultValue="Giới tính"
                 style={{ width: 302, height: 36 }}
+                value={inputProduct.unit}
                 onChange={(value) => {
                   handleSelectUnit(value);
                 }}
@@ -462,8 +501,7 @@ const AddProduct = () => {
                   type="radio"
                   id="active"
                   name="status"
-                  value="0"
-                  // checked={status === "active"}
+                  value={0}
                   onChange={handleStatusChange}
                 />
                 <label htmlFor="active">Kích hoạt</label>
@@ -471,8 +509,7 @@ const AddProduct = () => {
                   type="radio"
                   id="notactivate"
                   name="status"
-                  value="1"
-                  // checked={status === "notactive"}
+                  value={1}
                   onChange={handleStatusChange}
                 />
                 <label htmlFor="notactivate">Chưa kích hoạt</label>
@@ -503,7 +540,7 @@ const AddProduct = () => {
               <label htmlFor="labelUpload" className="title-picture">
                 Ảnh danh mục(<span>*</span>)
               </label>
-              {!previewImageProduct ? (
+              {!imgUrl ? (
                 <>
                   <label
                     htmlFor="labelUpload"
@@ -534,7 +571,7 @@ const AddProduct = () => {
                     <CiCircleRemove />
                   </button>
                   <img
-                    src={previewImageProduct}
+                    src={imgUrl}
                     alt="Preview"
                     style={{ maxHeight: "100%", maxWidth: "100%" }}
                   />
@@ -543,20 +580,21 @@ const AddProduct = () => {
             </div>
           </div>
         </div>
+
         <div className="footer-add-product">
           <button
             className="btn-cancel-product"
             onClick={onClickBackPageProduct}
           >
-            Hủy
+            HỦY
           </button>
-          <button className="btn-add-product" onClick={onClickAddProduct}>
-            Thêm sản phẩm
+          <button className="btn-add-product" onClick={onClickModifyProduct}>
+            LƯU
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default AddProduct;
+export default ModifyProduct;
