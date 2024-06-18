@@ -21,6 +21,7 @@ interface AuthContextType {
   fetchDataCategoryChild: (isKeyChild: string) => void;
   fetchDataCategory: () => void;
 }
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(() => {

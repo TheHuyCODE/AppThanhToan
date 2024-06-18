@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
@@ -21,6 +21,10 @@ import Permissions from "./components/Admin/Permissions";
 import AddProduct from "./components/category/AddProduct";
 import DetailProduct from "./components/category/DetailProduct";
 import ModifyProduct from "./components/category/ModifyProduct";
+import SalePage from "./components/SalesPage/SalePage";
+import RevenueReport from "./components/dashboard/RevenueReport";
+import InventoryReport from "./components/dashboard/InventoryReport";
+// import SalePage from "./components/SalesPage/SalePage";
 const NotFound = () => {
   return (
     <div>
@@ -30,6 +34,7 @@ const NotFound = () => {
     </div>
   );
 };
+
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
   const [collapsedTheme, setCollapsedTheme] = useState(false);
@@ -56,6 +61,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
+        <Route path="/" element={<Navigate to="/admin" />} />
         <Route
           path="admin"
           element={
@@ -69,6 +75,40 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <Home />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/revenuereport"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <RevenueReport />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/inventoryreport"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <InventoryReport />
               </AppWrapper>
             </ProtectedRouter>
           }
@@ -269,7 +309,9 @@ function App() {
             </PublicRouter>
           }
         />
-        <Route path="*" element={<NotFound />} />
+        {/* <Route path="*" element={<NotFound />} /> */}
+
+        <Route path="/SalesPage" element={<SalePage />} />
       </Routes>
     </div>
   );

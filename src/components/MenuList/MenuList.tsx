@@ -42,22 +42,37 @@ const MenuList = () => {
         mode="inline"
         className="menu-bar"
       >
-        <Menu.Item key="Dashboard" icon={<FaChartColumn />}>
-          <Link to="admin/dashboard">Thống kê</Link>
+        <Menu.Item key="SalesPage" icon={<FaCartShopping />}>
+          <Link to="/SalesPage">Bán hàng</Link>
         </Menu.Item>
+        <Menu.Item key="Dashboard" icon={<FaChartColumn />}>
+          <Link to="admin/dashboard">Báo cáo</Link>
+        </Menu.Item>
+        <Menu.SubMenu
+          key="Dashboard"
+          icon={<RiListSettingsFill />}
+          title="Báo cáo"
+        >
+          <Menu.Item key="Revenuereport" icon={<IoIosAdd />}>
+            <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>
+          </Menu.Item>
+          <Menu.Item key="Inventoryreport" icon={<IoIosAdd />}>
+            <Link to="/admin/inventoryreport">Báo cáo tồn kho</Link>
+          </Menu.Item>
+        </Menu.SubMenu>
         <Menu.Item key="Order_management" icon={<FaCartShopping />}>
-          <Link to="admin/ordermanagement">Quản lí đơn hàng</Link>
+          <Link to="admin/ordermanagement">Quản lý hóa đơn</Link>
         </Menu.Item>
         <Menu.Item key="User_management" icon={<IoPerson />}>
-          <Link to="/admin/users">Quản lí người dùng</Link>
+          <Link to="/admin/users">Quản lý người dùng</Link>
         </Menu.Item>
         <Menu.SubMenu
           key="Product_management"
           icon={<RiListSettingsFill />}
-          title="Quản lí sản phẩm"
+          title="Quản lý sản phẩm"
         >
           <Menu.Item key="Product_management_child" icon={<IoIosAdd />}>
-            <Link to="/admin/products">Quản lí sản phẩm</Link>
+            <Link to="/admin/products">Quản lý sản phẩm</Link>
           </Menu.Item>
           <Menu.Item
             key="Product_catalog_management_child"
@@ -65,7 +80,7 @@ const MenuList = () => {
             // onClick={handleDataCategories}
           >
             <Link to="/admin/productcatalogmanagement">
-              Quản lí danh mục sản phẩm
+              Quản lý danh mục sản phẩm
             </Link>
           </Menu.Item>
           <Menu.Item
@@ -73,11 +88,11 @@ const MenuList = () => {
             icon={<IoIosAdd />}
           >
             <Link to="/admin/managemanufacturersmodels">
-              Quản lí hãng sản xuất và model
+              Quản lý hãng sản xuất và model
             </Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.SubMenu
+        {/* <Menu.SubMenu
           key="
           Admin_management"
           icon={<FaLock />}
@@ -92,10 +107,10 @@ const MenuList = () => {
           <Menu.Item key="permissions" icon={<IoIosAdd />}>
             <Link to="/admin/permissions">Danh sách quyền</Link>
           </Menu.Item>
-        </Menu.SubMenu>
+        </Menu.SubMenu> */}
 
         <Menu.Item key="percent" icon={<FaPercent />}>
-          Quản lí mã giảm giá
+          Quản lý mã giảm giá
         </Menu.Item>
         <Menu.Item key="Setting" icon={<IoIosSettings />}>
           <Link to="/admin">Cài đặt</Link>

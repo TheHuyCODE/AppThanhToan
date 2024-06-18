@@ -311,10 +311,13 @@ const AddProduct = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-around",
-            border: "1px solid lightgray",
+            // border: "1px solid lightgray",
             borderRadius: "10px",
-            padding: "20px",
+            padding: "30px",
             gap: "5px",
+            color: "white",
+            boxShadow: " 0 0 10px rgba(0, 0, 0, 0.2)",
+            flex: 0,
           }}
         >
           <div
@@ -325,6 +328,7 @@ const AddProduct = () => {
               display: "flex",
               flexDirection: "column",
               marginLeft: "20px",
+              flex: 1,
             }}
           >
             <div className="input-info">
@@ -488,6 +492,7 @@ const AddProduct = () => {
               width: "50%",
               flexDirection: "column",
               height: "480px",
+              position: "relative",
             }}
           >
             <div
@@ -498,6 +503,7 @@ const AddProduct = () => {
                 justifyContent: "center",
                 flexDirection: "column",
                 gap: "40px",
+                color: "var(--cl-dark)",
               }}
             >
               <label htmlFor="labelUpload" className="title-picture">
@@ -541,18 +547,18 @@ const AddProduct = () => {
                 </div>
               )}
             </div>
+            <div className="footer-add-product">
+              <button
+                className="btn-cancel-product"
+                onClick={onClickBackPageProduct}
+              >
+                Hủy
+              </button>
+              <button className="btn-add-product" onClick={onClickAddProduct}>
+                Thêm sản phẩm
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="footer-add-product">
-          <button
-            className="btn-cancel-product"
-            onClick={onClickBackPageProduct}
-          >
-            Hủy
-          </button>
-          <button className="btn-add-product" onClick={onClickAddProduct}>
-            Thêm sản phẩm
-          </button>
         </div>
       </div>
     </>

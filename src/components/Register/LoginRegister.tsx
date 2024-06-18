@@ -187,7 +187,6 @@ const LoginRegister = () => {
   };
   const handleSubmitLogin = (event) => {
     event.preventDefault();
-
     const userData = {
       email: data.email,
       password: data.password,

@@ -11,19 +11,24 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { Option } from "antd/es/mentions";
 import AddProduct from "./AddProduct";
 import { useNavigate } from "react-router-dom";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
 import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
-
+import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
+import Spinners from "../SpinnerLoading/Spinners";
+// let locale = {
+//   emptyText: 'Abc',
+// };
 const ProductMangement = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
+
   const [dataProduct, setDataProduct] = useState([]);
   const navigate = useNavigate();
   const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
   const [IsValueSearchProduct, setIsValueSearchProduct] = useState("");
   const [idSearchCategory, setIdSearchCategory] = useState({
@@ -101,10 +106,17 @@ const ProductMangement = () => {
   };
   //fetch api product
   const fetchDataProduct = async () => {
-    const res = await products.getAll();
-    setDataProduct(res.data);
-    console.log("data category", res.data.items);
-    console.log(res.data);
+    setLoading(true);
+    try {
+      const res = await products.getAll();
+      setDataProduct(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.log("error:", error);
+      setLoading(false);
+    }
+    // console.log("data category", res.data.items);
+    // console.log(res.data);
   };
 
   useEffect(() => {
@@ -253,7 +265,6 @@ const ProductMangement = () => {
   return (
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
-
       <h1
         style={{
           fontFamily: "poppins, sans-serif",
@@ -264,7 +275,13 @@ const ProductMangement = () => {
       </h1>
       <div
         className="header"
-        style={{ display: "flex", alignItems: "center", border: "none" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          border: "none",
+          color: "white",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+        }}
       >
         <div className="header-left">
           <div className="header-left-top">
@@ -288,16 +305,7 @@ const ProductMangement = () => {
                 onChange={handleSearchProduct}
               />
             </div>
-            <Select
-              placeholder="Hãng sản xuất"
-              allowClear
-              onChange={handleSelectChange}
-              style={{ width: 200, height: 35 }}
-            >
-              {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
-              ))}
-            </Select>
+
             <Select
               placeholder="Danh mục sản phẩm"
               allowClear
@@ -310,8 +318,6 @@ const ProductMangement = () => {
                 <option value={option.value}>{option.name}</option>
               ))}
             </Select>
-          </div>
-          <div className="header-left-bottom">
             <Select
               placeholder="Loại giảm giá"
               allowClear
@@ -322,7 +328,8 @@ const ProductMangement = () => {
                 <option value={option.value}>{option.name}</option>
               ))}
             </Select>
-
+          </div>
+          <div className="header-left-bottom">
             <Select
               placeholder="Trạng thái sản phẩm"
               allowClear
@@ -333,7 +340,7 @@ const ProductMangement = () => {
                 <option value={option.id}>{option.name}</option>
               ))}
             </Select>
-            <div
+            {/* <div
               style={{
                 width: "200px",
                 height: "35px",
@@ -344,7 +351,7 @@ const ProductMangement = () => {
             >
               <input type="checkbox" />
               <label htmlFor="">Sản phẩm bán chạy</label>
-            </div>
+            </div> */}
           </div>
         </div>
         <div
@@ -403,17 +410,19 @@ const ProductMangement = () => {
         </Modal>
       </div>
       <div className="table-container">
-        <Table
-          columns={columns}
-          dataSource={datatable}
-          pagination={{
-            position: ["bottomCenter"],
-            defaultPageSize: 15,
-            showSizeChanger: true,
-            pageSizeOptions: ["10", "20", "30"],
-          }}
-        ></Table>
-        <span className="total-items">{`${datatable?.length} items`}</span>
+        {loading ? (
+          <Spinners loading={loading} />
+        ) : (
+          <>
+            <Table
+              columns={columns}
+              dataSource={datatable}
+              locale={localeProduct}
+              pagination={paginationConfig}
+            />
+            <span className="total-items">{`${datatable?.length} Sản phẩm`}</span>
+          </>
+        )}
       </div>
     </div>
   );

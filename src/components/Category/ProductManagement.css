@@ -40,7 +40,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   gap: 10px;
 }
 
@@ -65,6 +65,9 @@
   background-color: var(--border-focus-color);
 }
 .footer-add-product {
+  position: absolute;
+  bottom: 4px;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: end;
@@ -135,10 +138,11 @@
   font-weight: 500;
   font-size: 17px;
   padding: 5px;
+  color: var(--cl-dark);
 }
 .input-info p {
   font-weight: 100;
   font-size: 15px;
   text-transform: uppercase;
-  color: var(--cl-gray);
+  color: var(--cl-dark);
 }

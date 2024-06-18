@@ -64,6 +64,9 @@ a.title-category {
   width: 100%;
   height: auto;
   position: relative;
+  border-radius: 10px;
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .custom-file-upload {
