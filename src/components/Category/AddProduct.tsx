@@ -1,13 +1,14 @@
 import { Select, Input } from "antd";
 import React, { useEffect, useState } from "react";
-import { IoIosAdd, IoIosArrowBack } from "react-icons/io";
+import { IoIosAdd, IoIosArrowBack, IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
 import { CiCircleRemove } from "react-icons/ci";
+import { FaBan } from "react-icons/fa";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
-import { CgLayoutGrid } from "react-icons/cg";
+
 import { ToastContainer, toast } from "react-toastify";
 import category from "../../configs/category";
 const { TextArea } = Input;
@@ -78,7 +79,7 @@ const AddProduct = () => {
     price: 0,
     capital_price: 0,
     inventory_number: 0,
-    is_activate: 0,
+    is_active: 0,
     unit: "",
     category_id: "",
   });
@@ -107,7 +108,7 @@ const AddProduct = () => {
       price: inputProduct.price,
       capital_price: inputProduct.capital_price,
       inventory_number: inputProduct.inventory_number,
-      is_activate: inputProduct.is_activate,
+      is_active: inputProduct.is_active,
       image_url: resImageProduct,
       unit: inputProduct.unit,
     };
@@ -153,7 +154,7 @@ const AddProduct = () => {
       price: 0,
       capital_price: 0,
       inventory_number: 0,
-      is_activate: 0,
+      is_active: 0,
       unit: "",
       category_id: "",
     });
@@ -236,7 +237,7 @@ const AddProduct = () => {
     const stateProduct = parseInt(value, 10);
     setInputProduct({
       ...inputProduct,
-      is_activate: stateProduct,
+      is_active: stateProduct,
     });
   };
   const handleInputImage = (e) => {
@@ -317,7 +318,6 @@ const AddProduct = () => {
             gap: "5px",
             color: "white",
             boxShadow: " 0 0 10px rgba(0, 0, 0, 0.2)",
-            flex: 0,
           }}
         >
           <div
@@ -328,7 +328,6 @@ const AddProduct = () => {
               display: "flex",
               flexDirection: "column",
               marginLeft: "20px",
-              flex: 1,
             }}
           >
             <div className="input-info">
@@ -552,10 +551,12 @@ const AddProduct = () => {
                 className="btn-cancel-product"
                 onClick={onClickBackPageProduct}
               >
+                <FaBan className="icon" />
                 Hủy
               </button>
               <button className="btn-add-product" onClick={onClickAddProduct}>
-                Thêm sản phẩm
+                <IoMdAdd className="icon" />
+                Thêm
               </button>
             </div>
           </div>

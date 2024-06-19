@@ -32,7 +32,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // Check local storage for an existing token on initial load
     return localStorage.getItem("access_token");
   });
-  const [darkTheme, setDarkTheme] = useState(false);
+  const [darkTheme, setDarkTheme] = useState(true);
   const [isResDataChild, setIsResDataChild] = useState("");
   const [isCategoryProduct, setIsCategoryProduct] = useState([]);
   const login = (access_token: string, refresh_token: string) => {

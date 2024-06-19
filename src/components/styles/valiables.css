@@ -18,4 +18,9 @@
   --cl-primary-20: rgba(230, 0, 0, 0.20784313725490197);
   --cl-green-2: #27ae60;
   --cl-light-primary: #f66;
+  --cl-btn: #009232;
+  --cl-btn-hover: #0a642a;
+  --cl-header-table: #e6f1fe;
+  --cl-btn-cancel: #677484;
+  --cl-btn-cancel-hover: #464d55;
 }

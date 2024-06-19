@@ -23,6 +23,7 @@ import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ChildrenCategory from "./Children_catagory";
 import { useAuth } from "../auth/AuthContext";
+import { localCategory } from "../TableConfig/TableConfig";
 const CatalogManagement = () => {
   const { isResDataChild, fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
@@ -537,6 +538,7 @@ const CatalogManagement = () => {
             <Table
               columns={columnsWithClick}
               dataSource={dataTable}
+              locale={localCategory}
               pagination={{
                 position: ["bottomCenter"],
                 defaultPageSize: 15,

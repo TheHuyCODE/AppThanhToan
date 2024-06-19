@@ -1,14 +1,24 @@
+import Search from "antd/es/transfer/search";
 import axiosClient from "./axiosClient";
 
 const products = {
   getAll: () => {
     const url = "api/v1/manage/product";
+    const params = {
+      search: "",
+      page: 1,
+      page_size: 30,
+      sort: "name",
+      order_by: "asc",
+    };
+
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+      params,
     });
   },
   getCategoryProduct: () => {
@@ -35,6 +45,36 @@ const products = {
     const url = `api/v1/manage/product`;
     const params = {
       category_id: parent_id,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+
+  getDataSearchProductActive: (status) => {
+    const url = `api/v1/manage/product`;
+    const params = {
+      is_active: status,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+
+  getDataSearchNameProduct: (value) => {
+    const url = `api/v1/manage/product`;
+    const params = {
+      search: value,
     };
     return axiosClient.get(url, {
       headers: {

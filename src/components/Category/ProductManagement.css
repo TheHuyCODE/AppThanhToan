@@ -1,3 +1,45 @@
+.ant-table-thead .ant-table-cell {
+  background-color: var(--cl-header-table) !important;
+}
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+  cursor: pointer;
+}
+
+.table-header .text {
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words */
+  text-overflow: ellipsis; /* Show ellipsis for truncated text */
+}
+.table-header:hover .up-arrow {
+  visibility: visible;
+}
+.arrow-icon-container {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  margin-left: 10px;
+}
+.up-arrow {
+  visibility: hidden;
+  /* margin-left: 3px; */
+}
+
+.table-header:hover .arrow-icon-hover {
+  visibility: visible; /* Show on hover */
+}
+/* 
+.arrow-icon {
+  width: 30%;
+} */
+.arrow-icon-visible {
+  visibility: visible; /* Show always */
+}
+
 .search-category {
   border: 1px solid grey;
   border-radius: 5px;
@@ -44,29 +86,24 @@
   gap: 10px;
 }
 
-/* .form-input {
-    border: 1px solid grey;
-    border-radius: 6.5px;
-    width: 150px;
-    height: 26px;
-    outline: none;
-    transition: 0.25s ease;
-} */
 .btn-header-right {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
+  color: white;
+  width: 160px;
+  height: 35px;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  background-color: var(--cl-btn);
+  cursor: pointer;
 }
-.btn-header-right:hover {
-  background-color: var(--border-hover-color);
-}
-.btn-header-right:focus {
-  background-color: var(--border-focus-color);
-}
+
 .footer-add-product {
   position: absolute;
-  bottom: 4px;
+  bottom: 0px;
   right: 0;
   display: flex;
   align-items: center;
@@ -75,6 +112,10 @@
   margin-right: 20px;
 }
 .btn-cancel-product {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   width: 80px;
   height: 40px;
   border: 1px solid #d9d9d9;
@@ -83,31 +124,30 @@
   outline: none;
   cursor: pointer;
   font-weight: 400;
-  background-color: transparent;
+  background-color: var(--cl-btn-cancel);
+  color: white;
 }
 .btn-cancel-product:hover {
-  background-color: lightgray;
+  background-color: var(--cl-btn-cancel-hover);
 }
 .btn-add-product {
-  width: 140px;
+  width: 80px;
   height: 40px;
   border: 1px solid #d9d9d9;
   border-radius: 5px;
   font-size: 15px;
   outline: none;
-  background-color: var(--border-hover-color);
+  background-color: var(--cl-btn);
   color: white;
   cursor: pointer;
   font-weight: 400;
 }
 .btn-add-product:hover {
-  background-color: var(--border-focus-color);
+  background-color: var(--cl-btn-hover);
 }
-.btn-header-right {
-  background-color: var(--border-hover-color);
-}
+
 .btn-header-right:hover {
-  background-color: var(--border-focus-color);
+  background-color: var(--cl-btn-hover);
 }
 .overlay-text {
   position: absolute;

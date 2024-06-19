@@ -27,7 +27,7 @@ const ModifyProduct = () => {
     price: 0,
     capital_price: 0,
     inventory_number: 0,
-    is_activate: 0,
+    is_active: 0,
     unit: "",
     category_id: "",
     category: "",
@@ -40,7 +40,7 @@ const ModifyProduct = () => {
     const value = event.target.id === "active" ? 0 : 1;
     setInputProduct({
       ...inputProduct,
-      is_activate: value,
+      is_active: value,
     });
   };
 
@@ -151,7 +151,7 @@ const ModifyProduct = () => {
       inventory_number: inputProduct.inventory_number,
       category_id: inputProduct.category_id,
       unit: inputProduct.unit,
-      is_activate: inputProduct.is_activate,
+      is_active: inputProduct.is_active,
       image_url: resImageProduct,
     };
     console.log("dataModify:", dataModify);
@@ -277,7 +277,7 @@ const ModifyProduct = () => {
     } else {
       setIsEditable(true);
     }
-    if (dataProductModify?.is_activate) {
+    if (dataProductModify?.is_active) {
       setIsActive("notactive");
     } else {
       setIsActive("active");
@@ -290,12 +290,12 @@ const ModifyProduct = () => {
         price: dataProductModify.price || "",
         capital_price: dataProductModify.capital_price || "",
         inventory_number: dataProductModify.inventory_number || "",
-        // is_activate: dataProductModify.is_activate || "",
+        // is_active: dataProductModify.is_active || "",
         // unit: dataProductModify.unit || "",
         category_id: dataProductModify.category_id || "",
         category: dataProductModify.category.name || "",
         unit: dataProductModify.unit || "",
-        is_activate: dataProductModify.is_activate ? 0 : 1,
+        is_active: dataProductModify.is_active ? 0 : 1,
         image_url: dataProductModify.image_url || "",
       });
       if (dataProductModify.image_url) {

@@ -2,7 +2,12 @@ import React, { useState } from "react";
 
 import { Menu, Modal } from "antd";
 import { MdDashboard } from "react-icons/md";
-import { FaCartShopping, FaChartColumn, FaKey } from "react-icons/fa6";
+import {
+  FaBagShopping,
+  FaCartShopping,
+  FaChartColumn,
+  FaKey,
+} from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { IoIosSettings, IoIosAdd } from "react-icons/io";
 import { RiListSettingsFill } from "react-icons/ri";
@@ -42,21 +47,19 @@ const MenuList = () => {
         mode="inline"
         className="menu-bar"
       >
-        <Menu.Item key="SalesPage" icon={<FaCartShopping />}>
+        <Menu.Item key="SalesPage" icon={<FaBagShopping />}>
           <Link to="/SalesPage">Bán hàng</Link>
         </Menu.Item>
-        <Menu.Item key="Dashboard" icon={<FaChartColumn />}>
-          <Link to="admin/dashboard">Báo cáo</Link>
-        </Menu.Item>
+
         <Menu.SubMenu
           key="Dashboard"
           icon={<RiListSettingsFill />}
           title="Báo cáo"
         >
-          <Menu.Item key="Revenuereport" icon={<IoIosAdd />}>
+          <Menu.Item key="Revenuereport">
             <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>
           </Menu.Item>
-          <Menu.Item key="Inventoryreport" icon={<IoIosAdd />}>
+          <Menu.Item key="Inventoryreport">
             <Link to="/admin/inventoryreport">Báo cáo tồn kho</Link>
           </Menu.Item>
         </Menu.SubMenu>
@@ -71,43 +74,19 @@ const MenuList = () => {
           icon={<RiListSettingsFill />}
           title="Quản lý sản phẩm"
         >
-          <Menu.Item key="Product_management_child" icon={<IoIosAdd />}>
+          <Menu.Item key="Product_management_child">
             <Link to="/admin/products">Quản lý sản phẩm</Link>
           </Menu.Item>
           <Menu.Item
             key="Product_catalog_management_child"
-            icon={<IoIosAdd />}
+
             // onClick={handleDataCategories}
           >
             <Link to="/admin/productcatalogmanagement">
               Quản lý danh mục sản phẩm
             </Link>
           </Menu.Item>
-          <Menu.Item
-            key="Manage_manufacturers_models_child"
-            icon={<IoIosAdd />}
-          >
-            <Link to="/admin/managemanufacturersmodels">
-              Quản lý hãng sản xuất và model
-            </Link>
-          </Menu.Item>
         </Menu.SubMenu>
-        {/* <Menu.SubMenu
-          key="
-          Admin_management"
-          icon={<FaLock />}
-          title="Quản lí quản trị viên"
-        >
-          <Menu.Item key="admins" icon={<IoIosAdd />}>
-            <Link to="/admin/admins">Quản lí quản trị viên</Link>
-          </Menu.Item>
-          <Menu.Item key="groups" icon={<IoIosAdd />}>
-            <Link to="/admin/groups">Quản lí nhóm quyền</Link>
-          </Menu.Item>
-          <Menu.Item key="permissions" icon={<IoIosAdd />}>
-            <Link to="/admin/permissions">Danh sách quyền</Link>
-          </Menu.Item>
-        </Menu.SubMenu> */}
 
         <Menu.Item key="percent" icon={<FaPercent />}>
           Quản lý mã giảm giá

@@ -216,7 +216,7 @@ const DetailProduct = () => {
             <label htmlFor="" className="product-detail">
               Trạng thái sản phẩm
             </label>
-            {dataProductDetail?.is_activate ? (
+            {dataProductDetail?.is_active ? (
               <p>Kích hoạt</p>
             ) : (
               <p>Chưa kích hoạt</p>

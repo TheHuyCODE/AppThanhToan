@@ -7,6 +7,8 @@ import { Select, Button, Table, Space, Modal } from "antd";
 import {
   FaArrowAltCircleDown,
   FaArrowAltCircleUp,
+  FaArrowDown,
+  FaArrowUp,
   FaEye,
   FaPencilAlt,
   FaTrash,
@@ -19,27 +21,69 @@ import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
 import Spinners from "../SpinnerLoading/Spinners";
+import useDebounce from "../auth/useDebounce";
+import { IoMdAdd } from "react-icons/io";
 // let locale = {
 //   emptyText: 'Abc',
 // };
 const ProductMangement = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-
   const [dataProduct, setDataProduct] = useState([]);
   const navigate = useNavigate();
   const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
-  const [IsValueSearchProduct, setIsValueSearchProduct] = useState("");
+  const [valueSearch, setValueSearch] = useState("");
+  const debounceValue = useDebounce(valueSearch, 700);
+  const [sortedColumn, setSortedColumn] = useState({
+    key: null,
+    direction: null,
+  });
+  const [hoveredColumn, setHoveredColumn] = useState(null);
   const [idSearchCategory, setIdSearchCategory] = useState({
     id_category: "",
   });
+  const [stateActiveProduct, setStateActiveProduct] = useState({
+    is_active: "",
+  });
+  const handleHeaderClick = (key) => {
+    setSortedColumn((prevState) => {
+      if (prevState.key === key) {
+        const newDirection = prevState.direction === "up" ? "down" : "up";
+        console.log(`New direction for column ${key}: ${newDirection}`);
+        return { key, direction: newDirection };
+      }
+      console.log(`Sorting direction for column ${key}: up`);
+      return { key, direction: "up" };
+    });
+  };
+  const getColumnTitle = (title, key) => (
+    <div
+      className="table-header"
+      onClick={() => handleHeaderClick(key)}
+      onMouseEnter={() => setHoveredColumn(key)}
+      onMouseLeave={() => setHoveredColumn(null)}
+      // style={{ position: "relative", width: width }}
+    >
+      <span style={{ display: "block" }}>{title}</span>
+      <div className="arrow-icon-container">
+        {sortedColumn.key === key && sortedColumn.direction === "up" && (
+          <FaArrowUp className="arrow-icon arrow-icon-visible" />
+        )}
+        {sortedColumn.key === key && sortedColumn.direction === "down" && (
+          <FaArrowDown className="arrow-icon arrow-icon-visible" />
+        )}
+        {sortedColumn.key !== key && hoveredColumn === key && (
+          <FaArrowUp className="arrow-icon arrow-icon-hover arrow-icon-visible" />
+        )}
+      </div>
+    </div>
+  );
   // const [value, setValue] = useState("");
   // const [dataProduct, setDataProduct] = useState([]);
   const statusProduct = [
-    { id: 1, name: "Còn" },
-    { id: 2, name: "Còn" },
-    { id: 3, name: "Còn" },
+    { value: 1, name: "Kích hoạt", id: "00001" },
+    { value: 2, name: "Chưa kích hoạt", id: "00002" },
   ];
   const [selectedValue, setSelectedValue] = useState(null);
   const nameProduct = isCategoryProduct.map((item, index) => ({
@@ -52,6 +96,7 @@ const ProductMangement = () => {
     setSelectedValue(e.target.value);
     console.log("setSelectedValue", selectedValue);
   };
+
   const addProduct = () => {
     navigate("/admin/products/add");
   };
@@ -66,6 +111,8 @@ const ProductMangement = () => {
     console.log("deleteProduct", record);
     setDeleteItemProduct(record);
   };
+
+  //search product by category
 
   const handleSelectCategory = (value) => {
     const selectedCategory = nameProduct.find((item) => item.value === value);
@@ -84,10 +131,41 @@ const ProductMangement = () => {
       fetchDataProduct();
     }
   };
+
+  // search products by active
+  const handleSelectActive = (value) => {
+    const isActiveProduct = statusProduct.find((item) => item.value === value);
+
+    if (isActiveProduct) {
+      if (isActiveProduct.id === "00001") {
+        setStateActiveProduct({
+          ...stateActiveProduct,
+          is_active: "true",
+        });
+      } else if (isActiveProduct.id === "00002") {
+        setStateActiveProduct({
+          ...stateActiveProduct,
+          is_active: "false",
+        });
+      }
+
+      // Log the updated state after the state update
+      console.log("active", stateActiveProduct.is_active);
+
+      // Log additional information about the active product
+      console.log("Name tương ứng với value:", isActiveProduct);
+      console.log("Name tương ứng với id:", isActiveProduct.id);
+    } else {
+      console.log("Không tìm thấy value:", value);
+      fetchDataProduct();
+    }
+  };
   const handleSearchProduct = (e) => {
     const value = e.target.value.trim();
-    setIsValueSearchProduct(value);
+    setValueSearch(value);
+    console.log("value", value);
   };
+
   const handleDeleteProduct = async () => {
     console.log("handleDeleteProduct");
     const keyItemsProduct = deleteItemProduct.key;
@@ -119,6 +197,23 @@ const ProductMangement = () => {
     // console.log(res.data);
   };
 
+  // search product by input value using debounce
+
+  const fetchDataSearchProduct = async () => {
+    setLoading(true);
+    const res = await products.getDataSearchNameProduct(debounceValue);
+    if (res.code === 200) {
+      setDataProduct(res.data);
+      setLoading(false);
+    } else {
+      console.log("Error:");
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchDataSearchProduct();
+    console.log("valueSearchProduct", valueSearch);
+  }, [debounceValue]);
   useEffect(() => {
     console.log("isCategoryProduct:", isCategoryProduct);
     fetchDataCategory();
@@ -138,7 +233,7 @@ const ProductMangement = () => {
           console.log(res.data);
           setTimeout(() => {
             setDataProduct(res.data);
-          }, 1000);
+          }, 7000);
         } else {
           console.log(res.data);
         }
@@ -149,6 +244,61 @@ const ProductMangement = () => {
     };
     fetchSearchDataCategory();
   }, [idSearchCategory.id_category]);
+
+  useEffect(() => {
+    console.log("active", stateActiveProduct.is_active);
+    const fetchSearchDataActive = async () => {
+      if (stateActiveProduct.is_active) {
+        // Check if idSearchCategory is not empty
+        const res = await products.getDataSearchProductActive(
+          stateActiveProduct.is_active
+        );
+        if (res.code === 200) {
+          console.log(res.data);
+          setTimeout(() => {
+            setDataProduct(res.data);
+          }, 700);
+        } else {
+          console.log(res.data);
+        }
+      }
+      if (idSearchCategory.id_category === "undefined") {
+        await fetchDataProduct();
+      }
+    };
+    fetchSearchDataActive();
+  }, [stateActiveProduct.is_active]);
+
+  useEffect(() => {
+    console.log("key", sortedColumn.key);
+    console.log("key", sortedColumn.direction);
+    setLoading(true);
+
+    const fetchSortDataProduct = async () => {
+      if (sortedColumn.key) {
+        // Check if idSearchCategory is not empty
+        const res = await products.getDataSortProduct(
+          sortedColumn.key,
+          sortedColumn.direction
+        );
+        if (res.code === 200) {
+          console.log(res.data);
+          setTimeout(() => {
+            setDataProduct(res.data);
+          }, 700);
+          setLoading(false);
+        } else {
+          console.log(res.data);
+          setLoading(false);
+        }
+      }
+      // if (idSearchCategory.id_category === "undefined") {
+      //   await fetchDataProduct();
+      // }
+    };
+    fetchSortDataProduct();
+  }, [stateActiveProduct.is_active]);
+
   const datatable = dataProduct.items?.map((item, index) => ({
     stt: index + 1,
     key: item.id,
@@ -166,7 +316,7 @@ const ProductMangement = () => {
     capital_price: item.capital_price,
     inventory_number: item.inventory_number,
     unit: item.unit,
-    is_activate: item.is_activate,
+    is_active: item.is_active,
     image_url: item.image_url,
   }));
   const columns = [
@@ -176,52 +326,37 @@ const ProductMangement = () => {
       key: "stt",
     },
     {
-      title: "Mã sản phẩm chính",
+      title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
-      filteredValue: [IsValueSearchProduct],
-      onFilter: (value, record) => {
-        return (
-          String(record.barcode)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.name)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.created_date)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.category)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase())
-        );
-      },
+      align: "start",
     },
     {
-      title: "Tên sản phẩm",
+      title: getColumnTitle("Tên sản phẩm", "name"),
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Danh mục sản phẩm",
+      title: getColumnTitle("Danh mục \n sản phẩm", "category"),
       dataIndex: "category",
       key: "category",
     },
     {
-      title: "Giá nhập",
+      title: getColumnTitle("Giá bán", "price"),
       dataIndex: "price",
       key: "price",
     },
     {
-      title: "Giá bán",
+      title: getColumnTitle("Giá vốn", "capital_price"),
       dataIndex: "capital_price",
       key: "capital_price",
     },
     {
-      title: "Số lượng tồn",
+      title: getColumnTitle("Số lượng tồn kho", "inventory_number"),
       dataIndex: "inventory_number",
       key: "inventory_number",
     },
+
     {
       title: "Đơn vị tính",
       dataIndex: "unit",
@@ -229,15 +364,15 @@ const ProductMangement = () => {
     },
 
     {
-      title: "Ngày tạo",
+      title: getColumnTitle("Ngày tạo", "created_date"),
       dataIndex: "created_date",
       key: "created_date",
-      // align: "center",
     },
     {
-      title: "Người tạo",
+      title: getColumnTitle("Ngày tạo", "create_user"),
       dataIndex: "create_user",
       key: "create_user",
+
       // align: "center",
     },
     {
@@ -292,10 +427,11 @@ const ProductMangement = () => {
               <CiSearch
                 style={{
                   position: "absolute",
-                  top: "7px",
+                  top: "6px",
                   left: "5px",
                   transform: "translateY(5%)",
                   fontSize: "20px",
+                  color: "var(--cl-dark)",
                 }}
               />
               <input
@@ -315,7 +451,9 @@ const ProductMangement = () => {
               style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
+                <option value={option.value} key={option.id}>
+                  {option.name}
+                </option>
               ))}
             </Select>
             <Select
@@ -325,7 +463,9 @@ const ProductMangement = () => {
               style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
+                <option value={option.value} key={option.id}>
+                  {option.name}
+                </option>
               ))}
             </Select>
           </div>
@@ -333,11 +473,15 @@ const ProductMangement = () => {
             <Select
               placeholder="Trạng thái sản phẩm"
               allowClear
-              onChange={handleSelectChange}
+              onChange={(value) => {
+                handleSelectActive(value);
+              }}
               style={{ width: 200, height: 35 }}
             >
               {statusProduct.map((option) => (
-                <option value={option.id}>{option.name}</option>
+                <option value={option.value} key={option.id}>
+                  {option.name}
+                </option>
               ))}
             </Select>
             {/* <div
@@ -366,22 +510,16 @@ const ProductMangement = () => {
             marginLeft: "80px",
           }}
         >
-          <Button className="btn-header-right" type="primary">
-            Hướng dẫn sử dụng
-          </Button>
-          <Button type="primary" className="btn-header-right">
+          <button className="btn-header-right">Hướng dẫn sử dụng</button>
+          <button className="btn-header-right" style={{ width: "100px" }}>
             <FaArrowAltCircleUp /> &nbsp; Export
-          </Button>
-          <Button type="primary" className="btn-header-right">
+          </button>
+          <button className="btn-header-right" style={{ width: "100px" }}>
             <FaArrowAltCircleDown /> &nbsp; Import
-          </Button>
-          <Button
-            type="primary"
-            onClick={addProduct}
-            className="btn-header-right"
-          >
-            Thêm sản phẩm
-          </Button>
+          </button>
+          <button onClick={addProduct} className="btn-header-right">
+            <IoMdAdd className="icon" /> Thêm sản phẩm
+          </button>
         </div>
         <Modal
           okButtonProps={{ style: { backgroundColor: "red" } }}
@@ -419,8 +557,19 @@ const ProductMangement = () => {
               dataSource={datatable}
               locale={localeProduct}
               pagination={paginationConfig}
+              // onHeaderRow={(columns, index) => {
+              //   return {
+              //     onClick: (columns, index) => {
+              //       console.log("columns", columns);
+              //       console.log("columns", index);
+              //     }, // click header row
+              //   };
+              // }}
             />
-            <span className="total-items">{`${datatable?.length} Sản phẩm`}</span>
+            <span
+              className="total-items"
+              style={{ color: "var(--cl-dark)" }}
+            >{`${datatable?.length}/${dataProduct.total}`}</span>
           </>
         )}
       </div>

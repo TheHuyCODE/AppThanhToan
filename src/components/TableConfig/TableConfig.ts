@@ -1,7 +1,9 @@
 export const localeProduct = {
   emptyText: "Không có sản phẩm",
 };
-
+export const localCategory = {
+  emptyText: "Không có danh mục",
+};
 export const paginationConfig = {
   position: ["bottomCenter"],
   defaultPageSize: 15,
