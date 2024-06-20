@@ -6,12 +6,16 @@ import "./Children_category.css";
 import { IoIosAdd } from "react-icons/io";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast } from "react-toastify";
-import { CiSearch } from "react-icons/ci";
+import { CiCircleRemove, CiSearch } from "react-icons/ci";
 import category from "../../configs/category";
 import { format } from "date-fns";
 import { useAuth } from "../auth/AuthContext";
 import ChildrenThree_catagory from "./ChildrenThree_catagory";
+import { AiOutlinePicture } from "react-icons/ai";
+import { domain } from "../TableConfig/TableConfig";
+
 const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
+  const domainLink = domain.domainLink;
   // const params = useParams();
   const nameRef = useRef(null);
   const fileRef = useRef(null);
@@ -22,6 +26,8 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   const [isImageCategoryChild, setIsImageCategoryChild] = useState("");
   const [isResImageCategoryChild, setResImageCategoryChild] = useState("");
   const [isPreviewImageChild, setIsPreviewImageChild] = useState("");
+  const [isPreviewImageModifyChild, setIsPreviewImageModifyChild] =
+    useState("");
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
   const [isOpenModalModifyChild, setIsOpenModalModifyChild] = useState(false);
@@ -46,6 +52,10 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   const openModalChildSecond = () => {
     setIsOpenPopupChild(!isOpenPopupChild);
   };
+  const closePreviewImage = () => {
+    setIsPreviewImageChild("");
+    setIsPreviewImageModifyChild("");
+  };
   const clickAddItemCategoryChild = async (event) => {
     console.log("addItemCategoryChild");
     event.preventDefault();
@@ -61,7 +71,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
       );
       if (res.code === 200) {
         console.log("res", res);
-        toast.success("Đã thêm danh mục cấp 3 thành công!");
+        toast.success("Đã thêm danh mục cấp 2 thành công!");
         await fetchDataCategory();
         await fetchDataCategoryChild(isKeyChild);
         clearInputChildren();
@@ -100,12 +110,44 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   };
   //modify items child category
   const changeModifyCategoryChild = async () => {
-    // call api modify categoryChild
+    console.log("modidy child category", modifyItem);
+    const dataPutCategoryChild = {
+      name: modifyItem.name,
+      file_url: isResImageCategoryChild,
+      parent_id: isKeyChild,
+    };
+
+    const idModifyItemsChild = modifyItem.key;
+    console.log("idModifyItemsChild", idModifyItemsChild);
+    console.log("dataPutCategoryChild", dataPutCategoryChild);
+    try {
+      const res = await category.putModifyCategoryChild(
+        idModifyItemsChild,
+        dataPutCategoryChild
+      );
+      if (res.code === 200) {
+        console.log("res", res);
+        toast.success("Đã sửa danh mục cấp 2 thành công!");
+        await fetchDataCategoryChild(isKeyChild);
+        setIsOpenModalModifyChild(!isOpenModalModifyChild);
+        clearInputChildren();
+      } else {
+        console.log("Error:", res);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
   };
   const onModifyCategories = (record) => {
     console.log("onModifyCategories", record);
     setIsOpenModalModifyChild(!isOpenModalModifyChild);
     setModifyItem(record);
+    console.log("record:", record.key);
+    console.log("record:", record.image_url);
+
+    if (record.image_url) {
+      setIsPreviewImageModifyChild(`${domainLink}/${record.image_url}`);
+    }
   };
 
   //get input values and file images ChildrenCategory
@@ -125,7 +167,13 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
     setIsPreviewImageChild(URL.createObjectURL(fileImage));
     console.log("fileImage:", fileImage);
   };
-
+  const handleImageModifyChild = (event) => {
+    event.preventDefault();
+    const fileImage = event.target.files[0]; // Corrected here
+    setIsImageCategoryChild(fileImage);
+    setIsPreviewImageModifyChild(URL.createObjectURL(fileImage));
+    console.log("fileImage:", fileImage);
+  };
   //get list items children category
 
   const dataTableChild = isResDataChild.items?.map((item, index) => ({
@@ -304,7 +352,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
         <h1 className="title-addItem">Thêm danh mục cấp 2</h1>
         <div className="name-item">
           <label htmlFor="">
-            Tên danh mục 1 (<span>*</span>)
+            Tên danh mục 2 (<span>*</span>)
           </label>
           <input
             className="input-name-category"
@@ -316,30 +364,36 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
           <label htmlFor="" className="title-picture">
             Ảnh danh mục(<span>*</span>)
           </label>
-          <label htmlFor="labelUpload" className="label-upload">
-            <IoIosAdd />
-            Upload File Image
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            name="file"
-            id="labelUpload"
-            onChange={handleImageChild}
-            ref={fileRef}
-            hidden
-          />
-        </div>
-        <div className="preview-image">
-          {isImageCategoryChild ? (
-            <img
-              src={isPreviewImageChild}
-              ref={reviewImageRefChild}
-              alt=""
-              style={{ maxHeight: "100%", maxWidth: "100%" }}
-            />
+          {isPreviewImageChild ? (
+            <div
+              className="preview-image"
+              style={{ height: "150px", width: "240px", position: "relative" }}
+            >
+              <button className="btn-close-image" onClick={closePreviewImage}>
+                <CiCircleRemove />
+              </button>
+              <img
+                src={isPreviewImageChild}
+                alt="Preview"
+                style={{ maxHeight: "100%", maxWidth: "100%" }}
+              />
+            </div>
           ) : (
-            <span>Preview Image</span>
+            <>
+              <label htmlFor="labelUpload" className="label-upload">
+                <AiOutlinePicture />
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                name="file"
+                id="labelUpload"
+                // style={{display: "none"}}
+                onChange={handleImageChild}
+                ref={fileRef}
+                hidden
+              />
+            </>
           )}
         </div>
       </Modal>
@@ -396,31 +450,37 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
           <label htmlFor="" className="title-picture">
             Ảnh danh mục(<span>*</span>)
           </label>
-          <label htmlFor="labelUpload" className="label-upload">
-            <IoIosAdd />
-            Upload File Image
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            name="file"
-            id="labelUpload"
-            // style={{display: "none"}}
-            // onChange={handleImage}
-            // ref={fileRef}
-            hidden
-          />
-        </div>
-        <div className="preview-image">
-          {/* {image ? (
-            <img
-              src={selectedImage}
-              alt=""
-              style={{ maxHeight: "100%", maxWidth: "100%" }}
-            />
+          {isPreviewImageModifyChild ? (
+            <div
+              className="preview-image"
+              style={{ height: "150px", width: "240px", position: "relative" }}
+            >
+              <button className="btn-close-image" onClick={closePreviewImage}>
+                <CiCircleRemove />
+              </button>
+              <img
+                src={isPreviewImageModifyChild}
+                alt="Preview"
+                style={{ maxHeight: "100%", maxWidth: "100%" }}
+              />
+            </div>
           ) : (
-            <span>Preview Image</span>
-          )} */}
+            <>
+              <label htmlFor="labelUpload" className="label-upload">
+                <AiOutlinePicture />
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                name="file"
+                id="labelUpload"
+                // style={{display: "none"}}
+                onChange={handleImageModifyChild}
+                ref={fileRef}
+                hidden
+              />
+            </>
+          )}
         </div>
       </Modal>
     </>

@@ -111,6 +111,17 @@
   gap: 10px;
   margin-right: 20px;
 }
+
+.footer-modify-product {
+  position: absolute;
+  bottom: 12rem;
+  right: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+  margin-right: 20px;
+}
 .btn-cancel-product {
   display: flex;
   align-items: center;
@@ -145,7 +156,11 @@
 .btn-add-product:hover {
   background-color: var(--cl-btn-hover);
 }
-
+.footer-modify-product {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 .btn-header-right:hover {
   background-color: var(--cl-btn-hover);
 }

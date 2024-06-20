@@ -10,3 +10,7 @@ export const paginationConfig = {
   showSizeChanger: true,
   pageSizeOptions: ["10", "20", "30"],
 };
+
+export const domain = {
+  domainLink: "https://cdtn.boot.ai",
+};

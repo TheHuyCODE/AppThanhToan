@@ -69,7 +69,7 @@ const category = {
   },
   putModifyCategoryChild: (idItems, data) => {
     const url = `api/v1/manage/category/${idItems}`;
-    return axiosClient.put(url, {
+    return axiosClient.put(url, data, {
       headers: {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",

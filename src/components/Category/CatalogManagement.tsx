@@ -1,4 +1,4 @@
-import { CiSearch } from "react-icons/ci";
+import { CiCircleRemove, CiSearch } from "react-icons/ci";
 import {
   FaArrowDown,
   FaPencilAlt,
@@ -24,7 +24,10 @@ import { useNavigate } from "react-router-dom";
 import ChildrenCategory from "./Children_catagory";
 import { useAuth } from "../auth/AuthContext";
 import { localCategory } from "../TableConfig/TableConfig";
+import { AiOutlinePicture } from "react-icons/ai";
+import { domain } from "../TableConfig/TableConfig";
 const CatalogManagement = () => {
+  const domainLink = domain.domainLink;
   const { isResDataChild, fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
   const fileRef = useRef(null);
@@ -32,6 +35,8 @@ const CatalogManagement = () => {
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [image, setIsImage] = useState("");
   const [previewImage, setIsPreviewImage] = useState("");
+  const [previewImageModify, setIsPreviewImageModify] = useState("");
+
   const [dataCategory, setDataCategory] = useState("");
   // const navigate = useNavigate();
   const [ErrorMessageCategories, setErrorMessageCategories] = useState("");
@@ -52,7 +57,7 @@ const CatalogManagement = () => {
   const [deleteItem, setDeleteItem] = useState<any>();
 
   const setHandleInput = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     console.log("value", value);
     setDataCategory(value);
     // change edititem name
@@ -73,7 +78,7 @@ const CatalogManagement = () => {
       if (res.code === 200) {
         console.log("res:", res);
         setIsOpenModalDelete(!isOpenModalDetele);
-        toast.success("Đã xóa sản phẩm thành công"); // Fetch the updated data after deletion
+        toast.success("Đã xóa danh mục thành công"); // Fetch the updated data after deletion
         await fetchDataCategory();
       } else {
         console.log("error:", res);
@@ -81,7 +86,10 @@ const CatalogManagement = () => {
       }
     }
   };
-
+  const closePreviewImage = () => {
+    setIsPreviewImage("");
+    setIsPreviewImageModify("");
+  };
   useEffect(() => {
     // clickDeleteCategory();
     console.log(deleteItem);
@@ -96,13 +104,16 @@ const CatalogManagement = () => {
     setEditItem(item);
     console.log("item", item.key);
     console.log("item", item.image_url);
+    if (item.image_url) {
+      setIsPreviewImageModify(`${domainLink}/${item.image_url}`);
+    }
   };
   const changeModifyCategory = async () => {
     //call api change
     console.log("editItem", editItem);
     const dataPutCategory = {
       name: editItem.name,
-      file_url: editItem.image_url,
+      file_url: resImage,
       parent_id: null,
     };
     const idModifyItems = editItem.key;
@@ -116,7 +127,7 @@ const CatalogManagement = () => {
     );
     if (res.code === 200) {
       console.log("res", res);
-      toast.success("Đã sửa sản phẩm thành công"); // Fetch the updated data after deletion
+      toast.success("Đã sửa danh mục thành công"); // Fetch the updated data after deletion
       setIsOpenModalModify(!isOpenModalModify);
       await fetchDataCategory();
     } else {
@@ -132,7 +143,13 @@ const CatalogManagement = () => {
     setIsPreviewImage(URL.createObjectURL(fileImage));
     console.log(image);
   };
-
+  const handleImageModify = (e) => {
+    e.preventDefault();
+    const fileImage = e.target.files[0];
+    setIsImage(fileImage);
+    setIsPreviewImageModify(URL.createObjectURL(fileImage));
+    console.log(image);
+  };
   useEffect(() => {
     console.log("name", selectedCategory);
     setDataCategory(selectedCategory);
@@ -385,7 +402,7 @@ const CatalogManagement = () => {
                 </Button>
               </>
             )}
-            {/* modal add product */}
+            {/* modal add catalog */}
             <Modal
               className="modalDialog-addITems"
               width={500}
@@ -412,31 +429,44 @@ const CatalogManagement = () => {
                 <label htmlFor="" className="title-picture">
                   Ảnh danh mục(<span>*</span>)
                 </label>
-                <label htmlFor="labelUpload" className="label-upload">
-                  <IoIosAdd />
-                  Upload File Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  name="file"
-                  id="labelUpload"
-                  // style={{display: "none"}}
-                  onChange={handleImage}
-                  ref={fileRef}
-                  hidden
-                />
-              </div>
-              <div className="preview-image">
-                {image ? (
-                  <img
-                    src={previewImage}
-                    ref={reviewImageRef}
-                    alt=""
-                    style={{ maxHeight: "100%", maxWidth: "100%" }}
-                  />
+                {previewImage ? (
+                  <div
+                    className="preview-image"
+                    style={{
+                      height: "150px",
+                      width: "240px",
+                      position: "relative",
+                      // marginRight: "4rem",
+                    }}
+                  >
+                    <button
+                      className="btn-close-image"
+                      onClick={closePreviewImage}
+                    >
+                      <CiCircleRemove />
+                    </button>
+                    <img
+                      src={previewImage}
+                      alt="Preview"
+                      style={{ maxHeight: "100%", maxWidth: "100%" }}
+                    />
+                  </div>
                 ) : (
-                  <span>Preview Image</span>
+                  <>
+                    <label htmlFor="labelUpload" className="label-upload">
+                      <AiOutlinePicture />
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      name="file"
+                      id="labelUpload"
+                      // style={{display: "none"}}
+                      onChange={handleImage}
+                      ref={fileRef}
+                      hidden
+                    />
+                  </>
                 )}
               </div>
             </Modal>
@@ -468,30 +498,43 @@ const CatalogManagement = () => {
                 <label htmlFor="" className="title-picture">
                   Ảnh danh mục(<span>*</span>)
                 </label>
-                <label htmlFor="labelUpload" className="label-upload">
-                  <IoIosAdd />
-                  Upload File Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  name="file"
-                  id="labelUpload"
-                  // style={{display: "none"}}
-                  onChange={handleImage}
-                  ref={fileRef}
-                  hidden
-                />
-              </div>
-              <div className="preview-image">
-                {image ? (
-                  <img
-                    src={selectedImage}
-                    alt=""
-                    style={{ maxHeight: "100%", maxWidth: "100%" }}
-                  />
+                {previewImageModify ? (
+                  <div
+                    className="preview-image"
+                    style={{
+                      height: "150px",
+                      width: "240px",
+                      position: "relative",
+                    }}
+                  >
+                    <button
+                      className="btn-close-image"
+                      onClick={closePreviewImage}
+                    >
+                      <CiCircleRemove />
+                    </button>
+                    <img
+                      src={previewImageModify}
+                      alt="Preview"
+                      style={{ maxHeight: "100%", maxWidth: "100%" }}
+                    />
+                  </div>
                 ) : (
-                  <span>Preview Image</span>
+                  <>
+                    <label htmlFor="labelUpload" className="label-upload">
+                      <AiOutlinePicture />
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      name="file"
+                      id="labelUpload"
+                      // style={{display: "none"}}
+                      onChange={handleImageModify}
+                      ref={fileRef}
+                      hidden
+                    />
+                  </>
                 )}
               </div>
             </Modal>

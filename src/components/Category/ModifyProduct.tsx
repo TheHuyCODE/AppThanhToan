@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Flex, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
 import { IoIosAdd, IoIosArrowBack } from "react-icons/io";
@@ -7,6 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
 import { CiCircleRemove } from "react-icons/ci";
+import { FaBan, FaRegSave } from "react-icons/fa";
+import { AiOutlinePicture } from "react-icons/ai";
 
 const ModifyProduct = () => {
   const navigate = useNavigate();
@@ -346,6 +348,8 @@ const ModifyProduct = () => {
             borderRadius: "10px",
             padding: "20px",
             gap: "5px",
+            color: "white",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
           }}
         >
           <div
@@ -535,6 +539,7 @@ const ModifyProduct = () => {
                 justifyContent: "center",
                 flexDirection: "column",
                 gap: "40px",
+                color: "var(--cl-dark)",
               }}
             >
               <label htmlFor="labelUpload" className="title-picture">
@@ -547,8 +552,7 @@ const ModifyProduct = () => {
                     className="label-upload"
                     style={{ marginRight: 0 }}
                   >
-                    <IoIosAdd />
-                    Upload File Image
+                    <AiOutlinePicture />
                   </label>
                   <input
                     type="file"
@@ -578,19 +582,29 @@ const ModifyProduct = () => {
                 </div>
               )}
             </div>
+            <div className="footer-modify-product">
+              <button
+                className="btn-cancel-product"
+                onClick={onClickBackPageProduct}
+              >
+                <FaBan className="icon" />
+                Hủy
+              </button>
+              <button
+                className="btn-add-product"
+                style={{
+                  display: "flex",
+                  gap: "5px",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onClick={onClickModifyProduct}
+              >
+                <FaRegSave className="icon" />
+                Lưu
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="footer-add-product">
-          <button
-            className="btn-cancel-product"
-            onClick={onClickBackPageProduct}
-          >
-            HỦY
-          </button>
-          <button className="btn-add-product" onClick={onClickModifyProduct}>
-            LƯU
-          </button>
         </div>
       </div>
     </div>

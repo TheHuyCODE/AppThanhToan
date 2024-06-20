@@ -11,6 +11,7 @@ import { useAuth } from "../auth/AuthContext";
 
 import { ToastContainer, toast } from "react-toastify";
 import category from "../../configs/category";
+import { AiOutlinePicture } from "react-icons/ai";
 const { TextArea } = Input;
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -515,8 +516,7 @@ const AddProduct = () => {
                     className="label-upload"
                     style={{ marginRight: 0 }}
                   >
-                    <IoIosAdd />
-                    Upload File Image
+                    <AiOutlinePicture />
                   </label>
                   <input
                     type="file"
