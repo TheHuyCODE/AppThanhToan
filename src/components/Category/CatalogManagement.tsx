@@ -26,6 +26,9 @@ import { useAuth } from "../auth/AuthContext";
 import { localCategory } from "../TableConfig/TableConfig";
 import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
+import useDebounce from "../auth/useDebounce";
+import Spinners from "../SpinnerLoading/Spinners";
+
 const CatalogManagement = () => {
   const domainLink = domain.domainLink;
   const { isResDataChild, fetchDataCategoryChild } = useAuth();
@@ -36,26 +39,47 @@ const CatalogManagement = () => {
   const [image, setIsImage] = useState("");
   const [previewImage, setIsPreviewImage] = useState("");
   const [previewImageModify, setIsPreviewImageModify] = useState("");
+  const [valueSearch, setValueSearch] = useState("");
+  const debounceValue = useDebounce(valueSearch, 700);
+  const [loading, setLoading] = useState(false);
 
   const [dataCategory, setDataCategory] = useState("");
   // const navigate = useNavigate();
-  const [ErrorMessageCategories, setErrorMessageCategories] = useState("");
+
   const [resImage, setResImage] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
   const [isDataCategory, setIsDataCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
+
   const [selectedImage, setSelectedImgae] = useState("");
   const [idDeleteItems, setIdDeteleItem] = useState("");
-  const [isValueSearch, setIsValueSearch] = useState("");
+
   const [quantityItems, setQuantityItems] = useState(false);
   const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
+  const [hiddenTitleSecondsChild, setHiddenTitleSecondsChild] = useState(false);
+  const [viewTableChildSecond, setViewTableChildSecond] = useState(false);
+
   const [isKeyChild, setIsKeyChild] = useState("");
   const [viewTable, setViewTable] = useState(true);
+
   //editing item
   const [editItem, setEditItem] = useState<any>();
   const [deleteItem, setDeleteItem] = useState<any>();
-
+  const handleSelectNameChildCategory = (nameChildCategory: string) => {
+    setSelectedCategoryChild(nameChildCategory);
+    console.log("nameChildCategory", nameChildCategory);
+  };
+  const handleSearchCategory = (e) => {
+    const value = e.target.value.trim();
+    setValueSearch(value);
+    console.log("value", value);
+  };
+  const setHiddenThirdTitle = (hidden: boolean) => {
+    setHiddenTitleSecondsChild(hidden);
+    console.log("hiddenSecondsChild", hidden);
+  };
   const setHandleInput = (e) => {
     const value = e.target.value;
     console.log("value", value);
@@ -193,20 +217,6 @@ const CatalogManagement = () => {
       align: "center",
       editTable: true,
       key: "name",
-      filteredValue: [isValueSearch],
-      onFilter: (value, record) => {
-        return (
-          String(record.name)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.created_date)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.number_children)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase())
-        );
-      },
     },
     {
       title: "Số lượng danh mục cấp 2",
@@ -323,12 +333,18 @@ const CatalogManagement = () => {
   const showTableCategory = async () => {
     setViewTable(true);
     setHiddenTitleChild(true);
+    setHiddenTitleSecondsChild(true);
     await fetchDataCategory();
   };
   const showTableChildCategory = () => {
     setViewTable(false);
+    setHiddenTitleSecondsChild(true);
+    setViewTableChildSecond(true);
+    fetchDataCategoryChild(isKeyChild);
+    console.log("On click table 2");
+    console.log("viewTableChildSecond", viewTableChildSecond);
   };
-
+  const showTableChildSecondCategory = () => {};
   const fetchDataCategory = async () => {
     const res = await category.getAll();
     setIsDataCategory(res.data);
@@ -338,6 +354,21 @@ const CatalogManagement = () => {
   useEffect(() => {
     fetchDataCategory();
   }, []);
+  const fetchDataSearchCategory = async () => {
+    setLoading(true);
+    const res = await category.getDataSearchNameCategory(debounceValue);
+    if (res.code === 200) {
+      setIsDataCategory(res.data);
+      setLoading(false);
+    } else {
+      console.log("Error:");
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchDataSearchCategory();
+    console.log("valueSearchProduct", valueSearch);
+  }, [debounceValue]);
   const dataTable = isDataCategory.items?.map((item, index) => ({
     stt: index + 1,
     key: item.id,
@@ -363,8 +394,21 @@ const CatalogManagement = () => {
           onClick={showTableChildCategory}
           style={{ color: "rgb(3,23,110)" }}
         >
-          <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />
+          {!hiddenTitleChild && (
+            <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />
+          )}
           {selectedCategory}
+        </a>
+        <a
+          hidden={hiddenTitleSecondsChild}
+          className="title-category"
+          onClick={showTableChildSecondCategory}
+          style={{ color: "rgb(3,23,110)", pointerEvents: "none" }}
+        >
+          {!viewTable && (
+            <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />
+          )}
+          {selectedCategoryChild}
         </a>
       </div>
       <div className="header">
@@ -385,7 +429,7 @@ const CatalogManagement = () => {
                   type="text"
                   placeholder="Tìm danh mục"
                   className="search-categories"
-                  onChange={(e) => setIsValueSearch(e.target.value)}
+                  onChange={handleSearchCategory}
                 />
               </>
             )}
@@ -436,6 +480,9 @@ const CatalogManagement = () => {
                       height: "150px",
                       width: "240px",
                       position: "relative",
+                      color: "white",
+                      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+
                       // marginRight: "4rem",
                     }}
                   >
@@ -505,6 +552,8 @@ const CatalogManagement = () => {
                       height: "150px",
                       width: "240px",
                       position: "relative",
+                      color: "white",
+                      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                     }}
                   >
                     <button
@@ -578,23 +627,35 @@ const CatalogManagement = () => {
         </div>
         {viewTable ? (
           <div className="table-container">
-            <Table
-              columns={columnsWithClick}
-              dataSource={dataTable}
-              locale={localCategory}
-              pagination={{
-                position: ["bottomCenter"],
-                defaultPageSize: 15,
-                showSizeChanger: true,
-                pageSizeOptions: ["10", "20", "30"],
-              }}
-            />
-            <span className="total-items">{`${dataTable?.length} items`}</span>
+            {loading ? (
+              <Spinners loading={loading} />
+            ) : (
+              <>
+                <Table
+                  columns={columnsWithClick}
+                  dataSource={dataTable}
+                  locale={localCategory}
+                  pagination={{
+                    position: ["bottomCenter"],
+                    defaultPageSize: 15,
+                    showSizeChanger: true,
+                    pageSizeOptions: ["10", "20", "30"],
+                  }}
+                />
+                <span
+                  className="total-items"
+                  style={{ color: "black" }}
+                >{`${dataTable?.length} danh mục cấp 1`}</span>
+              </>
+            )}
           </div>
         ) : (
           <ChildrenCategory
             isKeyChild={isKeyChild}
             fetchDataCategory={fetchDataCategory}
+            onCategoryChange={handleSelectNameChildCategory}
+            onHiddenTitleChild={setHiddenThirdTitle}
+            viewTableChildSecond={viewTableChildSecond}
           />
         )}
       </div>

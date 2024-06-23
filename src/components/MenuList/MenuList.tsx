@@ -21,7 +21,6 @@ import { useAuth } from "../auth/AuthContext";
 
 const MenuList = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-
   const { accessToken, darkTheme, logout } = useAuth();
   const handleOK = () => {
     console.log("handle OK");

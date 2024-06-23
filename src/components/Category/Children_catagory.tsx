@@ -13,14 +13,28 @@ import { useAuth } from "../auth/AuthContext";
 import ChildrenThree_catagory from "./ChildrenThree_catagory";
 import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
+import useDebounce from "../auth/useDebounce";
+import Spinners from "../SpinnerLoading/Spinners";
 
-const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
+const ChildrenCategory = ({
+  isKeyChild,
+  fetchDataCategory,
+  onCategoryChange,
+  onHiddenTitleChild,
+  viewTableChildSecond,
+}) => {
   const domainLink = domain.domainLink;
   // const params = useParams();
   const nameRef = useRef(null);
   const fileRef = useRef(null);
   const reviewImageRefChild = useRef(null);
-  const { isResDataChild, fetchDataCategoryChild } = useAuth();
+  const [isHiddenThreeChild, setIsHiddenThreeChild] = useState(false);
+  const {
+    isResDataChild,
+    setIsResDataChild,
+    fetchDataCategoryChild,
+    fetchDataCategorySecondChild,
+  } = useAuth();
   const [isOpenPopupChild, setIsOpenPopupChild] = useState(false);
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
   const [isImageCategoryChild, setIsImageCategoryChild] = useState("");
@@ -29,11 +43,21 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
   const [isPreviewImageModifyChild, setIsPreviewImageModifyChild] =
     useState("");
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
+  const debounceValue = useDebounce(isValueSearchChild, 700);
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
   const [isOpenModalModifyChild, setIsOpenModalModifyChild] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
   const [modifyItem, setModifyItem] = useState<any>();
-  const [IsKeyThreeChild, setIsKeyThreeChild] = useState("");
+  const [isKeyThreeChild, setIsKeyThreeChild] = useState("");
+  // const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
+
+  const [viewTableChild, setViewTableChild] = useState(true);
+  const handleSearchCategory = (e) => {
+    const value = e.target.value.trim();
+    setIsValueSearchChild(value);
+    console.log("value", value);
+  };
   const clearInputChildren = () => {
     if (nameRef.current) {
       nameRef.current.value = "";
@@ -77,6 +101,8 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
         clearInputChildren();
       } else {
         console.log("Error:", res);
+        toast.error("Danh mục này đã có!");
+        setIsOpenPopupChild(true);
       }
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -154,7 +180,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
 
   const setHandleInput = (event) => {
     const value = event.target.value;
-    console.log("value Category 2:", value);
+    // console.log("value Category 2:", value);
     setIsInputCategoryChild(value);
     if (modifyItem) {
       setModifyItem({ ...modifyItem, name: value });
@@ -174,6 +200,7 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
     setIsPreviewImageModifyChild(URL.createObjectURL(fileImage));
     console.log("fileImage:", fileImage);
   };
+
   //get list items children category
 
   const dataTableChild = isResDataChild.items?.map((item, index) => ({
@@ -217,20 +244,6 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
       dataIndex: "name",
       key: "name",
       align: "center",
-      filteredValue: [isValueSearchChild],
-      onFilter: (value, record) => {
-        return (
-          String(record.name)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.created_date)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.number_children)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase())
-        );
-      },
     },
     {
       title: "Số lượng danh mục cấp 3",
@@ -270,21 +283,52 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
           onClick: () => {
             console.log("Click row");
             console.log("record:", record);
-            // checkQuatifyItem(record);
-            // const name = record.name;
-            // console.log(name);
+            const name = record.name;
+            console.log("nameClicked", name);
             const keyChild = record.key;
             console.log("keyChild: ", keyChild);
-            // setSelectedCategory(name);
+            // setSelectedCategoryChild(name);
             setIsKeyThreeChild(keyChild);
-            // setViewTable(false);
+            fetchDataCategorySecondChild(keyChild);
+            if (typeof onCategoryChange === "function") {
+              onCategoryChange(name); // Gọi hàm từ component cha
+            }
+            if (typeof onCategoryChange === "function") {
+              onHiddenTitleChild(false); // Gọi hàm từ component cha
+            }
+            setViewTableChild(false);
           },
         }),
       };
     }
     return col;
   });
-
+  //check state category
+  useEffect(() => {
+    console.log("viewTableChildSecond", viewTableChildSecond);
+    if (viewTableChildSecond) {
+      setViewTableChild(viewTableChild);
+      console.log("viewTableChild", viewTableChild);
+    }
+  }, [viewTableChildSecond]);
+  const fetchDataSearchCategory = async () => {
+    setLoading(true);
+    const res = await category.getDataSearchNameChildCategory(
+      isKeyChild,
+      debounceValue
+    );
+    if (res.code === 200) {
+      setIsResDataChild(res.data);
+      setLoading(false);
+    } else {
+      console.log("Error:");
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    console.log("viewTableChildSecond", viewTableChildSecond);
+    fetchDataSearchCategory();
+  }, [debounceValue]);
   return (
     <>
       {isResDataChild.items == 0 ? (
@@ -298,43 +342,63 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
         <div>
           <div className="header-top">
             <div className="header-top-right">
-              <CiSearch
-                style={{
-                  position: "absolute",
-                  top: "7px",
-                  left: "5px",
-                  transform: "translateY(5%)",
-                  fontSize: "20px",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Tìm danh mục cấp 2"
-                className="search-categories"
-                onChange={(e) => setIsValueSearchChild(e.target.value)}
-              />
+              {viewTableChild && (
+                <>
+                  <CiSearch
+                    style={{
+                      position: "absolute",
+                      top: "7px",
+                      left: "5px",
+                      transform: "translateY(5%)",
+                      fontSize: "20px",
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Tìm danh mục cấp 2"
+                    className="search-categories"
+                    onChange={handleSearchCategory}
+                  />
+                </>
+              )}
             </div>
             <div className="header-btn">
-              <Button type="primary">Hướng dẫn sử dụng</Button>
-              <Button type="primary" onClick={openModalChildSecond}>
-                Thêm danh mục cấp 2
-              </Button>
+              {viewTableChild && (
+                <>
+                  <Button type="primary">Hướng dẫn sử dụng</Button>
+                  <Button type="primary" onClick={openModalChildSecond}>
+                    Thêm danh mục cấp 2
+                  </Button>
+                </>
+              )}
             </div>
           </div>
-          <div className="table-container">
-            <Table
-              columns={columnsWithClick}
-              dataSource={dataTableChild}
-              pagination={{
-                position: ["bottomCenter"],
-                defaultPageSize: 15,
-                showSizeChanger: true,
-                pageSizeOptions: ["10", "20", "30"],
-              }}
-            />
-            <span className="total-items">{`${dataTableChild?.length} items`}</span>
-          </div>
-          {/* <ChildrenThree_catagory /> */}
+          {viewTableChild ? (
+            <div className="table-container">
+              {loading ? (
+                <Spinners loading={loading} />
+              ) : (
+                <>
+                  <Table
+                    columns={columnsWithClick}
+                    dataSource={dataTableChild}
+                    pagination={{
+                      position: ["bottomCenter"],
+                      defaultPageSize: 15,
+                      showSizeChanger: true,
+                      pageSizeOptions: ["10", "20", "30"],
+                    }}
+                  />
+                  <span
+                    className="total-items"
+                    style={{ color: "black" }}
+                  >{`${dataTableChild?.length} danh mục cấp 2`}</span>
+                </>
+              )}
+            </div>
+          ) : (
+            <ChildrenThree_catagory isKeyThreeChild={isKeyThreeChild} />
+          )}
         </div>
       )}
       {/* modal add child category */}
@@ -367,7 +431,13 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
           {isPreviewImageChild ? (
             <div
               className="preview-image"
-              style={{ height: "150px", width: "240px", position: "relative" }}
+              style={{
+                height: "150px",
+                width: "240px",
+                position: "relative",
+                color: "white",
+                boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+              }}
             >
               <button className="btn-close-image" onClick={closePreviewImage}>
                 <CiCircleRemove />
@@ -453,7 +523,13 @@ const ChildrenCategory = ({ isKeyChild, fetchDataCategory }) => {
           {isPreviewImageModifyChild ? (
             <div
               className="preview-image"
-              style={{ height: "150px", width: "240px", position: "relative" }}
+              style={{
+                height: "150px",
+                width: "240px",
+                position: "relative",
+                color: "white",
+                boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+              }}
             >
               <button className="btn-close-image" onClick={closePreviewImage}>
                 <CiCircleRemove />

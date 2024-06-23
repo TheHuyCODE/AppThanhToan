@@ -7,7 +7,7 @@ const Groups = () => {
       <h1
         style={{
           fontFamily: "poppins, sans-serif",
-          color: "var(--color-tiltle)",
+          color: "var(--color-title)",
         }}
       >
         Quản lí nhóm quyền

@@ -1,7 +1,7 @@
 :root {
   --border-hover-color: #1976d2;
   --border-focus-color: #135597;
-  --color-tiltle: #03176e;
+  --color-title: #03176e;
   --cl-header: #0070f4;
   --kv-gray-50: #f0f1f3;
   --cl-primary: #e60000;
@@ -23,4 +23,5 @@
   --cl-header-table: #e6f1fe;
   --cl-btn-cancel: #677484;
   --cl-btn-cancel-hover: #464d55;
+  --cl-input-search: #f0f1f3;
 }

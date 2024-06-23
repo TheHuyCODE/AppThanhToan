@@ -319,7 +319,7 @@ const ModifyProduct = () => {
             style={{
               fontSize: "26px",
               fontFamily: "Montserrat, sans-serif",
-              color: "var(--color-tiltle)",
+              color: "var(--color-title)",
             }}
           >
             Sửa sản phẩm
@@ -566,7 +566,13 @@ const ModifyProduct = () => {
               ) : (
                 <div
                   className="preview-image"
-                  style={{ height: "150px", position: "relative" }}
+                  style={{
+                    height: "150px",
+                    width: "240px",
+                    position: "relative",
+                    color: "white",
+                    boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+                  }}
                 >
                   <button
                     className="btn-close-image"

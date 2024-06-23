@@ -25,6 +25,21 @@ const category = {
       params,
     });
   },
+
+  getAllChildThirds: (parent_id) => {
+    const url = "api/v1/manage/category";
+    const params = {
+      parent_id: parent_id,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
   postNameCatalog: () => {
     const url = "/api/v1/auth/login";
     return axiosClient.post(url);
@@ -74,6 +89,50 @@ const category = {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+    });
+  },
+  getDataSearchNameCategory: (value) => {
+    const url = `api/v1/manage/category`;
+    const params = {
+      search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchNameChildCategory: (parent_id, value) => {
+    const url = `api/v1/manage/category`;
+    const params = {
+      parent_id: parent_id,
+      search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchNameThreeCategory: (parent_id, value) => {
+    const url = `api/v1/manage/category`;
+    const params = {
+      parent_id: parent_id,
+      search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
     });
   },
 };

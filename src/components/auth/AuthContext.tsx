@@ -14,15 +14,20 @@ interface AuthContextType {
   refresh_token: string | null;
   darkTheme: boolean;
   isResDataChild: string;
+  isResDataChildSeconds: string;
   isCategoryProduct: object;
+  setIsResDataChild: object;
+  setIsResDataChildSeconds: object;
   login: (access_token: string, refresh_token: string) => void;
   logout: () => void;
   colorSidebar: () => void;
   fetchDataCategoryChild: (isKeyChild: string) => void;
+  fetchDataCategorySecondChild: (isKeyChild: string) => void;
   fetchDataCategory: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(() => {
     // Check local storage for an existing token on initial load
@@ -30,23 +35,26 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   });
   const [refresh_token, setRefresh_token] = useState<string | null>(() => {
     // Check local storage for an existing token on initial load
-    return localStorage.getItem("access_token");
+    return localStorage.getItem("refresh_token");
   });
   const [darkTheme, setDarkTheme] = useState(true);
   const [isResDataChild, setIsResDataChild] = useState("");
+  const [isResDataChildSeconds, setIsResDataChildSeconds] = useState("");
   const [isCategoryProduct, setIsCategoryProduct] = useState([]);
+
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
     setAccessToken(access_token);
   };
+
   const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     setAccessToken(null);
   };
+
   const colorSidebar = () => {
-    // console.log("sidebar_color", sidebar);
     setDarkTheme(!darkTheme);
   };
 
@@ -62,6 +70,20 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       console.log("Not get data category", error);
     }
   };
+
+  const fetchDataCategorySecondChild = async (isKeyChild: string) => {
+    try {
+      const res = await category.getAllChildThirds(isKeyChild);
+      if (res.code === 200) {
+        setIsResDataChildSeconds(res.data);
+      } else {
+        console.log("Error", res);
+      }
+    } catch (error) {
+      console.log("Not get data category", error);
+    }
+  };
+
   const fetchDataCategory = async () => {
     try {
       const res = await products.getCategoryProduct();
@@ -74,7 +96,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       console.log("Not get data category", error);
     }
   };
+
   const isAuthenticated = !!accessToken;
+
   return (
     <AuthContext.Provider
       value={{
@@ -86,7 +110,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         colorSidebar,
         darkTheme,
         isResDataChild,
+        setIsResDataChild,
+        setIsResDataChildSeconds,
+        isResDataChildSeconds,
         fetchDataCategoryChild,
+        fetchDataCategorySecondChild,
         isCategoryProduct,
         fetchDataCategory,
       }}

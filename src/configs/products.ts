@@ -55,6 +55,21 @@ const products = {
       params,
     });
   },
+  getDataSortProduct: (key, order) => {
+    const url = `api/v1/manage/product`;
+    const params = {
+      sort: key,
+      order: order,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
 
   getDataSearchProductActive: (status) => {
     const url = `api/v1/manage/product`;
@@ -75,6 +90,20 @@ const products = {
     const url = `api/v1/manage/product`;
     const params = {
       search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchBarcodeProduct: (value: string) => {
+    const url = `api/v1/manage/product`;
+    const params = {
+      barcode: value,
     };
     return axiosClient.get(url, {
       headers: {
