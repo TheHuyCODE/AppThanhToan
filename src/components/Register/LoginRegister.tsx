@@ -47,6 +47,7 @@ const LoginRegister = () => {
     useState(false);
   const [isErrorRegisterEmail, setIsErrorRegisterEmail] = useState("");
   const [inputClicked, setInputClicked] = useState(false);
+  const [infoUser, setInfoUser] = useState("");
   const validateEmail = (email) => {
     // Regular expression for email validation
     const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
@@ -196,6 +197,7 @@ const LoginRegister = () => {
       console.log("res", res);
       if (res.code === 200) {
         toast.success("Login success!");
+        localStorage.setItem("INFO_USER", JSON.stringify(res.data));
         setTimeout(() => {
           login(res.data.access_token, res.data.refresh_token);
         }, 1000);
