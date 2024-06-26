@@ -10,6 +10,9 @@ const axiosClient = axios.create({
     Authorization: `Bearer ${access_token}`,
   },
   paramsSerializer: (params) => queryString.stringify(params),
+  validateStatus: function (status) {
+    return status >= 200 && status < 300; // default
+  },
 });
 axiosClient.interceptors.request.use(async (config) => {
   return config;

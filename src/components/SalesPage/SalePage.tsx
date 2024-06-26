@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 
-import { Modal, Select, Tabs } from "antd";
+import { Modal, QRCode, Select, Tabs } from "antd";
 import { FaBars } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 
@@ -18,7 +18,8 @@ import logoutApi from "../../configs/logoutApi";
 import { useNavigate } from "react-router-dom";
 import sellProduct from "../../configs/sellProduct";
 import { ToastContainer, toast } from "react-toastify";
-import { SpaceContext } from "antd/es/space";
+import QRcode from "./QRcode";
+
 interface User {
   access_token: string;
   created_date: number;
@@ -45,6 +46,19 @@ interface Category {
   image_url: string;
 }
 
+interface InfoBankingItem {
+  value: number;
+  id: string;
+  account_name: string;
+  account_no: string;
+  bank_id: string;
+  template: string;
+  name: string;
+}
+interface Customer {
+  id: string;
+  full_name: string;
+}
 const initialItems = [
   { label: "Hóa đơn 1", key: "1" },
   { label: "Hóa đơn 2", key: "2" },
@@ -62,29 +76,120 @@ const SalePage = () => {
   const [activeKey, setActiveKey] = useState(initialItems[0].key);
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
   // const [dataSearchProduct, setDataSearchProduct] = useState<Product[]>([]);
-  const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [infouser, setInfoUser] = useState<User | null>(null);
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
+  const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>(() => {
     const savedProducts = localStorage.getItem("selectedProducts");
     return savedProducts ? JSON.parse(savedProducts) : [];
   });
+  const [isdataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
   const [errorAddCustomer, setErrorAddCustomer] = useState({
     message: "",
   });
+  const [linkQR, setLinkQR] = useState<string>("");
+
+  const [inputQRCode, setInputQRCode] = useState({
+    idBank: "",
+    account_Bank: "",
+    template_Bank: "",
+    amount_Due: 0,
+    account_Name: "",
+    id: "",
+  });
+  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] =
+    useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState();
+
+  const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [showSelect, setShowSelect] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [items, setItems] = useState(initialItems);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // const [showResults, setShowResults] = useState(false);
+  const [detailQrCode, setDetailQrCode] = useState(false);
   const [valueSearchProduct, setValueSearchProduct] = useState("");
-  const [dataCustomer, setDataCustomer] = useState([]);
   const [scannedValue, setScannedValue] = useState("");
+  const [hiddenQRCode, setHiddenQRCode] = useState(false);
+  const [isPercentage, setIsPercentage] = useState(false);
   const [inputCustomer, setInputCustomer] = useState({
     full_name: "",
     phone: "",
   });
+  const infoBanking: InfoBankingItem[] =
+    bankingData.items
+      ?.filter((item) => item.type === true)
+      .map((item, index) => ({
+        value: index + 1,
+        id: item.id,
+        account_name: item.account_name,
+        account_no: item.account_no,
+        bank_id: item.bank_id,
+        template: item.template,
+        name: `${item.bank_name} - ${item.account_no} - ${item.account_name}`,
+      })) || [];
+
+  // get picture QR code
+  const getLinkPictureQRCode = (
+    Bank_ID: string,
+    Account_No: string,
+    Template: string,
+    Amount: number,
+    Account_Name: string
+  ): string => {
+    const encodedAccountName = encodeURIComponent(Account_Name.trim());
+    const linkQr = `https://img.vietqr.io/image/${Bank_ID}-${Account_No}-${Template}.png?amount=${Amount}&addInfo=${encodeURIComponent(
+      "Thanhtoánhóađơn"
+    )}&accountName=${encodedAccountName}`;
+    return linkQr;
+  };
+
+  // Example usage
+
+  const handleSelectInfoBank = (value: number) => {
+    const isActiveBank = infoBanking.find((item) => item.value === value);
+    if (isActiveBank) {
+      console.log("Name tương ứng với value:", isActiveBank);
+      console.log("Name tương ứng với id:", isActiveBank.id);
+      // const idBank = isActiveBank.bank_id;
+      // const account_Bank = isActiveBank.account_no;
+      // const template_Bank = isActiveBank.template;
+      // const amount_Due = inputPayment.amount_due;
+      // const account_Name = isActiveBank.account_name;
+      setInputQRCode({
+        ...inputQRCode,
+        id: isActiveBank.id,
+        idBank: isActiveBank.bank_id,
+        account_Bank: isActiveBank.account_no,
+        template_Bank: isActiveBank.template,
+        amount_Due: inputPayment.amount_due,
+        account_Name: isActiveBank.account_name,
+      });
+      console.log("setInputQRCode", inputQRCode);
+      const linkQr = getLinkPictureQRCode(
+        inputQRCode.idBank,
+        inputQRCode.account_Bank,
+        inputQRCode.template_Bank,
+        inputQRCode.amount_Due,
+        inputQRCode.account_Name
+      );
+      // const linkQr = `https://img.vietqr.io/image/${isActiveProduct.bank_id}-${
+      //   isActiveProduct.account_no
+      // }-${isActiveProduct.template}.png?amount=${
+      //   inputPayment.amount_due
+      // }&addInfo=${`Thanhtoánhóađơn`} `;
+      console.log("linkQr", linkQr);
+      setLinkQR(linkQr);
+      setHiddenQRCode(true);
+    } else {
+      console.log("Không tìm thấy value:", value);
+      setLinkQR("");
+      fetchDataProduct();
+      setHiddenQRCode(false);
+    }
+  };
   const debounceValue = useDebounce(scannedValue, 700);
+  const debouncedInputQRCode = useDebounce(inputQRCode, 700);
   const newTabIndex = useRef(0);
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
@@ -95,9 +200,35 @@ const SalePage = () => {
     setIsOpenPopups(true);
   };
 
+  const handleInputClick = () => {
+    setHiddenPopUpDiscountPrice(!hiddenPopUpDiscountPrice);
+  };
   const handleCloseModal = () => {
     setIsOpenPopups(false);
   };
+  const handlePercentageClick = () => {
+    console.log("clickPercentage");
+    const discountInVND = inputPayment.discount_price;
+    const discountInPercent = ((discountInVND / total.price) * 100).toFixed(2);
+
+    setInputPayment((prev) => ({
+      ...prev,
+      discount_price: parseFloat(discountInPercent),
+    }));
+    setIsPercentage(true);
+  };
+
+  const handleVNDClick = () => {
+    const discountInPercent = inputPayment.discount_price;
+    const discountInVND = ((discountInPercent / 100) * total.price).toFixed(2);
+
+    setInputPayment((prev) => ({
+      ...prev,
+      discount_price: parseFloat(discountInVND),
+    }));
+    setIsPercentage(false);
+  };
+
   const setHandleInputCustomer = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
@@ -118,44 +249,74 @@ const SalePage = () => {
     }
   };
 
-  const clickAddItemCategory = async (e) => {
+  const clickAddItemCategory = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     e.preventDefault();
     const dataCustomer = {
       full_name: inputCustomer.full_name,
       phone: inputCustomer.phone,
     };
-
+    setIsOpenPopups(isOpenPopups);
     try {
       const res = await sellProduct.putDataCustomer(dataCustomer);
-
       if (res.code === 200) {
-        console.log("messge", res.message.text);
+        setIsOpenPopups(false);
         toast.success(`${res.message.text}`);
         setInputCustomer({
           full_name: "",
           phone: "",
         });
-        setIsOpenPopups(false);
-      } else {
         setErrorAddCustomer({
-          message: res.message.text,
+          message: "",
         });
-        setIsOpenPopups(true);
+
+        await fetchDataCustomer();
+      } else {
+        toast.error(`${res.data.message.text}`);
+        setErrorAddCustomer({
+          message: res.data.message.text,
+        });
+        setIsOpenPopups(!isOpenPopups);
       }
     } catch (error) {
-      console.error("Lỗi khi gọi API", error.message);
+      // console.log(error.response.data);
+      // console.log(error.response.message.text);
     } finally {
       setIsOpenPopups(isOpenPopups);
     }
   };
-
+  const getInfoBanking = async () => {
+    try {
+      const res = await sellProduct.getInfoBank();
+      if (res.code === 200) {
+        setBankingData(res.data);
+        console.log("data", res.data);
+      } else {
+        console.log("message", res.message.text);
+        // toast.error(`${res.message.text}`);
+      }
+    } catch (error) {
+      console.error("Error fetching banking data", error);
+      // toast.error("Error fetching banking data");
+    }
+  };
   useEffect(() => {
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
   }, [selectedProducts]);
 
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
+    setHiddenPopUpDiscountPrice(false);
+    const discountInVND = inputPayment.discount_price;
+    const discountInPercent = (discountInVND / total.price) * 100;
+    setInputPayment((prev) => ({
+      ...prev,
+      discount_price: Math.round(discountInPercent),
+    }));
   };
+
+  // Add products or reduce the number of products---------------
   const increment = (id: string) => {
     setSelectedProducts((prevSelectedProducts) =>
       prevSelectedProducts.map((product) =>
@@ -175,6 +336,7 @@ const SalePage = () => {
       )
     );
   };
+  //-------------------------------------------------------------
   const addProductToSelected = (product: Product) => {
     setSelectedProducts((prevProducts) => {
       const productExists = prevProducts.some((item) => item.id === product.id);
@@ -189,6 +351,8 @@ const SalePage = () => {
       }
     });
   };
+
+  // Logout the user in the sales screen----------------------------
 
   const clickLogoutUser = () => {
     const resAccessToken = accessToken;
@@ -205,15 +369,16 @@ const SalePage = () => {
       });
     }
   };
+
   // const onSearchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   const value = e.target.value.trim();
   //   console.log("value", value);
   //   setValueSearchProduct(value);
   // };
+
   const handleEnterPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const value = e.currentTarget.value.trim();
-      console.log("Enter key pressed, value:", value);
       await fetchDataSearchProduct(value);
       setValueSearchProduct("");
     }
@@ -236,7 +401,14 @@ const SalePage = () => {
   const handlePaymentMethodChange = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    setSelectedPaymentMethod(parseInt(event.target.value, 10));
+    const newPaymentMethod = parseInt(event.target.value, 10);
+    setSelectedPaymentMethod(newPaymentMethod);
+    if (newPaymentMethod === 0 || newPaymentMethod === 2) {
+      setHiddenQRCode(false);
+    } else {
+      setHiddenQRCode(true); // Ẩn QR code nếu không phải các phương thức thanh toán trên
+    }
+    setShowSelect(false);
   };
   // remove product carts when user clicks on icon
   const removeProductCarts = (id: string) => {
@@ -266,7 +438,7 @@ const SalePage = () => {
     change: 0,
   });
   const onChangePricePayment = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+    const value = e.target.value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
     if (value === "") {
       setInputPayment((prev) => ({
         ...prev,
@@ -277,18 +449,32 @@ const SalePage = () => {
       }));
       return;
     }
-    const discount_price = parseInt(value, 10);
+    const discount_value = parseInt(value, 10);
+    let discount_price;
+    if (isPercentage) {
+      discount_price = (discount_value / 100) * total.price;
+      console.log("discount_price", discount_price);
+    } else {
+      discount_price = discount_value;
+      console.log("discount_price", discount_price);
+    }
     const amount_due = total.price - discount_price;
+    console.log("amount_due", amount_due);
+    setInputQRCode({
+      ...inputQRCode,
+      amount_Due: amount_due,
+    });
     setInputPayment((prev) => ({
       ...prev,
-      discount_price,
+      discount_price: discount_value,
       amount_due,
       amount_paid: amount_due,
       change: prev.amount_paid - amount_due,
     }));
   };
+
   const onChangeAmountPaid = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^0-9]/g, "");
+    const value = e.target.value.replace(/[^0-9]/g, "");
     if (value === "") {
       setInputPayment((prev) => ({
         ...prev,
@@ -304,6 +490,7 @@ const SalePage = () => {
       change: amount_paid - prev.amount_due,
     }));
   };
+
   useEffect(() => {
     // Update the amount due and amount paid when total price changes
     setInputPayment((prev) => ({
@@ -313,6 +500,36 @@ const SalePage = () => {
       change: 0,
     }));
   }, [total.price]);
+  // useEffect(() => {
+  //   console.log(" inputQRCode.amount_Due,", inputQRCode.amount_Due);
+  //   const linkQr = getLinkPictureQRCode(
+  //     inputQRCode.idBank,
+  //     inputQRCode.account_Bank,
+  //     inputQRCode.template_Bank,
+  //     inputQRCode.amount_Due,
+  //     inputQRCode.account_Name
+  //   );
+  //   console.log("linkQr", linkQr);
+  //   setLinkQR(linkQr);
+  // }, [inputPayment.amount_due]);
+  useEffect(() => {
+    if (
+      debouncedInputQRCode.idBank &&
+      debouncedInputQRCode.account_Bank &&
+      debouncedInputQRCode.template_Bank &&
+      debouncedInputQRCode.account_Name
+    ) {
+      const linkQr = getLinkPictureQRCode(
+        debouncedInputQRCode.idBank,
+        debouncedInputQRCode.account_Bank,
+        debouncedInputQRCode.template_Bank,
+        debouncedInputQRCode.amount_Due,
+        debouncedInputQRCode.account_Name
+      );
+      console.log("linkQr", linkQr);
+      setLinkQR(linkQr);
+    }
+  }, [debouncedInputQRCode]);
   const add = () => {
     const newActiveKey = `newTab${newTabIndex.current++}`;
     const newPanes = [...items];
@@ -355,7 +572,24 @@ const SalePage = () => {
       remove(targetKey);
     }
   };
+  //get customers payment information
+  const getCustomerPayment = (value: number) => {
+    console.log("customerPayment", value);
+    const isActiveCustomer = infoCustomer.find((item) => item.value === value);
+    if (isActiveCustomer) {
+      const customer_Id = isActiveCustomer.id;
+      console.log("info", isActiveCustomer.id);
+      setSelectedCustomer(customer_Id);
+    } else {
+      console.log("Không tìm thấy value", value);
+    }
+    // console.log("selected", selectedCustomer);
+  };
+  // const handleClearSelection = () => {
+  //   setSelectedCustomer(undefined);
+  // };
 
+  //------------------------------------------------------------
   const handleProductClick = (product: Product) => {
     setSelectedProducts((prevSelectedProducts) => {
       const existingProduct = prevSelectedProducts.find(
@@ -388,6 +622,7 @@ const SalePage = () => {
   };
 
   useEffect(() => {
+    getInfoBanking();
     fetchDataProduct();
   }, []);
   useEffect(() => {
@@ -408,20 +643,7 @@ const SalePage = () => {
       console.error("API response is not an array:", res.data);
     }
   };
-  const fetchDataCustomer = async () => {
-    const res = await sellProduct.getCustomer();
-    if (res.code === 200) {
-      setDataCustomer(res.data);
-    }
-    // if (res.data && Array.isArray(res.data.items)) {
-    //   setDataCategory(res.data.items);
-    // } else {
-    //   console.error("API response is not an array:", res.data);
-    // }
-    else {
-      console.error("API response is not an array:", res.data);
-    }
-  };
+
   //fetch data search category
   const fetchDataSearchProduct = async (barcode: string) => {
     try {
@@ -449,6 +671,52 @@ const SalePage = () => {
       console.error("Error fetching product data:", error);
     }
   };
+
+  const fetchDataCustomer = async () => {
+    try {
+      const res = await sellProduct.getCustomer();
+      if (res.code === 200) {
+        setIsDataCustomer(res.data);
+      }
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+  //fetch api payment the bill
+  const clickPaymentTheBill = async () => {
+    const transformedProducts = selectedProducts.map((product) => ({
+      product_id: product.id,
+      quantity: product.quantity,
+      price: product.price,
+      total_price: product.quantity * product.price,
+    }));
+    const idBank = inputQRCode.id;
+    console.log("transformed products:", transformedProducts);
+    const dataPayment = {
+      total_amount: inputPayment.amount_due,
+      total_product: total.quantity,
+      customer_money: inputPayment.amount_paid,
+      refund: inputPayment.change,
+      products: transformedProducts,
+      payment_methods: idBank,
+      discount: inputPayment.discount_price,
+      type_discount: 0,
+      customer_id: selectedCustomer,
+    };
+    try {
+      const res = await sellProduct.postDataPayment(dataPayment);
+      if (res.code === 200) {
+        console.log("data payment", res.data);
+        setIsDataCustomer(res.data);
+      } else {
+        const error = res.data.message.id;
+        console.log("data payment", res.data);
+        toast.error(`${error}`);
+      }
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
   useEffect(() => {
     if (debounceValue) {
       fetchDataSearchProduct(debounceValue);
@@ -460,13 +728,18 @@ const SalePage = () => {
     label: item.name,
     id: item.id,
   }));
-  const infoCustomer = dataCustomer.items?.map((item, index) => ({
+
+  const infoCustomer = isdataCustomer.items?.map((item, index) => ({
     value: index + 1,
-    label: item.name,
+    label: item.full_name,
     id: item.id,
   }));
-
+  const detailQRCode = () => {
+    setDetailQrCode(!detailQrCode);
+    console.log("detailQRCode", detailQRCode);
+  };
   useEffect(() => {
+    fetchDataCustomer();
     fetchDataCategory();
     fetchDataCustomer();
   }, []);
@@ -728,12 +1001,14 @@ const SalePage = () => {
                 THANH TOÁN
               </button>
             </div>
-
             <div
               className={`overlay ${isSidebarVisible ? "show" : ""}`}
               onClick={toggleSidebar}
             ></div>
-            <div className={`sidebar ${isSidebarVisible ? "show" : ""}`}>
+            <div
+              className={`sidebar ${isSidebarVisible ? "show" : ""}`}
+              // onClick={() => setHiddenPopUpDiscountPrice(false)}
+            >
               {/* Nội dung của sidebar */}
               <div className="header-sidebar-bank">
                 <span>Bán trực tiếp</span>
@@ -746,8 +1021,11 @@ const SalePage = () => {
                   <Select
                     showSearch
                     placeholder="Chọn khách hàng"
+                    notFoundContent="Không tìm thấy người dùng"
                     optionFilterProp="label"
-                    style={{ width: 300, height: 40, paddingRight: "0px" }}
+                    onChange={(value) => getCustomerPayment(value)}
+                    // value={selectedCustomer}
+                    style={{ width: 400, height: 40, paddingRight: "0px" }}
                     filterOption={(input, option) =>
                       (option?.label ?? "")
                         .toLowerCase()
@@ -755,6 +1033,14 @@ const SalePage = () => {
                     }
                     options={infoCustomer}
                   />
+                  {/* {selectedCustomer && (
+                    <button
+                      onClick={handleClearSelection}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      Clear
+                    </button>
+                  )} */}
                   <button
                     className="btn-add-customers"
                     title="Thêm khách hàng"
@@ -785,9 +1071,39 @@ const SalePage = () => {
                         "vi-VN"
                       )}
                       onChange={onChangePricePayment}
+                      onClick={handleInputClick}
                       className="payment-invoice__input"
                     />
                   </div>
+                  {hiddenPopUpDiscountPrice && (
+                    <div className="pop-discount">
+                      <p>Giảm giá</p>
+                      <input
+                        type="text"
+                        value={inputPayment.discount_price.toLocaleString(
+                          "vi-VN"
+                        )}
+                        onChange={onChangePricePayment}
+                        className="payment-invoice__input"
+                      />
+                      <button
+                        className={`discount-button ${
+                          !isPercentage ? "active" : ""
+                        }`}
+                        onClick={handleVNDClick}
+                      >
+                        VND
+                      </button>
+                      <button
+                        className={`discount-button ${
+                          isPercentage ? "active" : ""
+                        }`}
+                        onClick={handlePercentageClick}
+                      >
+                        %
+                      </button>
+                    </div>
+                  )}
                   <div className="payment-invoice__total-after-discount">
                     <label className="payment-invoice__label">
                       Khách cần trả
@@ -862,6 +1178,46 @@ const SalePage = () => {
                     </div>
                   </div>
 
+                  {selectedPaymentMethod === 1 && (
+                    <Select
+                      placeholder="-Tài khoản nhận-"
+                      allowClear
+                      onChange={(value) => {
+                        handleSelectInfoBank(value);
+                      }}
+                      style={{ width: "100%", height: 40 }}
+                    >
+                      {infoBanking.map((option) => (
+                        <option value={option.value} key={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </Select>
+                  )}
+                  {hiddenQRCode && (
+                    <div
+                      className="img-QR"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <img
+                        src={linkQR}
+                        alt="QR"
+                        style={{
+                          width: "250px",
+                          height: "300px",
+                          cursor: "pointer",
+                        }}
+                        onClick={detailQRCode}
+                      />
+                    </div>
+                  )}
+                  {/* {detailQrCode && <QRCode value={linkQR} />} */}
                   <div className="option_price"></div>
                   <div className="payment-invoice__money-return">
                     <label className="payment-invoice__label">
@@ -884,6 +1240,7 @@ const SalePage = () => {
                     alignItems: "center",
                     justifyContent: "center",
                   }}
+                  onClick={clickPaymentTheBill}
                 >
                   THANH TOÁN
                 </button>
@@ -904,19 +1261,19 @@ const SalePage = () => {
           cancelText="Hủy bỏ"
         >
           <h1 className="title-addItem">Thêm khách hàng</h1>
-          <div className="name-item">
+          <div className="name-customer">
             <label htmlFor="">
               Tên khách hàng (<span>*</span>)
             </label>
             <input
+              placeholder="Nhập tên khách hàng"
               className="input-name-category"
               onChange={setHandleInputCustomer}
               name="full_name"
               value={inputCustomer.full_name}
-              //  ref={nameRef}
             />
           </div>
-          <div className="picture-item">
+          <div className="number-customer">
             <label htmlFor="" className="title-picture">
               Số điện thoại(<span>*</span>)
             </label>

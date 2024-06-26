@@ -90,6 +90,9 @@ const MenuList = () => {
         <Menu.Item key="percent" icon={<FaPercent />}>
           Quản lý mã giảm giá
         </Menu.Item>
+        <Menu.Item key="paymentmethod" icon={<FaPercent />}>
+          <Link to="/admin/paymentmethod">Quản lí phương thức thanh toán</Link>
+        </Menu.Item>
         <Menu.Item key="Setting" icon={<IoIosSettings />}>
           <Link to="/admin">Cài đặt</Link>
         </Menu.Item>

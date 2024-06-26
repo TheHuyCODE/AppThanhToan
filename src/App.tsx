@@ -24,6 +24,7 @@ import ModifyProduct from "./components/category/ModifyProduct";
 import SalePage from "./components/SalesPage/SalePage";
 import RevenueReport from "./components/dashboard/RevenueReport";
 import InventoryReport from "./components/dashboard/InventoryReport";
+import Payment from "./components/Payment/Payment";
 // import SalePage from "./components/SalesPage/SalePage";
 const NotFound = () => {
   return (
@@ -109,6 +110,23 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <InventoryReport />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/paymentmethod"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Payment />
               </AppWrapper>
             </ProtectedRouter>
           }

@@ -11,6 +11,27 @@ const sellProduct = {
       },
     });
   },
+  getNameBank: () => {
+    const url = "https://api.vietqr.io/v2/banks";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
+
+  getInfoBank: () => {
+    const url = "api/v1/manage/payment";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
   getDataUsers: () => {
     const url = "api/v1/users";
     return axiosClient.get(url, {
@@ -32,8 +53,28 @@ const sellProduct = {
     });
   },
 
-  putDataCustomer: (data) => {
+  putDataCustomer: (data: object) => {
     const url = "api/v1/manage/customer";
+    return axiosClient.post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
+
+  postDataUserBanking: (data: object) => {
+    const url = "api/v1/manage/payment";
+    return axiosClient.post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
+
+  postDataPayment: (data: object) => {
+    const url = "api/v1/manage/payment";
     return axiosClient.post(url, data, {
       headers: {
         "Content-Type": "application/json",
