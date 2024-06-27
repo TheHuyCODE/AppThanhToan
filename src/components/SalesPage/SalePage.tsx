@@ -39,6 +39,17 @@ interface Product {
   full_name: string;
 }
 
+interface Invoice {
+  id: number;
+  invoice_number: string;
+  customer_id: string;
+  customer_name: string;
+  total_price: number;
+  created_date: number;
+  id_payment: string;
+  items: Array<Product>;
+}
+
 interface Category {
   id: string;
   name: string;
@@ -55,15 +66,15 @@ interface InfoBankingItem {
   template: string;
   name: string;
 }
+interface CashPayment {
+  id: string;
+}
 interface Customer {
   id: string;
   full_name: string;
 }
-const initialItems = [
-  { label: "Hóa đơn 1", key: "1" },
-  { label: "Hóa đơn 2", key: "2" },
-  { label: "Hóa đơn 3", key: "3" },
-];
+const initialItems = [{ label: "Hóa đơn 1", key: "1" }];
+
 interface InputPayment {
   amount_due: number;
   discount_price: number;
@@ -73,15 +84,40 @@ interface InputPayment {
 
 const SalePage = () => {
   const domainLink = domain.domainLink;
+  const maxItems = 5;
   const [activeKey, setActiveKey] = useState(initialItems[0].key);
+  const [nextInvoiceNumber, setNextInvoiceNumber] = useState(2);
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
   // const [dataSearchProduct, setDataSearchProduct] = useState<Product[]>([]);
   const [infouser, setInfoUser] = useState<User | null>(null);
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
   const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
+  const [cashmoney, setCashmoney] = useState<CashPayment[]>([]);
+
   const [selectedProducts, setSelectedProducts] = useState<Product[]>(() => {
     const savedProducts = localStorage.getItem("selectedProducts");
     return savedProducts ? JSON.parse(savedProducts) : [];
+  });
+  const [invoiceList, setInvoiceList] = useState<Invoice[]>(() => {
+    const savedInvoices = localStorage.getItem("invoiceList");
+    const parsedInvoices = savedInvoices ? JSON.parse(savedInvoices) : [];
+    const hasInitialInvoice = parsedInvoices.some(
+      (invoice) => invoice.key === initialItems[0].key
+    );
+    if (!hasInitialInvoice) {
+      parsedInvoices.push({
+        id: 1, // Example unique ID for invoice
+        invoice_number: "Hóa đơn 1", // Example invoice number
+        customer_id: "", // Example customer_id
+        customer_name: "", // Example customer_name
+        total_price: 0, // Example total_price
+        created_date: Date.now(), // Example created_date
+        items: [], // Initialize items (products) as empty for now
+        id_payment: initialItems[0].key, // Set id_payment to initialItems[0].key
+      });
+    }
+
+    return parsedInvoices;
   });
   const [isdataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
   const [errorAddCustomer, setErrorAddCustomer] = useState({
@@ -301,10 +337,27 @@ const SalePage = () => {
       // toast.error("Error fetching banking data");
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
+  }, [invoiceList]);
   useEffect(() => {
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
   }, [selectedProducts]);
 
+  // const addProduct = (product: Product, invoiceKey: string) => {
+  //   setSelectedProducts(prev => ({
+  //     ...prev,
+  //     [invoiceKey]: [...(prev[invoiceKey] || []), { ...product, invoiceKey }]
+  //   }));
+  // };
+
+  // const removeProduct = (product: Product, invoiceKey: string) => {
+  //   setSelectedProducts(prev => ({
+  //     ...prev,
+  //     [invoiceKey]: prev[invoiceKey].filter(p => p.id !== product.id)
+  //   }));
+  // };
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
     setHiddenPopUpDiscountPrice(false);
@@ -337,6 +390,7 @@ const SalePage = () => {
     );
   };
   //-------------------------------------------------------------
+
   const addProductToSelected = (product: Product) => {
     setSelectedProducts((prevProducts) => {
       const productExists = prevProducts.some((item) => item.id === product.id);
@@ -351,7 +405,6 @@ const SalePage = () => {
       }
     });
   };
-
   // Logout the user in the sales screen----------------------------
 
   const clickLogoutUser = () => {
@@ -405,9 +458,10 @@ const SalePage = () => {
     setSelectedPaymentMethod(newPaymentMethod);
     if (newPaymentMethod === 0 || newPaymentMethod === 2) {
       setHiddenQRCode(false);
-    } else {
-      setHiddenQRCode(true); // Ẩn QR code nếu không phải các phương thức thanh toán trên
     }
+    // else {
+    //   setHiddenQRCode(true); // Ẩn QR code nếu không phải các phương thức thanh toán trên
+    // }
     setShowSelect(false);
   };
   // remove product carts when user clicks on icon
@@ -415,9 +469,6 @@ const SalePage = () => {
     setSelectedProducts((prevSelectedProducts) =>
       prevSelectedProducts.filter((product) => product.id !== id)
     );
-  };
-  const onChange = (newActiveKey: string) => {
-    setActiveKey(newActiveKey);
   };
   const getTotalQuantityAndPrice = () => {
     const total = selectedProducts.reduce(
@@ -530,22 +581,54 @@ const SalePage = () => {
       setLinkQR(linkQr);
     }
   }, [debouncedInputQRCode]);
-  const add = () => {
-    const newActiveKey = `newTab${newTabIndex.current++}`;
-    const newPanes = [...items];
-    newPanes.push({
-      label: "Hóa đơn",
-      key: newActiveKey,
-    });
-    setItems(newPanes);
+  //add payment
+  //get key
+  const onChange = (newActiveKey: string) => {
     setActiveKey(newActiveKey);
+    console.log("newActiveKey", newActiveKey);
+    localStorage.setItem("name_payment", newActiveKey);
   };
-
-  const clickItemsCarts = (id: string) => {
-    console.log("id", id);
+  const add = () => {
+    if (items.length < maxItems) {
+      const newActiveKey = `${nextInvoiceNumber}`;
+      const newPanes = [...items];
+      newPanes.push({
+        label: `Hóa đơn ${nextInvoiceNumber}`,
+        key: newActiveKey,
+      });
+      setItems(newPanes);
+      setActiveKey(newActiveKey);
+      setSelectedProducts([]);
+      const newInvoice: Invoice = {
+        id: nextInvoiceNumber, // Unique ID for the invoice
+        invoice_number: `Invoice ${nextInvoiceNumber}`, // Example of invoice_number
+        customer_id: "", // Example of customer_id
+        customer_name: "", // Example of customer_name
+        total_price: 0, // Example of total_price
+        created_date: Date.now(), // Example of created_date
+        items: selectedProducts || [], // Initialize items (products) as empty for now
+        id_payment: newActiveKey, // Store the invoice key as id_payment
+      };
+      setInvoiceList((prev) => [...prev, newInvoice]);
+      // localStorage.setItem("name_payment", newActiveKey);
+      // Find the next available invoice number
+      let newInvoiceNumber = nextInvoiceNumber + 1;
+      while (
+        items.find((item) => item.key === `${newInvoiceNumber}`) &&
+        newInvoiceNumber <= maxItems
+      ) {
+        newInvoiceNumber++;
+      }
+      setNextInvoiceNumber(newInvoiceNumber);
+    } else {
+      toast.warning("Không thể thêm quá 5 hóa đơn");
+    }
   };
-
   const remove = (targetKey: string) => {
+    if (targetKey === initialItems[0].key) {
+      return;
+    }
+    console.log("targetKey", targetKey);
     let newActiveKey = activeKey;
     let lastIndex = -1;
     items.forEach((item, i) => {
@@ -554,15 +637,38 @@ const SalePage = () => {
       }
     });
     const newPanes = items.filter((item) => item.key !== targetKey);
-    if (newPanes.length && newActiveKey === targetKey) {
-      if (lastIndex >= 0) {
-        newActiveKey = newPanes[lastIndex].key;
-      } else {
-        newActiveKey = newPanes[0].key;
+    if (newPanes.length === 0) {
+      // If all items are removed, reset to the initial state
+      setItems(initialItems);
+      setActiveKey(initialItems[0].key);
+      setNextInvoiceNumber(2); // Reset to the next number in the sequence
+      setSelectedProducts([]); // Clear selected products for all invoices
+      setInvoiceList([]);
+    } else {
+      if (newPanes.length && newActiveKey === targetKey) {
+        if (lastIndex >= 0) {
+          newActiveKey = newPanes[lastIndex].key;
+        } else {
+          newActiveKey = newPanes[0].key;
+        }
       }
+      setItems(newPanes);
+      setActiveKey(newActiveKey);
+
+      setInvoiceList((prev) =>
+        prev.filter((inv) => inv.id !== parseInt(targetKey))
+      );
+      // Find the next available invoice number
+      const currentNumbers = newPanes.map((item) => parseInt(item.key, 10));
+      let newInvoiceNumber = 1;
+      while (
+        currentNumbers.includes(newInvoiceNumber) &&
+        newInvoiceNumber <= maxItems
+      ) {
+        newInvoiceNumber++;
+      }
+      setNextInvoiceNumber(newInvoiceNumber);
     }
-    setItems(newPanes);
-    setActiveKey(newActiveKey);
   };
 
   const onEdit = (targetKey: string, action: string) => {
@@ -610,7 +716,7 @@ const SalePage = () => {
 
   const fetchDataProduct = async () => {
     try {
-      const res = await products.getAll();
+      const res = await products.getSellProduct();
       if (res.data && Array.isArray(res.data.items)) {
         setDataProduct(res.data.items);
       } else {
@@ -682,6 +788,16 @@ const SalePage = () => {
       console.log("error:", error);
     }
   };
+  const findCashBankIds = () => {
+    const idCashBankString =
+      bankingData.items
+        ?.filter((item) => item.type === false) // Lọc các item có type là false
+        .map((item) => item.id) // Tạo một mảng chỉ chứa id của các item đã lọc
+        .join(", ") || // Kết hợp các id thành một chuỗi, ngăn cách bằng dấu phẩy và khoảng trắng
+      ""; // Nếu không có item nào, trả về chuỗi rỗng
+
+    return idCashBankString;
+  };
   //fetch api payment the bill
   const clickPaymentTheBill = async () => {
     const transformedProducts = selectedProducts.map((product) => ({
@@ -691,6 +807,8 @@ const SalePage = () => {
       total_price: product.quantity * product.price,
     }));
     const idBank = inputQRCode.id;
+    const idCashBank = findCashBankIds();
+    const method_bank = [{ id: idBank }, { id: idCashBank }];
     console.log("transformed products:", transformedProducts);
     const dataPayment = {
       total_amount: inputPayment.amount_due,
@@ -698,7 +816,7 @@ const SalePage = () => {
       customer_money: inputPayment.amount_paid,
       refund: inputPayment.change,
       products: transformedProducts,
-      payment_methods: idBank,
+      payment_methods: method_bank,
       discount: inputPayment.discount_price,
       type_discount: 0,
       customer_id: selectedCustomer,
@@ -707,9 +825,11 @@ const SalePage = () => {
       const res = await sellProduct.postDataPayment(dataPayment);
       if (res.code === 200) {
         console.log("data payment", res.data);
-        setIsDataCustomer(res.data);
+        const success = res.message.text;
+        toast.success(`${success}`);
       } else {
-        const error = res.data.message.id;
+        const error = res.data.message.text;
+        console.log("error", error);
         console.log("data payment", res.data);
         toast.error(`${error}`);
       }
@@ -857,7 +977,7 @@ const SalePage = () => {
               <div
                 key={product.id}
                 className="selected-product-details"
-                onClick={() => clickItemsCarts(product.id)}
+                // onClick={() => clickItemsCarts(product.id)}
               >
                 <div className="carts-product-active-left">
                   <span>{index + 1}</span>
@@ -1011,7 +1131,7 @@ const SalePage = () => {
             >
               {/* Nội dung của sidebar */}
               <div className="header-sidebar-bank">
-                <span>Bán trực tiếp</span>
+                <span>Thanh toán hóa đơn</span>
                 <button className="close-sidebar-bank" onClick={toggleSidebar}>
                   <IoMdClose />
                 </button>
@@ -1054,9 +1174,9 @@ const SalePage = () => {
                     <label className="payment-invoice__label">
                       Tổng tiền hàng
                     </label>
-                    <span className="payment-invoice__value">
+                    {/* <span className="payment-invoice__value">
                       {total.quantity}
-                    </span>
+                    </span> */}
                     <div className="payment-invoice__price-total">
                       <p className="payment-invoice__price-amount">
                         {total.price.toLocaleString("vi-VN")}
@@ -1209,8 +1329,8 @@ const SalePage = () => {
                         src={linkQR}
                         alt="QR"
                         style={{
-                          width: "250px",
-                          height: "300px",
+                          width: "150px",
+                          height: "180px",
                           cursor: "pointer",
                         }}
                         onClick={detailQRCode}

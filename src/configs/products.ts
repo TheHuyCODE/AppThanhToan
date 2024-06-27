@@ -11,7 +11,25 @@ const products = {
       sort: "name",
       order_by: "asc",
     };
-
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getSellProduct: () => {
+    const url = "api/v1/manage/product";
+    const params = {
+      search: "",
+      page: 1,
+      page_size: 30,
+      sort: "name",
+      order_by: "asc",
+      is_active: 1,
+    };
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,

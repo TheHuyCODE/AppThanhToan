@@ -19,7 +19,7 @@
   height: 50px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .col-left-control {
@@ -34,7 +34,9 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-top: 40px;
+  padding: 5px;
+  margin-left: 10px;
+  margin-top: 30px;
 }
 .search-product-sell {
   width: 326px;
@@ -536,7 +538,7 @@
   /* styles for each section */
 }
 .payment-invoice__price {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--cl-header);
   font-weight: 600;
 }

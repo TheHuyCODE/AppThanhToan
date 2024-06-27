@@ -62,8 +62,8 @@ const MenuList = () => {
             <Link to="/admin/inventoryreport">Báo cáo tồn kho</Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item key="Order_management" icon={<FaCartShopping />}>
-          <Link to="admin/ordermanagement">Quản lý hóa đơn</Link>
+        <Menu.Item key="invoices" icon={<FaCartShopping />}>
+          <Link to="/admin/invoices">Quản lý hóa đơn</Link>
         </Menu.Item>
         <Menu.Item key="User_management" icon={<IoPerson />}>
           <Link to="/admin/users">Quản lý người dùng</Link>

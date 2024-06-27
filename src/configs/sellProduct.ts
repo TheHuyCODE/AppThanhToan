@@ -74,7 +74,7 @@ const sellProduct = {
   },
 
   postDataPayment: (data: object) => {
-    const url = "api/v1/manage/payment";
+    const url = "api/v1/manage/invoice";
     return axiosClient.post(url, data, {
       headers: {
         "Content-Type": "application/json",
