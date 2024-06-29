@@ -183,21 +183,16 @@
   gap: 10px;
 }
 .btn-return-goods {
-  width: 70px;
-  height: 40px;
-  border-radius: 5px;
+  width: 76px;
+  height: 45px;
+  border-radius: 6px;
   padding: 5px;
+  margin-top: 2px;
   align-items: center;
+  font-weight: 600;
+  color: var(--cl-dark);
 }
-/* .show-product {
-  max-width: 170px;
-  outline: none;
-  text-decoration: none;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-} */
+
 .product-info-img {
   padding-top: 0;
   width: 48px;
@@ -308,7 +303,7 @@
   justify-content: center;
 }
 .icon-button:hover {
-  background-color: lightgray;
+  background-color: lightgrey;
 }
 .btn-remove-carts {
   width: 20px;

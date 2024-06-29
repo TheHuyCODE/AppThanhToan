@@ -18,7 +18,9 @@ import logoutApi from "../../configs/logoutApi";
 import { useNavigate } from "react-router-dom";
 import sellProduct from "../../configs/sellProduct";
 import { ToastContainer, toast } from "react-toastify";
+import { useReactToPrint } from "react-to-print";
 import QRcode from "./QRcode";
+import DetailInvoices from "../Invoices/detailInvoices";
 
 interface User {
   access_token: string;
@@ -85,6 +87,7 @@ interface InputPayment {
 const SalePage = () => {
   const domainLink = domain.domainLink;
   const maxItems = 5;
+  const componentRef = useRef();
   const [activeKey, setActiveKey] = useState(initialItems[0].key);
   const [nextInvoiceNumber, setNextInvoiceNumber] = useState(2);
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
@@ -93,7 +96,6 @@ const SalePage = () => {
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
   const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
   const [cashmoney, setCashmoney] = useState<CashPayment[]>([]);
-
   const [selectedProducts, setSelectedProducts] = useState<Product[]>(() => {
     const savedProducts = localStorage.getItem("selectedProducts");
     return savedProducts ? JSON.parse(savedProducts) : [];
@@ -116,7 +118,6 @@ const SalePage = () => {
         id_payment: initialItems[0].key, // Set id_payment to initialItems[0].key
       });
     }
-
     return parsedInvoices;
   });
   const [isdataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
@@ -136,7 +137,6 @@ const SalePage = () => {
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] =
     useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState();
-
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [showSelect, setShowSelect] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
@@ -145,9 +145,13 @@ const SalePage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [detailQrCode, setDetailQrCode] = useState(false);
   const [valueSearchProduct, setValueSearchProduct] = useState("");
+  const [isVoicesID, setIsVoicesID] = useState("");
   const [scannedValue, setScannedValue] = useState("");
   const [hiddenQRCode, setHiddenQRCode] = useState(false);
   const [isPercentage, setIsPercentage] = useState(false);
+  const [statePayment, setStatePayment] = useState(false);
+
+  const [isPrintReady, setIsPrintReady] = useState(false);
   const [inputCustomer, setInputCustomer] = useState({
     full_name: "",
     phone: "",
@@ -226,7 +230,7 @@ const SalePage = () => {
   };
   const debounceValue = useDebounce(scannedValue, 700);
   const debouncedInputQRCode = useDebounce(inputQRCode, 700);
-  const newTabIndex = useRef(0);
+  // const newTabIndex = useRef(0);
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
   const toggleMenu = () => {
@@ -436,6 +440,7 @@ const SalePage = () => {
       setValueSearchProduct("");
     }
   };
+
   const handleChangeNumberCards = (
     event: React.ChangeEvent<HTMLInputElement>,
     id: string
@@ -481,11 +486,13 @@ const SalePage = () => {
     );
     return total;
   };
+
   const total = useMemo(getTotalQuantityAndPrice, [selectedProducts]);
+
   const [inputPayment, setInputPayment] = useState<InputPayment>({
     discount_price: 0,
-    amount_due: total.price,
-    amount_paid: total.price,
+    amount_due: total?.price || 0,
+    amount_paid: total?.price || 0,
     change: 0,
   });
   const onChangePricePayment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -494,8 +501,8 @@ const SalePage = () => {
       setInputPayment((prev) => ({
         ...prev,
         discount_price: 0,
-        amount_due: total.price,
-        amount_paid: total.price,
+        amount_due: total?.price || 0,
+        amount_paid: total?.price || 0,
         change: 0,
       }));
       return;
@@ -518,8 +525,8 @@ const SalePage = () => {
     setInputPayment((prev) => ({
       ...prev,
       discount_price: discount_value,
-      amount_due,
-      amount_paid: amount_due,
+      amount_due: isNaN(amount_due) ? 0 : amount_due,
+      amount_paid: isNaN(amount_due) ? 0 : amount_due,
       change: prev.amount_paid - amount_due,
     }));
   };
@@ -726,8 +733,20 @@ const SalePage = () => {
       console.log("error:", error);
     }
   };
-
+  // const fetchDetailInvoice = async (isVoicesID: string) => {
+  //   try {
+  //     const res = await products.getDetailInvoices(isVoicesID);
+  //     if (res.data && Array.isArray(res.data.items)) {
+  //       setDataProduct(res.data.items);
+  //     } else {
+  //       console.error("API response is not an array:", res.data);
+  //     }
+  //   } catch (error) {
+  //     console.log("error:", error);
+  //   }
+  // };
   useEffect(() => {
+    // fetchDetailInvoice(isVoicesID);
     getInfoBanking();
     fetchDataProduct();
   }, []);
@@ -782,7 +801,9 @@ const SalePage = () => {
     try {
       const res = await sellProduct.getCustomer();
       if (res.code === 200) {
-        setIsDataCustomer(res.data);
+        const dataCustomer = res.data;
+        setIsDataCustomer(dataCustomer);
+        localStorage.setItem("info_customer", JSON.stringify(dataCustomer));
       }
     } catch (error) {
       console.log("error:", error);
@@ -795,11 +816,32 @@ const SalePage = () => {
         .map((item) => item.id) // Tạo một mảng chỉ chứa id của các item đã lọc
         .join(", ") || // Kết hợp các id thành một chuỗi, ngăn cách bằng dấu phẩy và khoảng trắng
       ""; // Nếu không có item nào, trả về chuỗi rỗng
-
     return idCashBankString;
   };
   //fetch api payment the bill
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    onAfterPrint: () => {
+      setStatePayment(false);
+      setIsPrintReady(false);
+      setSelectedProducts([]); // Reset print readiness
+      setInputPayment({
+        amount_due: 0,
+        amount_paid: 0,
+        change: 0,
+        discount_price: 0,
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (isPrintReady) {
+      handlePrint();
+    }
+  }, [isPrintReady]);
   const clickPaymentTheBill = async () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const transformedProducts = selectedProducts.map((product) => ({
       product_id: product.id,
       quantity: product.quantity,
@@ -808,7 +850,12 @@ const SalePage = () => {
     }));
     const idBank = inputQRCode.id;
     const idCashBank = findCashBankIds();
-    const method_bank = [{ id: idBank }, { id: idCashBank }];
+    let method_bank = [{ id: "" }];
+    if (selectedPaymentMethod === 0) {
+      method_bank = [{ id: idCashBank }];
+    } else {
+      method_bank = [{ id: idBank }];
+    }
     console.log("transformed products:", transformedProducts);
     const dataPayment = {
       total_amount: inputPayment.amount_due,
@@ -824,6 +871,11 @@ const SalePage = () => {
     try {
       const res = await sellProduct.postDataPayment(dataPayment);
       if (res.code === 200) {
+        setStatePayment(true);
+        setIsPrintReady(true);
+        handlePrint();
+        const resIdIvoices = res.data.invoice_id;
+        setIsVoicesID(resIdIvoices);
         console.log("data payment", res.data);
         const success = res.message.text;
         toast.success(`${success}`);
@@ -832,6 +884,7 @@ const SalePage = () => {
         console.log("error", error);
         console.log("data payment", res.data);
         toast.error(`${error}`);
+        setStatePayment(false);
       }
     } catch (error) {
       console.log("error:", error);
@@ -887,59 +940,7 @@ const SalePage = () => {
                 value={valueSearchProduct}
                 onKeyDown={handleEnterPress}
               />
-              {/* <div className="menu-search-product">
-              {dataSearchProduct && dataSearchProduct.length > 0 ? (
-                <ul className="list-product-search">
-                  {dataSearchProduct?.map((product, index) => (
-                    <li
-                      key={index}
-                      className="box-product-search-product"
-                      onClick={() => handleProductClick(product)}
-                    >
-                      <div className="product-info-img">
-                        <img
-                          src={`${domainLink}${product.image_url}`}
-                          loading="lazy"
-                          alt={product.name}
-                          className="image-review-product"
-                        />
-                      </div>
-                      <div className="product-info-search-right">
-                        <div className="product-info-search-right-top">
-                          <h4>{product.name}</h4>
-                          <span>
-                            {product.capital_price.toLocaleString("vi-VN")}
-                          </span>
-                        </div>
-                        <div className="product-info-search-right-mid">
-                          <span>{product.barcode}</span>
-                        </div>
-                        <div className="product-info-search-right-bottom">
-                          <span>Tồn</span>
-                          <span>{product.inventory_number}</span>
-                        </div>
-                        <div>
-                          <span></span>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "13px",
-                  }}
-                >
-                  <p>Không tìm thấy kết quả nào phù hợp.</p>
-                </div>
-              )}
-            </div> */}
+
               <button className="btn-return-goods">Trả hàng</button>
             </div>
             <div className="cart-tabs">
@@ -960,7 +961,11 @@ const SalePage = () => {
                 <span>No user data available</span>
               )}
             </div>
-            <button className="icon-button" onClick={toggleMenu}>
+            <button
+              className="icon-button"
+              onClick={toggleMenu}
+              style={{ color: "white", fontSize: "20px" }}
+            >
               <FaBars />
             </button>
             {isMenuOpen && (
@@ -1364,6 +1369,29 @@ const SalePage = () => {
                 >
                   THANH TOÁN
                 </button>
+                {/* {statePayment && ( */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "-9999px",
+                    top: "-9999px",
+                  }}
+                >
+                  <DetailInvoices
+                    ref={componentRef}
+                    idCustomer={selectedCustomer}
+                    selectedProducts={selectedProducts}
+                    amount_due={inputPayment.amount_due.toLocaleString("vi-VN")}
+                    amount_paid={inputPayment.amount_paid.toLocaleString(
+                      "vi-VN"
+                    )}
+                    discount_price={inputPayment.discount_price.toLocaleString(
+                      "vi-VN"
+                    )}
+                    isVoicesID={isVoicesID}
+                  />
+                </div>
+                {/* )} */}
               </div>
             </div>
           </div>

@@ -44,6 +44,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
+    console.log("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
     setAccessToken(access_token);
   };
@@ -52,7 +53,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("INFO_USER");
-
     setAccessToken(null);
   };
 

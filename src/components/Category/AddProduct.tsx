@@ -134,8 +134,8 @@ const AddProduct = () => {
         // setIsPreviewImage("");
       } else {
         console.log("error", response);
-        toast.error("Thêm danh mục không thành công!");
         const errorMessage = response.data.message.text;
+        toast.error(`${errorMessage}`);
         // setErrorMessageCategories(errorMessage);
         console.log(errorMessage);
         // setIsOpenPopups(isOpenPopups);

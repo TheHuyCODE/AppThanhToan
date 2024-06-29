@@ -1,4 +1,3 @@
-import Search from "antd/es/transfer/search";
 import axiosClient from "./axiosClient";
 
 const products = {
@@ -37,6 +36,18 @@ const products = {
         "ngrok-skip-browser-warning": "true",
       },
       params,
+    });
+  },
+
+  getDetailInvoices: (id: string) => {
+    const url = `api/v1/manage/invoice/${id}`;
+
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
     });
   },
   getCategoryProduct: () => {

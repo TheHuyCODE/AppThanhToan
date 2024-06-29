@@ -59,7 +59,10 @@ function App() {
     console.log("isAuthenticated", accessToken);
     setStateLogins(true);
   }, []);
-
+  const acces = localStorage.getItem("access_token");
+  useEffect(() => {
+    console.log("acces", acces);
+  }, [isAuthenticated]);
   return (
     <div className="App">
       <Routes>
