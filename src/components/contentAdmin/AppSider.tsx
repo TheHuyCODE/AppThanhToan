@@ -1,8 +1,8 @@
 import React from "react";
 import { Layout } from "antd";
-import MenuList from "../menuList/MenuList";
-import ToggleThemeButton from "../menuList/ToggleThemeButton";
-import Logo from "../logo/Logo";
+import MenuList from "../MenuList/MenuList";
+import ToggleThemeButton from "../MenuList/ToggleThemeButton";
+import Logo from "../Logo/Logo";
 import { useAuth } from "../auth/AuthContext";
 
 interface AppSiderProps {
