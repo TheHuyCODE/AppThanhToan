@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { Layout, theme } from "antd";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
 
@@ -8,11 +8,34 @@ import LoginRegister from "./components/Register/LoginRegister";
 import CatalogManagement from "./components/Category/CatalogManagement";
 import ProductMangement from "./components/Category/ProductMangement";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
-import AppSider from "./components/contentAdmin/AppSider";
+import PublicRouter from "./components/auth/PublicRouter";
+import Users from "./components/Users/Users";
 import Home from "./components/home/Home";
-import AppHeader from "./components/contentAdmin/AppHeader";
 import { TbRuler2 } from "react-icons/tb";
-import { AuthProvider } from "./components/auth/AuthContext";
+import AppWrapper from "./components/contentAdmin/wrapper";
+import DetailUsers from "./components/Users/DetailUsers";
+import ModifyUsers from "./components/Users/ModifyUsers";
+import Admins from "./components/Admin/Admins";
+import Groups from "./components/Admin/Groups";
+import Permissions from "./components/Admin/Permissions";
+import AddProduct from "./components/Category/AddProduct";
+import DetailProduct from "./components/Category/DetailProduct";
+import ModifyProduct from "./components/Category/ModifyProduct";
+import SalePage from "./components/SalesPage/SalePage";
+import RevenueReport from "./components/dashboard/RevenueReport";
+import InventoryReport from "./components/dashboard/InventoryReport";
+import Payment from "./components/Payment/Payment";
+import Invoices from "./components/Invoices/invoices";
+// import SalePage from "./components/SalesPage/SalePage";
+const NotFound = () => {
+  return (
+    <div>
+      <h1 style={{ color: "red", marginTop: "50px", marginLeft: "50px" }}>
+        404 Not Found
+      </h1>
+    </div>
+  );
+};
 
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
@@ -29,80 +52,314 @@ function App() {
 
   const location = useLocation();
   const isLoginRoute = location.pathname === "/login";
-  const  token  = useAuth();
+  const { isAuthenticated, accessToken, login, logout } = useAuth();
 
   useEffect(() => {
     // Logic to check if the user is logged in and update stateLogins
+    console.log("isAuthenticated", accessToken);
     setStateLogins(true);
   }, []);
-
+  const acces = localStorage.getItem("access_token");
+  useEffect(() => {
+    console.log("acces", acces);
+  }, [isAuthenticated]);
   return (
-    <AuthProvider>
-      <div className="App">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRouter token={token}>
-                <AppSider
-                  darkTheme={darkTheme}
-                  collapsedTheme={collapsedTheme}
-                  toggleTheme={toggleDarkTheme}
-                  setCollapsedTheme={setCollapsedTheme}
-                />
-                <AppHeader
-                  collapsedTheme={collapsedTheme}
-                  setCollapsedTheme={setCollapsedTheme}
-                  colorBgContainer={colorBgContainer}
-                />
-                <Layout
-                  style={{
-                    padding: "24px",
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
-                  }}
-                >
-                  <Home />
-                </Layout>
-              </ProtectedRouter>
-            }
-          />
-          <Route
-            path="/productmanagement"
-            element={
-              <ProtectedRouter stateLogins={stateLogins}>
-                <Layout
-                  style={{
-                    padding: "24px",
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
-                  }}
-                >
-                  <ProductMangement />
-                </Layout>
-              </ProtectedRouter>
-            }
-          />
-          <Route
-            path="/productcatalogmanagement"
-            element={
-              <ProtectedRouter stateLogins={stateLogins}>
-                <Layout
-                  style={{
-                    padding: "24px",
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
-                  }}
-                >
-                  <CatalogManagement />
-                </Layout>
-              </ProtectedRouter>
-            }
-          />
-          <Route path="/login" element={<LoginRegister />} />
-        </Routes>
-      </div>
-    </AuthProvider>
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Navigate to="/admin" />} />
+        <Route
+          path="admin"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Home />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/revenuereport"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <RevenueReport />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/inventoryreport"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <InventoryReport />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/invoices"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Invoices />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/paymentmethod"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Payment />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/products"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <ProductMangement />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+
+        <Route
+          path="admin/products/add"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <AddProduct />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/products/:idProduct"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <DetailProduct />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/products/edit/:idProduct"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <ModifyProduct />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/productcatalogmanagement"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <CatalogManagement />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/users/:userId"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <DetailUsers />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/users/edit/:userId"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <ModifyUsers />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Users />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/admins"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Admins />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/groups"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Groups />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/permissions"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Permissions />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRouter isAuthenticated={isAuthenticated}>
+              <LoginRegister />
+            </PublicRouter>
+          }
+        />
+        {/* <Route path="*" element={<NotFound />} /> */}
+
+        <Route
+          path="/SalesPage"
+          element={
+            <ProtectedRouter>
+              <SalePage />
+            </ProtectedRouter>
+          }
+        />
+      </Routes>
+    </div>
   );
 }
 

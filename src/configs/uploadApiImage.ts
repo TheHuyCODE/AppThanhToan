@@ -13,13 +13,25 @@ const uploadApiImage = {
       },
     });
   },
-  postAddItemCategory: (data, token) => {
+  postAddItemCategory: (data) => {
     const url = "api/v1/manage/category";
-    return axiosClient.post(url, data, {
+    return axiosClient.post(url, data, {});
+  },
+  postImageCategoryChild: (data) => {
+    const formData = new FormData();
+    formData.append("file", data);
+    const prefixImage = "category";
+    const url = `/api/v1/upload_file?prefix=${prefixImage}`;
+    return axiosClient.post(url, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
     });
+  },
+  //add image items child 1
+  postAddItemCategoryChild: (data) => {
+    const url = "api/v1/manage/category";
+    return axiosClient.post(url, data, {});
   },
 };
 export default uploadApiImage;

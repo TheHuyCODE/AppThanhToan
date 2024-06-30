@@ -1,34 +1,324 @@
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
+import "../styles/valiables.css";
 import uploadApiImage from "../../configs/uploadApiImage";
-import { Select, Button, Table, Space } from "antd";
+import { Select, Button, Table, Space, Modal } from "antd";
 import {
   FaArrowAltCircleDown,
   FaArrowAltCircleUp,
+  FaArrowDown,
+  FaArrowUp,
   FaEye,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { Option } from "antd/es/mentions";
+import AddProduct from "./AddProduct";
+import { useNavigate } from "react-router-dom";
+import products from "../../configs/products";
+import { useAuth } from "../auth/AuthContext";
+import { format } from "date-fns";
+import { ToastContainer, toast } from "react-toastify";
+import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
+import Spinners from "../SpinnerLoading/Spinners";
+import useDebounce from "../auth/useDebounce";
+import { IoMdAdd } from "react-icons/io";
+// let locale = {
+//   emptyText: 'Abc',
+// };
 const ProductMangement = () => {
-  const nameProduct = [
-    { name: "Máy nổ 1", value: 1 },
-    { name: "Máy nổ 2", value: 2 },
-    { name: "Máy nổ 3", value: 3 },
-  ];
+  const { fetchDataCategory, isCategoryProduct } = useAuth();
+  const [dataProduct, setDataProduct] = useState([]);
+  const navigate = useNavigate();
+  const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
+  const [valueSearch, setValueSearch] = useState("");
+  const debounceValue = useDebounce(valueSearch, 700);
+  const [sortedColumn, setSortedColumn] = useState({
+    key: null,
+    direction: null,
+  });
+  const [hoveredColumn, setHoveredColumn] = useState(null);
+  const [idSearchCategory, setIdSearchCategory] = useState({
+    id_category: "",
+  });
+  const [stateActiveProduct, setStateActiveProduct] = useState({
+    is_active: "",
+  });
+  const handleHeaderClick = (key) => {
+    setSortedColumn((prevState) => {
+      if (prevState.key === key) {
+        const newDirection = prevState.direction === "up" ? "down" : "up";
+        console.log(`New direction for column ${key}: ${newDirection}`);
+        return { key, direction: newDirection };
+      }
+      console.log(`Sorting direction for column ${key}: up`);
+      return { key, direction: "up" };
+    });
+  };
+  const getColumnTitle = (title, key) => (
+    <div
+      className="table-header"
+      onClick={() => handleHeaderClick(key)}
+      onMouseEnter={() => setHoveredColumn(key)}
+      onMouseLeave={() => setHoveredColumn(null)}
+      // style={{ position: "relative", width: width }}
+    >
+      <span style={{ display: "block" }}>{title}</span>
+      <div className="arrow-icon-container">
+        {sortedColumn.key === key && sortedColumn.direction === "up" && (
+          <FaArrowUp className="arrow-icon arrow-icon-visible" />
+        )}
+        {sortedColumn.key === key && sortedColumn.direction === "down" && (
+          <FaArrowDown className="arrow-icon arrow-icon-visible" />
+        )}
+        {sortedColumn.key !== key && hoveredColumn === key && (
+          <FaArrowUp className="arrow-icon arrow-icon-hover arrow-icon-visible" />
+        )}
+      </div>
+    </div>
+  );
+  // const [value, setValue] = useState("");
+  // const [dataProduct, setDataProduct] = useState([]);
   const statusProduct = [
-    { id: 1, name: "Còn" },
-    { id: 2, name: "Còn" },
-    { id: 3, name: "Còn" },
+    { value: 1, name: "Kích hoạt", id: "00001" },
+    { value: 2, name: "Chưa kích hoạt", id: "00002" },
   ];
   const [selectedValue, setSelectedValue] = useState(null);
-
+  const nameProduct = isCategoryProduct.map((item, index) => ({
+    name: item.name,
+    value: index + 1,
+    id: item.id,
+  }));
   const handleSelectChange = (e) => {
-    uploadApiImage.postMessage();
+    // uploadApiImage.postMessage();
     setSelectedValue(e.target.value);
     console.log("setSelectedValue", selectedValue);
   };
+
+  const addProduct = () => {
+    navigate("/admin/products/add");
+  };
+  const detailProduct = (record) => {
+    navigate(`/admin/products/${record.key}`);
+  };
+  const modifyProduct = (record) => {
+    navigate(`/admin/products/edit/${record.key}`);
+  };
+  const deleteProduct = async (record: any) => {
+    setOpenModalDeleteProduct(!openModalDeleteProduct);
+    console.log("deleteProduct", record);
+    setDeleteItemProduct(record);
+  };
+
+  //search product by category
+
+  const handleSelectCategory = (value) => {
+    const selectedCategory = nameProduct.find((item) => item.value === value);
+    if (selectedCategory) {
+      console.log("Name tương ứng với value:", selectedCategory);
+      console.log("Name tương ứng với id:", selectedCategory.id);
+      const idSearch = selectedCategory.id;
+      setIdSearchCategory({
+        ...idSearchCategory,
+        id_category: idSearch,
+      });
+      console.log("idSearchCategory", idSearchCategory);
+      // setSelectedCategory(selectedName);
+    } else {
+      console.log("Không tìm thấy name cho giá trị:", value);
+      fetchDataProduct();
+    }
+  };
+
+  // search products by active
+  const handleSelectActive = (value) => {
+    const isActiveProduct = statusProduct.find((item) => item.value === value);
+
+    if (isActiveProduct) {
+      if (isActiveProduct.id === "00001") {
+        setStateActiveProduct({
+          ...stateActiveProduct,
+          is_active: "true",
+        });
+      } else if (isActiveProduct.id === "00002") {
+        setStateActiveProduct({
+          ...stateActiveProduct,
+          is_active: "false",
+        });
+      }
+
+      // Log the updated state after the state update
+      console.log("active", stateActiveProduct.is_active);
+
+      // Log additional information about the active product
+      console.log("Name tương ứng với value:", isActiveProduct);
+      console.log("Name tương ứng với id:", isActiveProduct.id);
+    } else {
+      console.log("Không tìm thấy value:", value);
+      fetchDataProduct();
+    }
+  };
+  const handleSearchProduct = (e) => {
+    const value = e.target.value.trim();
+    setValueSearch(value);
+    console.log("value", value);
+  };
+
+  const handleDeleteProduct = async () => {
+    console.log("handleDeleteProduct");
+    const keyItemsProduct = deleteItemProduct.key;
+    if (keyItemsProduct) {
+      const res = await products.deleteProduct(keyItemsProduct);
+      if (res.code === 200) {
+        setOpenModalDeleteProduct(!openModalDeleteProduct);
+        toast.success("Đã xóa sản phẩm thành công");
+        await fetchDataProduct();
+        console.log("error:", res);
+      } else {
+        toast.error("Lỗi! Chưa xóa được sản phẩm");
+        setOpenModalDeleteProduct(!openModalDeleteProduct);
+      }
+    }
+  };
+  //fetch api product
+  const fetchDataProduct = async () => {
+    setLoading(true);
+    try {
+      const res = await products.getAll();
+      setDataProduct(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.log("error:", error);
+      setLoading(false);
+    }
+    // console.log("data category", res.data.items);
+    // console.log(res.data);
+  };
+
+  // search product by input value using debounce
+
+  const fetchDataSearchProduct = async () => {
+    setLoading(true);
+    const res = await products.getDataSearchNameProduct(debounceValue);
+    if (res.code === 200) {
+      setDataProduct(res.data);
+      setLoading(false);
+    } else {
+      console.log("Error:");
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchDataSearchProduct();
+    console.log("valueSearchProduct", valueSearch);
+  }, [debounceValue]);
+  useEffect(() => {
+    console.log("isCategoryProduct:", isCategoryProduct);
+    fetchDataCategory();
+    fetchDataProduct();
+  }, []);
+
+  //get api search products for category
+  useEffect(() => {
+    console.log("idSearchCategory", idSearchCategory.id_category);
+    const fetchSearchDataCategory = async () => {
+      if (idSearchCategory.id_category) {
+        // Check if idSearchCategory is not empty
+        const res = await products.getDataSearchProduct(
+          idSearchCategory.id_category
+        );
+        if (res.code === 200) {
+          console.log(res.data);
+          setTimeout(() => {
+            setDataProduct(res.data);
+          }, 7000);
+        } else {
+          console.log(res.data);
+        }
+      }
+      // if (idSearchCategory.id_category === "undefined") {
+      //   await fetchDataProduct();
+      // }
+    };
+    fetchSearchDataCategory();
+  }, [idSearchCategory.id_category]);
+
+  useEffect(() => {
+    console.log("active", stateActiveProduct.is_active);
+    const fetchSearchDataActive = async () => {
+      if (stateActiveProduct.is_active) {
+        // Check if idSearchCategory is not empty
+        const res = await products.getDataSearchProductActive(
+          stateActiveProduct.is_active
+        );
+        if (res.code === 200) {
+          console.log(res.data);
+          setTimeout(() => {
+            setDataProduct(res.data);
+          }, 700);
+        } else {
+          console.log(res.data);
+        }
+      }
+      if (idSearchCategory.id_category === "undefined") {
+        await fetchDataProduct();
+      }
+    };
+    fetchSearchDataActive();
+  }, [stateActiveProduct.is_active]);
+
+  useEffect(() => {
+    console.log("key", sortedColumn.key);
+    console.log("key", sortedColumn.direction);
+    setLoading(true);
+
+    const fetchSortDataProduct = async () => {
+      if (sortedColumn.key) {
+        // Check if idSearchCategory is not empty
+        const res = await products.getDataSortProduct(
+          sortedColumn.key,
+          sortedColumn.direction
+        );
+        if (res.code === 200) {
+          console.log(res.data);
+          setTimeout(() => {
+            setDataProduct(res.data);
+          }, 700);
+          setLoading(false);
+        } else {
+          console.log(res.data);
+          setLoading(false);
+        }
+      }
+      // if (idSearchCategory.id_category === "undefined") {
+      //   await fetchDataProduct();
+      // }
+    };
+    fetchSortDataProduct();
+  }, [stateActiveProduct.is_active]);
+
+  const datatable = dataProduct.items?.map((item, index) => ({
+    stt: index + 1,
+    key: item.id,
+    barcode: item.barcode,
+    name: item.name,
+    description: item.description,
+    created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
+    modified_date: item.description,
+    last_modified_user: item.last_modified_user,
+    store_id: item.store_id,
+    create_user: item.user.full_name,
+    category_id: item.category_id,
+    category: item.category.name,
+    price: item.price,
+    capital_price: item.capital_price,
+    inventory_number: item.inventory_number,
+    unit: item.unit,
+    is_active: item.is_active,
+    image_url: item.image_url,
+  }));
   const columns = [
     {
       title: "STT",
@@ -36,213 +326,252 @@ const ProductMangement = () => {
       key: "stt",
     },
     {
-      title: "Mã sản phẩm chính",
-      dataIndex: "Masanphamchinh",
-      key: "Masanphamchinh",
+      title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
+      dataIndex: "barcode",
+      key: "barcode",
+      align: "start",
     },
     {
-      title: "Tên sản phẩm",
-      dataIndex: "Tensanpham",
-      key: "Tensanpham",
+      title: getColumnTitle("Tên sản phẩm", "name"),
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: "Hãng sản xuất",
-      dataIndex: "Hangsanxuat",
-      key: "Hangsanxuat",
+      title: getColumnTitle("Danh mục \n sản phẩm", "category"),
+      dataIndex: "category",
+      key: "category",
     },
     {
-      title: "Hãng sản xuất gốc",
-      dataIndex: "Hangsanxuatgoc",
-      key: "Hangsanxuatgoc",
-      align: 'center',
-      editTable: true,
+      title: getColumnTitle("Giá bán", "price"),
+      dataIndex: "price",
+      key: "price",
     },
     {
-      title: "Danh mục sản phẩm",
-      dataIndex: "Danhmucsanpham",
-      key: "Danhmucsanpham",
-      align: 'center',
-      editTable: true,
+      title: getColumnTitle("Giá vốn", "capital_price"),
+      dataIndex: "capital_price",
+      key: "capital_price",
     },
     {
-      title: "Đơn giá",
-      dataIndex: "Dongia",
-      key: "Dongia",
-      align: 'center',
-      editTable: true,
+      title: getColumnTitle("Số lượng tồn kho", "inventory_number"),
+      dataIndex: "inventory_number",
+      key: "inventory_number",
+    },
+
+    {
+      title: "Đơn vị tính",
+      dataIndex: "unit",
+      key: "unit",
+    },
+
+    {
+      title: getColumnTitle("Ngày tạo", "created_date"),
+      dataIndex: "created_date",
+      key: "created_date",
     },
     {
-      title: "Đơn giá sau giảm",
-      dataIndex: "Dongiasaugiam",
-      key: "Dongiasaugiam",
-      align: 'center',
-      editTable: true,
-    },
-    {
-      title: "Số lượng tồn",
-      dataIndex: "SLton",
-      key: "SLton",
-    },
-    {
-      title: "Sản phẩm bán chạy",
-      dataIndex: "Sanphambanchay",
-      key: "Sanphambanchay",
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "Date",
-      key: "Date",
-      align: 'center',
-      editTable: true,
+      title: getColumnTitle("Ngày tạo", "create_user"),
+      dataIndex: "create_user",
+      key: "create_user",
+
+      // align: "center",
     },
     {
       title: "Thao tác",
       key: "action",
-      render: () => (
+      render: (record) => (
         <Space size="middle">
           <a>
-            <FaEye />
+            <FaEye onClick={() => detailProduct(record)} />
           </a>
           <a>
-            <FaPencilAlt style={{ color: "red" }} />
+            <FaPencilAlt onClick={() => modifyProduct(record)} />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => deleteProduct(record)}
+            />
           </a>
         </Space>
       ),
     },
   ];
-  const dataProduct = [
-    {
-      stt: 1,
-      Masanphamchinh: "HNAHDF",
-      Tensanpham: "Máy nổ 1",
-      Hangsanxuat: "Hàn Quốc",
-      Hangsanxuatgoc: "Hàn Quốc",
-      Danhmucsanpham: "Máy nổ",
-      Dongia: 1000000,
-      Dongiasaugiam: 1000000,
-      SLton: 100,
-      Sanphambanchay: 1,
-      Date: "2021-09-01",
-    },
-    {
-      stt: 2,
-      Masanphamchinh: "HNAHDF",
-      Tensanpham: "Máy nổ 1",
-      Hangsanxuat: "Hàn Quốc",
-      Hangsanxuatgoc: "Hàn Quốc",
-      Danhmucsanpham: "Máy nổ",
-      Dongia: 1000000,
-      Dongiasaugiam: 1000000,
-      SLton: 100,
-      Sanphambanchay: 1,
-      Date: "2021-09-01",
-    },
-    {
-      stt: 3,
-      Masanphamchinh: "HNAHDF",
-      Tensanpham: "Máy nổ 1",
-      Hangsanxuat: "Hàn Quốc",
-      Hangsanxuatgoc: "Hàn Quốc",
-      Danhmucsanpham: "Máy nổ",
-      Dongia: 1000000,
-      Dongiasaugiam: 1000000,
-      SLton: 100,
-      Sanphambanchay: 1,
-      Date: "2021-09-01",
-    },
-  ];
+
   return (
     <div className="content">
-      <h1>Quản lí sản phẩm</h1>
-      <div className="headerProduct">
-        <div className="headerProduct-left">
-          <div className="headerProduct-left-top">
-            <div className="search-product">
-              <CiSearch className="icon-search-product" />
+      <ToastContainer closeOnClick autoClose={5000} />
+      <h1
+        style={{
+          fontFamily: "poppins, sans-serif",
+          color: "var(--color-title)",
+        }}
+      >
+        Quản lí sản phẩm
+      </h1>
+      <div
+        className="header"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          border: "none",
+          color: "white",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+        }}
+      >
+        <div className="header-left">
+          <div className="header-left-top">
+            <div
+              className="search-product"
+              style={{ display: "flex", position: "relative" }}
+            >
+              <CiSearch
+                style={{
+                  position: "absolute",
+                  top: "6px",
+                  left: "5px",
+                  transform: "translateY(5%)",
+                  fontSize: "20px",
+                  color: "var(--cl-dark)",
+                }}
+              />
               <input
                 type="text"
-                placeholder="Tìm danh mục"
+                placeholder="Tìm sản phẩm"
                 className="search-category"
+                onChange={handleSearchProduct}
               />
             </div>
+
             <Select
-              className="form-input"
-              placeholder="Hãng sản xuất"
-              allowClear
-              onChange={handleSelectChange}
-            >
-              {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
-              ))}
-            </Select>
-            <Select
-              className="form-input"
               placeholder="Danh mục sản phẩm"
               allowClear
-              onChange={handleSelectChange}
+              onChange={(value) => {
+                handleSelectCategory(value);
+              }}
+              style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
+                <option value={option.value} key={option.id}>
+                  {option.name}
+                </option>
               ))}
             </Select>
             <Select
-              className="form-input"
               placeholder="Loại giảm giá"
               allowClear
               onChange={handleSelectChange}
+              style={{ width: 200, height: 35 }}
             >
               {nameProduct.map((option) => (
-                <option value={option.value}>{option.name}</option>
+                <option value={option.value} key={option.id}>
+                  {option.name}
+                </option>
               ))}
             </Select>
           </div>
-          <div className="headerProduct-left-bottom">
+          <div className="header-left-bottom">
             <Select
-              className="form-input"
               placeholder="Trạng thái sản phẩm"
               allowClear
-              onChange={handleSelectChange}
+              onChange={(value) => {
+                handleSelectActive(value);
+              }}
+              style={{ width: 200, height: 35 }}
             >
               {statusProduct.map((option) => (
-                <option value={option.id}>{option.name}</option>
+                <option value={option.value} key={option.id}>
+                  {option.name}
+                </option>
               ))}
             </Select>
-            <input type="checkbox" />
-            <label htmlFor="">Sản phẩm bán chạy</label>
+            {/* <div
+              style={{
+                width: "200px",
+                height: "35px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <input type="checkbox" />
+              <label htmlFor="">Sản phẩm bán chạy</label>
+            </div> */}
           </div>
         </div>
-        <div className="headerProduct-right">
-          <Button type="primary">Hướng dẫn sử dụng</Button>
-          <Button type="primary">
-            <FaArrowAltCircleUp />
-            Export
-          </Button>
-          <Button type="primary">
-            <FaArrowAltCircleDown />
-            Import
-          </Button>
-          <Button type="primary">Thêm sản phẩm</Button>
+        <div
+          className="header-right"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: "10px",
+            padding: "10px",
+            marginLeft: "80px",
+          }}
+        >
+          <button className="btn-header-right">Hướng dẫn sử dụng</button>
+          <button className="btn-header-right" style={{ width: "100px" }}>
+            <FaArrowAltCircleUp /> &nbsp; Export
+          </button>
+          <button className="btn-header-right" style={{ width: "100px" }}>
+            <FaArrowAltCircleDown /> &nbsp; Import
+          </button>
+          <button onClick={addProduct} className="btn-header-right">
+            <IoMdAdd className="icon" /> Thêm sản phẩm
+          </button>
         </div>
+        <Modal
+          okButtonProps={{ style: { backgroundColor: "red" } }}
+          width={600}
+          centered
+          open={openModalDeleteProduct}
+          onOk={handleDeleteProduct}
+          onCancel={() => setOpenModalDeleteProduct(!openModalDeleteProduct)}
+          okText="Xóa"
+          cancelText="Hủy bỏ"
+        >
+          <h1
+            style={{
+              fontFamily: "Arial",
+              fontSize: "30px",
+              fontWeight: "bold",
+              padding: "5px 10px",
+              marginBottom: "6px",
+            }}
+          >
+            Xóa sản phẩm
+          </h1>
+          <span style={{ fontSize: "15px", padding: "5px 10px" }}>
+            Bạn chắc chắn muốn xóa sản phẩm này không?
+          </span>
+        </Modal>
       </div>
       <div className="table-container">
-        <Table
-          columns={columns}
-          dataSource={dataProduct}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: () => {
-                console.log(record, rowIndex);
-              }, // click row
-            };
-          }}
-          pagination={{
-            current: 1,
-            pageSize: 10,
-          }}
-        ></Table>
+        {loading ? (
+          <Spinners loading={loading} />
+        ) : (
+          <>
+            <Table
+              columns={columns}
+              dataSource={datatable}
+              locale={localeProduct}
+              pagination={paginationConfig}
+              // onHeaderRow={(columns, index) => {
+              //   return {
+              //     onClick: (columns, index) => {
+              //       console.log("columns", columns);
+              //       console.log("columns", index);
+              //     }, // click header row
+              //   };
+              // }}
+            />
+            <span
+              className="total-items"
+              style={{ color: "var(--cl-dark)" }}
+            >{`${datatable?.length}/${dataProduct.total}`}</span>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient";
 
 const category = {
-  getAll: (accessToken) => {
+  getAll: () => {
     const url = "api/v1/manage/category";
     return axiosClient.get(url, {
       headers: {
@@ -9,6 +9,35 @@ const category = {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+    });
+  },
+  getAllChild: (parent_id) => {
+    const url = "api/v1/manage/category";
+    const params = {
+      parent_id: parent_id,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+
+  getAllChildThirds: (parent_id) => {
+    const url = "api/v1/manage/category";
+    const params = {
+      parent_id: parent_id,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
     });
   },
   postNameCatalog: () => {
@@ -25,24 +54,85 @@ const category = {
       },
     });
   },
-  deleteCategory: (idItems, accessToken) => {
+  deleteCategory: (idItems) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.delete(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
     });
   },
-  putModifyCategory: (idItems, data, accessToken) => {
+
+  deleteCategoryChild: (idItems) => {
     const url = `api/v1/manage/category/${idItems}`;
-    return axiosClient.put(url, {
+    return axiosClient.delete(url, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+    });
+  },
+  putModifyCategory: (idItems, data) => {
+    const url = `api/v1/manage/category/${idItems}`;
+    return axiosClient.put(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
+  putModifyCategoryChild: (idItems, data) => {
+    const url = `api/v1/manage/category/${idItems}`;
+    return axiosClient.put(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
+  getDataSearchNameCategory: (value) => {
+    const url = `api/v1/manage/category`;
+    const params = {
+      search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchNameChildCategory: (parent_id, value) => {
+    const url = `api/v1/manage/category`;
+    const params = {
+      parent_id: parent_id,
+      search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchNameThreeCategory: (parent_id, value) => {
+    const url = `api/v1/manage/category`;
+    const params = {
+      parent_id: parent_id,
+      search: value,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
     });
   },
 };
