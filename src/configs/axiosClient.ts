@@ -1,11 +1,13 @@
 import axios from "axios";
 import queryString from "query-string";
-const BASEURL = 'https://32cc-14-231-206-191.ngrok-free.app'
+
+const BASEURL = process.env.BASE_URL
+const access_token = localStorage.getItem('access_token')
 const axiosClient = axios.create({
   baseURL: BASEURL,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    Authorization: `Bearer ${access_token}`,
   },
   paramsSerializer: (params) => queryString.stringify(params),
 });
