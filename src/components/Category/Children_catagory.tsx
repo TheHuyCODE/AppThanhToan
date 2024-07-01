@@ -9,11 +9,11 @@ import { toast } from "react-toastify";
 import { CiCircleRemove, CiSearch } from "react-icons/ci";
 import category from "../../configs/category";
 import { format } from "date-fns";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 import ChildrenThree_catagory from "./ChildrenThree_catagory";
 import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
-import useDebounce from "../auth/useDebounce";
+import useDebounce from "../Auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
 
 const ChildrenCategory = ({

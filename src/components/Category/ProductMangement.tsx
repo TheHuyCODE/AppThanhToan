@@ -16,12 +16,12 @@ import {
 import AddProduct from "./AddProduct";
 import { useNavigate } from "react-router-dom";
 import products from "../../configs/products";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
 import Spinners from "../SpinnerLoading/Spinners";
-import useDebounce from "../auth/useDebounce";
+import useDebounce from "../Auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
 // let locale = {
 //   emptyText: 'Abc',
@@ -226,9 +226,7 @@ const ProductMangement = () => {
     const fetchSearchDataCategory = async () => {
       if (idSearchCategory.id_category) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSearchProduct(
-          idSearchCategory.id_category
-        );
+        const res = await products.getDataSearchProduct(idSearchCategory.id_category);
         if (res.code === 200) {
           console.log(res.data);
           setTimeout(() => {
@@ -250,9 +248,7 @@ const ProductMangement = () => {
     const fetchSearchDataActive = async () => {
       if (stateActiveProduct.is_active) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSearchProductActive(
-          stateActiveProduct.is_active
-        );
+        const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
         if (res.code === 200) {
           console.log(res.data);
           setTimeout(() => {
@@ -277,10 +273,7 @@ const ProductMangement = () => {
     const fetchSortDataProduct = async () => {
       if (sortedColumn.key) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSortProduct(
-          sortedColumn.key,
-          sortedColumn.direction
-        );
+        const res = await products.getDataSortProduct(sortedColumn.key, sortedColumn.direction);
         if (res.code === 200) {
           console.log(res.data);
           setTimeout(() => {
@@ -387,10 +380,7 @@ const ProductMangement = () => {
             <FaPencilAlt onClick={() => modifyProduct(record)} />
           </a>
           <a>
-            <FaTrash
-              style={{ color: "red" }}
-              onClick={() => deleteProduct(record)}
-            />
+            <FaTrash style={{ color: "red" }} onClick={() => deleteProduct(record)} />
           </a>
         </Space>
       ),
@@ -402,7 +392,7 @@ const ProductMangement = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <h1
         style={{
-          fontFamily: "poppins, sans-serif",
+          fontFamily: "var( --kv-font-sans-serif)",
           color: "var(--color-title)",
         }}
       >
@@ -420,10 +410,7 @@ const ProductMangement = () => {
       >
         <div className="header-left">
           <div className="header-left-top">
-            <div
-              className="search-product"
-              style={{ display: "flex", position: "relative" }}
-            >
+            <div className="search-product" style={{ display: "flex", position: "relative" }}>
               <CiSearch
                 style={{
                   position: "absolute",

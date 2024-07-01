@@ -5,7 +5,7 @@ import { IoIosAdd, IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import products from "../../configs/products";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBan, FaRegSave } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";

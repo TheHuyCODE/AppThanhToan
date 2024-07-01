@@ -19,7 +19,7 @@ import { LuStore } from "react-icons/lu";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 const LoginRegister = () => {
   const storeNameRef = useRef(null);
   const fullNameRef = useRef(null);

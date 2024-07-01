@@ -3,7 +3,7 @@ import { Layout } from "antd";
 import MenuList from "../MenuList/MenuList";
 import ToggleThemeButton from "../MenuList/ToggleThemeButton";
 import Logo from "../Logo/Logo";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 
 interface AppSiderProps {
   collapsedTheme: boolean;

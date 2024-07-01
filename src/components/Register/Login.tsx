@@ -8,7 +8,7 @@ import loginApi from "../../configs/loginApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./LoginRegister.css";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 const { isAuthenticated, accessToken, login, logout } = useAuth();
 
 const Login = ({ registerLink }) => {

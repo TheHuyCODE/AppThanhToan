@@ -3,13 +3,13 @@ import { format } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { CiCircleRemove, CiSearch } from "react-icons/ci";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 import { AiOutlinePicture } from "react-icons/ai";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast } from "react-toastify";
 import { domain } from "../TableConfig/TableConfig";
 import category from "../../configs/category";
-import useDebounce from "../auth/useDebounce";
+import useDebounce from "../Auth/useDebounce";
 
 const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   const domainLink = domain.domainLink;

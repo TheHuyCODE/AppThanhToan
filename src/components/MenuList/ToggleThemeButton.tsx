@@ -2,7 +2,7 @@ import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi";
 
 import React from "react";
 import { Button } from "antd";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 
 const ToggleThemeButton = () => {
   const { colorSidebar, darkTheme } = useAuth();

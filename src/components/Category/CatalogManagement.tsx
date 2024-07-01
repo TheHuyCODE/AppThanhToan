@@ -22,11 +22,11 @@ import { Button, Modal } from "antd";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ChildrenCategory from "./Children_catagory";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 import { localCategory } from "../TableConfig/TableConfig";
 import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
-import useDebounce from "../auth/useDebounce";
+import useDebounce from "../Auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
 
 const CatalogManagement = () => {

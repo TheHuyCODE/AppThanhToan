@@ -7,7 +7,7 @@ import "../styles/valiables.css";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBan } from "react-icons/fa";
 import products from "../../configs/products";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 
 import { ToastContainer, toast } from "react-toastify";
 import category from "../../configs/category";
