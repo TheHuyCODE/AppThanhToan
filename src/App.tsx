@@ -11,7 +11,6 @@ import ProtectedRouter from "./components/auth/ProtectedRouter";
 import PublicRouter from "./components/auth/PublicRouter";
 import Users from "./components/Users/Users";
 import Home from "./components/Home/Home";
-import { TbRuler2 } from "react-icons/tb";
 import AppWrapper from "./components/ContentAdmin/wrapper";
 import DetailUsers from "./components/Users/DetailUsers";
 import ModifyUsers from "./components/Users/ModifyUsers";
@@ -21,19 +20,20 @@ import Permissions from "./components/Admin/Permissions";
 import AddProduct from "./components/Category/AddProduct";
 import DetailProduct from "./components/Category/DetailProduct";
 import ModifyProduct from "./components/Category/ModifyProduct";
-import SalePage from "./components/SalesPage/SalePage";
+// import SalePage from './components/SalesPage/SalePage';
 import RevenueReport from "./components/Dashboard/RevenueReport";
 import InventoryReport from "./components/Dashboard/InventoryReport";
 import Payment from "./components/Payment/Payment";
 import Invoices from "./components/Invoices/invoices";
+import SalePageDemo from "./components/SalesPage/SalePageDemo";
 // import SalePage from "./components/SalesPage/SalePage";
-const NotFound = () => {
-  return (
-    <div>
-      <h1 style={{ color: "red", marginTop: "50px", marginLeft: "50px" }}>404 Not Found</h1>
-    </div>
-  );
-};
+// const NotFound = () => {
+//   return (
+//     <div>
+//       <h1 style={{ color: "red", marginTop: "50px", marginLeft: "50px" }}>404 Not Found</h1>
+//     </div>
+//   );
+// };
 
 function App() {
   const [darkTheme, setDarkTheme] = useState(true);
@@ -352,7 +352,7 @@ function App() {
           path="/SalesPage"
           element={
             <ProtectedRouter>
-              <SalePage />
+              <SalePageDemo />
             </ProtectedRouter>
           }
         />

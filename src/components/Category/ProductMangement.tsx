@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
-import uploadApiImage from "../../configs/uploadApiImage";
-import { Select, Button, Table, Space, Modal } from "antd";
+// import uploadApiImage from "../../configs/uploadApiImage";
+import { Select, Table, Space, Modal } from "antd";
 import {
   FaArrowAltCircleDown,
   FaArrowAltCircleUp,
@@ -46,7 +46,7 @@ const ProductMangement = () => {
   const [stateActiveProduct, setStateActiveProduct] = useState({
     is_active: "",
   });
-  const handleHeaderClick = (key) => {
+  const handleHeaderClick = (key: string) => {
     setSortedColumn((prevState) => {
       if (prevState.key === key) {
         const newDirection = prevState.direction === "up" ? "down" : "up";
@@ -57,7 +57,7 @@ const ProductMangement = () => {
       return { key, direction: "up" };
     });
   };
-  const getColumnTitle = (title, key) => (
+  const getColumnTitle = (title: string, key: string) => (
     <div
       className="table-header"
       onClick={() => handleHeaderClick(key)}
@@ -86,7 +86,7 @@ const ProductMangement = () => {
     { value: 2, name: "Chưa kích hoạt", id: "00002" },
   ];
   const [selectedValue, setSelectedValue] = useState(null);
-  const nameProduct = isCategoryProduct.map((item, index) => ({
+  const nameProduct = isCategoryProduct?.map((item, index) => ({
     name: item.name,
     value: index + 1,
     id: item.id,
@@ -226,9 +226,7 @@ const ProductMangement = () => {
     const fetchSearchDataCategory = async () => {
       if (idSearchCategory.id_category) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSearchProduct(
-          idSearchCategory.id_category
-        );
+        const res = await products.getDataSearchProduct(idSearchCategory.id_category);
         if (res.code === 200) {
           console.log(res.data);
           setTimeout(() => {
@@ -250,9 +248,7 @@ const ProductMangement = () => {
     const fetchSearchDataActive = async () => {
       if (stateActiveProduct.is_active) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSearchProductActive(
-          stateActiveProduct.is_active
-        );
+        const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
         if (res.code === 200) {
           console.log(res.data);
           setTimeout(() => {
@@ -277,10 +273,7 @@ const ProductMangement = () => {
     const fetchSortDataProduct = async () => {
       if (sortedColumn.key) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSortProduct(
-          sortedColumn.key,
-          sortedColumn.direction
-        );
+        const res = await products.getDataSortProduct(sortedColumn.key, sortedColumn.direction);
         if (res.code === 200) {
           console.log(res.data);
           setTimeout(() => {
@@ -387,10 +380,7 @@ const ProductMangement = () => {
             <FaPencilAlt onClick={() => modifyProduct(record)} />
           </a>
           <a>
-            <FaTrash
-              style={{ color: "red" }}
-              onClick={() => deleteProduct(record)}
-            />
+            <FaTrash style={{ color: "red" }} onClick={() => deleteProduct(record)} />
           </a>
         </Space>
       ),
@@ -402,7 +392,7 @@ const ProductMangement = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <h1
         style={{
-          fontFamily: "poppins, sans-serif",
+          fontFamily: "var( --kv-font-sans-serif)",
           color: "var(--color-title)",
         }}
       >
@@ -420,10 +410,7 @@ const ProductMangement = () => {
       >
         <div className="header-left">
           <div className="header-left-top">
-            <div
-              className="search-product"
-              style={{ display: "flex", position: "relative" }}
-            >
+            <div className="search-product" style={{ display: "flex", position: "relative" }}>
               <CiSearch
                 style={{
                   position: "absolute",

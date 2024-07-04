@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 
-import { Modal, QRCode, Select, Tabs } from "antd";
+import { Modal, Select, Tabs } from "antd";
 import { FaBars } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 
@@ -8,19 +8,20 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import products from "../../configs/products";
 import category from "../../configs/category";
 import { domain } from "../TableConfig/TableConfig";
-import { FaEllipsisVertical, FaRegTrashCan } from "react-icons/fa6";
+import { FaArrowRightFromBracket, FaEllipsisVertical, FaRegTrashCan } from "react-icons/fa6";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import "./SalePage.css";
 import "../styles/valiables.css";
 import useDebounce from "../auth/useDebounce";
 import { useAuth } from "../auth/AuthContext";
 import logoutApi from "../../configs/logoutApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import sellProduct from "../../configs/sellProduct";
 import { ToastContainer, toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import QRcode from "./QRcode";
 import DetailInvoices from "../Invoices/detailInvoices";
+import { MdOutlinePoll } from "react-icons/md";
 
 interface User {
   access_token: string;
@@ -49,7 +50,7 @@ interface Invoice {
   total_price: number;
   created_date: number;
   id_payment: string;
-  items: Array<Product>;
+  //   items: Array<Product>;
 }
 
 interface Category {
@@ -96,16 +97,15 @@ const SalePage = () => {
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
   const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
   const [cashmoney, setCashmoney] = useState<CashPayment[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>(() => {
-    const savedProducts = localStorage.getItem("selectedProducts");
-    return savedProducts ? JSON.parse(savedProducts) : [];
+
+  const [selectedProducts, setSelectedProducts] = useState<{ items: Product[] }>(() => {
+    const savedProducts = localStorage.getItem("detail_invoice");
+    return savedProducts ? JSON.parse(savedProducts) : { Items: [] };
   });
   const [invoiceList, setInvoiceList] = useState<Invoice[]>(() => {
     const savedInvoices = localStorage.getItem("invoiceList");
     const parsedInvoices = savedInvoices ? JSON.parse(savedInvoices) : [];
-    const hasInitialInvoice = parsedInvoices.some(
-      (invoice) => invoice.key === initialItems[0].key
-    );
+    const hasInitialInvoice = parsedInvoices.some((invoice) => invoice.key === initialItems[0].key);
     if (!hasInitialInvoice) {
       parsedInvoices.push({
         id: 1, // Example unique ID for invoice
@@ -134,8 +134,7 @@ const SalePage = () => {
     account_Name: "",
     id: "",
   });
-  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] =
-    useState(false);
+  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState();
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [showSelect, setShowSelect] = useState(false);
@@ -213,11 +212,7 @@ const SalePage = () => {
         inputQRCode.amount_Due,
         inputQRCode.account_Name
       );
-      // const linkQr = `https://img.vietqr.io/image/${isActiveProduct.bank_id}-${
-      //   isActiveProduct.account_no
-      // }-${isActiveProduct.template}.png?amount=${
-      //   inputPayment.amount_due
-      // }&addInfo=${`Thanhtoánhóađơn`} `;
+
       console.log("linkQr", linkQr);
       setLinkQR(linkQr);
       setHiddenQRCode(true);
@@ -289,9 +284,7 @@ const SalePage = () => {
     }
   };
 
-  const clickAddItemCategory = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const clickAddItemCategory = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const dataCustomer = {
       full_name: inputCustomer.full_name,
@@ -346,7 +339,7 @@ const SalePage = () => {
     localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
   }, [invoiceList]);
   useEffect(() => {
-    localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
+    localStorage.setItem("detail_invoice", JSON.stringify(selectedProducts));
   }, [selectedProducts]);
 
   // const addProduct = (product: Product, invoiceKey: string) => {
@@ -375,40 +368,46 @@ const SalePage = () => {
 
   // Add products or reduce the number of products---------------
   const increment = (id: string) => {
-    setSelectedProducts((prevSelectedProducts) =>
-      prevSelectedProducts.map((product) =>
-        product.id === id
-          ? { ...product, quantity: product.quantity + 1 }
-          : product
-      )
-    );
+    setSelectedProducts((prevState) => ({
+      ...prevState,
+      Items: prevState.items.map((product) =>
+        product.id === id ? { ...product, quantity: product.quantity + 1 } : product
+      ),
+    }));
   };
 
   const decrement = (id: string) => {
-    setSelectedProducts((prevSelectedProducts) =>
-      prevSelectedProducts.map((product) =>
+    setSelectedProducts((prevState) => ({
+      ...prevState,
+      Items: prevState.items.map((product) =>
         product.id === id && product.quantity > 1
           ? { ...product, quantity: product.quantity - 1 }
           : product
-      )
-    );
+      ),
+    }));
   };
+
   //-------------------------------------------------------------
 
   const addProductToSelected = (product: Product) => {
-    setSelectedProducts((prevProducts) => {
-      const productExists = prevProducts.some((item) => item.id === product.id);
+    setSelectedProducts((prevState) => {
+      const productExists = prevState.items.some((item) => item.id === product.id);
       if (productExists) {
-        return prevProducts.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        return {
+          ...prevState,
+          Items: prevState.items.map((item) =>
+            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          ),
+        };
       } else {
-        return [...prevProducts, { ...product, quantity: 1 }];
+        return {
+          ...prevState,
+          Items: [...prevState.items, { ...product, quantity: 1 }],
+        };
       }
     });
   };
+
   // Logout the user in the sales screen----------------------------
 
   const clickLogoutUser = () => {
@@ -441,24 +440,20 @@ const SalePage = () => {
     }
   };
 
-  const handleChangeNumberCards = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    id: string
-  ) => {
+  const handleChangeNumberCards = (event: React.ChangeEvent<HTMLInputElement>, id: string) => {
     const newValue = parseInt(event.target.value);
     if (!isNaN(newValue) && newValue >= 0) {
-      setSelectedProducts((prevSelectedProducts) =>
-        prevSelectedProducts.map((product) =>
+      setSelectedProducts((prevState) => ({
+        ...prevState,
+        Items: prevState.items.map((product) =>
           product.id === id ? { ...product, quantity: newValue } : product
-        )
-      );
+        ),
+      }));
     }
   };
 
   // Event handler to update the selected payment method
-  const handlePaymentMethodChange = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handlePaymentMethodChange = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const newPaymentMethod = parseInt(event.target.value, 10);
     setSelectedPaymentMethod(newPaymentMethod);
     if (newPaymentMethod === 0 || newPaymentMethod === 2) {
@@ -471,12 +466,13 @@ const SalePage = () => {
   };
   // remove product carts when user clicks on icon
   const removeProductCarts = (id: string) => {
-    setSelectedProducts((prevSelectedProducts) =>
-      prevSelectedProducts.filter((product) => product.id !== id)
-    );
+    setSelectedProducts((prevState) => ({
+      ...prevState,
+      Items: prevState.items.filter((product) => product.id !== id),
+    }));
   };
   const getTotalQuantityAndPrice = () => {
-    const total = selectedProducts.reduce(
+    const total = selectedProducts.items.reduce(
       (acc, product) => {
         acc.quantity += product.quantity;
         acc.price += product.quantity * product.capital_price;
@@ -605,7 +601,7 @@ const SalePage = () => {
       });
       setItems(newPanes);
       setActiveKey(newActiveKey);
-      setSelectedProducts([]);
+      // setSelectedProducts([]);
       const newInvoice: Invoice = {
         id: nextInvoiceNumber, // Unique ID for the invoice
         invoice_number: `Invoice ${nextInvoiceNumber}`, // Example of invoice_number
@@ -613,7 +609,7 @@ const SalePage = () => {
         customer_name: "", // Example of customer_name
         total_price: 0, // Example of total_price
         created_date: Date.now(), // Example of created_date
-        items: selectedProducts || [], // Initialize items (products) as empty for now
+        //   items: selectedProducts || [], // Initialize items (products) as empty for now
         id_payment: newActiveKey, // Store the invoice key as id_payment
       };
       setInvoiceList((prev) => [...prev, newInvoice]);
@@ -662,16 +658,11 @@ const SalePage = () => {
       setItems(newPanes);
       setActiveKey(newActiveKey);
 
-      setInvoiceList((prev) =>
-        prev.filter((inv) => inv.id !== parseInt(targetKey))
-      );
+      setInvoiceList((prev) => prev.filter((inv) => inv.id !== parseInt(targetKey)));
       // Find the next available invoice number
       const currentNumbers = newPanes.map((item) => parseInt(item.key, 10));
       let newInvoiceNumber = 1;
-      while (
-        currentNumbers.includes(newInvoiceNumber) &&
-        newInvoiceNumber <= maxItems
-      ) {
+      while (currentNumbers.includes(newInvoiceNumber) && newInvoiceNumber <= maxItems) {
         newInvoiceNumber++;
       }
       setNextInvoiceNumber(newInvoiceNumber);
@@ -704,20 +695,25 @@ const SalePage = () => {
 
   //------------------------------------------------------------
   const handleProductClick = (product: Product) => {
-    setSelectedProducts((prevSelectedProducts) => {
-      const existingProduct = prevSelectedProducts.find(
+    setSelectedProducts((prevState) => {
+      const existingProduct = prevState.items.find(
         (selectedProduct) => selectedProduct.id === product.id
       );
 
       if (existingProduct) {
-        return prevSelectedProducts.map((selectedProduct) =>
-          selectedProduct.id === product.id
-            ? { ...selectedProduct, quantity: selectedProduct.quantity + 1 }
-            : selectedProduct
-        );
+        return {
+          ...prevState,
+          items: prevState.items.map((selectedProduct) =>
+            selectedProduct.id === product.id
+              ? { ...selectedProduct, quantity: selectedProduct.quantity + 1 }
+              : selectedProduct
+          ),
+        };
       }
-
-      return [...prevSelectedProducts, { ...product, quantity: 1 }];
+      return {
+        ...prevState,
+        items: [...prevState.items, { ...product, quantity: 1 }],
+      };
     });
   };
 
@@ -784,10 +780,7 @@ const SalePage = () => {
         if (foundProduct && foundProduct.id) {
           addProductToSelected({ ...foundProduct, quantity: 1 });
         } else {
-          console.error(
-            "API response is not a valid product object:",
-            res.data
-          );
+          console.error("API response is not a valid product object:", res.data);
         }
       } else {
         console.error("API response is invalid:", res.data);
@@ -955,11 +948,7 @@ const SalePage = () => {
           </div>
           <div className="header-right-page">
             <div>
-              {infouser ? (
-                <span>{infouser.full_name}</span>
-              ) : (
-                <span>No user data available</span>
-              )}
+              {infouser ? <span>{infouser.full_name}</span> : <span>No user data available</span>}
             </div>
             <button
               className="icon-button"
@@ -970,8 +959,16 @@ const SalePage = () => {
             </button>
             {isMenuOpen && (
               <div className="menu-dropdown">
-                <div>Trang quản lý</div>
-                <div onClick={clickLogoutUser}>Đăng xuất</div>
+                <div>
+                  <MdOutlinePoll style={{ fontSize: "20px" }} />
+                  <Link to="/admin/products" style={{ textDecoration: "none", color: "black" }}>
+                    <span>Trang quản lý</span>
+                  </Link>
+                </div>
+                <div onClick={clickLogoutUser}>
+                  <FaArrowRightFromBracket />
+                  <span style={{ marginLeft: "18px" }}>Đăng xuất</span>
+                </div>
               </div>
             )}
           </div>
@@ -1008,10 +1005,7 @@ const SalePage = () => {
                         justifyContent: "space-around",
                       }}
                     >
-                      <button
-                        className="icon-button"
-                        onClick={() => decrement(product.id)}
-                      >
+                      <button className="icon-button" onClick={() => decrement(product.id)}>
                         <AiOutlineMinus />
                       </button>
                       <input
@@ -1022,18 +1016,13 @@ const SalePage = () => {
                         inputMode="numeric"
                         pattern="[0-9]*"
                       />
-                      <button
-                        className="icon-button"
-                        onClick={() => increment(product.id)}
-                      >
+                      <button className="icon-button" onClick={() => increment(product.id)}>
                         <AiOutlinePlus />
                       </button>
                     </div>
                     <span>{product.capital_price.toLocaleString("vi-VN")}</span>
                     <div className="sell-change-price">
-                      {(
-                        product.capital_price * product.quantity
-                      ).toLocaleString("vi-VN")}
+                      {(product.capital_price * product.quantity).toLocaleString("vi-VN")}
                     </div>
                   </div>
                 </div>
@@ -1045,9 +1034,7 @@ const SalePage = () => {
             <div className="cart-summary">
               <div className="cart-summary-item">
                 <span>Tổng số lượng:</span>
-                <span style={{ fontWeight: "700", marginLeft: "10px" }}>
-                  {total.quantity}
-                </span>
+                <span style={{ fontWeight: "700", marginLeft: "10px" }}>{total.quantity}</span>
               </div>
               <div className="cart-summary-item">
                 <span>Tổng giá tiền: </span>
@@ -1072,11 +1059,7 @@ const SalePage = () => {
                     fontSize: "20px",
                   }}
                 />
-                <input
-                  type="text"
-                  placeholder="Tìm sản phẩm"
-                  className="input-search-customer"
-                />
+                <input type="text" placeholder="Tìm sản phẩm" className="input-search-customer" />
               </div>
               <Select
                 showSearch
@@ -1084,9 +1067,7 @@ const SalePage = () => {
                 optionFilterProp="label"
                 style={{ width: 260, height: 40 }}
                 filterOption={(input, option) =>
-                  (option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                 }
                 options={formatDataCategory}
               />
@@ -1112,9 +1093,7 @@ const SalePage = () => {
                     <div className="product-info-bottom">
                       <h4>{product.name}</h4>
                       <div>
-                        <span>
-                          {product.capital_price.toLocaleString("vi-VN")}
-                        </span>
+                        <span>{product.capital_price.toLocaleString("vi-VN")}</span>
                       </div>
                     </div>
                   </li>
@@ -1152,9 +1131,7 @@ const SalePage = () => {
                     // value={selectedCustomer}
                     style={{ width: 400, height: 40, paddingRight: "0px" }}
                     filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
+                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                     }
                     options={infoCustomer}
                   />
@@ -1176,9 +1153,7 @@ const SalePage = () => {
                 </div>
                 <div className="payment-invoice">
                   <div className="payment-invoice__total">
-                    <label className="payment-invoice__label">
-                      Tổng tiền hàng
-                    </label>
+                    <label className="payment-invoice__label">Tổng tiền hàng</label>
                     {/* <span className="payment-invoice__value">
                       {total.quantity}
                     </span> */}
@@ -1192,9 +1167,7 @@ const SalePage = () => {
                     <label className="payment-invoice__label">Giảm giá</label>
                     <input
                       type="text"
-                      value={inputPayment.discount_price.toLocaleString(
-                        "vi-VN"
-                      )}
+                      value={inputPayment.discount_price.toLocaleString("vi-VN")}
                       onChange={onChangePricePayment}
                       onClick={handleInputClick}
                       className="payment-invoice__input"
@@ -1205,24 +1178,18 @@ const SalePage = () => {
                       <p>Giảm giá</p>
                       <input
                         type="text"
-                        value={inputPayment.discount_price.toLocaleString(
-                          "vi-VN"
-                        )}
+                        value={inputPayment.discount_price.toLocaleString("vi-VN")}
                         onChange={onChangePricePayment}
                         className="payment-invoice__input"
                       />
                       <button
-                        className={`discount-button ${
-                          !isPercentage ? "active" : ""
-                        }`}
+                        className={`discount-button ${!isPercentage ? "active" : ""}`}
                         onClick={handleVNDClick}
                       >
                         VND
                       </button>
                       <button
-                        className={`discount-button ${
-                          isPercentage ? "active" : ""
-                        }`}
+                        className={`discount-button ${isPercentage ? "active" : ""}`}
                         onClick={handlePercentageClick}
                       >
                         %
@@ -1230,9 +1197,7 @@ const SalePage = () => {
                     </div>
                   )}
                   <div className="payment-invoice__total-after-discount">
-                    <label className="payment-invoice__label">
-                      Khách cần trả
-                    </label>
+                    <label className="payment-invoice__label">Khách cần trả</label>
                     <div className="payment-invoice__price">
                       <p className="payment-invoice__price-amount">
                         {inputPayment.amount_due.toLocaleString("vi-VN")}
@@ -1240,9 +1205,7 @@ const SalePage = () => {
                     </div>
                   </div>
                   <div className="payment-invoice__guest-pays">
-                    <label className="payment-invoice__label">
-                      Khách thanh toán
-                    </label>
+                    <label className="payment-invoice__label">Khách thanh toán</label>
                     <input
                       type="text"
                       value={inputPayment.amount_paid.toLocaleString("vi-VN")}
@@ -1262,10 +1225,7 @@ const SalePage = () => {
                         checked={selectedPaymentMethod === 0}
                         onChange={handlePaymentMethodChange}
                       />
-                      <label
-                        className="payment-invoice__label"
-                        htmlFor="cashmoney"
-                      >
+                      <label className="payment-invoice__label" htmlFor="cashmoney">
                         Tiền mặt
                       </label>
                     </div>
@@ -1278,10 +1238,7 @@ const SalePage = () => {
                         checked={selectedPaymentMethod === 1}
                         onChange={handlePaymentMethodChange}
                       />
-                      <label
-                        className="payment-invoice__label"
-                        htmlFor="internetmoney"
-                      >
+                      <label className="payment-invoice__label" htmlFor="internetmoney">
                         Chuyển khoản
                       </label>
                     </div>
@@ -1294,10 +1251,7 @@ const SalePage = () => {
                         checked={selectedPaymentMethod === 2}
                         onChange={handlePaymentMethodChange}
                       />
-                      <label
-                        className="payment-invoice__label"
-                        htmlFor="cashmoneyandinternetmoney"
-                      >
+                      <label className="payment-invoice__label" htmlFor="cashmoneyandinternetmoney">
                         Thanh toán kết hợp
                       </label>
                     </div>
@@ -1345,9 +1299,7 @@ const SalePage = () => {
                   {/* {detailQrCode && <QRCode value={linkQR} />} */}
                   <div className="option_price"></div>
                   <div className="payment-invoice__money-return">
-                    <label className="payment-invoice__label">
-                      Tiền thừa trả khách
-                    </label>
+                    <label className="payment-invoice__label">Tiền thừa trả khách</label>
                     <div className="payment-invoice__return-amount">
                       <p className="payment-invoice__price-amount">
                         {inputPayment.change.toLocaleString("vi-VN")}
@@ -1382,12 +1334,8 @@ const SalePage = () => {
                     idCustomer={selectedCustomer}
                     selectedProducts={selectedProducts}
                     amount_due={inputPayment.amount_due.toLocaleString("vi-VN")}
-                    amount_paid={inputPayment.amount_paid.toLocaleString(
-                      "vi-VN"
-                    )}
-                    discount_price={inputPayment.discount_price.toLocaleString(
-                      "vi-VN"
-                    )}
+                    amount_paid={inputPayment.amount_paid.toLocaleString("vi-VN")}
+                    discount_price={inputPayment.discount_price.toLocaleString("vi-VN")}
                     isVoicesID={isVoicesID}
                   />
                 </div>
@@ -1438,9 +1386,7 @@ const SalePage = () => {
               />
               <br />
               {errorAddCustomer && (
-                <span style={{ color: "red", fontSize: "12px" }}>
-                  {errorAddCustomer.message}
-                </span>
+                <span style={{ color: "red", fontSize: "12px" }}>{errorAddCustomer.message}</span>
               )}
             </div>
           </div>
