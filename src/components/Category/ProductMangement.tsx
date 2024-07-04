@@ -133,9 +133,9 @@ const ProductMangement = () => {
   };
 
   // search products by active
-  const handleSelectActive = (value) => {
+  const handleSelectActive = (value: number) => {
+    console.log("value", value);
     const isActiveProduct = statusProduct.find((item) => item.value === value);
-
     if (isActiveProduct) {
       if (isActiveProduct.id === "00001") {
         setStateActiveProduct({
@@ -148,10 +148,8 @@ const ProductMangement = () => {
           is_active: "false",
         });
       }
-
       // Log the updated state after the state update
       console.log("active", stateActiveProduct.is_active);
-
       // Log additional information about the active product
       console.log("Name tương ứng với value:", isActiveProduct);
       console.log("Name tương ứng với id:", isActiveProduct.id);
@@ -197,8 +195,6 @@ const ProductMangement = () => {
     // console.log(res.data);
   };
 
-  // search product by input value using debounce
-
   const fetchDataSearchProduct = async () => {
     setLoading(true);
     const res = await products.getDataSearchNameProduct(debounceValue);
@@ -221,68 +217,55 @@ const ProductMangement = () => {
   }, []);
 
   //get api search products for category
+  const fetchSearchDataCategory = async () => {
+    if (idSearchCategory.id_category) {
+      // Check if idSearchCategory is not empty
+      const res = await products.getDataSearchProduct(idSearchCategory.id_category);
+      if (res.code === 200) {
+        console.log(res.data);
+        setDataProduct(res.data);
+      } else {
+        console.log(res.data);
+      }
+    }
+  };
   useEffect(() => {
     console.log("idSearchCategory", idSearchCategory.id_category);
-    const fetchSearchDataCategory = async () => {
-      if (idSearchCategory.id_category) {
-        // Check if idSearchCategory is not empty
-        const res = await products.getDataSearchProduct(idSearchCategory.id_category);
-        if (res.code === 200) {
-          console.log(res.data);
-          setTimeout(() => {
-            setDataProduct(res.data);
-          }, 7000);
-        } else {
-          console.log(res.data);
-        }
-      }
-      // if (idSearchCategory.id_category === "undefined") {
-      //   await fetchDataProduct();
-      // }
-    };
     fetchSearchDataCategory();
   }, [idSearchCategory.id_category]);
 
+  const fetchSearchDataActive = async () => {
+    if (stateActiveProduct.is_active) {
+      // Check if idSearchCategory is not empty
+      const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
+      if (res.code === 200) {
+        console.log(res.data);
+        setDataProduct(res.data);
+      } else {
+        console.log(res.data);
+      }
+    }
+  };
   useEffect(() => {
     console.log("active", stateActiveProduct.is_active);
-    const fetchSearchDataActive = async () => {
-      if (stateActiveProduct.is_active) {
-        // Check if idSearchCategory is not empty
-        const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
-        if (res.code === 200) {
-          console.log(res.data);
-          setTimeout(() => {
-            setDataProduct(res.data);
-          }, 700);
-        } else {
-          console.log(res.data);
-        }
-      }
-      if (idSearchCategory.id_category === "undefined") {
-        await fetchDataProduct();
-      }
-    };
     fetchSearchDataActive();
   }, [stateActiveProduct.is_active]);
 
   useEffect(() => {
     console.log("key", sortedColumn.key);
     console.log("key", sortedColumn.direction);
-    setLoading(true);
-
+    // setLoading(true);
     const fetchSortDataProduct = async () => {
       if (sortedColumn.key) {
         // Check if idSearchCategory is not empty
         const res = await products.getDataSortProduct(sortedColumn.key, sortedColumn.direction);
         if (res.code === 200) {
           console.log(res.data);
-          setTimeout(() => {
-            setDataProduct(res.data);
-          }, 700);
-          setLoading(false);
+          setDataProduct(res.data);
+          // setLoading(false);
         } else {
           console.log(res.data);
-          setLoading(false);
+          // setLoading(false);
         }
       }
       // if (idSearchCategory.id_category === "undefined") {

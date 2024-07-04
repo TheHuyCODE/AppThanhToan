@@ -14,3 +14,9 @@ export const paginationConfig = {
 export const domain = {
   domainLink: "https://cdtn.boot.ai",
 };
+
+export const tableReturn = [
+  {
+    
+  }
+]

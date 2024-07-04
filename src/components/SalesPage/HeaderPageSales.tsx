@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./SalePage.css";
-import { Table, Tabs } from "antd";
+import { Space, Table, Tabs } from "antd";
 import { FaBars } from "react-icons/fa";
 import { MdOutlinePoll } from "react-icons/md";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
@@ -10,6 +10,7 @@ import { useAuth } from "../auth/AuthContext";
 import logoutApi from "../../configs/logoutApi";
 
 import { toast } from "react-toastify";
+import { localeProduct } from "../TableConfig/TableConfig";
 
 // interface Invoice {
 //   id: number;
@@ -97,7 +98,48 @@ const HeaderPageSales = ({
       setInfoUser(JSON.parse(storedUser));
     }
   }, []);
-
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+    },
+    {
+      title: "Mã hóa đơn",
+      dataIndex: "barcode",
+      key: "barcode",
+    },
+    {
+      title: "Thời gian",
+      dataIndex: "time",
+      key: "time",
+    },
+    {
+      title: "Nhân viên",
+      dataIndex: "staff",
+      key: "staff",
+    },
+    {
+      title: "Khách hàng",
+      dataIndex: "customer",
+      key: "customer",
+    },
+    {
+      title: "Tổng cộng",
+      dataIndex: "total_price",
+      key: "total_price",
+    },
+    {
+      title: "",
+      dataIndex: "inventory_number",
+      key: "inventory_number",
+      render: (record) => (
+        <Space size="middle">
+          <button>Chọn</button>
+        </Space>
+      ),
+    },
+  ];
   return (
     <>
       <div className="page-header">
@@ -177,7 +219,6 @@ const HeaderPageSales = ({
           <div className="modal">
             <div>
               <h4>Chọn hóa đơn trả hàng</h4>
-
               <span className="close" onClick={closeModal}>
                 &times;
               </span>
@@ -189,7 +230,11 @@ const HeaderPageSales = ({
                 <input type="text" placeholder="Theo khách hàng hoặc ĐT" />
               </div>
               <div className="table_invoices">
-                <Table></Table>
+                <Table
+                  columns={columns}
+                  // dataSource={datatable}
+                  locale={localeProduct}
+                />
               </div>
               {/* <button
                 onClick={() => {
