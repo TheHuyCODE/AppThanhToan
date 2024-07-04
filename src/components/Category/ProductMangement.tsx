@@ -268,9 +268,6 @@ const ProductMangement = () => {
           // setLoading(false);
         }
       }
-      // if (idSearchCategory.id_category === "undefined") {
-      //   await fetchDataProduct();
-      // }
     };
     fetchSortDataProduct();
   }, [stateActiveProduct.is_active]);

@@ -7,7 +7,8 @@ import RightPageContent from "./RightPageContent";
 import "./SalePage.css";
 import "../styles/valiables.css";
 import { Modal } from "antd";
-
+import invoice from "../../configs/invoice";
+import useDebounce from "../auth/useDebounce";
 interface Product {
   id: number;
   name: string;
@@ -30,6 +31,9 @@ interface Invoice {
 
 const SalePageDemo: React.FC = () => {
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
+  const [dataTableInvoice, setDataTableInvoice] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 700); // Delay 500ms
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
@@ -226,6 +230,7 @@ const SalePageDemo: React.FC = () => {
   };
   const addReturnInvoice = () => {
     setIsModalOpen(true);
+    getDataInvoiceReturn();
   };
   const closeModal = () => {
     setIsModalOpen(false);
@@ -352,7 +357,41 @@ const SalePageDemo: React.FC = () => {
     }
     openModal();
   };
-
+  const getDataInvoiceReturn = async () => {
+    try {
+      const res = await invoice.getAllInvoices();
+      if (res.code === 200) {
+        const data = res.data.items;
+        console.log("dataInvoice", data);
+        setDataTableInvoice(data);
+      } else {
+        console.log("message", res.data);
+      }
+    } catch (err) {
+      console.error("Error fetching data", err);
+    }
+  };
+  const handleSearchInvoices = async (searchTerm: string) => {
+    console.log("valueSearch", searchTerm);
+    try {
+      const res = await invoice.getDataSearchInvoice(searchTerm);
+      if (res.code === 200) {
+        const data = res.data.items;
+        setDataTableInvoice(data);
+      } else {
+        console.log("message", res.data);
+      }
+    } catch (err) {
+      console.error("Error fetching data", err);
+    }
+  };
+  useEffect(() => {
+    if (debouncedSearchTerm) {
+      handleSearchInvoices(debouncedSearchTerm);
+    } else {
+      getDataInvoiceReturn();
+    }
+  }, [debouncedSearchTerm]);
   useEffect(() => {
     localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
   }, [invoiceList]);
@@ -395,6 +434,8 @@ const SalePageDemo: React.FC = () => {
           isModalOpen={isModalOpen}
           addReturnInvoice={addReturnInvoice}
           closeModal={closeModal}
+          dataTableInvoice={dataTableInvoice}
+          onSearchInvoices={setSearchTerm}
         />
         <div className="page-content">
           <LeftPageContent

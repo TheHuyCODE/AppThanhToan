@@ -9,19 +9,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import logoutApi from "../../configs/logoutApi";
 
-import { toast } from "react-toastify";
 import { localeProduct } from "../TableConfig/TableConfig";
-
-// interface Invoice {
-//   id: number;
-//   invoice_number: string;
-//   customer_id: string;
-//   customer_name: string;
-//   total_price: number;
-//   created_date: number;
-//   items: [];
-//   id_payment: string;
-// }
+import { format } from "date-fns";
+import { IoMdClose } from "react-icons/io";
 
 interface User {
   access_token: string;
@@ -41,10 +31,13 @@ const HeaderPageSales = ({
   removeReturnInvoice,
   isModalOpen,
   closeModal,
+  dataTableInvoice,
+  onSearchInvoices,
 }) => {
   const [infouser, setInfoUser] = useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [valueSearchProduct, setValueSearchProduct] = useState("");
+  const [valueSearchInvoice, setValueSearchInvoice] = useState("");
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
   const toggleMenu = () => {
@@ -56,7 +49,11 @@ const HeaderPageSales = ({
       setValueSearchProduct("");
     }
   };
-
+  const handleSearchInvoice = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log(value);
+    onSearchInvoices(value);
+  };
   const clickLogoutUser = () => {
     const resAccessToken = accessToken;
     logout();
@@ -98,6 +95,14 @@ const HeaderPageSales = ({
       setInfoUser(JSON.parse(storedUser));
     }
   }, []);
+  const dataTable = dataTableInvoice.map((items, index) => ({
+    stt: index + 1,
+    id: items.id,
+    created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
+    full_name: items.create_user.full_name,
+    customer: items.customer.full_name,
+    total_amount: items.total_amount,
+  }));
   const columns = [
     {
       title: "STT",
@@ -106,18 +111,18 @@ const HeaderPageSales = ({
     },
     {
       title: "Mã hóa đơn",
-      dataIndex: "barcode",
-      key: "barcode",
+      dataIndex: "id",
+      key: "id",
     },
     {
       title: "Thời gian",
-      dataIndex: "time",
-      key: "time",
+      dataIndex: "created_date",
+      key: "created_date",
     },
     {
       title: "Nhân viên",
-      dataIndex: "staff",
-      key: "staff",
+      dataIndex: "full_name",
+      key: "full_name",
     },
     {
       title: "Khách hàng",
@@ -126,8 +131,8 @@ const HeaderPageSales = ({
     },
     {
       title: "Tổng cộng",
-      dataIndex: "total_price",
-      key: "total_price",
+      dataIndex: "total_amount",
+      key: "total_amount",
     },
     {
       title: "",
@@ -135,7 +140,7 @@ const HeaderPageSales = ({
       key: "inventory_number",
       render: (record) => (
         <Space size="middle">
-          <button>Chọn</button>
+          <button className="btn_return_invoice">Chọn</button>
         </Space>
       ),
     },
@@ -217,24 +222,29 @@ const HeaderPageSales = ({
         <>
           <div className="modal-background" />
           <div className="modal">
-            <div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "5px",
+                marginLeft: "5px",
+              }}
+            >
               <h4>Chọn hóa đơn trả hàng</h4>
-              <span className="close" onClick={closeModal}>
-                &times;
-              </span>
+              <button className="close-modal-invoice" onClick={closeModal}>
+                <IoMdClose />
+              </button>
             </div>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="search_invoices">
                 <span>Tìm kiếm</span>
-                <input type="text" placeholder="Theo mã hóa đơn" />
+                <input type="text" placeholder="Theo mã hóa đơn" onChange={handleSearchInvoice} />
                 <input type="text" placeholder="Theo khách hàng hoặc ĐT" />
               </div>
               <div className="table_invoices">
-                <Table
-                  columns={columns}
-                  // dataSource={datatable}
-                  locale={localeProduct}
-                />
+                <Table columns={columns} dataSource={dataTable} locale={localeProduct} />
               </div>
               {/* <button
                 onClick={() => {
