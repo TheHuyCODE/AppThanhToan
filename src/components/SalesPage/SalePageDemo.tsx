@@ -109,7 +109,6 @@ const SalePageDemo: React.FC = () => {
         : [...currentProducts, { ...product, quantity: 1 }];
 
       updateTotal(updatedProducts);
-
       // Update the invoiceList to include the updated products
       setInvoiceList((prevInvoices) =>
         prevInvoices.map((invoice) =>
@@ -235,7 +234,7 @@ const SalePageDemo: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const handleAddReturnInvoice = () => {
+  const handleAddReturnInvoice = async () => {
     if (invoiceList.length < maxItems) {
       const returnInvoiceIds = invoiceList
         .filter((invoice) => invoice.type === "return")
@@ -255,11 +254,36 @@ const SalePageDemo: React.FC = () => {
         id_payment: newKey,
         type: "return",
       };
+
+      // Add the new return invoice to the invoice list
       setInvoiceList((prev) => [...prev, newInvoice]);
       setActiveKey(newKey);
       setIsModalOpen(false); // Close the modal after adding the invoice
     } else {
       toast.warning("Không thể thêm quá 5 hóa đơn");
+    }
+  };
+
+  const handleDetailInvoiceReturn = async (id: string) => {
+    try {
+      const res = await invoice.getDataDetailInvoiceReturn(id);
+      const returnedInvoice = res.data;
+      setInvoiceList((prevInvoiceList) => {
+        return prevInvoiceList.map((invoice) => {
+          if (invoice.type === "return") {
+            return {
+              ...invoice,
+              items: returnedInvoice.product,
+            };
+          }
+          // localStorage.setItem("invoiceList", JSON.stringify(updatedInvoiceList));
+          return invoice;
+        });
+      });
+
+      console.log("Updated invoiceList with returned items", invoiceList);
+    } catch (err) {
+      console.log("Error fetching invoice return details", err);
     }
   };
 
@@ -431,6 +455,7 @@ const SalePageDemo: React.FC = () => {
           removeInvoice={removeInvoice}
           removeReturnInvoice={removeReturnInvoice}
           handleAddReturnInvoice={handleAddReturnInvoice}
+          onDetailInvoiceReturn={handleDetailInvoiceReturn}
           isModalOpen={isModalOpen}
           addReturnInvoice={addReturnInvoice}
           closeModal={closeModal}

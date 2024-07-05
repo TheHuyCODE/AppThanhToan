@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import logoutApi from "../../configs/logoutApi";
 
-import { localeProduct } from "../TableConfig/TableConfig";
+import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
 import { format } from "date-fns";
 import { IoMdClose } from "react-icons/io";
 
@@ -19,14 +19,26 @@ interface User {
   email: string;
   full_name: string;
 }
+type RecordType = {
+  stt: number;
+  id: string;
+  created_date: string;
+  full_name: string;
+  customer: string;
+  total_amount: number;
+};
+type ChildComponentProps = {
+  onDetailInvoiceReturn: (id: string) => void;
+};
 const { TabPane } = Tabs;
-const HeaderPageSales = ({
+const HeaderPageSales: React.FC<ChildComponentProps> = ({
   addInvoice,
   setActiveKey,
   activeKey,
   items,
   removeInvoice,
   handleAddReturnInvoice,
+  onDetailInvoiceReturn,
   addReturnInvoice,
   removeReturnInvoice,
   isModalOpen,
@@ -85,17 +97,19 @@ const HeaderPageSales = ({
       }
     }
   };
-
-  // const closeModal = () => {
-  //   setLocalIsModalOpen(false);
-  // };
+  const detailInvoiceReturn = (record: object) => {
+    console.log("record", record.id);
+    onDetailInvoiceReturn(record.id);
+    closeModal();
+    handleAddReturnInvoice();
+  };
   useEffect(() => {
     const storedUser = localStorage.getItem("INFO_USER");
     if (storedUser) {
       setInfoUser(JSON.parse(storedUser));
     }
   }, []);
-  const dataTable = dataTableInvoice.map((items, index) => ({
+  const dataTable: RecordType[] = dataTableInvoice.map((items, index) => ({
     stt: index + 1,
     id: items.id,
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
@@ -136,11 +150,14 @@ const HeaderPageSales = ({
     },
     {
       title: "",
-      dataIndex: "inventory_number",
-      key: "inventory_number",
-      render: (record) => (
+      dataIndex: "action",
+      key: "action",
+
+      render: (text, record) => (
         <Space size="middle">
-          <button className="btn_return_invoice">Chọn</button>
+          <button className="btn_return_invoice" onClick={() => detailInvoiceReturn(record)}>
+            Chọn
+          </button>
         </Space>
       ),
     },
@@ -241,10 +258,19 @@ const HeaderPageSales = ({
               <div className="search_invoices">
                 <span>Tìm kiếm</span>
                 <input type="text" placeholder="Theo mã hóa đơn" onChange={handleSearchInvoice} />
-                <input type="text" placeholder="Theo khách hàng hoặc ĐT" />
+                <input
+                  type="text"
+                  placeholder="Theo khách hàng hoặc ĐT"
+                  onChange={handleSearchInvoice}
+                />
               </div>
               <div className="table_invoices">
-                <Table columns={columns} dataSource={dataTable} locale={localeProduct} />
+                <Table
+                  columns={columns}
+                  dataSource={dataTable}
+                  locale={localeProduct}
+                  pagination={paginationConfig}
+                />
               </div>
               {/* <button
                 onClick={() => {

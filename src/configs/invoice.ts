@@ -25,6 +25,16 @@ const invoice = {
       params,
     });
   },
-
+  getDataDetailInvoiceReturn: (id: string) => {
+    const url = `api/v1/manage/invoice/${id}`;
+        return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    
+    });
+  },
 };
 export default invoice;
