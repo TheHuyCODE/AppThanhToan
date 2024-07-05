@@ -1,5 +1,6 @@
 import React from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { FaEllipsisVertical, FaRegTrashCan } from "react-icons/fa6";
 import { IoMdAdd } from "react-icons/io";
 
@@ -17,16 +18,21 @@ const LeftPageContent = ({
           <div className="carts-product-active-left">
             <span>{index + 1}</span>
           </div>
+          <div className="carts-product-active-left">
+            <button className="btn-remove-carts" title="Xóa hàng hóa">
+              <FaRegTrashCan className="trash-product" />
+            </button>
+          </div>
           <div className="carts-product-active-mid">
             <div className="carts-product-active-mid-top">
-              <button className="btn-remove-carts" title="Xóa hàng hóa">
-                <FaRegTrashCan />
-              </button>
-              <span>{product.barcode}</span>
-              <h4>{product.name}</h4>
-              <IoMdAdd />
+              <div className="cell-code">
+                <span>{product.barcode}</span>
+              </div>
+              <div className="cell-info">
+                <h4>{product.name}</h4>
+              </div>
             </div>
-            <div className="carts-product-active-mid-top">
+            <div className="carts-product-active-mid-bottom">
               <div
                 style={{
                   display: "flex",
@@ -56,6 +62,7 @@ const LeftPageContent = ({
             </div>
           </div>
           <div className="carts-product-active-right">
+            <IoMdAdd />
             <FaEllipsisVertical />
           </div>
         </div>
