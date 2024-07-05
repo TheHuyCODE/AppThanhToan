@@ -36,7 +36,7 @@
   justify-content: flex-end;
   padding: 5px;
   margin-left: 15px;
-  margin-top: 25px;
+  margin-top: 29px;
 }
 .search-product-sell {
   width: 326px;
@@ -138,7 +138,7 @@
 .box-product {
   width: 200px;
   height: 80px;
-  border: 1px solid var(--cl-light);
+  border: 1px solid white;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -744,13 +744,36 @@
 }
 
 .ant-tabs-tab.ant-tabs-tab-active {
-  color: #000; /* Đặt màu văn bản là đen khi tab được kích hoạt */
+  color: #000 !important; /* Đặt màu văn bản là đen khi tab được kích hoạt */
   background-color: transparent; /* Đặt màu nền của tab kích hoạt */
 }
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
+  border: none !important;
+}
+/* .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:hover {
+  background-color: var(--border-focus-color); */
 
-/* Đảm bảo nền không bị trùng với màu chữ */
-.ant-tabs {
-  background-color: transparent; /* Đặt màu nền chung cho tabs */
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-add {
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 5px;
+  min-height: 5px;
+  color: white;
+  border-width: 2px;
+  margin-top: 8px;
+  margin-left: 8px;
+  outline: none;
+
+  /* padding: 2px; */
+}
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-add:hover {
+  color: white;
+  outline: none;
+  /* padding: 2px; */
 }
 .confirm_remove_invoices {
   font-size: 20px;
@@ -770,15 +793,28 @@
 }
 .custom-tabs .ant-tabs-tab-btn {
   color: white;
+  width: 100px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 500 !important;
+  border: none !important;
+  outline: none !important;
 }
 .custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: black;
+  color: rgba(0, 0, 0, 0.704) !important;
+  border: none !important;
+  outline: none !important;
 }
-.ant-tabs-ink-bar {
-  height: 5px;
-  background: transparent;
+.tabsContainerDefault {
+  :global {
+    .ant-tabs-nav {
+      &:before {
+        border: none !important;
+      }
+    }
+  }
 }
-
 .ant-tabs-ink-bar::after {
   content: " ";
   position: absolute;
