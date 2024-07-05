@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./SalePage.css";
 import { Space, Table, Tabs } from "antd";
@@ -52,20 +52,24 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   const [valueSearchInvoice, setValueSearchInvoice] = useState("");
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
+  const menuRef = useRef(null);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   const handleEnterPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const value = e.currentTarget.value.trim();
       setValueSearchProduct("");
     }
   };
+
   const handleSearchInvoice = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const value = e.target.value;
     console.log(value);
     onSearchInvoices(value);
   };
+
   const clickLogoutUser = () => {
     const resAccessToken = accessToken;
     logout();
@@ -97,18 +101,36 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       }
     }
   };
+
   const detailInvoiceReturn = (record: object) => {
     console.log("record", record.id);
     onDetailInvoiceReturn(record.id);
     closeModal();
     handleAddReturnInvoice();
   };
+
   useEffect(() => {
     const storedUser = localStorage.getItem("INFO_USER");
     if (storedUser) {
       setInfoUser(JSON.parse(storedUser));
     }
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close the menu if click occurs outside of it
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    // Add event listener when component mounts
+    document.addEventListener("mousedown", handleClickOutside);
+    // Cleanup event listener when component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuRef]);
+
   const dataTable: RecordType[] = dataTableInvoice.map((items, index) => ({
     stt: index + 1,
     id: items.id,
@@ -117,6 +139,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     customer: items.customer.full_name,
     total_amount: items.total_amount,
   }));
+
   const columns = [
     {
       title: "STT",
@@ -162,6 +185,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       ),
     },
   ];
+
   return (
     <>
       <div className="page-header">
@@ -170,7 +194,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
             <CiSearch
               style={{
                 position: "absolute",
-                top: "13px",
+                top: "8px",
                 left: "7px",
                 transform: "translateY(8%)",
                 fontSize: "20px",
@@ -220,7 +244,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
             <FaBars />
           </button>
           {isMenuOpen && (
-            <div className="menu-dropdown">
+            <div ref={menuRef} className="menu-dropdown">
               <div>
                 <MdOutlinePoll style={{ fontSize: "20px" }} />
                 <Link to="/admin/products" style={{ textDecoration: "none", color: "black" }}>
@@ -229,7 +253,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
               </div>
               <div onClick={clickLogoutUser}>
                 <FaArrowRightFromBracket />
-                <span style={{ marginLeft: "18px" }}>Đăng xuất</span>
+                <span style={{ marginLeft: "8px" }}>Đăng xuất</span>
               </div>
             </div>
           )}
@@ -272,13 +296,6 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
                   pagination={paginationConfig}
                 />
               </div>
-              {/* <button
-                onClick={() => {
-                  handleAddReturnInvoice();
-                }}
-              >
-                Xác nhận trả hàng
-              </button> */}
             </div>
           </div>
         </>

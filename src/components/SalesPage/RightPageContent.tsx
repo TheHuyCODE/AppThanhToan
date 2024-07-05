@@ -4,6 +4,7 @@ import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const RightPageContent = ({
   dataProduct,
@@ -66,9 +67,17 @@ const RightPageContent = ({
         </ul>
       </div>
       <div className="right-page-content-footer">
+        <div className="nagination-product">
+          <button title="Trang trước" className="btn-before-product">
+            <MdKeyboardArrowLeft className="icon" />
+          </button>
+          <span>2/2</span>
+          <button title="Trang sau" className="btn-after-product">
+            <MdKeyboardArrowRight className="icon" />
+          </button>
+        </div>
         <button className="btn-pay" onClick={toggleSidebar}>
-          <FaArrowRightFromBracket />
-          Thanh toán
+          THANH TOÁN
         </button>
       </div>
       <div className={`overlay ${isSidebarVisible ? "show" : ""}`} onClick={toggleSidebar}></div>

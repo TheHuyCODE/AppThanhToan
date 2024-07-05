@@ -6,7 +6,7 @@
 }
 .page-header {
   width: 100%;
-  height: 60px;
+  height: 50px;
   padding: 6px;
   background-color: var(--cl-header);
   display: flex;
@@ -35,12 +35,12 @@
   align-items: center;
   justify-content: flex-end;
   padding: 5px;
-  margin-left: 10px;
-  margin-top: 35px;
+  margin-left: 15px;
+  margin-top: 25px;
 }
 .search-product-sell {
   width: 326px;
-  height: 45px;
+  height: 35px;
   border-radius: 5px;
   padding: 5px 5px 5px 33px;
   margin-top: 2px;
@@ -96,8 +96,9 @@
   padding: 15px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 10px;
+  margin-top: 15px;
   border: none;
   color: black;
 }
@@ -111,13 +112,14 @@
   margin-top: 10px;
 }
 .input-search-customer {
-  width: 250px;
+  width: 320px;
   height: 40px;
   border-radius: 5px;
   padding: 5px 5px 5px 33px;
   margin-top: 2px;
-  background-color: var(--cl-input-search);
-  border: 1px solid grey;
+  background-color: transparent;
+  border: 1px solid lightgray;
+  /* max-width: 550px; */
 }
 
 .input-search-customer:focus {
@@ -134,14 +136,13 @@
   border-width: 2px;
 }
 .box-product {
-  width: 160px;
-  height: 70px;
-  border: 1px solid lightgray;
-  border-radius: 5px;
+  width: 200px;
+  height: 80px;
+  border: 1px solid var(--cl-light);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* flex-wrap: wrap; */
 }
 .box-product-search-product {
   width: 100%;
@@ -153,24 +154,58 @@
   justify-content: space-between;
 }
 
+.box-product:hover,
 .box-product:hover {
-  border-color: blue;
+  border-color: rgb(32, 32, 233);
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 .right-page-content-footer {
   display: flex;
-  justify-content: end;
+  justify-content: space-around;
   align-items: center;
   padding: 15px;
 }
+.nagination-product {
+  /* width: auto; */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  /* margin-right: 50px; */
+}
+.nagination-product span {
+  font-size: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.right-page-content-footer .btn-before-product,
+.right-page-content-footer .btn-after-product {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.right-page-content-footer .btn-before-product:hover,
+.right-page-content-footer .btn-after-product:hover {
+  background-color: lightgray;
+}
 .btn-pay {
-  width: 300px;
-  height: 50px;
+  width: 75%;
+  height: 60px;
+  max-width: 600px;
+  padding: 10px;
   background-color: var(--cl-header);
   color: white;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-weight: 600;
+  font-size: 20px;
 }
 .btn-pay:hover {
   background-color: var(--border-hover-color);
@@ -184,7 +219,7 @@
 }
 .btn-return-goods {
   width: 76px;
-  height: 45px;
+  height: 35px;
   border-radius: 6px;
   padding: 5px;
   margin-top: 2px;
@@ -204,6 +239,7 @@
   height: 48px;
   min-width: 48px;
   border-radius: 5px;
+  margin-left: 0;
 }
 .show-product.product-info-img {
   border-radius: 5px;
@@ -306,9 +342,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 5px;
 }
 .icon-button:hover {
-  background-color: lightgrey;
+  background-color: var(--border-focus-color);
 }
 .btn-remove-carts {
   width: 20px;
@@ -325,7 +362,7 @@
 }
 .cart-summary {
   width: 98%;
-  height: 50px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -333,7 +370,7 @@
   padding: 10px;
   border: 1px solid lightgray;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   position: absolute;
   bottom: 10px;
 }
@@ -343,6 +380,7 @@
   padding: 10px 0;
 }
 .menu-dropdown {
+  width: 95%;
   position: absolute;
   top: 52px; /* Căn chỉnh vị trí xuất hiện của menu */
   right: 20px;
@@ -353,8 +391,13 @@
   z-index: 1000; /* Đảm bảo menu hiển thị trên các phần tử khác */
   padding: 10px;
   color: var(--cl-dark);
+  max-width: 200px;
 }
 .menu-dropdown div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
   padding: 8px 16px;
   cursor: pointer;
 }
