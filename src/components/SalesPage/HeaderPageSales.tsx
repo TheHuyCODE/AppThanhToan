@@ -45,6 +45,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   closeModal,
   dataTableInvoice,
   onSearchInvoices,
+  setIsOpenPaymentReturn,
 }) => {
   const [infouser, setInfoUser] = useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -86,7 +87,11 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
 
   const onChange = (newActiveKey: string) => {
     setActiveKey(newActiveKey);
-    localStorage.setItem("name_payment", newActiveKey);
+    localStorage.setItem("idActiveInvoice", newActiveKey);
+    if (!newActiveKey.startsWith("return-")) {
+      console.log("11111");
+      setIsOpenPaymentReturn(false);
+    }
   };
 
   const onEdit = (targetKey: string, action: string) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Select } from "antd";
 import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
@@ -8,13 +8,37 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const RightPageContent = ({
   dataProduct,
+  dataCategory,
   handleProductClick,
-  handleOpenModal,
   toggleSidebar,
   isSidebarVisible,
   hiddenPopUpDiscountPrice,
+  isDataCustomer,
 }) => {
+  const [selectedCustomer, setSelectedCustomer] = useState("");
   const domainLink = domain.domainLink;
+  const formatDataCategory = dataCategory?.map((item, index) => ({
+    value: index + 1,
+    label: item.name,
+    id: item.id,
+  }));
+  const infoCustomer = isDataCustomer?.map((item, index) => ({
+    value: index + 1,
+    label: item.full_name,
+    id: item.id,
+  }));
+  const getCustomerPayment = (value: number) => {
+    console.log("customerPayment", value);
+    const isActiveCustomer = infoCustomer.find((item) => item.value === value);
+    if (isActiveCustomer) {
+      const customer_Id = isActiveCustomer.id;
+      console.log("info", isActiveCustomer.id);
+      setSelectedCustomer(customer_Id);
+    } else {
+      console.log("Không tìm thấy value", value);
+    }
+    // console.log("selected", selectedCustomer);
+  };
   return (
     <div className="right-page-content">
       <div className="right-page-content-header">
@@ -41,6 +65,7 @@ const RightPageContent = ({
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
+          options={formatDataCategory}
           // options={category.map((cat) => ({ label: cat.name, value: cat.id }))}
         />
       </div>
@@ -99,13 +124,13 @@ const RightPageContent = ({
               placeholder="Chọn khách hàng"
               notFoundContent="Không tìm thấy người dùng"
               optionFilterProp="label"
-              // onChange={(value) => getCustomerPayment(value)}
+              onChange={(value) => getCustomerPayment(value)}
               // value={selectedCustomer}
               style={{ width: 400, height: 40, paddingRight: "0px" }}
               filterOption={(input, option) =>
                 (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
               }
-              // options={infoCustomer}
+              options={infoCustomer}
             />
             {/* {selectedCustomer && (
               <button
@@ -115,7 +140,7 @@ const RightPageContent = ({
                 Clear
               </button>
             )} */}
-            <button className="btn-add-customers" title="Thêm khách hàng" onClick={handleOpenModal}>
+            <button className="btn-add-customers" title="Thêm khách hàng">
               <IoMdAdd />
             </button>
           </div>

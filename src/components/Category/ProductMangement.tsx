@@ -536,7 +536,7 @@ const ProductMangement = () => {
             <span
               className="total-items"
               style={{ color: "var(--cl-dark)" }}
-            >{`${datatable?.length}`}</span>
+            >{`${datatable?.length}/${dataProduct.total}`}</span>
           </>
         )}
       </div>

@@ -9,6 +9,9 @@ import "../styles/valiables.css";
 import { Modal } from "antd";
 import invoice from "../../configs/invoice";
 import useDebounce from "../auth/useDebounce";
+import category from "../../configs/category";
+import sellProduct from "../../configs/sellProduct";
+import ReturnInvoice from "../Invoices/ReturnInvoice";
 interface Product {
   id: number;
   name: string;
@@ -16,7 +19,6 @@ interface Product {
   capital_price: number;
   // Add other necessary fields
 }
-
 interface Invoice {
   id: number;
   invoice_number: string;
@@ -29,13 +31,27 @@ interface Invoice {
   type: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string;
+}
+interface Customer {
+  id: string;
+  full_name: string;
+}
 const SalePageDemo: React.FC = () => {
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
+  const [dataCategory, setDataCategory] = useState<Category[]>([]);
+  const [isDataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
   const [dataTableInvoice, setDataTableInvoice] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 700); // Delay 500ms
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenPaymentReturn, setIsOpenPaymentReturn] = useState(false);
+  const [keyActiveInvoiceId, setKeyActiveInvoiceId] = useState("");
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
   // const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [open, setOpen] = useState(false);
@@ -115,7 +131,6 @@ const SalePageDemo: React.FC = () => {
           invoice.id_payment === activeKey ? { ...invoice, items: updatedProducts } : invoice
         )
       );
-
       return { ...prevSelectedProducts, [activeKey]: updatedProducts };
     });
   };
@@ -141,44 +156,51 @@ const SalePageDemo: React.FC = () => {
     });
   };
 
-  const decrement = (productId: number) => {
-    setSelectedProducts((prevSelectedProducts) => {
-      const currentProducts = prevSelectedProducts[activeKey] || [];
-      const updatedProducts = currentProducts.map((product) =>
-        product.id === productId && product.quantity > 1
-          ? { ...product, quantity: product.quantity - 1 }
-          : product
-      );
-      updateTotal(updatedProducts);
-      // Update the invoiceList to include the updated products
-      setInvoiceList((prevInvoices) =>
-        prevInvoices.map((invoice) =>
-          invoice.id_payment === activeKey ? { ...invoice, items: updatedProducts } : invoice
-        )
-      );
-
-      return { ...prevSelectedProducts, [activeKey]: updatedProducts };
-    });
+  const decrement = (invoiceId, productId) => {
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) =>
+        invoice.id_payment === invoiceId
+          ? {
+              ...invoice,
+              items: invoice.items.map((product) =>
+                product.id === productId && product.quantity > 1
+                  ? { ...product, quantity: product.quantity - 1 }
+                  : product
+              ),
+            }
+          : invoice
+      )
+    );
   };
 
-  const increment = (productId: number) => {
-    setSelectedProducts((prevSelectedProducts) => {
-      const currentProducts = prevSelectedProducts[activeKey] || [];
-      const updatedProducts = currentProducts.map((product) =>
-        product.id === productId ? { ...product, quantity: product.quantity + 1 } : product
-      );
-
-      updateTotal(updatedProducts);
-
-      // Update the invoiceList to include the updated products
-      setInvoiceList((prevInvoices) =>
-        prevInvoices.map((invoice) =>
-          invoice.id_payment === activeKey ? { ...invoice, items: updatedProducts } : invoice
-        )
-      );
-
-      return { ...prevSelectedProducts, [activeKey]: updatedProducts };
-    });
+  const increment = (invoiceId, productId) => {
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) =>
+        invoice.id_payment === invoiceId
+          ? {
+              ...invoice,
+              items: invoice.items.map((product) =>
+                product.id === productId ? { ...product, quantity: product.quantity + 1 } : product
+              ),
+            }
+          : invoice
+      )
+    );
+  };
+  const removeProductCarts = (invoiceId: string, productId: string) => {
+    console.log("Invoice ID:", invoiceId);
+    console.log("Product ID:", productId);
+    setInvoiceList((prevState) =>
+      prevState.map((invoice) => {
+        if (invoice.id_payment === invoiceId) {
+          return {
+            ...invoice,
+            items: invoice.items.filter((product) => product.id !== productId),
+          };
+        }
+        return invoice;
+      })
+    );
   };
 
   const updateTotal = (products: Product[]) => {
@@ -221,6 +243,7 @@ const SalePageDemo: React.FC = () => {
       };
       setInvoiceList((prev) => [...prev, newInvoice]);
       setActiveKey(newKey);
+      localStorage.setItem("idActiveInvoice", newKey);
       console.log("actiiveKey:", newInvoice.id_payment);
       setNextInvoiceNumber(newInvoiceNumber + 1);
     } else {
@@ -254,11 +277,12 @@ const SalePageDemo: React.FC = () => {
         id_payment: newKey,
         type: "return",
       };
-
       // Add the new return invoice to the invoice list
       setInvoiceList((prev) => [...prev, newInvoice]);
       setActiveKey(newKey);
-      setIsModalOpen(false); // Close the modal after adding the invoice
+      setIsModalOpen(false);
+      setIsOpenPaymentReturn(true);
+      // Close the modal after adding the invoice
     } else {
       toast.warning("Không thể thêm quá 5 hóa đơn");
     }
@@ -287,43 +311,23 @@ const SalePageDemo: React.FC = () => {
     }
   };
 
-  // const removeInvoice = (key: string) => {
-  //   console.log("key", key);
-  //   const keyRemove = key;
-  //   setKeyRemove(keyRemove);
-  //   if (key === "1") {
-  //     setSelectedProducts((prevSelectedProducts) => {
-  //       // Clear products associated with invoice "Hóa đơn 1"
-  //       const updatedSelectedProducts = { ...prevSelectedProducts };
-  //       delete updatedSelectedProducts[key];
-  //       return updatedSelectedProducts;
-  //     });
-  //     setInvoiceList((prev) => {
-  //       // Find the invoice with id === 1 and set its items to an empty array
-  //       return prev.map((invoice) => (invoice.id === 1 ? { ...invoice, items: [] } : invoice));
-  //     });
-  //     setActiveKey("1"); // Set to the initial invoice
-  //   } else {
-  //     setInvoiceList((prev) => prev.filter((invoice) => invoice.id !== parseInt(key)));
-  //     setSelectedProducts((prev) => {
-  //       const newProducts = { ...prev };
-  //       delete newProducts[key];
-  //       return newProducts;
-  //     });
-  //   }
-  // };
-  const removeInvoice = (key: string) => {
-    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === key);
-    if (invoiceToRemove && invoiceToRemove.items.length > 0) {
-      // Invoice has products, show confirmation modal
-      setKeyRemove(key);
+  const removeInvoice = (targetKey: string) => {
+    const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
+    setInvoiceList(newInvoiceList);
+    console.log("111", newInvoiceList);
+    // setInvoiceList(newInvoiceList);
+    if (newInvoiceList.length) {
+      const newActiveKey = newInvoiceList[0].id_payment;
+      setActiveKey(newActiveKey);
+      localStorage.setItem("idActiveInvoice", newActiveKey);
       openModal();
+      setKeyRemove(targetKey);
     } else {
       // Invoice has no products, remove directly
-      if (key === "1") {
+      if (targetKey === "1") {
         setSelectedProducts((prevSelectedProducts) => {
           const updatedSelectedProducts = { ...prevSelectedProducts };
-          delete updatedSelectedProducts[key];
+          delete updatedSelectedProducts[targetKey];
           return updatedSelectedProducts;
         });
         setInvoiceList((prev) =>
@@ -331,15 +335,30 @@ const SalePageDemo: React.FC = () => {
         );
         setActiveKey("1");
       } else {
-        setInvoiceList((prev) => prev.filter((invoice) => invoice.id !== parseInt(key)));
+        setInvoiceList((prev) => prev.filter((invoice) => invoice.id !== parseInt(targetKey)));
         setSelectedProducts((prev) => {
           const newProducts = { ...prev };
-          delete newProducts[key];
+          delete newProducts[targetKey];
           return newProducts;
         });
       }
     }
   };
+
+  // const removeInvoice = (targetKey: string) => {
+  //   const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
+  //   setInvoiceList(newInvoiceList);
+
+  //   if (newInvoiceList.length) {
+  //     const newActiveKey = newInvoiceList[0].id_payment;
+  //     setActiveKey(newActiveKey);
+  //     localStorage.setItem("idActiveInvoice", newActiveKey);
+  //   } else {
+  //     setActiveKey("");
+  //     localStorage.removeItem("idActiveInvoice");
+  //   }
+  // };
+
   const removeReturnInvoice = (key: string) => {
     const returnInvoiceToRemove = invoiceList.find(
       (invoice) => invoice.id_payment === key && invoice.type === "return"
@@ -381,6 +400,16 @@ const SalePageDemo: React.FC = () => {
     }
     openModal();
   };
+  const getDataCategory = async () => {
+    const res = await category.getAll();
+    if (res.data && Array.isArray(res.data.items)) {
+      const data = res.data.items;
+      setDataCategory(data);
+      console.log("dataCategory", dataCategory);
+    } else {
+      console.error("API response is not an array:", res.data);
+    }
+  };
   const getDataInvoiceReturn = async () => {
     try {
       const res = await invoice.getAllInvoices();
@@ -393,6 +422,18 @@ const SalePageDemo: React.FC = () => {
       }
     } catch (err) {
       console.error("Error fetching data", err);
+    }
+  };
+  const getDataCustomer = async () => {
+    try {
+      const res = await sellProduct.getCustomer();
+      if (res.code === 200) {
+        const dataCustomer = res.data.items;
+        setIsDataCustomer(dataCustomer);
+        localStorage.setItem("info_customer", JSON.stringify(dataCustomer));
+      }
+    } catch (error) {
+      console.log("error:", error);
     }
   };
   const handleSearchInvoices = async (searchTerm: string) => {
@@ -416,8 +457,24 @@ const SalePageDemo: React.FC = () => {
       getDataInvoiceReturn();
     }
   }, [debouncedSearchTerm]);
+  // useEffect(() => {
+  //   const typeInvoiceList = invoiceList.filter((invoice) => invoice.type === "return");
+  //   console.log("typeInvoiceList", typeInvoiceList);
+  //   if (typeInvoiceList) {
+  //     setIsOpenPaymentReturn(true);
+  //   } else {
+  //     setIsOpenPaymentReturn(false);
+  //   }
+  // }, [isOpenPaymentReturn]);
   useEffect(() => {
     localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
+    // const typeInvoiceList = invoiceList.filter((invoice) => invoice.type === "return");
+    // console.log("typeInvoiceList", typeInvoiceList);
+    // if (typeInvoiceList.length > 0) {
+    //   setIsOpenPaymentReturn(true);
+    // } else {
+    //   setIsOpenPaymentReturn(false);
+    // }
   }, [invoiceList]);
 
   useEffect(() => {
@@ -426,6 +483,8 @@ const SalePageDemo: React.FC = () => {
 
   useEffect(() => {
     fetchDataProduct();
+    getDataCategory();
+    getDataCustomer();
   }, []);
   return (
     <>
@@ -466,22 +525,30 @@ const SalePageDemo: React.FC = () => {
           <LeftPageContent
             dataProduct={dataProduct}
             handleProductClick={handleProductClick}
+            removeProductCarts={removeProductCarts}
             activeKey={activeKey}
-            selectedProducts={selectedProducts[activeKey] || []}
-          />
-          <RightPageContent
-            selectedProducts={selectedProducts[activeKey] || []}
-            total={total}
-            // handleOpenModal={handleOpenModal}
-            handleChangeNumberCards={handleChangeNumberCards}
+            invoiceList={invoiceList}
             decrement={decrement}
             increment={increment}
-            dataProduct={dataProduct}
-            handleProductClick={handleProductClick}
-            toggleSidebar={toggleSidebar}
-            isSidebarVisible={isSidebarVisible}
-            hiddenPopUpDiscountPrice={hiddenPopUpDiscountPrice}
+            setIsOpenPaymentReturn={setIsOpenPaymentReturn}
+            // selectedProducts={selectedProducts[activeKey] || []}
           />
+          {isOpenPaymentReturn ? (
+            <ReturnInvoice />
+          ) : (
+            <RightPageContent
+              selectedProducts={selectedProducts[activeKey] || []}
+              total={total}
+              dataCategory={dataCategory}
+              handleChangeNumberCards={handleChangeNumberCards}
+              dataProduct={dataProduct}
+              handleProductClick={handleProductClick}
+              toggleSidebar={toggleSidebar}
+              isSidebarVisible={isSidebarVisible}
+              hiddenPopUpDiscountPrice={hiddenPopUpDiscountPrice}
+              isDataCustomer={isDataCustomer}
+            />
+          )}
         </div>
       </div>
     </>
