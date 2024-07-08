@@ -31,7 +31,15 @@ interface Invoice {
   id_payment: string;
   type: string;
 }
-
+interface InfoBankingItem {
+  value: number;
+  id: string;
+  account_name: string;
+  account_no: string;
+  bank_id: string;
+  template: string;
+  name: string;
+}
 interface Category {
   id: string;
   name: string;
@@ -46,10 +54,14 @@ const SalePageDemo: React.FC = () => {
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
   const [isDataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
+  const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
+
   const [dataTableInvoice, setDataTableInvoice] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 700); // Delay 500ms
   const [isSidebarVisible, setSidebarVisible] = useState(false);
+  const [hiddenQRCode, setHiddenQRCode] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenPaymentReturn, setIsOpenPaymentReturn] = useState(false);
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
@@ -68,6 +80,7 @@ const SalePageDemo: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountPrice, setDiscountPrice] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
+  const [amountPaid, setAmountPaid] = useState(totalPrice);
   const [isPercentage, setIsPercentage] = useState(false);
   const [invoiceList, setInvoiceList] = useState<Invoice[]>(() => {
     const savedInvoices = localStorage.getItem("invoiceList");
@@ -266,6 +279,18 @@ const SalePageDemo: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  const handlePaymentMethodChange = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const newPaymentMethod = parseInt(event.target.value, 10);
+    console.log("newPaymentMethod", newPaymentMethod);
+    setSelectedPaymentMethod(newPaymentMethod);
+    if (newPaymentMethod === 0 || newPaymentMethod === 2) {
+      setHiddenQRCode(false);
+    }
+    // else {
+    //   setHiddenQRCode(true); // Ẩn QR code nếu không phải các phương thức thanh toán trên
+    // }
+    // setShowSelect(false);
+  };
   const handleAddReturnInvoice = async () => {
     if (invoiceList.length < maxItems) {
       const returnInvoiceIds = invoiceList
@@ -395,6 +420,16 @@ const SalePageDemo: React.FC = () => {
     }
     openModal();
   };
+  const getInfoBanking = async () => {
+    try {
+      const res = await sellProduct.getInfoBank();
+      const dataBank = res.data.items;
+      setBankingData(dataBank);
+      console.log("data", dataBank);
+    } catch (error) {
+      console.error("Error fetching banking data", error);
+    }
+  };
   const getDataCategory = async () => {
     const res = await category.getAll();
     if (res.data && Array.isArray(res.data.items)) {
@@ -452,16 +487,6 @@ const SalePageDemo: React.FC = () => {
       getDataInvoiceReturn();
     }
   }, [debouncedSearchTerm]);
-  // useEffect(() => {
-  //   const typeInvoiceList = invoiceList.filter((invoice) => invoice.type === "return");
-  //   console.log("typeInvoiceList", typeInvoiceList);
-  //   if (typeInvoiceList) {
-  //     setIsOpenPaymentReturn(true);
-  //   } else {
-  //     setIsOpenPaymentReturn(false);
-  //   }
-  // }, [isOpenPaymentReturn]);
-
   const detailTotalInvoice = (invoiceID: string) => {
     const activeInvoice = invoiceList.find((invoice) => invoice.id_payment === invoiceID);
     if (activeInvoice) {
@@ -483,40 +508,58 @@ const SalePageDemo: React.FC = () => {
     }
     setFinalPrice(finalPrice);
   };
+  const handleAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    if (value === "") {
+      value = "0";
+    }
+    setAmountPaid(parseFloat(value));
+  };
+  const calculateChange = () => {
+    const change = amountPaid - totalPrice;
+    return change < 0 ? 0 : change.toLocaleString("vi-VN");
+  };
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/[^0-9]/g, "");
     console.log("value", value);
 
-    // Ensure value is not empty
     if (value === "") {
-      value = "0"; // Set default value to 0 or handle as needed
+      value = "0";
     }
-    // Convert value to number
     let parsedValue = parseFloat(value);
-    // Ensure discount price does not exceed total price
-    if (parsedValue > totalPrice) {
-      parsedValue = totalPrice; // Set discount price to totalPrice if it exceeds
+    if (!isPercentage && parsedValue > totalPrice) {
+      parsedValue = totalPrice;
+    } else if (isPercentage && parsedValue > 100) {
+      parsedValue = 100;
     }
-    // Update discount price state
     setDiscountPrice(parsedValue);
   };
   const handleVNDClick = () => {
+    if (isPercentage) {
+      // Convert percentage discount to VND
+      const discountInVND = ((totalPrice * discountPrice) / 100).toFixed(2);
+      setDiscountPrice(parseFloat(discountInVND));
+      setIsPercentage(false);
+    }
     setIsPercentage(false);
   };
-
   const handlePercentageClick = () => {
-    setIsPercentage(true);
-    if (discountPrice > 100) {
-      setDiscountPrice(0);
+    if (!isPercentage) {
+      // Convert VND discount to percentage
+      const discountInPercentage = ((discountPrice / totalPrice) * 100).toFixed(2);
+      setDiscountPrice(parseFloat(discountInPercentage));
+      setIsPercentage(true);
     }
+    setIsPercentage(true);
   };
   useEffect(() => {
     const { totalQuantity, totalPrice } = detailTotalInvoice(activeKey);
     setTotalQuantity(totalQuantity);
     setTotalPrice(totalPrice);
+    setAmountPaid(totalPrice);
     calculateFinalPrice(totalPrice, discountPrice, isPercentage);
     // console.log("activeKey", activeKey);
-  }, [invoiceList, activeKey, discountPrice, isPercentage]);
+  }, [invoiceList, activeKey, discountPrice, isPercentage, totalPrice]);
   useEffect(() => {
     localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
     setDiscountPrice(0);
@@ -530,6 +573,7 @@ const SalePageDemo: React.FC = () => {
     fetchDataProduct();
     getDataCategory();
     getDataCustomer();
+    getInfoBanking();
   }, []);
   return (
     <>
@@ -605,6 +649,15 @@ const SalePageDemo: React.FC = () => {
               handleVNDClick={handleVNDClick}
               handlePercentageClick={handlePercentageClick}
               isPercentage={isPercentage}
+              calculateChange={calculateChange}
+              handleAmountPaidChange={handleAmountPaidChange}
+              amountPaid={amountPaid}
+              setHiddenPopUpDiscountPrice={setHiddenPopUpDiscountPrice}
+              handlePaymentMethodChange={handlePaymentMethodChange}
+              bankingData={bankingData}
+              selectedPaymentMethod={selectedPaymentMethod}
+              setHiddenQRCode={setHiddenQRCode}
+              hiddenQRCode={hiddenQRCode}
             />
           )}
         </div>

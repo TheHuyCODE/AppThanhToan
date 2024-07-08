@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Select } from "antd";
 import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
@@ -24,10 +24,28 @@ const RightPageContent = ({
   handleVNDClick,
   handlePercentageClick,
   isPercentage,
+  amountPaid,
+  handleAmountPaidChange,
+  calculateChange,
+  setHiddenPopUpDiscountPrice,
+  selectedPaymentMethod,
+  handlePaymentMethodChange,
+  bankingData,
+  setHiddenQRCode,
+  hiddenQRCode,
 }) => {
-  const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState<string>("");
+  const [linkQR, setLinkQR] = useState<string>("");
+  const [inputQRCode, setInputQRCode] = useState({
+    idBank: "",
+    account_Bank: "",
+    template_Bank: "",
+    amount_Due: 0,
+    account_Name: "",
+    id: "",
+  });
   const domainLink = domain.domainLink;
-
+  const menuRef = useRef(null);
   const formatDataCategory = dataCategory?.map((item, index) => ({
     value: index + 1,
     label: item.name,
@@ -39,16 +57,107 @@ const RightPageContent = ({
     label: item.full_name,
     id: item.id,
   }));
-
-  const getCustomerPayment = (value) => {
+  const infoBanking =
+    bankingData
+      ?.filter((item) => item.type === true)
+      .map((item, index) => ({
+        value: index + 1,
+        id: item.id,
+        account_name: item.account_name,
+        account_no: item.account_no,
+        bank_id: item.bank_id,
+        template: item.template,
+        name: `${item.bank_name} - ${item.account_no} - ${item.account_name}`,
+      })) || [];
+  const getCustomerPayment = (value: number) => {
     const isActiveCustomer = infoCustomer.find((item) => item.value === value);
     if (isActiveCustomer) {
-      setSelectedCustomer(isActiveCustomer.id);
+      const IDCustomer = isActiveCustomer.id;
+      setSelectedCustomer(IDCustomer);
+      console.log("isActiveCustomer", selectedCustomer);
+      console.log("isActiveCustomer", IDCustomer);
     } else {
       console.log("Không tìm thấy value", value);
     }
   };
-
+  const getLinkPictureQRCode = (
+    Bank_ID: string,
+    Account_No: string,
+    Template: string,
+    Amount: number,
+    Account_Name: string
+  ): string => {
+    const encodedAccountName = encodeURIComponent(Account_Name.trim());
+    const linkQr = `https://img.vietqr.io/image/${Bank_ID}-${Account_No}-${Template}.png?amount=${Amount}&addInfo=${encodeURIComponent(
+      "Thanhtoánhóađơn"
+    )}&accountName=${encodedAccountName}`;
+    return linkQr;
+  };
+  const handleSelectInfoBank = (value: number) => {
+    const isActiveBank = infoBanking.find((item) => item.value === value);
+    if (isActiveBank) {
+      console.log("Name tương ứng với value:", isActiveBank);
+      console.log("Name tương ứng với id:", isActiveBank.id);
+      // const idBank = isActiveBank.bank_id;
+      // const account_Bank = isActiveBank.account_no;
+      // const template_Bank = isActiveBank.template;
+      // const amount_Due = inputPayment.amount_due;
+      // const account_Name = isActiveBank.account_name;
+      setInputQRCode({
+        ...inputQRCode,
+        id: isActiveBank.id,
+        idBank: isActiveBank.bank_id,
+        account_Bank: isActiveBank.account_no,
+        template_Bank: isActiveBank.template,
+        amount_Due: finalPrice,
+        account_Name: isActiveBank.account_name,
+      });
+      console.log("setInputQRCode", inputQRCode);
+      const linkQr = getLinkPictureQRCode(
+        inputQRCode.idBank,
+        inputQRCode.account_Bank,
+        inputQRCode.template_Bank,
+        inputQRCode.amount_Due,
+        inputQRCode.account_Name
+      );
+      console.log("linkQr", linkQr);
+      setLinkQR(linkQr);
+      setHiddenQRCode(true);
+    } else {
+      console.log("Không tìm thấy value:", value);
+      setLinkQR("");
+      // fetchDataProduct();
+      setHiddenQRCode(false);
+    }
+  };
+  useEffect(() => {
+    console.log("Selected Customer:", selectedCustomer);
+  }, [selectedCustomer]);
+  useEffect(() => {
+    if (inputQRCode.idBank && finalPrice > 0) {
+      const linkQr = getLinkPictureQRCode(
+        inputQRCode.idBank,
+        inputQRCode.account_Bank,
+        inputQRCode.template_Bank,
+        finalPrice,
+        inputQRCode.account_Name
+      );
+      console.log("linkQr", linkQr);
+      setLinkQR(linkQr);
+    }
+  }, [inputQRCode, finalPrice]);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close the menu if click occurs outside of it
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setHiddenPopUpDiscountPrice(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuRef]);
   return (
     <div className="right-page-content">
       <div className="right-page-content-header">
@@ -129,7 +238,7 @@ const RightPageContent = ({
               placeholder="Chọn khách hàng"
               notFoundContent="Không tìm thấy người dùng"
               optionFilterProp="label"
-              onChange={getCustomerPayment}
+              onChange={(value) => getCustomerPayment(value)}
               style={{ width: 400, height: 40, paddingRight: "0px" }}
               filterOption={(input, option) =>
                 (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -160,7 +269,7 @@ const RightPageContent = ({
               />
             </div>
             {hiddenPopUpDiscountPrice && (
-              <div className="pop-discount">
+              <div ref={menuRef} className="pop-discount">
                 <p>Giảm giá</p>
                 <input
                   type="text"
@@ -183,7 +292,9 @@ const RightPageContent = ({
               </div>
             )}
             <div className="payment-invoice__total-after-discount">
-              <label className="payment-invoice__label">Khách cần trả</label>
+              <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
+                Khách cần trả
+              </label>
               <div className="payment-invoice__price">
                 <p className="payment-invoice__price-amount">
                   {finalPrice?.toLocaleString("vi-VN") || "0"}
@@ -191,9 +302,13 @@ const RightPageContent = ({
               </div>
             </div>
             <div className="payment-invoice__guest-pays">
-              <label className="payment-invoice__label">Khách thanh toán</label>
+              <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
+                Khách thanh toán
+              </label>
               <input
                 type="text"
+                value={amountPaid.toLocaleString("vi-VN")}
+                onChange={handleAmountPaidChange}
                 className="payment-invoice__input"
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -206,6 +321,8 @@ const RightPageContent = ({
                   type="radio"
                   id="cashmoney"
                   value={0}
+                  checked={selectedPaymentMethod === 0}
+                  onChange={handlePaymentMethodChange}
                 />
                 <label className="payment-invoice__label" htmlFor="cashmoney">
                   Tiền mặt
@@ -217,6 +334,8 @@ const RightPageContent = ({
                   type="radio"
                   id="internetmoney"
                   value={1}
+                  checked={selectedPaymentMethod === 1}
+                  onChange={handlePaymentMethodChange}
                 />
                 <label className="payment-invoice__label" htmlFor="internetmoney">
                   Chuyển khoản
@@ -228,18 +347,58 @@ const RightPageContent = ({
                   type="radio"
                   id="cashmoneyandinternetmoney"
                   value={2}
+                  checked={selectedPaymentMethod === 2}
+                  onChange={handlePaymentMethodChange}
                 />
                 <label className="payment-invoice__label" htmlFor="cashmoneyandinternetmoney">
                   Thanh toán kết hợp
                 </label>
               </div>
             </div>
+
+            {selectedPaymentMethod === 1 && (
+              <Select
+                placeholder="-Tài khoản nhận-"
+                allowClear
+                onChange={(value) => {
+                  handleSelectInfoBank(value);
+                }}
+                style={{ width: "100%", height: 40 }}
+              >
+                {infoBanking.map((option) => (
+                  <option value={option.value} key={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+            {hiddenQRCode && (
+              <div
+                className="img-QR"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <img
+                  src={linkQR}
+                  alt="QR"
+                  style={{
+                    width: "250px",
+                    height: "300px",
+                    cursor: "pointer",
+                  }}
+                  // onClick={detailQRCode}
+                />
+              </div>
+            )}
             <div className="payment-invoice__money-return">
               <label className="payment-invoice__label">Tiền thừa trả khách</label>
               <div className="payment-invoice__return-amount">
-                <p className="payment-invoice__price-amount">
-                  {totalPrice?.toLocaleString("vi-VN") || "0"}
-                </p>
+                <p className="payment-invoice__price-amount">{calculateChange()}</p>
               </div>
             </div>
           </div>

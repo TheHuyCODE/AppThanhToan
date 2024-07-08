@@ -141,9 +141,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
         setIsMenuOpen(false);
       }
     };
-    // Add event listener when component mounts
     document.addEventListener("mousedown", handleClickOutside);
-    // Cleanup event listener when component unmounts
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };

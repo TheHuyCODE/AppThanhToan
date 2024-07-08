@@ -149,7 +149,6 @@ const SalePage = () => {
   const [hiddenQRCode, setHiddenQRCode] = useState(false);
   const [isPercentage, setIsPercentage] = useState(false);
   const [statePayment, setStatePayment] = useState(false);
-
   const [isPrintReady, setIsPrintReady] = useState(false);
   const [inputCustomer, setInputCustomer] = useState({
     full_name: "",
@@ -1115,7 +1114,7 @@ const SalePage = () => {
             >
               {/* Nội dung của sidebar */}
               <div className="header-sidebar-bank">
-                <span>Thanh toán hóa đơn</span>
+                <span>Thanh toán hóa đơn </span>
                 <button className="close-sidebar-bank" onClick={toggleSidebar}>
                   <IoMdClose />
                 </button>
