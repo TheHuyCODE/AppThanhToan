@@ -12,6 +12,7 @@ import useDebounce from "../auth/useDebounce";
 import category from "../../configs/category";
 import sellProduct from "../../configs/sellProduct";
 import ReturnInvoice from "../Invoices/ReturnInvoice";
+import { GiCardKingClubs } from "react-icons/gi";
 interface Product {
   id: number;
   name: string;
@@ -51,7 +52,6 @@ const SalePageDemo: React.FC = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenPaymentReturn, setIsOpenPaymentReturn] = useState(false);
-  const [keyActiveInvoiceId, setKeyActiveInvoiceId] = useState("");
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
   // const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [open, setOpen] = useState(false);
@@ -64,6 +64,11 @@ const SalePageDemo: React.FC = () => {
     quantity: 0,
     price: 0,
   });
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [discountPrice, setDiscountPrice] = useState(0);
+  const [finalPrice, setFinalPrice] = useState(0);
+  const [isPercentage, setIsPercentage] = useState(false);
   const [invoiceList, setInvoiceList] = useState<Invoice[]>(() => {
     const savedInvoices = localStorage.getItem("invoiceList");
     const parsedInvoices = savedInvoices ? JSON.parse(savedInvoices) : [];
@@ -115,7 +120,9 @@ const SalePageDemo: React.FC = () => {
       console.log("error:", error);
     }
   };
-
+  const handleInputDiscountPrice = () => {
+    setHiddenPopUpDiscountPrice(!hiddenPopUpDiscountPrice);
+  };
   const handleProductClick = (product: Product) => {
     setSelectedProducts((prevSelectedProducts) => {
       const currentProducts = prevSelectedProducts[activeKey] || [];
@@ -157,6 +164,7 @@ const SalePageDemo: React.FC = () => {
   };
 
   const decrement = (invoiceId, productId) => {
+    console.log("invoice", invoiceId);
     setInvoiceList((prevInvoices) =>
       prevInvoices.map((invoice) =>
         invoice.id_payment === invoiceId
@@ -245,6 +253,7 @@ const SalePageDemo: React.FC = () => {
       setActiveKey(newKey);
       localStorage.setItem("idActiveInvoice", newKey);
       console.log("actiiveKey:", newInvoice.id_payment);
+
       setNextInvoiceNumber(newInvoiceNumber + 1);
     } else {
       toast.warning("Không thể thêm quá 5 hóa đơn");
@@ -344,20 +353,6 @@ const SalePageDemo: React.FC = () => {
       }
     }
   };
-
-  // const removeInvoice = (targetKey: string) => {
-  //   const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
-  //   setInvoiceList(newInvoiceList);
-
-  //   if (newInvoiceList.length) {
-  //     const newActiveKey = newInvoiceList[0].id_payment;
-  //     setActiveKey(newActiveKey);
-  //     localStorage.setItem("idActiveInvoice", newActiveKey);
-  //   } else {
-  //     setActiveKey("");
-  //     localStorage.removeItem("idActiveInvoice");
-  //   }
-  // };
 
   const removeReturnInvoice = (key: string) => {
     const returnInvoiceToRemove = invoiceList.find(
@@ -466,15 +461,65 @@ const SalePageDemo: React.FC = () => {
   //     setIsOpenPaymentReturn(false);
   //   }
   // }, [isOpenPaymentReturn]);
+
+  const detailTotalInvoice = (invoiceID: string) => {
+    const activeInvoice = invoiceList.find((invoice) => invoice.id_payment === invoiceID);
+    if (activeInvoice) {
+      const totalQuantity = activeInvoice.items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalPrice = activeInvoice.items.reduce(
+        (sum, item) => sum + item.quantity * item.capital_price,
+        0
+      );
+      return { totalQuantity, totalPrice };
+    }
+    return { totalQuantity: 0, totalPrice: 0 };
+  };
+  const calculateFinalPrice = (totalPrice, discountPrice, isPercentage) => {
+    let finalPrice = totalPrice;
+    if (isPercentage) {
+      finalPrice -= (totalPrice * discountPrice) / 100;
+    } else {
+      finalPrice -= discountPrice;
+    }
+    setFinalPrice(finalPrice);
+  };
+  const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    console.log("value", value);
+
+    // Ensure value is not empty
+    if (value === "") {
+      value = "0"; // Set default value to 0 or handle as needed
+    }
+    // Convert value to number
+    let parsedValue = parseFloat(value);
+    // Ensure discount price does not exceed total price
+    if (parsedValue > totalPrice) {
+      parsedValue = totalPrice; // Set discount price to totalPrice if it exceeds
+    }
+    // Update discount price state
+    setDiscountPrice(parsedValue);
+  };
+  const handleVNDClick = () => {
+    setIsPercentage(false);
+  };
+
+  const handlePercentageClick = () => {
+    setIsPercentage(true);
+    if (discountPrice > 100) {
+      setDiscountPrice(0);
+    }
+  };
+  useEffect(() => {
+    const { totalQuantity, totalPrice } = detailTotalInvoice(activeKey);
+    setTotalQuantity(totalQuantity);
+    setTotalPrice(totalPrice);
+    calculateFinalPrice(totalPrice, discountPrice, isPercentage);
+    // console.log("activeKey", activeKey);
+  }, [invoiceList, activeKey, discountPrice, isPercentage]);
   useEffect(() => {
     localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
-    // const typeInvoiceList = invoiceList.filter((invoice) => invoice.type === "return");
-    // console.log("typeInvoiceList", typeInvoiceList);
-    // if (typeInvoiceList.length > 0) {
-    //   setIsOpenPaymentReturn(true);
-    // } else {
-    //   setIsOpenPaymentReturn(false);
-    // }
+    setDiscountPrice(0);
   }, [invoiceList]);
 
   useEffect(() => {
@@ -531,6 +576,9 @@ const SalePageDemo: React.FC = () => {
             decrement={decrement}
             increment={increment}
             setIsOpenPaymentReturn={setIsOpenPaymentReturn}
+            totalQuantity={totalQuantity}
+            totalPrice={totalPrice}
+            // detailTotalInvoice={detailTotalInvoice}
             // selectedProducts={selectedProducts[activeKey] || []}
           />
           {isOpenPaymentReturn ? (
@@ -541,12 +589,22 @@ const SalePageDemo: React.FC = () => {
               total={total}
               dataCategory={dataCategory}
               handleChangeNumberCards={handleChangeNumberCards}
+              handleInputDiscountPrice={handleInputDiscountPrice}
               dataProduct={dataProduct}
               handleProductClick={handleProductClick}
               toggleSidebar={toggleSidebar}
               isSidebarVisible={isSidebarVisible}
               hiddenPopUpDiscountPrice={hiddenPopUpDiscountPrice}
               isDataCustomer={isDataCustomer}
+              totalQuantity={totalQuantity}
+              totalPrice={totalPrice}
+              activeKey={activeKey}
+              discountPrice={discountPrice}
+              finalPrice={finalPrice}
+              handleDiscountChange={handleDiscountChange}
+              handleVNDClick={handleVNDClick}
+              handlePercentageClick={handlePercentageClick}
+              isPercentage={isPercentage}
             />
           )}
         </div>

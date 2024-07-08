@@ -28,29 +28,42 @@ type RecordType = {
   total_amount: number;
 };
 type ChildComponentProps = {
+  activeKey: string;
+  items: [];
+  isModalOpen: boolean;
+  // dataTableInvoice: [];
+  addInvoice: () => void;
   onDetailInvoiceReturn: (id: string) => void;
+  setActiveKey: (value: string) => void;
+  removeInvoice: (id: string) => void;
+  handleAddReturnInvoice: () => void;
+  addReturnInvoice: () => void;
+  removeReturnInvoice: (key: string) => void;
+  closeModal: () => void;
+  onSearchInvoices: (value: string) => void;
+  // setIsOpenPaymentReturn: (value: boolean) => void;
 };
 const { TabPane } = Tabs;
 const HeaderPageSales: React.FC<ChildComponentProps> = ({
-  addInvoice,
   setActiveKey,
   activeKey,
   items,
+  isModalOpen,
+  addInvoice,
   removeInvoice,
   handleAddReturnInvoice,
   onDetailInvoiceReturn,
   addReturnInvoice,
   removeReturnInvoice,
-  isModalOpen,
   closeModal,
   dataTableInvoice,
   onSearchInvoices,
-  setIsOpenPaymentReturn,
+  // setIsOpenPaymentReturn,
 }) => {
   const [infouser, setInfoUser] = useState<User | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [valueSearchProduct, setValueSearchProduct] = useState("");
-  const [valueSearchInvoice, setValueSearchInvoice] = useState("");
+  // const [valueSearchInvoice, setValueSearchInvoice] = useState("");
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -87,11 +100,11 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
 
   const onChange = (newActiveKey: string) => {
     setActiveKey(newActiveKey);
+    console.log("newActiveKey", newActiveKey);
     localStorage.setItem("idActiveInvoice", newActiveKey);
-    if (!newActiveKey.startsWith("return-")) {
-      console.log("11111");
-      setIsOpenPaymentReturn(false);
-    }
+    // if (!newActiveKey.startsWith("return-")) {
+    //   setIsOpenPaymentReturn(false);
+    // }
   };
 
   const onEdit = (targetKey: string, action: string) => {
@@ -214,7 +227,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
               onKeyDown={handleEnterPress}
             />
 
-            <button className="btn-return-goods" onClick={addReturnInvoice}>
+            <button className="btn-return-goods" onClick={addReturnInvoice} title="Trả hàng">
               Trả hàng
             </button>
           </div>

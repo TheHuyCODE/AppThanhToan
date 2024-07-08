@@ -10,35 +10,45 @@ const RightPageContent = ({
   dataProduct,
   dataCategory,
   handleProductClick,
+  handleInputDiscountPrice,
   toggleSidebar,
   isSidebarVisible,
   hiddenPopUpDiscountPrice,
   isDataCustomer,
+  activeKey,
+  totalQuantity = 0,
+  totalPrice = 0,
+  discountPrice,
+  finalPrice,
+  handleDiscountChange,
+  handleVNDClick,
+  handlePercentageClick,
+  isPercentage,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const domainLink = domain.domainLink;
+
   const formatDataCategory = dataCategory?.map((item, index) => ({
     value: index + 1,
     label: item.name,
     id: item.id,
   }));
+
   const infoCustomer = isDataCustomer?.map((item, index) => ({
     value: index + 1,
     label: item.full_name,
     id: item.id,
   }));
-  const getCustomerPayment = (value: number) => {
-    console.log("customerPayment", value);
+
+  const getCustomerPayment = (value) => {
     const isActiveCustomer = infoCustomer.find((item) => item.value === value);
     if (isActiveCustomer) {
-      const customer_Id = isActiveCustomer.id;
-      console.log("info", isActiveCustomer.id);
-      setSelectedCustomer(customer_Id);
+      setSelectedCustomer(isActiveCustomer.id);
     } else {
       console.log("Không tìm thấy value", value);
     }
-    // console.log("selected", selectedCustomer);
   };
+
   return (
     <div className="right-page-content">
       <div className="right-page-content-header">
@@ -59,14 +69,13 @@ const RightPageContent = ({
         </div>
         <Select
           showSearch
-          placeholder="Lọc theo danh mục sản phẩm danh mục sản phẩm"
+          placeholder="Lọc theo danh mục sản phẩm"
           optionFilterProp="label"
           style={{ width: 260, height: 40 }}
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
           options={formatDataCategory}
-          // options={category.map((cat) => ({ label: cat.name, value: cat.id }))}
         />
       </div>
       <div className="right-page-content-container">
@@ -106,13 +115,9 @@ const RightPageContent = ({
         </button>
       </div>
       <div className={`overlay ${isSidebarVisible ? "show" : ""}`} onClick={toggleSidebar}></div>
-      <div
-        className={`sidebar ${isSidebarVisible ? "show" : ""}`}
-        // onClick={() => setHiddenPopUpDiscountPrice(false )}
-      >
-        {/* Nội dung của sidebar */}
+      <div className={`sidebar ${isSidebarVisible ? "show" : ""}`}>
         <div className="header-sidebar-bank">
-          <span>Thanh toán hóa đơn</span>
+          <span>Thanh toán hóa đơn {activeKey}</span>
           <button className="close-sidebar-bank" onClick={toggleSidebar}>
             <IoMdClose />
           </button>
@@ -124,22 +129,13 @@ const RightPageContent = ({
               placeholder="Chọn khách hàng"
               notFoundContent="Không tìm thấy người dùng"
               optionFilterProp="label"
-              onChange={(value) => getCustomerPayment(value)}
-              // value={selectedCustomer}
+              onChange={getCustomerPayment}
               style={{ width: 400, height: 40, paddingRight: "0px" }}
               filterOption={(input, option) =>
                 (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
               }
               options={infoCustomer}
             />
-            {/* {selectedCustomer && (
-              <button
-                onClick={handleClearSelection}
-                style={{ marginLeft: "10px" }}
-              >
-                Clear
-              </button>
-            )} */}
             <button className="btn-add-customers" title="Thêm khách hàng">
               <IoMdAdd />
             </button>
@@ -147,12 +143,9 @@ const RightPageContent = ({
           <div className="payment-invoice">
             <div className="payment-invoice__total">
               <label className="payment-invoice__label">Tổng tiền hàng</label>
-              {/* <span className="payment-invoice__value">
-                {total.quantity}
-              </span> */}
               <div className="payment-invoice__price-total">
                 <p className="payment-invoice__price-amount">
-                  {/* {total.price.toLocaleString("vi-VN")} */}
+                  {totalPrice?.toLocaleString("vi-VN") || "0"}
                 </p>
               </div>
             </div>
@@ -160,10 +153,10 @@ const RightPageContent = ({
               <label className="payment-invoice__label">Giảm giá</label>
               <input
                 type="text"
-                // value={inputPayment.discount_price.toLocaleString("vi-VN")}
-                // onChange={onChangePricePayment}
-                // onClick={handleInputClick}
                 className="payment-invoice__input"
+                value={discountPrice.toLocaleString("vi-VN")}
+                onChange={handleDiscountChange}
+                onClick={handleInputDiscountPrice}
               />
             </div>
             {hiddenPopUpDiscountPrice && (
@@ -171,19 +164,19 @@ const RightPageContent = ({
                 <p>Giảm giá</p>
                 <input
                   type="text"
-                  // value={inputPayment.discount_price.toLocaleString("vi-VN")}
-                  // onChange={onChangePricePayment}
                   className="payment-invoice__input"
+                  value={discountPrice.toLocaleString("vi-VN")}
+                  onChange={handleDiscountChange}
                 />
                 <button
-                // className={`discount-button ${!isPercentage ? "active" : ""}`}
-                // onClick={handleVNDClick}
+                  className={`discount-button ${!isPercentage ? "active" : ""}`}
+                  onClick={handleVNDClick}
                 >
                   VND
                 </button>
                 <button
-                // className={`discount-button ${isPercentage ? "active" : ""}`}
-                // onClick={handlePercentageClick}
+                  className={`discount-button ${isPercentage ? "active" : ""}`}
+                  onClick={handlePercentageClick}
                 >
                   %
                 </button>
@@ -193,7 +186,7 @@ const RightPageContent = ({
               <label className="payment-invoice__label">Khách cần trả</label>
               <div className="payment-invoice__price">
                 <p className="payment-invoice__price-amount">
-                  {/* {inputPayment.amount_due.toLocaleString("vi-VN")} */}
+                  {finalPrice?.toLocaleString("vi-VN") || "0"}
                 </p>
               </div>
             </div>
@@ -201,8 +194,6 @@ const RightPageContent = ({
               <label className="payment-invoice__label">Khách thanh toán</label>
               <input
                 type="text"
-                // value={inputPayment.amount_paid.toLocaleString("vi-VN")}
-                // onChange={onChangeAmountPaid}
                 className="payment-invoice__input"
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -215,8 +206,6 @@ const RightPageContent = ({
                   type="radio"
                   id="cashmoney"
                   value={0}
-                  // checked={selectedPaymentMethod === 0}
-                  // onChange={handlePaymentMethodChange}
                 />
                 <label className="payment-invoice__label" htmlFor="cashmoney">
                   Tiền mặt
@@ -228,8 +217,6 @@ const RightPageContent = ({
                   type="radio"
                   id="internetmoney"
                   value={1}
-                  // checked={selectedPaymentMethod === 1}
-                  // onChange={handlePaymentMethodChange}
                 />
                 <label className="payment-invoice__label" htmlFor="internetmoney">
                   Chuyển khoản
@@ -241,61 +228,17 @@ const RightPageContent = ({
                   type="radio"
                   id="cashmoneyandinternetmoney"
                   value={2}
-                  // checked={selectedPaymentMethod === 2}
-                  // onChange={handlePaymentMethodChange}
                 />
                 <label className="payment-invoice__label" htmlFor="cashmoneyandinternetmoney">
                   Thanh toán kết hợp
                 </label>
               </div>
             </div>
-
-            {/* {selectedPaymentMethod === 1 && (
-              <Select
-                placeholder="-Tài khoản nhận-"
-                allowClear
-                onChange={(value) => {
-                  handleSelectInfoBank(value);
-                }}
-                style={{ width: "100%", height: 40 }}
-              >
-                {infoBanking.map((option) => (
-                  <option value={option.value} key={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </Select>
-            )} */}
-            {/* {hiddenQRCode && (
-              <div
-                className="img-QR"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <img
-                  src={linkQR}
-                  alt="QR"
-                  style={{
-                    width: "150px",
-                    height: "180px",
-                    cursor: "pointer",
-                  }}
-                  onClick={detailQRCode}
-                />
-              </div>
-            )} */}
-            {/* {detailQrCode && <QRCode value={linkQR} />} */}
-            <div className="option_price"></div>
             <div className="payment-invoice__money-return">
               <label className="payment-invoice__label">Tiền thừa trả khách</label>
               <div className="payment-invoice__return-amount">
                 <p className="payment-invoice__price-amount">
-                  {/* {inputPayment.change.toLocaleString("vi-VN")} */}
+                  {totalPrice?.toLocaleString("vi-VN") || "0"}
                 </p>
               </div>
             </div>
@@ -310,29 +253,10 @@ const RightPageContent = ({
               alignItems: "center",
               justifyContent: "center",
             }}
-            // onClick={clickPaymentTheBill}
           >
             THANH TOÁN
           </button>
-          {/* {statePayment && ( */}
-          <div
-            style={{
-              position: "absolute",
-              left: "-9999px",
-              top: "-9999px",
-            }}
-          >
-            {/* <DetailInvoices
-              ref={componentRef}
-              idCustomer={selectedCustomer}
-              selectedProducts={selectedProducts}
-              amount_due={inputPayment.amount_due.toLocaleString("vi-VN")}
-              amount_paid={inputPayment.amount_paid.toLocaleString("vi-VN")}
-              discount_price={inputPayment.discount_price.toLocaleString("vi-VN")}
-              isVoicesID={isVoicesID}
-            /> */}
-          </div>
-          {/* )} */}
+          <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}></div>
         </div>
       </div>
     </div>
