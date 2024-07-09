@@ -123,8 +123,7 @@ const Payment = () => {
           alt={item.shortName}
           style={{ width: 30, height: 30, marginRight: 10 }}
         />
-        <span style={{ fontWeight: "bold" }}>{item.code}</span>{" "}
-        {`-${item.shortName}`}
+        <span style={{ fontWeight: "bold" }}>{item.code}</span> {`-${item.shortName}`}
       </div>
     ),
     bank_id: item.bin,
@@ -169,7 +168,7 @@ const Payment = () => {
           <Select
             showSearch
             onSearch={onSearch}
-            notFoundContent="không tìm thấy ngân hàng"
+            notFoundContent="Không tìm thấy ngân hàng"
             placeholder="Chọn ngân hàng"
             optionFilterProp="label"
             onChange={onChange}
@@ -182,9 +181,7 @@ const Payment = () => {
                 React.isValidElement(labelValue) &&
                 typeof labelValue.props.children === "string"
               ) {
-                return labelValue.props.children
-                  .toLowerCase()
-                  .includes(input.toLowerCase());
+                return labelValue.props.children.toLowerCase().includes(input.toLowerCase());
               }
               return false;
             }}

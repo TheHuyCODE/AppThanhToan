@@ -79,6 +79,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   };
 
   const handleSearchInvoice = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const value = e.target.value;
     console.log(value);
     onSearchInvoices(value);
@@ -100,7 +101,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
 
   const onChange = (newActiveKey: string) => {
     setActiveKey(newActiveKey);
-    console.log("newActiveKey", newActiveKey);
+    // console.log("newActiveKey", newActiveKey);
     localStorage.setItem("idActiveInvoice", newActiveKey);
     // if (!newActiveKey.startsWith("return-")) {
     //   setIsOpenPaymentReturn(false);

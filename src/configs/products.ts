@@ -52,12 +52,16 @@ const products = {
   },
   getCategoryProduct: () => {
     const url = "api/v1/manage/category/category-dropdown";
+    const params = {
+      is_haveproduct: 1,
+    }
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+      params,
     });
   },
   getDetailProduct: (idItems) => {
@@ -74,6 +78,7 @@ const products = {
     const url = `api/v1/manage/product`;
     const params = {
       category_id: parent_id,
+   
     };
     return axiosClient.get(url, {
       headers: {

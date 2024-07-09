@@ -165,29 +165,17 @@ const DetailProduct = () => {
           />
           <ProductDetail
             label="Tên sản phẩm chính"
-            value={dataProductDetail?.category.name}
-            unit={undefined}
-          />
-          <ProductDetail
-            label="Danh mục sản phẩm"
             value={dataProductDetail?.name}
             unit={undefined}
           />
           <ProductDetail
-            label="Mô tả"
-            value={dataProductDetail?.description}
+            label="Danh mục sản phẩm"
+            value={dataProductDetail?.category.name}
             unit={undefined}
           />
-          <ProductDetail
-            label="Giá nhập"
-            value={dataProductDetail?.price}
-            unit="đ"
-          />
-          <ProductDetail
-            label="Giá bán"
-            value={dataProductDetail?.capital_price}
-            unit="đ"
-          />
+          <ProductDetail label="Mô tả" value={dataProductDetail?.description} unit={undefined} />
+          <ProductDetail label="Giá nhập" value={dataProductDetail?.price} unit="đ" />
+          <ProductDetail label="Giá bán" value={dataProductDetail?.capital_price} unit="đ" />
           <ProductDetail
             label="Ngày tạo"
             value={convertDateProductDetail(dataProductDetail?.created_date)}
@@ -198,11 +186,7 @@ const DetailProduct = () => {
             value={convertDateProductDetail(dataProductDetail?.modified_date)}
             unit={undefined}
           />
-          <ProductDetail
-            label="Đơn vị tính"
-            value={dataProductDetail?.unit}
-            unit={undefined}
-          />
+          <ProductDetail label="Đơn vị tính" value={dataProductDetail?.unit} unit={undefined} />
           <ProductDetail
             label="Người tạo"
             value={dataProductDetail?.user.full_name}
@@ -222,11 +206,7 @@ const DetailProduct = () => {
             <label htmlFor="" className="product-detail">
               Trạng thái sản phẩm
             </label>
-            {dataProductDetail?.is_active ? (
-              <p>Kích hoạt</p>
-            ) : (
-              <p>Chưa kích hoạt</p>
-            )}
+            {dataProductDetail?.is_active ? <p>Kích hoạt</p> : <p>Chưa kích hoạt</p>}
           </div>
         </div>
       </div>

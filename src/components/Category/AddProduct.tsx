@@ -303,9 +303,7 @@ const AddProduct = () => {
             marginBottom: "15px",
           }}
         >
-          <h2 style={{ fontFamily: "poppins, sans-serif" }}>
-            Thông tin sản phẩm
-          </h2>
+          <h2 style={{ fontFamily: "poppins, sans-serif" }}>Thông tin sản phẩm</h2>
         </div>
         <div
           className="content-add-product"
@@ -335,21 +333,13 @@ const AddProduct = () => {
               <label htmlFor="">
                 Mã sản phẩm gốc(<span>*</span>)
               </label>
-              <input
-                type="text"
-                className="input-form"
-                onChange={onChangeInput("barcode")}
-              />
+              <input type="text" className="input-form" onChange={onChangeInput("barcode")} />
             </div>
             <div className="input-info">
               <label htmlFor="">
                 Tên sản phẩm chính(<span>*</span>)
               </label>
-              <input
-                type="text"
-                className="input-form"
-                onChange={onChangeInput("name")}
-              />
+              <input type="text" className="input-form" onChange={onChangeInput("name")} />
             </div>
             <div className="input-info">
               <label htmlFor="">Mô tả</label>
@@ -470,7 +460,7 @@ const AddProduct = () => {
                   // checked={status === "active"}
                   onChange={handleStatusChange}
                 />
-                <label htmlFor="active">Kích hoạt</label>
+                <label htmlFor="active">Chưa kích hoạt</label>
                 <input
                   type="radio"
                   id="notactivate"
@@ -479,7 +469,7 @@ const AddProduct = () => {
                   // checked={status === "notactive"}
                   onChange={handleStatusChange}
                 />
-                <label htmlFor="notactivate">Chưa kích hoạt</label>
+                <label htmlFor="notactivate">Kích hoạt</label>
               </div>
             </div>
           </div>
@@ -511,11 +501,7 @@ const AddProduct = () => {
               </label>
               {!previewImageProduct ? (
                 <>
-                  <label
-                    htmlFor="labelUpload"
-                    className="label-upload"
-                    style={{ marginRight: 0 }}
-                  >
+                  <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
                     <AiOutlinePicture />
                   </label>
                   <input
@@ -538,10 +524,7 @@ const AddProduct = () => {
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <button
-                    className="btn-close-image"
-                    onClick={closePreviewImage}
-                  >
+                  <button className="btn-close-image" onClick={closePreviewImage}>
                     <CiCircleRemove />
                   </button>
                   <img
@@ -553,10 +536,7 @@ const AddProduct = () => {
               )}
             </div>
             <div className="footer-add-product">
-              <button
-                className="btn-cancel-product"
-                onClick={onClickBackPageProduct}
-              >
+              <button className="btn-cancel-product" onClick={onClickBackPageProduct}>
                 <FaBan className="icon" />
                 Hủy
               </button>

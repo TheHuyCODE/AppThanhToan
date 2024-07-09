@@ -131,7 +131,6 @@ const ProductMangement = () => {
       fetchDataProduct();
     }
   };
-
   // search products by active
   const handleSelectActive = (value: number) => {
     console.log("value", value);
@@ -158,7 +157,7 @@ const ProductMangement = () => {
       fetchDataProduct();
     }
   };
-  const handleSearchProduct = (e) => {
+  const handleSearchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setValueSearch(value);
     console.log("value", value);

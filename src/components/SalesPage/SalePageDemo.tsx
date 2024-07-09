@@ -13,6 +13,7 @@ import category from "../../configs/category";
 import sellProduct from "../../configs/sellProduct";
 import ReturnInvoice from "../Invoices/ReturnInvoice";
 import { GiCardKingClubs } from "react-icons/gi";
+import LeftReturnInvoice from "../Invoices/LeftReturnInvoice";
 interface Product {
   id: number;
   name: string;
@@ -55,10 +56,17 @@ const SalePageDemo: React.FC = () => {
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
   const [isDataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
   const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
-
+  const [isSelectItemPayment, setIsSelectItemPayment] = useState([]);
+  const [dataReturnPayment, setDataReturnPayment] = useState([]);
   const [dataTableInvoice, setDataTableInvoice] = useState([]);
+  const [productTotals, setProductTotals] = useState({});
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [idSearchCategory, setIdSearchCategory] = useState({
+    id_category: "",
+  });
+  const [valueSearch, setValueSearch] = useState("");
+  const debounceValueSearch = useDebounce(valueSearch, 700);
   const debouncedSearchTerm = useDebounce(searchTerm, 700); // Delay 500ms
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const [hiddenQRCode, setHiddenQRCode] = useState(false);
@@ -176,8 +184,8 @@ const SalePageDemo: React.FC = () => {
     });
   };
 
-  const decrement = (invoiceId, productId) => {
-    console.log("invoice", invoiceId);
+  const decrement = (invoiceId: string, productId: string) => {
+    console.log("invoice", typeof invoiceId);
     setInvoiceList((prevInvoices) =>
       prevInvoices.map((invoice) =>
         invoice.id_payment === invoiceId
@@ -194,7 +202,7 @@ const SalePageDemo: React.FC = () => {
     );
   };
 
-  const increment = (invoiceId, productId) => {
+  const increment = (invoiceId: string, productId: string) => {
     setInvoiceList((prevInvoices) =>
       prevInvoices.map((invoice) =>
         invoice.id_payment === invoiceId
@@ -279,6 +287,14 @@ const SalePageDemo: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  const findCashBankIds = () => {
+    const itemWithFalseType = bankingData.find((item) => item.type === false);
+    const id = itemWithFalseType ? itemWithFalseType.id : null;
+
+    console.log("idCashBankString", id);
+    return id;
+  };
+  useEffect(() => console.log("111", findCashBankIds), []);
   const handlePaymentMethodChange = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const newPaymentMethod = parseInt(event.target.value, 10);
     console.log("newPaymentMethod", newPaymentMethod);
@@ -291,6 +307,49 @@ const SalePageDemo: React.FC = () => {
     // }
     // setShowSelect(false);
   };
+  const handleSearchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const valueSearch = e.target.value.trim();
+    setValueSearch(valueSearch);
+    console.log("valueSearch", valueSearch);
+  };
+  const handleSelectCategory = (value: number) => {
+    if (value >= 0 && value < dataCategory.length) {
+      const selectedCategory = dataCategory[value - 1];
+      console.log("select", selectedCategory.id);
+      setIdSearchCategory({
+        ...idSearchCategory,
+        id_category: selectedCategory,
+      });
+    } else {
+      console.log("Invalid category index:", value);
+    }
+  };
+  const fetchDataSearchProduct = async () => {
+    try {
+      const res = await products.getDataSearchNameProduct(debounceValueSearch);
+      setDataProduct(res.data.items);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+  useEffect(() => {
+    fetchDataSearchProduct();
+    console.log("valueSearchProduct", valueSearch);
+  }, [debounceValueSearch]);
+  const fetchSearchDataCategory = async () => {
+    try {
+      const res = await products.getDataSearchProduct(idSearchCategory.id_category.id);
+      setDataProduct(res.data.items);
+    } catch (err) {
+      console.log("err", err);
+    } // Check if idSearchCategory is not empty
+  };
+  useEffect(() => {
+    console.log("idSearchCategory", idSearchCategory.id_category.id);
+    if (idSearchCategory.id_category) {
+      fetchSearchDataCategory();
+    }
+  }, [idSearchCategory.id_category]);
   const handleAddReturnInvoice = async () => {
     if (invoiceList.length < maxItems) {
       const returnInvoiceIds = invoiceList
@@ -310,6 +369,8 @@ const SalePageDemo: React.FC = () => {
         items: [],
         id_payment: newKey,
         type: "return",
+        user: [],
+        id_invoice: "",
       };
       // Add the new return invoice to the invoice list
       setInvoiceList((prev) => [...prev, newInvoice]);
@@ -332,19 +393,19 @@ const SalePageDemo: React.FC = () => {
             return {
               ...invoice,
               items: returnedInvoice.product,
+              user: returnedInvoice.create_user,
+              id_invoice: returnedInvoice.id,
             };
           }
           // localStorage.setItem("invoiceList", JSON.stringify(updatedInvoiceList));
           return invoice;
         });
       });
-
       console.log("Updated invoiceList with returned items", invoiceList);
     } catch (err) {
       console.log("Error fetching invoice return details", err);
     }
   };
-
   const removeInvoice = (targetKey: string) => {
     const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
     setInvoiceList(newInvoiceList);
@@ -431,9 +492,9 @@ const SalePageDemo: React.FC = () => {
     }
   };
   const getDataCategory = async () => {
-    const res = await category.getAll();
-    if (res.data && Array.isArray(res.data.items)) {
-      const data = res.data.items;
+    const res = await products.getCategoryProduct();
+    if (res.data && Array.isArray(res.data.category)) {
+      const data = res.data.category;
       setDataCategory(data);
       console.log("dataCategory", dataCategory);
     } else {
@@ -552,14 +613,53 @@ const SalePageDemo: React.FC = () => {
     }
     setIsPercentage(true);
   };
+  const updateProductTotal = (productID: string, totalPrice: number) => {
+    setProductTotals((prev) => ({
+      ...prev,
+      [productID]: totalPrice,
+    }));
+    console.log("productTotals", productTotals);
+  };
+  const typeInvoiListDetail = () => {
+    const typeInvoiceList = invoiceList.filter(
+      (invoice) => invoice.type === "invoice" && invoice.id_payment === activeKey
+    );
+    const items = typeInvoiceList.flatMap((invoice) =>
+      invoice.items.map((product) => ({
+        product_id: product.id,
+        quantity: product.quantity,
+        price: product.price,
+        total_price: product.quantity * product.price,
+      }))
+    );
+    return items;
+  };
+  // const calculateAndPrintInvoice = () => {
+  //   console.log("build payment");
+  //   const Items = typeInvoiListDetail();
+  // };
   useEffect(() => {
     const { totalQuantity, totalPrice } = detailTotalInvoice(activeKey);
     setTotalQuantity(totalQuantity);
     setTotalPrice(totalPrice);
     setAmountPaid(totalPrice);
     calculateFinalPrice(totalPrice, discountPrice, isPercentage);
-    // console.log("activeKey", activeKey);
+    console.log("activeKey", activeKey);
+    const typeInvoiceList = invoiceList.filter(
+      (invoice) => invoice.type === "return" && invoice.id_payment === activeKey
+    );
+    setDataReturnPayment(typeInvoiceList);
   }, [invoiceList, activeKey, discountPrice, isPercentage, totalPrice]);
+  useEffect(() => {
+    console.log("111");
+    if (activeKey.includes("return")) {
+      setIsOpenPaymentReturn(true);
+      console.log("isOpenPaymentReturn", isOpenPaymentReturn);
+    } else {
+      setIsOpenPaymentReturn(false);
+    }
+  }, [activeKey]);
+
   useEffect(() => {
     localStorage.setItem("invoiceList", JSON.stringify(invoiceList));
     setDiscountPrice(0);
@@ -611,22 +711,34 @@ const SalePageDemo: React.FC = () => {
           onSearchInvoices={setSearchTerm}
         />
         <div className="page-content">
-          <LeftPageContent
-            dataProduct={dataProduct}
-            handleProductClick={handleProductClick}
-            removeProductCarts={removeProductCarts}
-            activeKey={activeKey}
-            invoiceList={invoiceList}
-            decrement={decrement}
-            increment={increment}
-            setIsOpenPaymentReturn={setIsOpenPaymentReturn}
-            totalQuantity={totalQuantity}
-            totalPrice={totalPrice}
-            // detailTotalInvoice={detailTotalInvoice}
-            // selectedProducts={selectedProducts[activeKey] || []}
-          />
           {isOpenPaymentReturn ? (
-            <ReturnInvoice />
+            <LeftReturnInvoice
+              invoiceList={invoiceList}
+              activeKey={activeKey}
+              removeProductCarts={removeProductCarts}
+              decrement={decrement}
+              increment={increment}
+              updateProductTotal={updateProductTotal}
+            />
+          ) : (
+            <LeftPageContent
+              dataProduct={dataProduct}
+              handleProductClick={handleProductClick}
+              removeProductCarts={removeProductCarts}
+              activeKey={activeKey}
+              invoiceList={invoiceList}
+              decrement={decrement}
+              increment={increment}
+              setIsOpenPaymentReturn={setIsOpenPaymentReturn}
+              totalQuantity={totalQuantity}
+              totalPrice={totalPrice}
+              setIsSelectItemPayment={setIsSelectItemPayment}
+              // detailTotalInvoice={detailTotalInvoice}
+              // selectedProducts={selectedProducts[activeKey] || []}
+            />
+          )}
+          {isOpenPaymentReturn ? (
+            <ReturnInvoice dataReturnPayment={dataReturnPayment} productTotals={productTotals} />
           ) : (
             <RightPageContent
               selectedProducts={selectedProducts[activeKey] || []}
@@ -658,6 +770,11 @@ const SalePageDemo: React.FC = () => {
               selectedPaymentMethod={selectedPaymentMethod}
               setHiddenQRCode={setHiddenQRCode}
               hiddenQRCode={hiddenQRCode}
+              // calculateAndPrintInvoice={calculateAndPrintInvoice}
+              typeInvoiListDetail={typeInvoiListDetail}
+              findCashBankIds={findCashBankIds}
+              handleSearchProduct={handleSearchProduct}
+              handleSelectCategory={handleSelectCategory}
             />
           )}
         </div>

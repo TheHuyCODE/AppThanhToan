@@ -173,10 +173,11 @@
   display: flex;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
   flex-direction: column;
+  position: relative;
 }
 .return-header {
   width: 100%;
-  height: 60px;
+  height: 150px;
   padding: 15px;
   display: flex;
   flex-direction: column;
@@ -186,4 +187,203 @@
   margin-top: 15px;
   border: none;
   color: black;
+}
+.return-header .return-date {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-self: center;
+  margin-right: 30px;
+  justify-content: end;
+}
+.return-header .return-customer {
+  width: 100%;
+  height: 50px;
+  background-color: lightgray;
+  border-radius: 8px;
+  position: relative;
+}
+.return-header .return-customer .icon {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  color: rgb(85, 78, 78);
+}
+.return-customer input {
+  width: 100%;
+  height: 40px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: start;
+  padding: 5px;
+  padding-left: 25px;
+  margin-left: 8px;
+}
+.return-header .title-return {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+.title-return span {
+  font-size: 20px;
+  color: rgb(23, 215, 23);
+  font-weight: 600;
+}
+.title-return span a {
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.return-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 15px;
+  padding: 15px;
+}
+.return-item {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.return-item .discount-input {
+  width: 140px;
+  height: 30px;
+  border-bottom: 1px solid lightgrey;
+  font-size: 16px;
+  text-align: right;
+}
+.return-item .discount-input:focus {
+  border-color: var(--cl-header);
+  border-width: 2px;
+}
+.return-item .return-fee-input {
+  width: 140px;
+  height: 30px;
+  border-bottom: 1px solid lightgrey;
+  font-size: 16px;
+  text-align: right;
+}
+.return-item .return-fee-input:focus {
+  border-color: var(--cl-header);
+  border-width: 2px;
+}
+.return-item .refund-amount-input {
+  width: 140px;
+  height: 30px;
+  border-bottom: 1px solid lightgrey;
+  font-size: 16px;
+  text-align: right;
+}
+.return-item .refund-amount-input:focus {
+  border-color: var(--cl-header);
+  border-width: 2px;
+}
+.return-footer {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.left-page-content-return {
+  width: 65%;
+  height: 100%;
+  padding: 5px;
+  margin-top: 6px;
+  position: relative;
+}
+.cell-code-return {
+  width: 90%;
+  max-width: 150px;
+  margin-top: 5px;
+  height: auto;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+}
+.cell-info-return {
+  width: 90%;
+  max-width: 150px;
+  margin-top: 5px;
+  height: auto;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+}
+.quantity-product-return {
+  width: 90%;
+  max-width: 150px;
+  margin-top: 5px;
+  height: auto;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+}
+.quantity-product-return span {
+  color: rgb(77, 69, 69);
+  font-size: 14px;
+}
+.cell-change-price,
+.cell-total-price {
+  width: 90%;
+  max-width: 150px;
+  margin-top: 5px;
+  height: auto;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+}
+.pop-discount-return {
+  position: absolute;
+  left: 0rem;
+  top: 15rem;
+  width: 360px;
+  height: 80px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  z-index: 1000;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateY(-20px);
+  transition: opacity 1s ease, transform 0.5s ease;
+}
+.pop-discount-return.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pop-discount-return .discount-button {
+  width: 32px;
+  height: 27px;
+  background: var(--cl-light-gray);
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.discount-button.active {
+  background-color: var(--cl-header);
+  color: white;
 }

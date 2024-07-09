@@ -5,6 +5,8 @@ import { domain } from "../TableConfig/TableConfig";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import sellProduct from "../../configs/sellProduct";
+import { toast } from "react-toastify";
 
 const RightPageContent = ({
   dataProduct,
@@ -33,6 +35,10 @@ const RightPageContent = ({
   bankingData,
   setHiddenQRCode,
   hiddenQRCode,
+  typeInvoiListDetail,
+  findCashBankIds,
+  handleSearchProduct,
+  handleSelectCategory,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [linkQR, setLinkQR] = useState<string>("");
@@ -80,6 +86,7 @@ const RightPageContent = ({
       console.log("Không tìm thấy value", value);
     }
   };
+
   const getLinkPictureQRCode = (
     Bank_ID: string,
     Account_No: string,
@@ -98,11 +105,6 @@ const RightPageContent = ({
     if (isActiveBank) {
       console.log("Name tương ứng với value:", isActiveBank);
       console.log("Name tương ứng với id:", isActiveBank.id);
-      // const idBank = isActiveBank.bank_id;
-      // const account_Bank = isActiveBank.account_no;
-      // const template_Bank = isActiveBank.template;
-      // const amount_Due = inputPayment.amount_due;
-      // const account_Name = isActiveBank.account_name;
       setInputQRCode({
         ...inputQRCode,
         id: isActiveBank.id,
@@ -133,6 +135,52 @@ const RightPageContent = ({
   useEffect(() => {
     console.log("Selected Customer:", selectedCustomer);
   }, [selectedCustomer]);
+  const calculateAndPrintInvoice = async () => {
+    console.log("build payment");
+    const Items = typeInvoiListDetail();
+    console.log(Items);
+    const idCashBank = findCashBankIds();
+    const idBank = inputQRCode.id;
+    console.log("idCash", idCashBank);
+    let method_bank = [{ id: "" }];
+    if (selectedPaymentMethod === 0) {
+      method_bank = [{ id: idCashBank }];
+    } else {
+      method_bank = [{ id: idBank }];
+    }
+    const refund = parseInt(calculateChange());
+    const dataPayment = {
+      total_amount: totalPrice,
+      total_product: totalQuantity,
+      customer_money: amountPaid,
+      refund: refund,
+      products: Items,
+      payment_methods: method_bank,
+      discount: discountPrice,
+      type_discount: 0,
+      customer_id: selectedCustomer,
+    };
+    try {
+      const res = await sellProduct.postDataPayment(dataPayment);
+      // setStatePayment(true);
+      // setIsPrintReady(true);
+      // handlePrint();
+      // const resIdIvoices = res.data.invoice_id;
+      // setIsVoicesID(resIdIvoices);
+      console.log("data payment", res.data);
+      const success = res.message.text;
+      toast.success(`${success}`);
+      // } else {
+      //   const error = res.data.message.text;
+      //   console.log("error", error);
+      //   console.log("data payment", res.data);
+
+      //   setStatePayment(false);
+    } catch (error) {
+      const errorMS = res.data.message.text;
+      toast.error(`${errorMS}`);
+    }
+  };
   useEffect(() => {
     if (inputQRCode.idBank && finalPrice > 0) {
       const linkQr = getLinkPictureQRCode(
@@ -174,13 +222,22 @@ const RightPageContent = ({
               fontSize: "20px",
             }}
           />
-          <input type="text" placeholder="Tìm sản phẩm" className="input-search-customer" />
+          <input
+            type="text"
+            placeholder="Tìm sản phẩm"
+            className="input-search-customer"
+            onChange={handleSearchProduct}
+          />
         </div>
         <Select
           showSearch
           placeholder="Lọc theo danh mục sản phẩm"
+          notFoundContent="Không tìm thấy danh mục sản phẩm"
           optionFilterProp="label"
           style={{ width: 260, height: 40 }}
+          onChange={(value) => {
+            handleSelectCategory(value);
+          }}
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }
@@ -412,6 +469,7 @@ const RightPageContent = ({
               alignItems: "center",
               justifyContent: "center",
             }}
+            onClick={calculateAndPrintInvoice}
           >
             THANH TOÁN
           </button>
