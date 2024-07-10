@@ -72,6 +72,26 @@ const AddProduct = () => {
       name: "Yến",
       value: 10,
     },
+    {
+      name: "Chai",
+      value: 11,
+    },
+    {
+      name: "Bịch",
+      value: 12,
+    },
+    {
+      name: "Gói",
+      value: 13,
+    },
+    {
+      name: "Thùng",
+      value: 12,
+    },
+    {
+      name: "Hộp",
+      value: 14,
+    },
   ];
   const [inputProduct, setInputProduct] = useState({
     barcode: "",
