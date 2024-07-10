@@ -154,7 +154,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
     full_name: items.create_user.full_name,
     customer: items.customer.full_name,
-    total_amount: items.total_amount,
+    total_amount: items.total_amount.toLocaleString("vi-VN"),
   }));
 
   const columns = [

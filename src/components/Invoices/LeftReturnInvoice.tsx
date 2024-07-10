@@ -22,6 +22,11 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   updateProductTotal,
 }) => {
   const [quantityState, setQuantityState] = useState<{ [key: string]: number }>({});
+  const [invoiceListItems, setInvoiceList] = useState<any[]>([]); // Khai báo invoiceList và setter
+
+  const updateInvoiceList = (updatedList: any[]) => {
+    setInvoiceList(updatedList); // Cập nhật invoiceList mới
+  };
 
   const typeInvoiceList = invoiceList.filter(
     (invoice) => invoice.type === "return" && invoice.id_payment === activeKey
@@ -43,30 +48,64 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
       [product.id]: value ? parseInt(value, 10) : 0,
     }));
   };
-  const decrementReturn = (invoiceID: string, productID: string) => {
-    const product = findProduct(productID);
-    if (!product) return;
-
-    setQuantityState((prev) => {
-      const newQuantity = Math.max((prev[productID] || 0) - 1, 0);
-      updateProductTotal(productID, calculateTotal(newQuantity, product.price));
-      return { ...prev, [productID]: newQuantity };
-    });
-  };
   const findProduct = (productID: string) => {
     return typeInvoiceList
       .flatMap((invoice) => invoice.items)
       .find((item) => item.id === productID);
   };
+  const decrementReturn = (invoiceID: string, productID: string) => {
+    const product = findProduct(productID);
+    if (!product) return;
 
+    // Update quantityState
+    const newQuantity = Math.max((quantityState[productID] || 0) - 1, 0);
+    setQuantityState((prev) => ({
+      ...prev,
+      [productID]: newQuantity,
+    }));
+    // Update invoiceList
+    const updatedInvoiceList = invoiceList.map((invoice) => {
+      if (invoice.id_payment === activeKey && invoice.type === "return") {
+        const updatedItems = invoice.items.map((item) =>
+          item.id === productID
+            ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price }
+            : item
+        );
+        return { ...invoice, items: updatedItems };
+      }
+      return invoice;
+    });
+    // Update parent component state with the updated invoiceList
+    updateInvoiceList(updatedInvoiceList);
+    console.log("invoiceList", invoiceListItems);
+    // Update product total
+    updateProductTotal(productID, newQuantity * product.price);
+  };
   const incrementReturn = (invoiceID: string, productID: string) => {
     const product = findProduct(productID);
     if (!product) return;
-    setQuantityState((prev) => {
-      const newQuantity = Math.min((prev[productID] || 0) + 1, product.quantity);
-      updateProductTotal(productID, calculateTotal(newQuantity, product.price));
-      return { ...prev, [productID]: newQuantity };
+    // Update quantityState
+    const newQuantity = Math.min((quantityState[productID] || 0) + 1, product.quantity);
+    setQuantityState((prev) => ({
+      ...prev,
+      [productID]: newQuantity,
+    }));
+    // Update invoiceList
+    const updatedInvoiceList = invoiceList.map((invoice) => {
+      if (invoice.id_payment === activeKey && invoice.type === "return") {
+        const updatedItems = invoice.items.map((item) =>
+          item.id === productID
+            ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price }
+            : item
+        );
+        return { ...invoice, items: updatedItems };
+      }
+      return invoice;
     });
+    // Update parent component state with the updated invoiceList
+    updateInvoiceList(updatedInvoiceList);
+    console.log("invoiceList", invoiceListItems);
+    updateProductTotal(productID, newQuantity * product.price);
   };
 
   const calculateTotal = (quantity: number, price: number) => {

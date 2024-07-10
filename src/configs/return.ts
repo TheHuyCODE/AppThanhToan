@@ -14,7 +14,7 @@ const ReturnProduct = {
 
 
   postDataPayment: (data: object) => {
-    const url = "api/v1/manage/return";
+    const url = "api/v1/manage/returns";
     return axiosClient.post(url, data, {
       headers: {
         "Content-Type": "application/json",

@@ -6,8 +6,10 @@ import { FaArrowRightFromBracket } from "react-icons/fa6";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import sellProduct from "../../configs/sellProduct";
-import { toast } from "react-toastify";
-
+import { toast, ToastContainer } from "react-toastify";
+import DetailInvoices from "../Invoices/detailInvoices";
+import { useReactToPrint } from "react-to-print";
+import products from "../../configs/products";
 const RightPageContent = ({
   dataProduct,
   dataCategory,
@@ -42,6 +44,10 @@ const RightPageContent = ({
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [linkQR, setLinkQR] = useState<string>("");
+  const [isVoicesID, setIsVoicesID] = useState("");
+  const [statePayment, setStatePayment] = useState(false);
+  const [isPrintReady, setIsPrintReady] = useState(false);
+  const componentRef = useRef();
   const [inputQRCode, setInputQRCode] = useState({
     idBank: "",
     account_Bank: "",
@@ -135,6 +141,26 @@ const RightPageContent = ({
   useEffect(() => {
     console.log("Selected Customer:", selectedCustomer);
   }, [selectedCustomer]);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    onAfterPrint: () => {
+      setStatePayment(false);
+      setIsPrintReady(false);
+      // setSelectedProducts([]); // Reset print readiness
+      //   setInputPayment({
+      //     amount_due: 0,
+      //     amount_paid: 0,
+      //     change: 0,
+      //     discount_price: 0,
+      //   });
+    },
+  });
+  useEffect(() => {
+    if (isPrintReady) {
+      handlePrint();
+    }
+  }, [isPrintReady]);
+
   const calculateAndPrintInvoice = async () => {
     console.log("build payment");
     const Items = typeInvoiListDetail();
@@ -162,23 +188,40 @@ const RightPageContent = ({
     };
     try {
       const res = await sellProduct.postDataPayment(dataPayment);
-      // setStatePayment(true);
+      if (res.code === 200) {
+        console.log("data payment", res.data);
+        const resIdIvoices = res.data.invoice_id;
+        const success = res.message.text;
+        console.log("success", success);
+        // await setIsVoicesID();
+        await getDataDetailInvoice(resIdIvoices);
+        toast.success(success);
+        setStatePayment(true);
+        handlePrint();
+      }
       // setIsPrintReady(true);
-      // handlePrint();
-      // const resIdIvoices = res.data.invoice_id;
-      // setIsVoicesID(resIdIvoices);
-      console.log("data payment", res.data);
-      const success = res.message.text;
-      toast.success(`${success}`);
-      // } else {
-      //   const error = res.data.message.text;
-      //   console.log("error", error);
-      //   console.log("data payment", res.data);
-
-      //   setStatePayment(false);
+      else {
+        const error = res.data.message.text;
+        console.log("error", error);
+        console.log("data payment", res.data);
+        toast.error(error);
+        setStatePayment(false);
+      }
     } catch (error) {
-      const errorMS = res.data.message.text;
-      toast.error(`${errorMS}`);
+      console.log("err", error);
+    }
+  };
+  const getDataDetailInvoice = async (IdInvoice: string) => {
+    try {
+      const res = await products.getDetailInvoices(IdInvoice);
+      if (res.data) {
+        console.log("data", res.data);
+        localStorage.setItem("dataDetailInvoice", JSON.stringify(res.data));
+      } else {
+        console.error("API response is not an array:", res.data);
+      }
+    } catch (err) {
+      console.log("err", err);
     }
   };
   useEffect(() => {
@@ -207,276 +250,289 @@ const RightPageContent = ({
     };
   }, [menuRef]);
   return (
-    <div className="right-page-content">
-      <div className="right-page-content-header">
-        <div
-          style={{ display: "flex", position: "relative" }}
-          className="box-input-search-customer"
-        >
-          <CiSearch
-            style={{
-              position: "absolute",
-              top: "10px",
-              left: "11px",
-              transform: "translateY(8%)",
-              fontSize: "20px",
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Tìm sản phẩm"
-            className="input-search-customer"
-            onChange={handleSearchProduct}
-          />
-        </div>
-        <Select
-          showSearch
-          placeholder="Lọc theo danh mục sản phẩm"
-          notFoundContent="Không tìm thấy danh mục sản phẩm"
-          optionFilterProp="label"
-          style={{ width: 260, height: 40 }}
-          onChange={(value) => {
-            handleSelectCategory(value);
-          }}
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          options={formatDataCategory}
-        />
-      </div>
-      <div className="right-page-content-container">
-        <ul className="list-product">
-          {dataProduct?.map((product, index) => (
-            <li key={index} className="box-product" onClick={() => handleProductClick(product)}>
-              <div className="product-info-img">
-                <img
-                  src={`${domainLink}${product.image_url}`}
-                  loading="lazy"
-                  alt={product.name}
-                  className="image-review-product"
-                />
-              </div>
-              <div className="product-info-bottom">
-                <h4>{product.name}</h4>
-                <div>
-                  <span>{product.capital_price.toLocaleString("vi-VN")}</span>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="right-page-content-footer">
-        <div className="nagination-product">
-          <button title="Trang trước" className="btn-before-product">
-            <MdKeyboardArrowLeft className="icon" />
-          </button>
-          <span>2/2</span>
-          <button title="Trang sau" className="btn-after-product">
-            <MdKeyboardArrowRight className="icon" />
-          </button>
-        </div>
-        <button className="btn-pay" onClick={toggleSidebar}>
-          THANH TOÁN
-        </button>
-      </div>
-      <div className={`overlay ${isSidebarVisible ? "show" : ""}`} onClick={toggleSidebar}></div>
-      <div className={`sidebar ${isSidebarVisible ? "show" : ""}`}>
-        <div className="header-sidebar-bank">
-          <span>Thanh toán hóa đơn {activeKey}</span>
-          <button className="close-sidebar-bank" onClick={toggleSidebar}>
-            <IoMdClose />
-          </button>
-        </div>
-        <div className="main-sidebar-bank">
-          <div className="customer-debt-point-wraper">
-            <Select
-              showSearch
-              placeholder="Chọn khách hàng"
-              notFoundContent="Không tìm thấy người dùng"
-              optionFilterProp="label"
-              onChange={(value) => getCustomerPayment(value)}
-              style={{ width: 400, height: 40, paddingRight: "0px" }}
-              filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              options={infoCustomer}
+    <>
+      <ToastContainer />
+      <div className="right-page-content">
+        <div className="right-page-content-header">
+          <div
+            style={{ display: "flex", position: "relative" }}
+            className="box-input-search-customer"
+          >
+            <CiSearch
+              style={{
+                position: "absolute",
+                top: "10px",
+                left: "11px",
+                transform: "translateY(8%)",
+                fontSize: "20px",
+              }}
             />
-            <button className="btn-add-customers" title="Thêm khách hàng">
-              <IoMdAdd />
+            <input
+              type="text"
+              placeholder="Tìm sản phẩm"
+              className="input-search-customer"
+              onChange={handleSearchProduct}
+            />
+          </div>
+          <Select
+            showSearch
+            placeholder="Lọc theo danh mục sản phẩm"
+            notFoundContent="Không tìm thấy danh mục sản phẩm"
+            optionFilterProp="label"
+            style={{ width: 260, height: 40 }}
+            onChange={(value) => {
+              handleSelectCategory(value);
+            }}
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={formatDataCategory}
+          />
+        </div>
+        <div className="right-page-content-container">
+          <ul className="list-product">
+            {dataProduct?.map((product, index) => (
+              <li key={index} className="box-product" onClick={() => handleProductClick(product)}>
+                <div className="product-info-img">
+                  <img
+                    src={`${domainLink}${product.image_url}`}
+                    loading="lazy"
+                    alt={product.name}
+                    className="image-review-product"
+                  />
+                </div>
+                <div className="product-info-bottom">
+                  <h4>{product.name}</h4>
+                  <div>
+                    <span>{product.capital_price.toLocaleString("vi-VN")}</span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="right-page-content-footer">
+          <div className="nagination-product">
+            <button title="Trang trước" className="btn-before-product">
+              <MdKeyboardArrowLeft className="icon" />
+            </button>
+            <span>2/2</span>
+            <button title="Trang sau" className="btn-after-product">
+              <MdKeyboardArrowRight className="icon" />
             </button>
           </div>
-          <div className="payment-invoice">
-            <div className="payment-invoice__total">
-              <label className="payment-invoice__label">Tổng tiền hàng</label>
-              <div className="payment-invoice__price-total">
-                <p className="payment-invoice__price-amount">
-                  {totalPrice?.toLocaleString("vi-VN") || "0"}
-                </p>
-              </div>
-            </div>
-            <div className="payment-invoice__discount">
-              <label className="payment-invoice__label">Giảm giá</label>
-              <input
-                type="text"
-                className="payment-invoice__input"
-                value={discountPrice.toLocaleString("vi-VN")}
-                onChange={handleDiscountChange}
-                onClick={handleInputDiscountPrice}
+          <button className="btn-pay" onClick={toggleSidebar}>
+            THANH TOÁN
+          </button>
+        </div>
+        <div className={`overlay ${isSidebarVisible ? "show" : ""}`} onClick={toggleSidebar}></div>
+        <div className={`sidebar ${isSidebarVisible ? "show" : ""}`}>
+          <div className="header-sidebar-bank">
+            <span>Thanh toán hóa đơn {activeKey}</span>
+            <button className="close-sidebar-bank" onClick={toggleSidebar}>
+              <IoMdClose />
+            </button>
+          </div>
+          <div className="main-sidebar-bank">
+            <div className="customer-debt-point-wraper">
+              <Select
+                showSearch
+                placeholder="Chọn khách hàng"
+                notFoundContent="Không tìm thấy người dùng"
+                optionFilterProp="label"
+                onChange={(value) => getCustomerPayment(value)}
+                style={{ width: 400, height: 40, paddingRight: "0px" }}
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                }
+                options={infoCustomer}
               />
+              <button className="btn-add-customers" title="Thêm khách hàng">
+                <IoMdAdd />
+              </button>
             </div>
-            {hiddenPopUpDiscountPrice && (
-              <div ref={menuRef} className="pop-discount">
-                <p>Giảm giá</p>
+            <div className="payment-invoice">
+              <div className="payment-invoice__total">
+                <label className="payment-invoice__label">Tổng tiền hàng</label>
+                <div className="payment-invoice__price-total">
+                  <p className="payment-invoice__price-amount">
+                    {totalPrice?.toLocaleString("vi-VN") || "0"}
+                  </p>
+                </div>
+              </div>
+              <div className="payment-invoice__discount">
+                <label className="payment-invoice__label">Giảm giá</label>
                 <input
                   type="text"
                   className="payment-invoice__input"
                   value={discountPrice.toLocaleString("vi-VN")}
                   onChange={handleDiscountChange}
+                  onClick={handleInputDiscountPrice}
                 />
-                <button
-                  className={`discount-button ${!isPercentage ? "active" : ""}`}
-                  onClick={handleVNDClick}
-                >
-                  VND
-                </button>
-                <button
-                  className={`discount-button ${isPercentage ? "active" : ""}`}
-                  onClick={handlePercentageClick}
-                >
-                  %
-                </button>
               </div>
-            )}
-            <div className="payment-invoice__total-after-discount">
-              <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
-                Khách cần trả
-              </label>
-              <div className="payment-invoice__price">
-                <p className="payment-invoice__price-amount">
-                  {finalPrice?.toLocaleString("vi-VN") || "0"}
-                </p>
-              </div>
-            </div>
-            <div className="payment-invoice__guest-pays">
-              <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
-                Khách thanh toán
-              </label>
-              <input
-                type="text"
-                value={amountPaid.toLocaleString("vi-VN")}
-                onChange={handleAmountPaidChange}
-                className="payment-invoice__input"
-                inputMode="numeric"
-                pattern="[0-9]*"
-              />
-            </div>
-            <div className="payment-invoice__payment-methods">
-              <div className="payment-invoice__method">
-                <input
-                  className="payment-invoice__checkbox"
-                  type="radio"
-                  id="cashmoney"
-                  value={0}
-                  checked={selectedPaymentMethod === 0}
-                  onChange={handlePaymentMethodChange}
-                />
-                <label className="payment-invoice__label" htmlFor="cashmoney">
-                  Tiền mặt
+              {hiddenPopUpDiscountPrice && (
+                <div ref={menuRef} className="pop-discount">
+                  <p>Giảm giá</p>
+                  <input
+                    type="text"
+                    className="payment-invoice__input"
+                    value={discountPrice.toLocaleString("vi-VN")}
+                    onChange={handleDiscountChange}
+                  />
+                  <button
+                    className={`discount-button ${!isPercentage ? "active" : ""}`}
+                    onClick={handleVNDClick}
+                  >
+                    VND
+                  </button>
+                  <button
+                    className={`discount-button ${isPercentage ? "active" : ""}`}
+                    onClick={handlePercentageClick}
+                  >
+                    %
+                  </button>
+                </div>
+              )}
+              <div className="payment-invoice__total-after-discount">
+                <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
+                  Khách cần trả
                 </label>
+                <div className="payment-invoice__price">
+                  <p className="payment-invoice__price-amount">
+                    {finalPrice?.toLocaleString("vi-VN") || "0"}
+                  </p>
+                </div>
               </div>
-              <div className="payment-invoice__method">
-                <input
-                  className="payment-invoice__checkbox"
-                  type="radio"
-                  id="internetmoney"
-                  value={1}
-                  checked={selectedPaymentMethod === 1}
-                  onChange={handlePaymentMethodChange}
-                />
-                <label className="payment-invoice__label" htmlFor="internetmoney">
-                  Chuyển khoản
+              <div className="payment-invoice__guest-pays">
+                <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
+                  Khách thanh toán
                 </label>
-              </div>
-              <div className="payment-invoice__method">
                 <input
-                  className="payment-invoice__checkbox"
-                  type="radio"
-                  id="cashmoneyandinternetmoney"
-                  value={2}
-                  checked={selectedPaymentMethod === 2}
-                  onChange={handlePaymentMethodChange}
+                  type="text"
+                  value={amountPaid.toLocaleString("vi-VN")}
+                  onChange={handleAmountPaidChange}
+                  className="payment-invoice__input"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                 />
-                <label className="payment-invoice__label" htmlFor="cashmoneyandinternetmoney">
-                  Thanh toán kết hợp
-                </label>
               </div>
-            </div>
+              <div className="payment-invoice__payment-methods">
+                <div className="payment-invoice__method">
+                  <input
+                    className="payment-invoice__checkbox"
+                    type="radio"
+                    id="cashmoney"
+                    value={0}
+                    checked={selectedPaymentMethod === 0}
+                    onChange={handlePaymentMethodChange}
+                  />
+                  <label className="payment-invoice__label" htmlFor="cashmoney">
+                    Tiền mặt
+                  </label>
+                </div>
+                <div className="payment-invoice__method">
+                  <input
+                    className="payment-invoice__checkbox"
+                    type="radio"
+                    id="internetmoney"
+                    value={1}
+                    checked={selectedPaymentMethod === 1}
+                    onChange={handlePaymentMethodChange}
+                  />
+                  <label className="payment-invoice__label" htmlFor="internetmoney">
+                    Chuyển khoản
+                  </label>
+                </div>
+                <div className="payment-invoice__method">
+                  <input
+                    className="payment-invoice__checkbox"
+                    type="radio"
+                    id="cashmoneyandinternetmoney"
+                    value={2}
+                    checked={selectedPaymentMethod === 2}
+                    onChange={handlePaymentMethodChange}
+                  />
+                  <label className="payment-invoice__label" htmlFor="cashmoneyandinternetmoney">
+                    Thanh toán kết hợp
+                  </label>
+                </div>
+              </div>
 
-            {selectedPaymentMethod === 1 && (
-              <Select
-                placeholder="-Tài khoản nhận-"
-                allowClear
-                onChange={(value) => {
-                  handleSelectInfoBank(value);
-                }}
-                style={{ width: "100%", height: 40 }}
-              >
-                {infoBanking.map((option) => (
-                  <option value={option.value} key={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </Select>
-            )}
-            {hiddenQRCode && (
-              <div
-                className="img-QR"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <img
-                  src={linkQR}
-                  alt="QR"
-                  style={{
-                    width: "250px",
-                    height: "300px",
-                    cursor: "pointer",
+              {selectedPaymentMethod === 1 && (
+                <Select
+                  placeholder="-Tài khoản nhận-"
+                  allowClear
+                  onChange={(value) => {
+                    handleSelectInfoBank(value);
                   }}
-                  // onClick={detailQRCode}
-                />
-              </div>
-            )}
-            <div className="payment-invoice__money-return">
-              <label className="payment-invoice__label">Tiền thừa trả khách</label>
-              <div className="payment-invoice__return-amount">
-                <p className="payment-invoice__price-amount">{calculateChange()}</p>
+                  style={{ width: "100%", height: 40 }}
+                >
+                  {infoBanking.map((option) => (
+                    <option value={option.value} key={option.id}>
+                      {option.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
+              {hiddenQRCode && (
+                <div
+                  className="img-QR"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img
+                    src={linkQR}
+                    alt="QR"
+                    style={{
+                      width: "250px",
+                      height: "300px",
+                      cursor: "pointer",
+                    }}
+                    // onClick={detailQRCode}
+                  />
+                </div>
+              )}
+              <div className="payment-invoice__money-return">
+                <label className="payment-invoice__label">Tiền thừa trả khách</label>
+                <div className="payment-invoice__return-amount">
+                  <p className="payment-invoice__price-amount">{calculateChange()}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="bottom-sidebar-bank">
-          <button
-            className="btn-pay"
-            style={{
-              width: "90%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={calculateAndPrintInvoice}
-          >
-            THANH TOÁN
-          </button>
-          <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}></div>
+          <div className="bottom-sidebar-bank">
+            <button
+              className="btn-pay"
+              style={{
+                width: "90%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={calculateAndPrintInvoice}
+            >
+              THANH TOÁN
+            </button>
+            {statePayment && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: "-9999px",
+                  top: "-9999px",
+                }}
+              >
+                <DetailInvoices ref={componentRef} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

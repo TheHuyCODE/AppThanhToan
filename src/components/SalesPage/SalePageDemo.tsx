@@ -145,22 +145,20 @@ const SalePageDemo: React.FC = () => {
     setHiddenPopUpDiscountPrice(!hiddenPopUpDiscountPrice);
   };
   const handleProductClick = (product: Product) => {
-    setSelectedProducts((prevSelectedProducts) => {
-      const currentProducts = prevSelectedProducts[activeKey] || [];
-      const existingProduct = currentProducts.find((p) => p.id === product.id);
-      const updatedProducts = existingProduct
-        ? currentProducts.map((p) => (p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p))
-        : [...currentProducts, { ...product, quantity: 1 }];
-
-      updateTotal(updatedProducts);
-      // Update the invoiceList to include the updated products
-      setInvoiceList((prevInvoices) =>
-        prevInvoices.map((invoice) =>
-          invoice.id_payment === activeKey ? { ...invoice, items: updatedProducts } : invoice
-        )
-      );
-      return { ...prevSelectedProducts, [activeKey]: updatedProducts };
-    });
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) => {
+        if (invoice.id_payment === activeKey) {
+          const existingProduct = invoice.items.find((p) => p.id === product.id);
+          const updatedItems = existingProduct
+            ? invoice.items.map((p) =>
+                p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+              )
+            : [...invoice.items, { ...product, quantity: 1 }];
+          return { ...invoice, items: updatedItems };
+        }
+        return invoice;
+      })
+    );
   };
 
   const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: number) => {
@@ -444,11 +442,7 @@ const SalePageDemo: React.FC = () => {
     );
     if (returnInvoiceToRemove) {
       setInvoiceList((prev) => prev.filter((invoice) => invoice.id_payment !== key));
-      setSelectedProducts((prev) => {
-        const updatedProducts = { ...prev };
-        delete updatedProducts[key];
-        return updatedProducts;
-      });
+      setActiveKey("1");
     } else {
       toast.warning("Hóa đơn trả hàng không tồn tại hoặc đã bị xóa.");
     }
