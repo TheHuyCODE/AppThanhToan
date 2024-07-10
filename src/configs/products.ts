@@ -64,6 +64,16 @@ const products = {
       params,
     });
   },
+  getFiltersCategoryProduct: () => {
+    const url = "api/v1/manage/category/category-dropdown";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+         });
+  },
   getDetailProduct: (idItems) => {
     const url = `api/v1/manage/product/${idItems}`;
     return axiosClient.get(url, {

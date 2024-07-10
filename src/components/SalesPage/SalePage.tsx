@@ -810,7 +810,6 @@ const SalePage = () => {
       ""; // Nếu không có item nào, trả về chuỗi rỗng
     return idCashBankString;
   };
-  //fetch api payment the bill
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,

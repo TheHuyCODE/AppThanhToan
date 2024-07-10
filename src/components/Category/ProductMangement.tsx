@@ -422,7 +422,7 @@ const ProductMangement = () => {
                 </option>
               ))}
             </Select>
-            <Select
+            {/* <Select
               placeholder="Loại giảm giá"
               allowClear
               onChange={handleSelectChange}
@@ -433,7 +433,7 @@ const ProductMangement = () => {
                   {option.name}
                 </option>
               ))}
-            </Select>
+            </Select> */}
           </div>
           <div className="header-left-bottom">
             <Select

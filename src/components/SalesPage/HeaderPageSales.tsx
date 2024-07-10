@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import logoutApi from "../../configs/logoutApi";
 
-import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
+import { localeProduct, localInvoice, paginationConfig } from "../TableConfig/TableConfig";
 import { format } from "date-fns";
 import { IoMdClose } from "react-icons/io";
 
@@ -309,7 +309,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
                 <Table
                   columns={columns}
                   dataSource={dataTable}
-                  locale={localeProduct}
+                  locale={localInvoice}
                   pagination={paginationConfig}
                 />
               </div>

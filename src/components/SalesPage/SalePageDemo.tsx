@@ -407,35 +407,41 @@ const SalePageDemo: React.FC = () => {
     }
   };
   const removeInvoice = (targetKey: string) => {
-    const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
-    setInvoiceList(newInvoiceList);
-    console.log("111", newInvoiceList);
-    // setInvoiceList(newInvoiceList);
-    if (newInvoiceList.length) {
-      const newActiveKey = newInvoiceList[0].id_payment;
-      setActiveKey(newActiveKey);
-      localStorage.setItem("idActiveInvoice", newActiveKey);
+    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
+
+    if (invoiceToRemove && invoiceToRemove.items.length > 0) {
+      // Invoice has items, require confirmation
       openModal();
       setKeyRemove(targetKey);
     } else {
-      // Invoice has no products, remove directly
-      if (targetKey === "1") {
-        setSelectedProducts((prevSelectedProducts) => {
-          const updatedSelectedProducts = { ...prevSelectedProducts };
-          delete updatedSelectedProducts[targetKey];
-          return updatedSelectedProducts;
-        });
-        setInvoiceList((prev) =>
-          prev.map((invoice) => (invoice.id === 1 ? { ...invoice, items: [] } : invoice))
-        );
-        setActiveKey("1");
+      // Invoice has no items, remove directly
+      const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
+      setInvoiceList(newInvoiceList);
+      console.log("111", newInvoiceList);
+      if (newInvoiceList.length) {
+        const newActiveKey = newInvoiceList[0].id_payment;
+        setActiveKey(newActiveKey);
+        localStorage.setItem("idActiveInvoice", newActiveKey);
       } else {
-        setInvoiceList((prev) => prev.filter((invoice) => invoice.id !== parseInt(targetKey)));
-        setSelectedProducts((prev) => {
-          const newProducts = { ...prev };
-          delete newProducts[targetKey];
-          return newProducts;
-        });
+        if (targetKey === "1") {
+          // setSelectedProducts((prevSelectedProducts) => {
+          //   const updatedSelectedProducts = { ...prevSelectedProducts };
+          //   delete updatedSelectedProducts[targetKey];
+          //   return updatedSelectedProducts;
+          // });
+          setInvoiceList((prev) =>
+            prev.map((invoice) => (invoice.id === 1 ? { ...invoice, items: [] } : invoice))
+          );
+          setActiveKey("1");
+        } else {
+          setInvoiceList((prev) => prev.filter((invoice) => invoice.id !== parseInt(targetKey)));
+          // setSelectedProducts((prev) => {
+          //   const newProducts = { ...prev };
+          //   delete newProducts[targetKey];
+          //   return newProducts;
+          // });
+          setActiveKey("1");
+        }
       }
     }
   };
@@ -459,12 +465,12 @@ const SalePageDemo: React.FC = () => {
   const confirmRemoveInvoice = () => {
     if (keyRemove) {
       if (keyRemove === "1") {
-        setSelectedProducts((prevSelectedProducts) => {
-          // Clear products associated with invoice "Hóa đơn 1"
-          const updatedSelectedProducts = { ...prevSelectedProducts };
-          delete updatedSelectedProducts[keyRemove];
-          return updatedSelectedProducts;
-        });
+        // setSelectedProducts((prevSelectedProducts) => {
+        //   // Clear products associated with invoice "Hóa đơn 1"
+        //   const updatedSelectedProducts = { ...prevSelectedProducts };
+        //   delete updatedSelectedProducts[keyRemove];
+        //   return updatedSelectedProducts;
+        // });
         setInvoiceList((prev) => {
           // Find the invoice with id === 1 and set its items to an empty array
           return prev.map((invoice) => (invoice.id === 1 ? { ...invoice, items: [] } : invoice));
@@ -472,11 +478,12 @@ const SalePageDemo: React.FC = () => {
         setActiveKey("1"); // Set to the initial invoice
       } else {
         setInvoiceList((prev) => prev.filter((invoice) => invoice.id !== parseInt(keyRemove)));
-        setSelectedProducts((prev) => {
-          const newProducts = { ...prev };
-          delete newProducts[keyRemove];
-          return newProducts;
-        });
+        // setSelectedProducts((prev) => {
+        //   const newProducts = { ...prev };
+        //   delete newProducts[keyRemove];
+        //   return newProducts;
+        // });
+        setActiveKey("1");
       }
     }
     openModal();

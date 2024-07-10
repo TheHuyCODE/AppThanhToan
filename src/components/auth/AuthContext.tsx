@@ -82,7 +82,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const fetchDataCategory = async () => {
     try {
-      const res = await products.getCategoryProduct();
+      const res = await products.getFiltersCategoryProduct();
       if (res.code === 200) {
         setIsCategoryProduct(res.data.category);
       } else {
