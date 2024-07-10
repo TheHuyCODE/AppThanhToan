@@ -75,8 +75,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: start;
+  gap: 20px;
 }
 .header-left-bottom {
   display: flex;
@@ -97,8 +97,9 @@
   border: none;
   outline: none;
   border-radius: 5px;
-  background-color: var(--cl-btn);
+  background-color: var(--kv-success);
   cursor: pointer;
+  font-weight: 600;
 }
 
 .footer-add-product {
@@ -114,8 +115,8 @@
 
 .footer-modify-product {
   position: absolute;
-  bottom: 12rem;
-  right: 5rem;
+  bottom: 13rem;
+  right: 3rem;
   display: flex;
   align-items: center;
   justify-content: end;
@@ -148,13 +149,13 @@
   border-radius: 5px;
   font-size: 15px;
   outline: none;
-  background-color: var(--cl-btn);
+  background-color: var(--kv-success);
   color: white;
   cursor: pointer;
   font-weight: 400;
 }
 .btn-add-product:hover {
-  background-color: var(--cl-btn-hover);
+  background-color: var(--kv-success-600);
 }
 .footer-modify-product {
   display: flex;
@@ -162,7 +163,7 @@
   gap: 5px;
 }
 .btn-header-right:hover {
-  background-color: var(--cl-btn-hover);
+  background-color: var(--kv-success-600);
 }
 .overlay-text {
   position: absolute;

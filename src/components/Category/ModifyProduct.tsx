@@ -317,8 +317,7 @@ const ModifyProduct = () => {
           />
           <h1
             style={{
-              fontSize: "26px",
-              fontFamily: "Montserrat, sans-serif",
+              fontSize: "30px",
               color: "var(--color-title)",
             }}
           >
@@ -334,9 +333,7 @@ const ModifyProduct = () => {
             marginBottom: "15px",
           }}
         >
-          <h2 style={{ fontFamily: "poppins, sans-serif" }}>
-            Thông tin sản phẩm
-          </h2>
+          <h2 style={{ fontSize: "25px" }}>Thông tin sản phẩm</h2>
         </div>
         <div
           className="content-add-product"
@@ -547,11 +544,7 @@ const ModifyProduct = () => {
               </label>
               {!imgUrl ? (
                 <>
-                  <label
-                    htmlFor="labelUpload"
-                    className="label-upload"
-                    style={{ marginRight: 0 }}
-                  >
+                  <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
                     <AiOutlinePicture />
                   </label>
                   <input
@@ -574,25 +567,15 @@ const ModifyProduct = () => {
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <button
-                    className="btn-close-image"
-                    onClick={closePreviewImage}
-                  >
+                  <button className="btn-close-image" onClick={closePreviewImage}>
                     <CiCircleRemove />
                   </button>
-                  <img
-                    src={imgUrl}
-                    alt="Preview"
-                    style={{ maxHeight: "100%", maxWidth: "100%" }}
-                  />
+                  <img src={imgUrl} alt="Preview" style={{ maxHeight: "100%", maxWidth: "100%" }} />
                 </div>
               )}
             </div>
             <div className="footer-modify-product">
-              <button
-                className="btn-cancel-product"
-                onClick={onClickBackPageProduct}
-              >
+              <button className="btn-cancel-product" onClick={onClickBackPageProduct}>
                 <FaBan className="icon" />
                 Hủy
               </button>

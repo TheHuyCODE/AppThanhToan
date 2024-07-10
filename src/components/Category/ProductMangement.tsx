@@ -434,8 +434,6 @@ const ProductMangement = () => {
                 </option>
               ))}
             </Select> */}
-          </div>
-          <div className="header-left-bottom">
             <Select
               placeholder="Trạng thái sản phẩm"
               allowClear
@@ -450,18 +448,6 @@ const ProductMangement = () => {
                 </option>
               ))}
             </Select>
-            {/* <div
-              style={{
-                width: "200px",
-                height: "35px",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <input type="checkbox" />
-              <label htmlFor="">Sản phẩm bán chạy</label>
-            </div> */}
           </div>
         </div>
         <div

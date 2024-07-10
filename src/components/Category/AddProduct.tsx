@@ -306,8 +306,8 @@ const AddProduct = () => {
           />
           <h1
             style={{
-              fontSize: "26px",
-              fontFamily: "Montserrat, sans-serif",
+              fontSize: "30px",
+
               color: "var(--color-title)",
             }}
           >
@@ -323,7 +323,7 @@ const AddProduct = () => {
             marginBottom: "15px",
           }}
         >
-          <h2 style={{ fontFamily: "poppins, sans-serif" }}>Thông tin sản phẩm</h2>
+          <h2 style={{ fontSize: "25px" }}>Thông tin sản phẩm</h2>
         </div>
         <div
           className="content-add-product"
