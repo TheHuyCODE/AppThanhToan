@@ -146,10 +146,10 @@ const SalePageDemo: React.FC = () => {
       console.log("error:", error);
     }
   };
-  const fetchDataProductAfter = async () => {
+  const fetchDataProductAfter = async (current: number, page_size: number) => {
     try {
-      const res = await products.getSellProductPaginationAfter();
-      if (res.data && Array.isArray(res.data.items)) {
+      const res = await products.getDataProductPagination(current, page_size);
+      if (res.data) {
         setDataProduct(res.data.items);
       } else {
         console.error("API response is not an array:", res.data);
@@ -832,6 +832,7 @@ const SalePageDemo: React.FC = () => {
               handleSelectCategory={handleSelectCategory}
               fetchDataProductAfter={fetchDataProductAfter}
               fetchDataProduct={fetchDataProduct}
+              getDataCustomer={getDataCustomer}
             />
           )}
         </div>

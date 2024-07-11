@@ -14,11 +14,6 @@ const DetailInvoices = React.forwardRef((props, ref) => {
     }
   }, []);
 
-  // const numberToVietnameseWords = (number: number): string => {
-  //   // Function for converting number to Vietnamese words
-  //   // (same as your existing function)
-  // };
-
   if (!invoiceData) {
     return <div>Loading...</div>;
   }
@@ -85,7 +80,7 @@ const DetailInvoices = React.forwardRef((props, ref) => {
             <div className="detail_prices">
               <span>{invoiceData.total_amount.toLocaleString("vi-VN")}</span>
               <span>{invoiceData.discount.toLocaleString("vi-VN")}</span>
-              <span>{invoiceData.total_amount.toLocaleString("vi-VN")}</span>
+              <span>{invoiceData.customer_money.toLocaleString("vi-VN")}</span>
             </div>
           </div>
           <div className="detail_text_invoices">{/* <span>({amountPaidInWords})</span> */}</div>

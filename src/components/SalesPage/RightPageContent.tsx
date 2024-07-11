@@ -168,25 +168,17 @@ const RightPageContent = ({
     console.log("Selected Customer:", selectedCustomer);
   }, [selectedCustomer]);
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    content: () => componentRef.current || null,
     onAfterPrint: () => {
       setStatePayment(false);
       setIsPrintReady(false);
-      // setSelectedProducts([]); // Reset print readiness
-      //   setInputPayment({
-      //     amount_due: 0,
-      //     amount_paid: 0,
-      //     change: 0,
-      //     discount_price: 0,
-      //   });
     },
   });
-  // useEffect(() => {
-  //   if (isPrintReady) {
-  //     handlePrint();
-  //   }
-  // }, [isPrintReady]);
-
+  useEffect(() => {
+    if (statePayment) {
+      handlePrint();
+    }
+  }, [statePayment]);
   const calculateAndPrintInvoice = async () => {
     console.log("build payment");
     const Items = typeInvoiListDetail();
@@ -237,15 +229,15 @@ const RightPageContent = ({
       console.log("err", error);
     }
   };
-  const fetchDataProductAfterChild = async () => {
-    const value = numberPage + 1;
-    setNumberPage(value);
-    await fetchDataProduct();
-  };
   const fetchDataProductChild = async () => {
     const value = 1;
     setNumberPage(value);
-    await fetchDataProductAfter();
+    await fetchDataProduct();
+  };
+  const fetchDataProductAfterChild = async () => {
+    const value = 2;
+    setNumberPage(value);
+    await fetchDataProductAfter(value, 20);
   };
   const getDataDetailInvoice = async (IdInvoice: string) => {
     try {
