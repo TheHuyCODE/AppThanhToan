@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Select } from "antd";
+import { Modal, Select } from "antd";
 import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import DetailInvoices from "../Invoices/detailInvoices";
 import { useReactToPrint } from "react-to-print";
 import products from "../../configs/products";
+import { FiPlusCircle } from "react-icons/fi";
 const RightPageContent = ({
   dataProduct,
   dataCategory,
@@ -43,6 +44,7 @@ const RightPageContent = ({
   handleSelectCategory,
   fetchDataProductAfter,
   fetchDataProduct,
+  getDataCustomer,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [linkQR, setLinkQR] = useState<string>("");
@@ -50,8 +52,12 @@ const RightPageContent = ({
   const [statePayment, setStatePayment] = useState(false);
   const [isPrintReady, setIsPrintReady] = useState(false);
   const [hiddenPayment, setHiddenPayment] = useState(false);
+  const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [hiddenErr, setHiddenErr] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
+  const [errorAddCustomer, setErrorAddCustomer] = useState({
+    message: "",
+  });
   const componentRef = useRef();
   const [inputQRCode, setInputQRCode] = useState({
     idBank: "",
@@ -60,6 +66,10 @@ const RightPageContent = ({
     amount_Due: 0,
     account_Name: "",
     id: "",
+  });
+  const [inputCustomer, setInputCustomer] = useState({
+    full_name: "",
+    phone: "",
   });
   const domainLink = domain.domainLink;
   const menuRef = useRef(null);
@@ -121,6 +131,7 @@ const RightPageContent = ({
     )}&accountName=${encodedAccountName}`;
     return linkQr;
   };
+
   const handleSelectInfoBank = (value: number) => {
     const isActiveBank = infoBanking.find((item) => item.value === value);
     if (isActiveBank) {
@@ -246,6 +257,65 @@ const RightPageContent = ({
         console.error("API response is not an array:", res.data);
       }
     } catch (err) {
+      console.log("err", err);
+    }
+  };
+  const handleOpenModal = () => {
+    setIsOpenPopups(true);
+  };
+  const handleCloseModal = () => {
+    setIsOpenPopups(false);
+  };
+  const setHandleInputCustomer = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    // Kiểm tra nếu chỉnh sửa ô nhập số điện thoại
+    if (name === "phone") {
+      // Lọc và chỉ lấy các ký tự số
+      const numericValue = value.replace(/[^0-9]/g, "");
+      setInputCustomer({
+        ...inputCustomer,
+        [name]: numericValue,
+      });
+    } else {
+      // Cập nhật trường khác (tên khách hàng chẳng hạn)
+      setInputCustomer({
+        ...inputCustomer,
+        [name]: value,
+      });
+    }
+  };
+  const clickAddItemCategory = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const dataCustomer = {
+      full_name: inputCustomer.full_name,
+      phone: inputCustomer.phone,
+    };
+
+    try {
+      const res = await sellProduct.putDataCustomer(dataCustomer);
+      if (res.code === 200) {
+        setIsOpenPopups(false);
+        const success = res.message.text;
+        console.log("success", success);
+        toast.success(success);
+        setInputCustomer({
+          full_name: "",
+          phone: "",
+        });
+        setErrorAddCustomer({
+          message: "",
+        });
+        await getDataCustomer();
+      } else {
+        const errMs = res.data.message.text;
+        toast.error(errMs);
+        setErrorAddCustomer({
+          message: res.data.message.text,
+        });
+        setIsOpenPopups(true);
+      }
+    } catch (error) {
       console.log("err", err);
     }
   };
@@ -380,8 +450,12 @@ const RightPageContent = ({
                 }
                 options={infoCustomer}
               />
-              <button className="btn-add-customers" title="Thêm khách hàng">
-                <IoMdAdd />
+              <button
+                className="btn-add-customers"
+                title="Thêm khách hàng"
+                onClick={handleOpenModal}
+              >
+                <FiPlusCircle />
               </button>
             </div>
             <div className="payment-invoice">
@@ -570,6 +644,53 @@ const RightPageContent = ({
             )}
           </div>
         </div>
+        {/* Modal add customer */}
+        <Modal
+          className="modalDialog-addITems"
+          width={500}
+          // height={500}
+          centered
+          open={isOpenPopups}
+          onOk={clickAddItemCategory}
+          onCancel={handleCloseModal}
+          okText="Thêm"
+          cancelText="Hủy bỏ"
+        >
+          <h1 className="title-addItem">Thêm khách hàng</h1>
+          <div className="name-customer">
+            <label htmlFor="">
+              Tên khách hàng (<span>*</span>)
+            </label>
+            <input
+              placeholder="Nhập tên khách hàng"
+              className="input-name-category"
+              onChange={setHandleInputCustomer}
+              name="full_name"
+              value={inputCustomer.full_name}
+            />
+          </div>
+          <div className="number-customer">
+            <label htmlFor="" className="title-picture">
+              Số điện thoại(<span>*</span>)
+            </label>
+            <div>
+              <input
+                type="text"
+                className="input-name-category"
+                onChange={setHandleInputCustomer}
+                name="phone"
+                value={inputCustomer.phone}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Nhập số điện thoại"
+              />
+              <br />
+              {errorAddCustomer && (
+                <span style={{ color: "red", fontSize: "12px" }}>{errorAddCustomer.message}</span>
+              )}
+            </div>
+          </div>
+        </Modal>
       </div>
     </>
   );
