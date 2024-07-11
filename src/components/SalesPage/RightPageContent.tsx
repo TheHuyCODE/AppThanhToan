@@ -11,6 +11,7 @@ import DetailInvoices from "../Invoices/detailInvoices";
 import { useReactToPrint } from "react-to-print";
 import products from "../../configs/products";
 import { FiPlusCircle } from "react-icons/fi";
+import { BiSolidError } from "react-icons/bi";
 const RightPageContent = ({
   dataProduct,
   dataCategory,
@@ -521,6 +522,7 @@ const RightPageContent = ({
               </div>
               {hiddenErr && (
                 <div className="err_payment">
+                  <BiSolidError className="icon-err" />
                   <span>Tiền thanh toán nhỏ hơn tiền cần trả</span>
                 </div>
               )}
@@ -635,7 +637,7 @@ const RightPageContent = ({
                   top: "-9999px",
                 }}
               >
-                <DetailInvoices ref={componentRef} linkQR={linkQR} />
+                <DetailInvoices ref={componentRef} linkQR={linkQR} finalPrice={finalPrice} />
               </div>
             )}
           </div>

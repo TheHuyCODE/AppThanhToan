@@ -1,24 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
-import { FaEllipsisVertical } from "react-icons/fa6";
-
-const LeftPageContent = ({
+interface Product {
+  id: string;
+  barcode: string;
+  name: string;
+  quantity: number;
+  capital_price: number;
+}
+interface Invoice {
+  id: number;
+  invoice_number: string;
+  customer_id: string;
+  customer_name: string;
+  total_price: number;
+  created_date: number;
+  items: [];
+  id_payment: string;
+  type: string;
+}
+interface LeftPageContentProps {
+  decrement: (invoiceId: string, productId: string) => void;
+  increment: (invoiceId: string, productId: string) => void;
+  handleChangeNumberCards: (e: React.ChangeEvent<HTMLInputElement>, productId: string) => void;
+  handleChangePriceProduct: (e: React.ChangeEvent<HTMLInputElement>, productId: string) => void;
+  removeProductCarts: (invoiceId: string, productId: string) => void;
+  handleBlurPriceProduct: (invoiceId: string) => void;
+  activeKey: string;
+  editedPrices: object;
+  invoiceList: Invoice[];
+  totalQuantity: number;
+  totalPrice: number;
+}
+const LeftPageContent: React.FC<LeftPageContentProps> = ({
   decrement,
   increment,
   handleChangeNumberCards,
+  handleChangePriceProduct,
+  handleBlurPriceProduct,
   removeProductCarts,
   activeKey,
   invoiceList,
   totalQuantity,
   totalPrice,
+  editedPrices,
   // detailTotalInvoice,
 }) => {
-  const deleteProductCarts = (invoiceID, productID) => {
+  const [initialPrices, setInitialPrices] = useState<{ [key: string]: number }>({});
+  useEffect(() => {
+    const initialPrices: { [key: string]: number } = {};
+    invoiceList.forEach((invoice) => {
+      invoice.items.forEach((product: Product) => {
+        initialPrices[product.id] = product.capital_price;
+      });
+    });
+    setInitialPrices(initialPrices);
+  }, [invoiceList]);
+  const deleteProductCarts = (invoiceID: string, productID: string) => {
     removeProductCarts(invoiceID, productID);
   };
-
   const typeInvoiceList = invoiceList.filter(
     (invoice) => invoice.type === "invoice" && invoice.id_payment === activeKey
   );
@@ -26,7 +67,7 @@ const LeftPageContent = ({
   return (
     <div className="left-page-content">
       {typeInvoiceList.flatMap((invoice) =>
-        invoice.items.map((product, index) => (
+        invoice.items.map((product: Product, index) => (
           <div key={product.id} className="selected-product-details">
             <div className="carts-product-active-left">
               <span>{index + 1}</span>
@@ -73,7 +114,14 @@ const LeftPageContent = ({
                   </button>
                 </div>
                 <div className="cell-change-price">
-                  <span>{product.capital_price?.toLocaleString("vi-VN")}</span>
+                  <input
+                    type="text"
+                    value={product.capital_price.toLocaleString("vi-VN")}
+                    className="payment-invoice__input-change "
+                    onChange={(e) => handleChangePriceProduct(e, product.id)}
+                    onBlur={() => handleBlurPriceProduct(product.id)}
+                  />
+                  {/* <span>{product.capital_price?.toLocaleString("vi-VN")}</span> */}
                 </div>
                 <div className="cell-total-price">
                   {(product.capital_price * product.quantity)?.toLocaleString("vi-VN")}
@@ -82,7 +130,7 @@ const LeftPageContent = ({
             </div>
             <div className="carts-product-active-right">
               <IoMdAdd />
-              <FaEllipsisVertical />
+              {/* <FaEllipsisVertical /> */}
             </div>
           </div>
         ))

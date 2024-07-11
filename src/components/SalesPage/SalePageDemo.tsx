@@ -214,7 +214,7 @@ const SalePageDemo: React.FC = () => {
     }
   };
 
-  const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: number) => {
+  const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
     const newQuantity = parseInt(e.target.value, 10);
     setSelectedProducts((prevSelectedProducts) => {
       const currentProducts = prevSelectedProducts[activeKey] || [];
@@ -230,9 +230,24 @@ const SalePageDemo: React.FC = () => {
           invoice.id_payment === activeKey ? { ...invoice, items: updatedProducts } : invoice
         )
       );
-
       return { ...prevSelectedProducts, [activeKey]: updatedProducts };
     });
+  };
+  const handleChangePriceProduct = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
+    const value = parseInt(e.target.value.replace(/[^0-9]/g, ""), 10);
+    console.log("value", value);
+    console.log("productId", productId);
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) => {
+        if (invoice.id_payment === activeKey) {
+          const updatedItems = invoice.items.map((p) =>
+            p.id === productId ? { ...p, capital_price: value } : p
+          );
+          return { ...invoice, items: updatedItems };
+        }
+        return invoice;
+      })
+    );
   };
 
   const decrement = (invoiceId: string, productId: string) => {
@@ -636,7 +651,6 @@ const SalePageDemo: React.FC = () => {
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/[^0-9]/g, "");
     console.log("value", value);
-
     if (value === "") {
       value = "0";
     }
@@ -788,6 +802,7 @@ const SalePageDemo: React.FC = () => {
               totalQuantity={totalQuantity}
               totalPrice={totalPrice}
               setIsSelectItemPayment={setIsSelectItemPayment}
+              handleChangePriceProduct={handleChangePriceProduct}
               // detailTotalInvoice={detailTotalInvoice}
               // selectedProducts={selectedProducts[activeKey] || []}
             />

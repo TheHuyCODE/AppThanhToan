@@ -171,7 +171,7 @@
   border: 1px groove var(--kv-link);
   /* box-shadow: var(--border-focus-color) 0px 2px 2px, var(--border-focus-color) 0px 3px 3px; */
   /* box-shadow: var(--border-focus-color) 0px 0px 5px 5px, var(--border-focus-color) 0px 0px 0px 5px; */
-  box-shadow: var(--border-focus-color) 0px 4px 4px 0px;
+  box-shadow: var(--border-focus-color) 1px 1px 0px 0.5px;
   cursor: pointer;
   transform: scale(1.05);
 }
@@ -365,6 +365,10 @@
 .err_payment span {
   color: red;
   font-size: 12px;
+}
+.err_payment .icon-err {
+  font-size: 12px;
+  color: red;
 }
 .cell-change-price {
   width: 98%;
@@ -713,11 +717,13 @@
   color: var(--cl-header);
   font-weight: 600;
 }
-.payment-invoice__input {
+.payment-invoice__input-change {
   width: 100px;
   height: 25px;
   border-bottom: 1px solid lightgrey;
-  padding-left: 50px;
+  font-size: 16px;
+  text-align: right;
+  /* padding-left: 56px; */
 }
 .payment-invoice__input {
   width: 150px;
@@ -727,6 +733,18 @@
   text-align: right;
   /* padding-right: 10px; */
 }
+.payment-invoice__input-change:focus {
+  /* border-color: var(--cl-header); */
+  border-width: 2px;
+}
+.payment-invoice__input-change.price-changed {
+  border-color: red;
+  color: red;
+  border-width: 2px;
+}
+/* .payment-invoice__input-change.price-changed {
+  color: red;
+} */
 .payment-invoice__input.payment-invoice__input:focus {
   border-color: var(--cl-header);
   border-width: 2px;
