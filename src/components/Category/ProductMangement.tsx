@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
 // import uploadApiImage from "../../configs/uploadApiImage";
-import { Select, Table, Space, Modal } from "antd";
+import { Select, Table, Space, Modal, Pagination } from "antd";
 import {
   FaArrowAltCircleDown,
   FaArrowAltCircleUp,
@@ -35,6 +35,8 @@ const ProductMangement = () => {
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
   const [valueSearch, setValueSearch] = useState("");
   const debounceValue = useDebounce(valueSearch, 700);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [sortedColumn, setSortedColumn] = useState({
     key: null,
     direction: null,
@@ -228,6 +230,33 @@ const ProductMangement = () => {
       }
     }
   };
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    // setLoading(true);
+    try {
+      const res = await products.getDataProductPagination(current, size);
+      if (res.data) {
+        setDataProduct(res.data);
+        // setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
   useEffect(() => {
     console.log("idSearchCategory", idSearchCategory.id_category);
     fetchSearchDataCategory();
@@ -508,7 +537,7 @@ const ProductMangement = () => {
               columns={columns}
               dataSource={datatable}
               locale={localeProduct}
-              pagination={paginationConfig}
+              pagination={false}
               // onHeaderRow={(columns, index) => {
               //   return {
               //     onClick: (columns, index) => {
@@ -518,10 +547,29 @@ const ProductMangement = () => {
               //   };
               // }}
             />
-            <span
-              className="total-items"
-              style={{ color: "var(--cl-dark)" }}
-            >{`${datatable?.length}/${dataProduct.total}`}</span>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+                gap: "10px",
+                marginTop: "10px",
+                padding: "10px",
+              }}
+            >
+              <Pagination
+                showSizeChanger
+                onShowSizeChange={onShowSizeChange}
+                onChange={onChangeNumberPagination}
+                defaultCurrent={1}
+                total={300}
+              />
+              <span
+                className="total-items"
+                style={{ color: "var(--cl-dark)" }}
+              >{`${datatable?.length}/${dataProduct.total}`}</span>
+            </div>
           </>
         )}
       </div>

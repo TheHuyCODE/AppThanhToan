@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./SalePage.css";
-import { Space, Table, Tabs } from "antd";
+import { Pagination, Space, Table, Tabs } from "antd";
 import { FaBars } from "react-icons/fa";
 import { MdOutlinePoll } from "react-icons/md";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
@@ -12,6 +12,8 @@ import logoutApi from "../../configs/logoutApi";
 import { localeProduct, localInvoice, paginationConfig } from "../TableConfig/TableConfig";
 import { format } from "date-fns";
 import { IoMdClose } from "react-icons/io";
+import products from "../../configs/products";
+import invoice from "../../configs/invoice";
 
 interface User {
   access_token: string;
@@ -41,6 +43,9 @@ type ChildComponentProps = {
   removeReturnInvoice: (key: string) => void;
   closeModal: () => void;
   onSearchInvoices: (value: string) => void;
+  handleEnterPress: () => void;
+  setDataTableInvoice: () => void;
+
   // setIsOpenPaymentReturn: (value: boolean) => void;
 };
 const { TabPane } = Tabs;
@@ -58,24 +63,21 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   closeModal,
   dataTableInvoice,
   onSearchInvoices,
+  handleEnterPress,
+  setDataTableInvoice,
   // setIsOpenPaymentReturn,
 }) => {
   const [infouser, setInfoUser] = useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [valueSearchProduct, setValueSearchProduct] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(7);
   // const [valueSearchInvoice, setValueSearchInvoice] = useState("");
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleEnterPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      const value = e.currentTarget.value.trim();
-      setValueSearchProduct("");
-    }
   };
 
   const handleSearchInvoice = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -202,7 +204,33 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       ),
     },
   ];
-
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    // setLoading(true);
+    try {
+      const res = await invoice.getDataPagination(current, size);
+      if (res.data) {
+        const data = res.data.items;
+        setDataTableInvoice(data);
+        // setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
   return (
     <>
       <div className="page-header">
@@ -310,8 +338,31 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
                   columns={columns}
                   dataSource={dataTable}
                   locale={localInvoice}
-                  pagination={paginationConfig}
+                  pagination={false}
                 />
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-around",
+                    gap: "10px",
+                    marginTop: "10px",
+                    padding: "10px",
+                  }}
+                >
+                  <Pagination
+                    showSizeChanger
+                    onShowSizeChange={onShowSizeChange}
+                    onChange={onChangeNumberPagination}
+                    defaultCurrent={1}
+                    total={50}
+                  />
+                  {/* <span
+                    className="total-items"
+                    style={{ color: "var(--cl-dark)" }}
+                  >{`${datatable?.length}/${dataProduct.total}`}</span> */}
+                </div>
               </div>
             </div>
           </div>

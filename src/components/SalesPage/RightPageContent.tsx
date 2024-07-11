@@ -41,12 +41,15 @@ const RightPageContent = ({
   findCashBankIds,
   handleSearchProduct,
   handleSelectCategory,
+  fetchDataProductAfter,
+  fetchDataProduct,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [linkQR, setLinkQR] = useState<string>("");
   const [isVoicesID, setIsVoicesID] = useState("");
   const [statePayment, setStatePayment] = useState(false);
   const [isPrintReady, setIsPrintReady] = useState(false);
+  const [numberPage, setNumberPage] = useState(1);
   const componentRef = useRef();
   const [inputQRCode, setInputQRCode] = useState({
     idBank: "",
@@ -155,11 +158,11 @@ const RightPageContent = ({
       //   });
     },
   });
-  useEffect(() => {
-    if (isPrintReady) {
-      handlePrint();
-    }
-  }, [isPrintReady]);
+  // useEffect(() => {
+  //   if (isPrintReady) {
+  //     handlePrint();
+  //   }
+  // }, [isPrintReady]);
 
   const calculateAndPrintInvoice = async () => {
     console.log("build payment");
@@ -210,6 +213,16 @@ const RightPageContent = ({
     } catch (error) {
       console.log("err", error);
     }
+  };
+  const fetchDataProductAfterChild = async () => {
+    const value = numberPage + 1;
+    setNumberPage(value);
+    await fetchDataProduct();
+  };
+  const fetchDataProductChild = async () => {
+    const value = numberPage - 1;
+    setNumberPage(value);
+    await fetchDataProductAfter();
   };
   const getDataDetailInvoice = async (IdInvoice: string) => {
     try {
@@ -313,11 +326,19 @@ const RightPageContent = ({
         </div>
         <div className="right-page-content-footer">
           <div className="nagination-product">
-            <button title="Trang trước" className="btn-before-product">
+            <button
+              title="Trang trước"
+              className="btn-before-product"
+              onClick={fetchDataProductChild}
+            >
               <MdKeyboardArrowLeft className="icon" />
             </button>
-            <span>2/2</span>
-            <button title="Trang sau" className="btn-after-product">
+            <span>{numberPage}/2</span>
+            <button
+              title="Trang sau"
+              className="btn-after-product"
+              onClick={fetchDataProductAfterChild}
+            >
               <MdKeyboardArrowRight className="icon" />
             </button>
           </div>

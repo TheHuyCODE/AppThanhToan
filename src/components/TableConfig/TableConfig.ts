@@ -9,7 +9,8 @@ export const localInvoice = {
 };
 export const paginationConfig = {
   position: ["bottomCenter"],
-  defaultPageSize: 15,
+  defaultCurrent:6,
+  defaultPageSize: 10,
   showSizeChanger: true,
   pageSizeOptions: ["10", "20", "30"],
 };

@@ -171,10 +171,10 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                 </div>
                 <span>/&nbsp;{product.quantity}</span>
               </div>
-              <div className="cell-change-price">
+              <div className="cell-change-price-return">
                 <span>{product.price}</span>
               </div>
-              <div className="cell-total-price">
+              <div className="cell-total-price-return">
                 {calculateTotal(quantityState[product.id] || 0, product.price).toLocaleString(
                   "vi-VN"
                 )}

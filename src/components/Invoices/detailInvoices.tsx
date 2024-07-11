@@ -38,13 +38,13 @@ const DetailInvoices = React.forwardRef((props, ref) => {
               <span className="name_store">App Bán Hàng</span>
             </div>
             <div className="info_admin">
-              <span>{adminName}</span>
+              <span>Người tạo: {adminName}</span>
               <span>Địa chỉ: --</span>
               <span>Điện thoại</span>
-            </div>
-            <div className="title_invoices">
-              <h3>HÓA ĐƠN HÀNG HÓA</h3>
-              <span>Số HD: {invoiceData.id}</span>
+              <div className="title_invoices">
+                <h3>HÓA ĐƠN HÀNG HÓA</h3>
+                <span>Số HD: {invoiceData.id}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -83,9 +83,9 @@ const DetailInvoices = React.forwardRef((props, ref) => {
               <span>Tổng thanh toán:</span>
             </div>
             <div className="detail_prices">
-              <span>{invoiceData.total_amount}</span>
-              <span>{invoiceData.discount}</span>
-              <span>{invoiceData.total_amount}</span>
+              <span>{invoiceData.total_amount.toLocaleString("vi-VN")}</span>
+              <span>{invoiceData.discount.toLocaleString("vi-VN")}</span>
+              <span>{invoiceData.total_amount.toLocaleString("vi-VN")}</span>
             </div>
           </div>
           <div className="detail_text_invoices">{/* <span>({amountPaidInWords})</span> */}</div>

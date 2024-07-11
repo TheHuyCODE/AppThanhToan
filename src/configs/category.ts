@@ -3,12 +3,32 @@ import axiosClient from "./axiosClient";
 const category = {
   getAll: () => {
     const url = "api/v1/manage/category";
+    const params = {
+      page: 1,
+      page_size: 10,
+    }
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+      params,
+    });
+  },
+   getDataCategoryPagination: (current: number, size: number) => {
+    const url = "api/v1/manage/category";
+    const params = {
+      page: current,
+      page_size: size,
+    }
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
     });
   },
   getAllChild: (parent_id) => {

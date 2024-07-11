@@ -86,11 +86,11 @@ const AddProduct = () => {
     },
     {
       name: "Thùng",
-      value: 12,
+      value: 14,
     },
     {
       name: "Hộp",
-      value: 14,
+      value: 15,
     },
   ];
   const [inputProduct, setInputProduct] = useState({

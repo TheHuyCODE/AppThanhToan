@@ -351,11 +351,13 @@
   justify-content: center;
 }
 .cell-change-price {
-  width: 95%;
-  max-width: 20rem;
-  font-size: 15px;
+  width: 98%;
+  max-width: 300px;
+  margin-top: 5px;
+  height: auto;
+  padding: 5px;
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: end;
 }
 .cell-total-price {

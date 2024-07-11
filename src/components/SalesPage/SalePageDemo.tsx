@@ -66,6 +66,7 @@ const SalePageDemo: React.FC = () => {
     id_category: "",
   });
   const [valueSearch, setValueSearch] = useState("");
+  const [valueSearchProduct, setValueSearchProduct] = useState("");
   const debounceValueSearch = useDebounce(valueSearch, 700);
   const debouncedSearchTerm = useDebounce(searchTerm, 700); // Delay 500ms
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -131,7 +132,19 @@ const SalePageDemo: React.FC = () => {
   };
   const fetchDataProduct = async () => {
     try {
-      const res = await products.getSellProduct();
+      const res = await products.getSellProductPagination();
+      if (res.data && Array.isArray(res.data.items)) {
+        setDataProduct(res.data.items);
+      } else {
+        console.error("API response is not an array:", res.data);
+      }
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+  const fetchDataProductAfter = async () => {
+    try {
+      const res = await products.getSellProductPaginationAfter();
       if (res.data && Array.isArray(res.data.items)) {
         setDataProduct(res.data.items);
       } else {
@@ -159,6 +172,42 @@ const SalePageDemo: React.FC = () => {
         return invoice;
       })
     );
+  };
+  const handleEnterPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const value = e.currentTarget.value.trim();
+      await fetchScanProductData(value);
+      setValueSearchProduct("");
+    }
+  };
+  const fetchScanProductData = async (barcode: string) => {
+    try {
+      const res = await products.getDataSearchBarcodeProduct(barcode);
+      // Kiểm tra xem res.data.items có tồn tại và là một mảng
+      if (res.data) {
+        const foundProduct = res.data;
+        console.log("foundProduct", foundProduct);
+        setValueSearchProduct(foundProduct);
+        setInvoiceList((prevInvoices) =>
+          prevInvoices.map((invoice) => {
+            if (invoice.id_payment === activeKey) {
+              const existingProduct = invoice.items.find((p) => p.id === foundProduct.id);
+              const updatedItems = existingProduct
+                ? invoice.items.map((p) =>
+                    p.id === foundProduct.id ? { ...p, quantity: p.quantity + 1 } : p
+                  )
+                : [...invoice.items, { ...foundProduct, quantity: 1 }];
+              return { ...invoice, items: updatedItems };
+            }
+            return invoice;
+          })
+        );
+      } else {
+        console.error("API response is not a valid product object:", res.data);
+      }
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+    }
   };
 
   const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: number) => {
@@ -707,6 +756,8 @@ const SalePageDemo: React.FC = () => {
           closeModal={closeModal}
           dataTableInvoice={dataTableInvoice}
           onSearchInvoices={setSearchTerm}
+          handleEnterPress={handleEnterPress}
+          setDataTableInvoice={setDataTableInvoice}
         />
         <div className="page-content">
           {isOpenPaymentReturn ? (
@@ -773,6 +824,8 @@ const SalePageDemo: React.FC = () => {
               findCashBankIds={findCashBankIds}
               handleSearchProduct={handleSearchProduct}
               handleSelectCategory={handleSelectCategory}
+              fetchDataProductAfter={fetchDataProductAfter}
+              fetchDataProduct={fetchDataProduct}
             />
           )}
         </div>

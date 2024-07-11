@@ -44,7 +44,7 @@ const CatalogManagement = () => {
   const [loading, setLoading] = useState(false);
 
   const [dataCategory, setDataCategory] = useState("");
-  // const navigate = useNavigate();
+  // cons navigate = useNavigate();
 
   const [resImage, setResImage] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
@@ -52,11 +52,8 @@ const CatalogManagement = () => {
   const [isDataCategory, setIsDataCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
-
-  const [selectedImage, setSelectedImgae] = useState("");
-  const [idDeleteItems, setIdDeteleItem] = useState("");
-
-  const [quantityItems, setQuantityItems] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
   const [hiddenTitleSecondsChild, setHiddenTitleSecondsChild] = useState(false);
   const [viewTableChildSecond, setViewTableChildSecond] = useState(false);
@@ -145,10 +142,7 @@ const CatalogManagement = () => {
     console.log("dataPutCategory", dataPutCategory);
 
     console.log("editItem", editItem);
-    const res = await category.putModifyCategory(
-      idModifyItems,
-      dataPutCategory
-    );
+    const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
     if (res.code === 200) {
       console.log("res", res);
       toast.success("Đã sửa danh mục thành công"); // Fetch the updated data after deletion
@@ -174,12 +168,11 @@ const CatalogManagement = () => {
     setIsPreviewImageModify(URL.createObjectURL(fileImage));
     console.log(image);
   };
-  useEffect(() => {
-    console.log("name", selectedCategory);
-    setDataCategory(selectedCategory);
-    console.log("dataCategory", dataCategory);
-    console.log("selectedImage", selectedImage);
-  }, [idDeleteItems]);
+  // useEffect(() => {
+  //   console.log("name", selectedCategory);
+  //   setDataCategory(selectedCategory);
+  //   console.log("dataCategory", dataCategory);
+  // }, [idDeleteItems]);
   //set quantity children
   useEffect(() => {
     if (image) {
@@ -306,9 +299,7 @@ const CatalogManagement = () => {
       parent_id: null,
     };
     try {
-      const response = await uploadApiImage.postAddItemCategory(
-        userDataCategory
-      );
+      const response = await uploadApiImage.postAddItemCategory(userDataCategory);
       if (response.code === 200) {
         console.log("res", response);
         toast.success("Đã thêm danh mục thành công!");
@@ -351,13 +342,40 @@ const CatalogManagement = () => {
     console.log("data category", res.data.items);
     console.log(res.data);
   };
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    // setLoading(true);
+    try {
+      const res = await category.getDataCategoryPagination(current, size);
+      if (res.data) {
+        const data = res.data;
+        setIsDataCategory(data);
+        // setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
   useEffect(() => {
     fetchDataCategory();
   }, []);
   const fetchDataSearchCategory = async () => {
     setLoading(true);
     const res = await category.getDataSearchNameCategory(debounceValue);
-    if (res.code === 200) {
+    if (res.data) {
       setIsDataCategory(res.data);
       setLoading(false);
     } else {
@@ -394,9 +412,7 @@ const CatalogManagement = () => {
           onClick={showTableChildCategory}
           style={{ color: "rgb(3,23,110)" }}
         >
-          {!hiddenTitleChild && (
-            <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />
-          )}
+          {!hiddenTitleChild && <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />}
           {selectedCategory}
         </a>
         <a
@@ -405,9 +421,7 @@ const CatalogManagement = () => {
           onClick={showTableChildSecondCategory}
           style={{ color: "rgb(3,23,110)", pointerEvents: "none" }}
         >
-          {!viewTable && (
-            <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />
-          )}
+          {!viewTable && <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />}
           {selectedCategoryChild}
         </a>
       </div>
@@ -437,10 +451,13 @@ const CatalogManagement = () => {
           <div className="header-btn">
             {viewTable && (
               <>
-                <Button type="primary">Hướng dẫn sử dụng</Button>
+                <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
+                  Hướng dẫn sử dụng
+                </Button>
                 <Button
                   type="primary"
                   onClick={() => setIsOpenPopups(!isOpenPopups)}
+                  style={{ backgroundColor: "var( --kv-success)" }}
                 >
                   Thêm danh mục cấp 1
                 </Button>
@@ -463,11 +480,7 @@ const CatalogManagement = () => {
                 <label htmlFor="">
                   Tên danh mục 1 (<span>*</span>)
                 </label>
-                <input
-                  className="input-name-category"
-                  onChange={setHandleInput}
-                  ref={nameRef}
-                />
+                <input className="input-name-category" onChange={setHandleInput} ref={nameRef} />
               </div>
               <div className="picture-item">
                 <label htmlFor="" className="title-picture">
@@ -486,10 +499,7 @@ const CatalogManagement = () => {
                       // marginRight: "4rem",
                     }}
                   >
-                    <button
-                      className="btn-close-image"
-                      onClick={closePreviewImage}
-                    >
+                    <button className="btn-close-image" onClick={closePreviewImage}>
                       <CiCircleRemove />
                     </button>
                     <img
@@ -556,10 +566,7 @@ const CatalogManagement = () => {
                       boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                     }}
                   >
-                    <button
-                      className="btn-close-image"
-                      onClick={closePreviewImage}
-                    >
+                    <button className="btn-close-image" onClick={closePreviewImage}>
                       <CiCircleRemove />
                     </button>
                     <img
@@ -618,8 +625,8 @@ const CatalogManagement = () => {
                   fontFamily: "Montserrat ,sans-serif",
                 }}
               >
-                Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả
-                danh mục cấp con và sản phẩm đã link với danh mục sẽ bị xóa
+                Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và
+                sản phẩm đã link với danh mục sẽ bị xóa
               </p>
             </Modal>
             {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
@@ -635,17 +642,31 @@ const CatalogManagement = () => {
                   columns={columnsWithClick}
                   dataSource={dataTable}
                   locale={localCategory}
-                  pagination={{
-                    position: ["bottomCenter"],
-                    defaultPageSize: 15,
-                    showSizeChanger: true,
-                    pageSizeOptions: ["10", "20", "30"],
-                  }}
+                  pagination={false}
                 />
-                <span
-                  className="total-items"
-                  style={{ color: "black" }}
-                >{`${dataTable?.length} danh mục cấp 1`}</span>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-around",
+                    gap: "10px",
+                    marginTop: "10px",
+                    padding: "10px",
+                  }}
+                >
+                  <Pagination
+                    showSizeChanger
+                    onShowSizeChange={onShowSizeChange}
+                    onChange={onChangeNumberPagination}
+                    defaultCurrent={1}
+                    total={100}
+                  />
+                  <span
+                    className="total-items"
+                    style={{ color: "black" }}
+                  >{`${dataTable?.length} danh mục cấp 1`}</span>
+                </div>
               </>
             )}
           </div>
