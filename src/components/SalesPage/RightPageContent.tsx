@@ -50,6 +50,7 @@ const RightPageContent = ({
   const [statePayment, setStatePayment] = useState(false);
   const [isPrintReady, setIsPrintReady] = useState(false);
   const [hiddenPayment, setHiddenPayment] = useState(false);
+  const [hiddenErr, setHiddenErr] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
   const componentRef = useRef();
   const [inputQRCode, setInputQRCode] = useState({
@@ -96,17 +97,17 @@ const RightPageContent = ({
       console.log("Không tìm thấy value", value);
     }
   };
+  //check when finalPrice < amountPaid, then disable button
   useEffect(() => {
-    console.log("111", typeof amountPaid);
-    console.log("111", typeof finalPrice);
-
     if (amountPaid < finalPrice) {
       setHiddenPayment(true);
-      console.log("1111111");
+      setHiddenErr(true);
     } else {
       setHiddenPayment(false);
+      setHiddenErr(false);
     }
   }, [amountPaid]);
+  //get link picture QR Code
   const getLinkPictureQRCode = (
     Bank_ID: string,
     Account_No: string,
@@ -448,6 +449,11 @@ const RightPageContent = ({
                   pattern="[0-9]*"
                 />
               </div>
+              {hiddenErr && (
+                <div className="err_payment">
+                  <span>Tiền thanh toán nhỏ hơn tiền cần trả</span>
+                </div>
+              )}
               <div className="payment-invoice__payment-methods">
                 <div className="payment-invoice__method">
                   <input

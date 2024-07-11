@@ -625,7 +625,7 @@ const SalePageDemo: React.FC = () => {
     setAmountPaid(parseFloat(value));
   };
   const calculateChange = () => {
-    const change = amountPaid - totalPrice;
+    const change = amountPaid - finalPrice;
     return change < 0 ? 0 : change.toLocaleString("vi-VN");
   };
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
