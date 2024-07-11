@@ -223,6 +223,10 @@
 .btn-pay:hover {
   background-color: var(--border-hover-color);
 }
+.btn-pay:disabled {
+  background-color: var(--kv-primary-300);
+  cursor: not-allowed;
+}
 .list-product {
   display: flex;
   flex-wrap: wrap;

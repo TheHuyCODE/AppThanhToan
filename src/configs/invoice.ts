@@ -5,7 +5,7 @@ const invoice = {
     const url = "api/v1/manage/invoice";
     const params = {
       page: 1,
-      page_size: 7
+      page_size: 10
     }
     return axiosClient.get(url, {
       headers: {

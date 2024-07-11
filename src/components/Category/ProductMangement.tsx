@@ -23,6 +23,7 @@ import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
 import Spinners from "../SpinnerLoading/Spinners";
 import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 // let locale = {
 //   emptyText: 'Abc',
 // };
@@ -325,12 +326,14 @@ const ProductMangement = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 80,
     },
     {
       title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
       align: "start",
+      width: 130,
     },
     {
       title: getColumnTitle("Tên sản phẩm", "name"),

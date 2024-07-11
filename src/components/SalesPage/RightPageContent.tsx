@@ -232,7 +232,7 @@ const RightPageContent = ({
     await fetchDataProduct();
   };
   const fetchDataProductChild = async () => {
-    const value = numberPage - 1;
+    const value = 1;
     setNumberPage(value);
     await fetchDataProductAfter();
   };

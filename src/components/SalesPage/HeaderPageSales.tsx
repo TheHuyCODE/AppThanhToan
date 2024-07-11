@@ -177,7 +177,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       title: "Thời gian",
       dataIndex: "created_date",
       key: "created_date",
-      width: 150,
+      width: 100,
     },
     {
       title: "Nhân viên",
@@ -201,7 +201,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       title: "",
       dataIndex: "action",
       key: "action",
-      // width: 100,
+      width: 100,
 
       render: (text, record) => (
         <Space size="middle">

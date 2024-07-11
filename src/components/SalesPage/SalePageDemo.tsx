@@ -126,7 +126,11 @@ const SalePageDemo: React.FC = () => {
   });
   const [activeKey, setActiveKey] = useState<string>("1");
   const maxItems: number = 5;
-
+  const dataCategorySearch = dataCategory?.map((item, index) => ({
+    name: item.name,
+    value: index + 1,
+    id: item.id,
+  }));
   const openModal = () => {
     setOpen(!open);
   };
@@ -360,8 +364,9 @@ const SalePageDemo: React.FC = () => {
     console.log("valueSearch", valueSearch);
   };
   const handleSelectCategory = (value: number) => {
-    if (value >= 0 && value < dataCategory.length) {
-      const selectedCategory = dataCategory[value - 1];
+    const selectedCategory = dataCategorySearch.find((item) => item.value === value);
+    console.log("selectedCategory", selectedCategory);
+    if (selectedCategory) {
       console.log("select", selectedCategory.id);
       setIdSearchCategory({
         ...idSearchCategory,

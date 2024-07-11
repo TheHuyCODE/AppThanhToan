@@ -16,7 +16,7 @@
   background-color: #fff;
   border: 2px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(50px);
-  border-radius:  10px;
+  border-radius: 10px;
   color: black;
   display: flex;
   align-items: center;
@@ -43,11 +43,11 @@
   transition: none;
 }
 .wrapper .form-box.login {
-  transition:  0.25s ease;
+  transition: 0.25s ease;
   translate: 0;
 }
 .wrapper.active .form-box.register {
-  transition:  0.25s ease;
+  transition: 0.25s ease;
   translate: 0;
 }
 form h1 {
@@ -96,10 +96,10 @@ form .input-box {
 }
 .input-box input:not(:placeholder-shown) + .form-email,
 .input-box input:focus + .form-email {
-  top: 0; 
-  padding: 0 8px ;
-  display: inline-block ;
-  background-color: #fff ;
+  top: 0;
+  padding: 0 8px;
+  display: inline-block;
+  background-color: #fff;
   color: black;
 }
 
@@ -163,6 +163,10 @@ form button {
   &.active {
     background-color: #1976d2;
   }
+}
+form button:disabled {
+  background-color: #5f8dc2;
+  cursor: not-allowed;
 }
 .button-resgister {
   margin-top: 60px;
