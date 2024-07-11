@@ -174,11 +174,7 @@ const RightPageContent = ({
       setIsPrintReady(false);
     },
   });
-  useEffect(() => {
-    if (statePayment) {
-      handlePrint();
-    }
-  }, [statePayment]);
+
   const calculateAndPrintInvoice = async () => {
     console.log("build payment");
     const Items = typeInvoiListDetail();
@@ -229,6 +225,14 @@ const RightPageContent = ({
       console.log("err", error);
     }
   };
+  useEffect(() => {
+    if (statePayment) {
+      console.log("1111");
+      setTimeout(() => {
+        handlePrint();
+      }, 0);
+    }
+  }, [statePayment]);
   const fetchDataProductChild = async () => {
     const value = 1;
     setNumberPage(value);
@@ -631,7 +635,7 @@ const RightPageContent = ({
                   top: "-9999px",
                 }}
               >
-                <DetailInvoices ref={componentRef} />
+                <DetailInvoices ref={componentRef} linkQR={linkQR} />
               </div>
             )}
           </div>

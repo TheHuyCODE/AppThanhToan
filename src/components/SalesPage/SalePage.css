@@ -169,7 +169,9 @@
 .box-product:hover,
 .box-product:focus {
   border: 1px groove var(--kv-link);
-  box-shadow: var(--border-focus-color) 0px 2px 2px, var(--border-focus-color) 0px 3px 3px;
+  /* box-shadow: var(--border-focus-color) 0px 2px 2px, var(--border-focus-color) 0px 3px 3px; */
+  /* box-shadow: var(--border-focus-color) 0px 0px 5px 5px, var(--border-focus-color) 0px 0px 0px 5px; */
+  box-shadow: var(--border-focus-color) 0px 4px 4px 0px;
   cursor: pointer;
   transform: scale(1.05);
 }
