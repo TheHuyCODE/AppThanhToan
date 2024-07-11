@@ -49,6 +49,7 @@ const RightPageContent = ({
   const [isVoicesID, setIsVoicesID] = useState("");
   const [statePayment, setStatePayment] = useState(false);
   const [isPrintReady, setIsPrintReady] = useState(false);
+  const [hiddenPayment, setHiddenPayment] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
   const componentRef = useRef();
   const [inputQRCode, setInputQRCode] = useState({
@@ -95,7 +96,17 @@ const RightPageContent = ({
       console.log("Không tìm thấy value", value);
     }
   };
+  useEffect(() => {
+    console.log("111", typeof amountPaid);
+    console.log("111", typeof finalPrice);
 
+    if (amountPaid < finalPrice) {
+      setHiddenPayment(true);
+      console.log("1111111");
+    } else {
+      setHiddenPayment(false);
+    }
+  }, [amountPaid]);
   const getLinkPictureQRCode = (
     Bank_ID: string,
     Account_No: string,
@@ -536,6 +547,7 @@ const RightPageContent = ({
                 justifyContent: "center",
               }}
               onClick={calculateAndPrintInvoice}
+              disabled={hiddenPayment}
             >
               THANH TOÁN
             </button>
