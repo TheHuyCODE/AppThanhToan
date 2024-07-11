@@ -89,7 +89,7 @@ const SalePageDemo: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [discountPrice, setDiscountPrice] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
-  const [amountPaid, setAmountPaid] = useState(totalPrice);
+  const [amountPaid, setAmountPaid] = useState(finalPrice);
   const [isPercentage, setIsPercentage] = useState(false);
   const [invoiceList, setInvoiceList] = useState<Invoice[]>(() => {
     const savedInvoices = localStorage.getItem("invoiceList");
@@ -615,6 +615,7 @@ const SalePageDemo: React.FC = () => {
       finalPrice -= discountPrice;
     }
     setFinalPrice(finalPrice);
+    setAmountPaid(finalPrice);
   };
   const handleAmountPaidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/[^0-9]/g, "");
