@@ -643,6 +643,9 @@ const CatalogManagement = () => {
                   dataSource={dataTable}
                   locale={localCategory}
                   pagination={false}
+                  scroll={{
+                    y: 200,
+                  }}
                 />
                 <div
                   style={{

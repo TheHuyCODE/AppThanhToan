@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { IoMdClose } from "react-icons/io";
 import products from "../../configs/products";
 import invoice from "../../configs/invoice";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 interface User {
   access_token: string;
@@ -71,7 +72,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [valueSearchProduct, setValueSearchProduct] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(7);
+  const [pageSize, setPageSize] = useState(10);
   // const [valueSearchInvoice, setValueSearchInvoice] = useState("");
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
@@ -164,36 +165,43 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 80,
     },
     {
       title: "Mã hóa đơn",
       dataIndex: "id",
       key: "id",
+      width: 150,
     },
     {
       title: "Thời gian",
       dataIndex: "created_date",
       key: "created_date",
+      width: 150,
     },
     {
       title: "Nhân viên",
       dataIndex: "full_name",
       key: "full_name",
+      width: 150,
     },
     {
       title: "Khách hàng",
       dataIndex: "customer",
       key: "customer",
+      width: 130,
     },
     {
       title: "Tổng cộng",
       dataIndex: "total_amount",
       key: "total_amount",
+      width: 150,
     },
     {
       title: "",
       dataIndex: "action",
       key: "action",
+      // width: 100,
 
       render: (text, record) => (
         <Space size="middle">
@@ -339,6 +347,9 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
                   dataSource={dataTable}
                   locale={localInvoice}
                   pagination={false}
+                  scroll={{
+                    y: 400,
+                  }}
                 />
                 <div
                   style={{

@@ -535,17 +535,13 @@ const ProductMangement = () => {
           <>
             <Table
               columns={columns}
+              height={900}
               dataSource={datatable}
               locale={localeProduct}
               pagination={false}
-              // onHeaderRow={(columns, index) => {
-              //   return {
-              //     onClick: (columns, index) => {
-              //       console.log("columns", columns);
-              //       console.log("columns", index);
-              //     }, // click header row
-              //   };
-              // }}
+              scroll={{
+                y: 500,
+              }}
             />
             <div
               style={{
