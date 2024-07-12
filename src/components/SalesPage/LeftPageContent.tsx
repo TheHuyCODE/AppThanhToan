@@ -38,25 +38,15 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
   increment,
   handleChangeNumberCards,
   handleChangePriceProduct,
-  handleBlurPriceProduct,
+
   removeProductCarts,
   activeKey,
   invoiceList,
   totalQuantity,
   totalPrice,
-  editedPrices,
+
   // detailTotalInvoice,
 }) => {
-  const [initialPrices, setInitialPrices] = useState<{ [key: string]: number }>({});
-  useEffect(() => {
-    const initialPrices: { [key: string]: number } = {};
-    invoiceList.forEach((invoice) => {
-      invoice.items.forEach((product: Product) => {
-        initialPrices[product.id] = product.capital_price;
-      });
-    });
-    setInitialPrices(initialPrices);
-  }, [invoiceList]);
   const deleteProductCarts = (invoiceID: string, productID: string) => {
     removeProductCarts(invoiceID, productID);
   };
@@ -116,10 +106,11 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
                 <div className="cell-change-price">
                   <input
                     type="text"
-                    value={product.capital_price.toLocaleString("vi-VN")}
+                    value={
+                      product.capital_price ? product.capital_price.toLocaleString("vi-VN") : ""
+                    }
                     className="payment-invoice__input-change "
                     onChange={(e) => handleChangePriceProduct(e, product.id)}
-                    onBlur={() => handleBlurPriceProduct(product.id)}
                   />
                   {/* <span>{product.capital_price?.toLocaleString("vi-VN")}</span> */}
                 </div>

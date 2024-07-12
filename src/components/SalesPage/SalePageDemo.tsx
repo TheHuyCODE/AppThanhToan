@@ -81,6 +81,7 @@ const SalePageDemo: React.FC = () => {
     const savedProducts = localStorage.getItem("selectedProducts");
     return savedProducts ? JSON.parse(savedProducts) : {};
   });
+  const [editedPrices, setEditedPrices] = useState<{ [key: string]: boolean }>({});
   const [total, setTotal] = useState<{ quantity: number; price: number }>({
     quantity: 0,
     price: 0,
@@ -234,9 +235,12 @@ const SalePageDemo: React.FC = () => {
     });
   };
   const handleChangePriceProduct = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
-    const value = parseInt(e.target.value.replace(/[^0-9]/g, ""), 10);
+    let value = parseInt(e.target.value.replace(/[^0-9]/g, ""), 10);
     console.log("value", value);
     console.log("productId", productId);
+    if (isNaN(value)) {
+      value = 0; // Set a default value if the input is not a number
+    }
     setInvoiceList((prevInvoices) =>
       prevInvoices.map((invoice) => {
         if (invoice.id_payment === activeKey) {
@@ -248,8 +252,11 @@ const SalePageDemo: React.FC = () => {
         return invoice;
       })
     );
+    setEditedPrices((prev) => ({ ...prev, [productId]: true }));
   };
-
+  const handleBlurPriceProduct = (productId: string) => {
+    setEditedPrices((prev) => ({ ...prev, [productId]: true }));
+  };
   const decrement = (invoiceId: string, productId: string) => {
     console.log("invoice", typeof invoiceId);
     setInvoiceList((prevInvoices) =>
@@ -695,8 +702,8 @@ const SalePageDemo: React.FC = () => {
       invoice.items.map((product) => ({
         product_id: product.id,
         quantity: product.quantity,
-        price: product.price,
-        total_price: product.quantity * product.price,
+        price: product.capital_price,
+        total_price: product.quantity * product.capital_price,
       }))
     );
     return items;
@@ -803,6 +810,8 @@ const SalePageDemo: React.FC = () => {
               totalPrice={totalPrice}
               setIsSelectItemPayment={setIsSelectItemPayment}
               handleChangePriceProduct={handleChangePriceProduct}
+              handleBlurPriceProduct={handleBlurPriceProduct}
+              editedPrices={editedPrices}
               // detailTotalInvoice={detailTotalInvoice}
               // selectedProducts={selectedProducts[activeKey] || []}
             />

@@ -29,6 +29,7 @@ type RecordType = {
   full_name: string;
   customer: string;
   total_amount: number;
+  key: string;
 };
 type ChildComponentProps = {
   activeKey: string;
@@ -158,6 +159,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     full_name: items.create_user.full_name,
     customer: items.customer.full_name,
     total_amount: items.total_amount.toLocaleString("vi-VN"),
+    key: items.id,
   }));
 
   const columns = [

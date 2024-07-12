@@ -17,8 +17,6 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   invoiceList,
   activeKey,
   removeProductCarts,
-  decrement,
-  increment,
   updateProductTotal,
 }) => {
   const [quantityState, setQuantityState] = useState<{ [key: string]: number }>({});
@@ -80,6 +78,10 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
     console.log("invoiceList", invoiceListItems);
     // Update product total
     updateProductTotal(productID, newQuantity * product.price);
+  };
+  const onChangeValueCommend = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log("1111", value);
   };
   const incrementReturn = (invoiceID: string, productID: string) => {
     const product = findProduct(productID);
@@ -172,7 +174,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                 <span>/&nbsp;{product.quantity}</span>
               </div>
               <div className="cell-change-price-return">
-                <span>{product.price}</span>
+                <span>{product.price.toLocaleString("vi-VN")}</span>
               </div>
               <div className="cell-total-price-return">
                 {calculateTotal(quantityState[product.id] || 0, product.price).toLocaleString(
@@ -187,7 +189,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
             <div className="icon-pen">
               <FaPen />
             </div>
-            <input type="text" placeholder="Chú thích đơn hàng" />
+            <input type="text" placeholder="Chú thích đơn hàng" onChange={onChangeValueCommend} />
           </div>
         )}
       </div>
