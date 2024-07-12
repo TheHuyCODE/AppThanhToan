@@ -5,120 +5,100 @@ import { FaPen, FaRegTrashAlt } from "react-icons/fa";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { FaEllipsisVertical } from "react-icons/fa6";
 import { IoMdAdd } from "react-icons/io";
+
+type Product = {
+  id: string;
+  barcode: string;
+  name: string;
+  price: number;
+  quantity: number;
+  remaining_quantity: number;
+};
+
+type Invoice = {
+  id_payment: string;
+  type: string;
+  items: Product[];
+};
+
 type LeftContentReturn = {
-  invoiceList: [];
+  invoiceList: Invoice[];
   activeKey: string;
   removeProductCarts: (invoiceID: string, productID: string) => void;
-  decrement: (invoiceID: string, productID: string) => void;
-  increment: (invoiceID: string, productID: string) => void;
-  updateProductTotal: (productID: string, total: number) => void;
+  decrementReturn: (invoiceID: string, productID: string) => void;
+  incrementReturn: (invoiceID: string, productID: string) => void;
+  // updateProductTotal: (productID: string, total: number) => void;
 };
+
 const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   invoiceList,
   activeKey,
   removeProductCarts,
-  updateProductTotal,
+  // updateProductTotal,
+  decrementReturn,
+  incrementReturn,
+  setInvoiceList,
 }) => {
   const [quantityState, setQuantityState] = useState<{ [key: string]: number }>({});
-  const [invoiceListItems, setInvoiceList] = useState<any[]>([]); // Khai báo invoiceList và setter
+  // Filter the invoice list to get the active return invoice
+  // useEffect(() => {
+  //   // Initialize quantity state with quantities from the active return invoice
+  //   if (typeInvoiceList.length > 0) {
+  //     const initialQuantities: { [key: string]: number } = {};
+  //     typeInvoiceList[0].items.forEach((product) => {
+  //       initialQuantities[product.id] = product.quantity;
+  //     });
+  //     setQuantityState(initialQuantities);
+  //   }
+  // }, [typeInvoiceList]);
 
-  const updateInvoiceList = (updatedList: any[]) => {
-    setInvoiceList(updatedList); // Cập nhật invoiceList mới
-  };
-
-  const typeInvoiceList = invoiceList.filter(
-    (invoice) => invoice.type === "return" && invoice.id_payment === activeKey
-  );
-  const deleteProductCartsReturn = (invoiceID, productID) => {
+  const deleteProductCartsReturn = (invoiceID: string, productID: string) => {
     removeProductCarts(invoiceID, productID);
   };
-  const handleChangeNumberCards = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    IdReturn: string,
-    product: object
-  ) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (parseInt(value, 10) > product.quantity) {
-      value = product.quantity.toString();
-    }
-    setQuantityState((prev) => ({
-      ...prev,
-      [product.id]: value ? parseInt(value, 10) : 0,
-    }));
-  };
-  const findProduct = (productID: string) => {
-    return typeInvoiceList
-      .flatMap((invoice) => invoice.items)
-      .find((item) => item.id === productID);
-  };
-  const decrementReturn = (invoiceID: string, productID: string) => {
-    const product = findProduct(productID);
-    if (!product) return;
 
-    // Update quantityState
-    const newQuantity = Math.max((quantityState[productID] || 0) - 1, 0);
-    setQuantityState((prev) => ({
-      ...prev,
-      [productID]: newQuantity,
-    }));
-    // Update invoiceList
-    const updatedInvoiceList = invoiceList.map((invoice) => {
-      if (invoice.id_payment === activeKey && invoice.type === "return") {
-        const updatedItems = invoice.items.map((item) =>
-          item.id === productID
-            ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price }
-            : item
-        );
-        return { ...invoice, items: updatedItems };
-      }
-      return invoice;
-    });
-    // Update parent component state with the updated invoiceList
-    updateInvoiceList(updatedInvoiceList);
-    console.log("invoiceList", invoiceListItems);
-    // Update product total
-    updateProductTotal(productID, newQuantity * product.price);
-  };
   const onChangeValueCommend = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log("1111", value);
+    console.log("Comment:", value);
   };
-  const incrementReturn = (invoiceID: string, productID: string) => {
-    const product = findProduct(productID);
-    if (!product) return;
-    // Update quantityState
-    const newQuantity = Math.min((quantityState[productID] || 0) + 1, product.quantity);
-    setQuantityState((prev) => ({
-      ...prev,
-      [productID]: newQuantity,
-    }));
-    // Update invoiceList
-    const updatedInvoiceList = invoiceList.map((invoice) => {
-      if (invoice.id_payment === activeKey && invoice.type === "return") {
-        const updatedItems = invoice.items.map((item) =>
-          item.id === productID
-            ? { ...item, quantity: newQuantity, total_price: newQuantity * item.price }
-            : item
-        );
-        return { ...invoice, items: updatedItems };
-      }
-      return invoice;
-    });
-    // Update parent component state with the updated invoiceList
-    updateInvoiceList(updatedInvoiceList);
-    console.log("invoiceList", invoiceListItems);
-    updateProductTotal(productID, newQuantity * product.price);
-  };
-
   const calculateTotal = (quantity: number, price: number) => {
     return quantity * price;
   };
+  const typeInvoiceList = invoiceList.filter(
+    (invoice) => invoice.type === "return" && invoice.id_payment === activeKey
+  );
+  const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
+    let value = e.target.value.replace(/\D/g, "");
+    const product = typeInvoiceList[0].items.find((item) => item.id === productId);
+    if (!product) return;
+    if (parseInt(value, 10) > product.remaining_quantity) {
+      value = product.remaining_quantity.toString();
+    }
+    const newQuantity = parseInt(value, 10) || 0;
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) =>
+        invoice.id_payment === typeInvoiceList[0].id_payment
+          ? {
+              ...invoice,
+              items: invoice.items.map((product) =>
+                product.id === productId
+                  ? {
+                      ...product,
+                      quantity: newQuantity,
+                      total_price: newQuantity * product.price,
+                    }
+                  : product
+              ),
+            }
+          : invoice
+      )
+    );
+  };
+
   useEffect(() => {
-    // Update total for all products on initial render
     typeInvoiceList.flatMap((invoice) =>
       invoice.items.forEach((product) => {
         const totalPrice = calculateTotal(quantityState[product.id] || 0, product.price);
-        updateProductTotal(product.id, totalPrice);
+        // updateProductTotal(product.id, totalPrice);
       })
     );
   }, [quantityState]);
@@ -158,8 +138,8 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                   </button>
                   <input
                     type="text"
-                    value={quantityState[product.id] || 0}
-                    onChange={(e) => handleChangeNumberCards(e, product.id, product)}
+                    value={product.quantity.toLocaleString("vi-VN")}
+                    onChange={(e) => handleChangeNumberCards(e, product.id)}
                     className="input-number-cart"
                     inputMode="numeric"
                     pattern="[0-9]*"
@@ -171,15 +151,13 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                     <AiOutlinePlus />
                   </button>
                 </div>
-                <span>/&nbsp;{product.quantity}</span>
+                <span>/&nbsp;{product.remaining_quantity}</span>
               </div>
               <div className="cell-change-price-return">
                 <span>{product.price.toLocaleString("vi-VN")}</span>
               </div>
               <div className="cell-total-price-return">
-                {calculateTotal(quantityState[product.id] || 0, product.price).toLocaleString(
-                  "vi-VN"
-                )}
+                <span>{(product.quantity * product.price).toLocaleString("vi-VN")}</span>
               </div>
             </div>
           ))

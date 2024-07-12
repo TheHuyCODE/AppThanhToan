@@ -505,7 +505,7 @@ const ModifyProduct = () => {
                   value={0}
                   onChange={handleStatusChange}
                 />
-                <label htmlFor="active">Kích hoạt</label>
+                <label htmlFor="active">Chưa kích hoạt</label>
                 <input
                   type="radio"
                   id="notactivate"
@@ -513,7 +513,7 @@ const ModifyProduct = () => {
                   value={1}
                   onChange={handleStatusChange}
                 />
-                <label htmlFor="notactivate">Chưa kích hoạt</label>
+                <label htmlFor="notactivate">Kích hoạt</label>
               </div>
             </div>
           </div>

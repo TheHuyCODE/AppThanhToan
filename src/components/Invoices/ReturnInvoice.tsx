@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./detailInvoices.css";
 import "../SalesPage/SalePage.css";
-import "../styles/valiables.css";
+// import "../styles/variables.css";
 import { FaUser } from "react-icons/fa";
 import ReturnProduct from "../../configs/return";
 import { toast, ToastContainer } from "react-toastify";
 
-const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
+const ReturnInvoice = ({ dataReturnPayment }) => {
   const [invoiceCode, setInvoiceCode] = useState("");
   const [dataProduct, setDataProduct] = useState([]);
-
   const [originalPrice, setOriginalPrice] = useState(0);
   const [returnPrice, setReturnPrice] = useState(0);
-  const [discount, setDiscount] = useState(0);
+  const [needReturnPrice, setNeedReturnPrice] = useState(0);
   const [returnFee, setReturnFee] = useState(0);
   const [refundAmount, setRefundAmount] = useState(0);
   const [inforUser, setInfoUser] = useState("");
@@ -20,16 +19,16 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
   const [isPercentage, setIsPercentage] = useState(false);
   const menuRef = useRef(null);
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
-  const converDataProduct = (data: []) => {
+
+  const converDataProduct = (data) => {
     const dataConvert = data.map((value, index) => ({
       product_id: value.product_id,
-      quantity: value.quantity, // Corrected spelling from `quatity` to `quantity`
+      quantity: value.quantity,
       price: value.price,
       total_price: value.total_price,
     }));
     return dataConvert;
   };
-
   useEffect(() => {
     if (dataReturnPayment.length > 0) {
       const userFullName = dataReturnPayment[0]?.user?.full_name || "";
@@ -40,51 +39,62 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
       setInfoUser(userFullName);
       setDataProduct(data);
     }
+    console.log("dataReturnPayment", dataReturnPayment);
   }, [dataReturnPayment]);
 
-  const handleRefundAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value; // Get the input value
-    const numericValue = parseInt(value.replace(/\D/g, ""), 10); // Parse the numeric value
-
-    // Check if the parsed numeric value is valid
-    if (!isNaN(numericValue)) {
-      // Check if the numeric value is greater than the return price
-      if (numericValue > returnPrice) {
-        setRefundAmount(returnPrice); // Set refund amount to return price if input exceeds it
-      } else {
-        setRefundAmount(numericValue); // Set refund amount to the parsed numeric value
-      }
-    } else if (value === "") {
-      setRefundAmount(0); // Set refund amount to 0 if input is empty
+  const handleRefundAmountChange = (e) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    if (value === "") {
+      value = "0";
     }
+    let parsedValue = parseFloat(value);
+    // Ensure refundAmount does not exceed needReturnPrice
+    if (parsedValue > needReturnPrice) {
+      parsedValue = needReturnPrice;
+    }
+    setRefundAmount(parsedValue);
   };
+
   const handleClickDiscountReturn = () => {
     setHiddenPopUpDiscountPrice(!hiddenPopUpDiscountPrice);
   };
+
+  const handleDiscountChangeReturnFee = (e) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    if (value === "") {
+      value = "0";
+    }
+    let parsedValue = parseFloat(value);
+    if (!isPercentage && parsedValue > returnPrice) {
+      parsedValue = returnPrice;
+    } else if (isPercentage && parsedValue > 100) {
+      parsedValue = 100;
+    }
+    setReturnFee(parsedValue);
+  };
+
   const handleVNDClick = () => {
     if (isPercentage) {
       // Convert percentage discount to VND
-      // const discountInVND = ((totalPrice * discountPrice) / 100).toFixed(2);
-      // setDiscountPrice(parseFloat(discountInVND));
+      const discountInVND = ((returnPrice * returnFee) / 100).toFixed(2);
+      setReturnFee(parseFloat(discountInVND));
       setIsPercentage(false);
     }
-    setIsPercentage(false);
   };
   const handlePercentageClick = () => {
     if (!isPercentage) {
       // Convert VND discount to percentage
-      // const discountInPercentage = ((discountPrice / totalPrice) * 100).toFixed(2);
-      // setDiscountPrice(parseFloat(discountInPercentage));
+      const discountInPercentage = ((returnFee / returnPrice) * 100).toFixed(2);
+      setReturnFee(parseFloat(discountInPercentage));
       setIsPercentage(true);
     }
-    setIsPercentage(true);
   };
   const handleClickReturn = async () => {
     const dataReturn = {
       invoice_id: invoiceId,
       total_amount: returnPrice,
       reason: "hết hạn",
-      return_fee: 0,
+      return_fee: returnFee,
       type_fee: 0,
       total_product: 1,
       products: dataProduct,
@@ -92,29 +102,34 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
     try {
       const res = await ReturnProduct.postDataPayment(dataReturn);
       if (res.code === 200) {
-        const texSS = res.data.massage;
+        const texSS = res.massage.text;
         toast.success(texSS);
       } else {
-        const textErr = res.data.massage;
-        console.log("err");
+        const textErr = res.data.massage.text;
         toast.success(textErr);
       }
     } catch (err) {
       console.log("err");
     }
   };
-  // Tính toán tổng tiền trả hàng
+  // Load data from localStorage and calculate prices on initial render
   useEffect(() => {
-    let totalPrice = 0;
-    Object.values(productTotals).forEach((total) => {
-      totalPrice += total;
-    });
-    setReturnPrice(totalPrice);
-  }, [productTotals]);
+    if (dataReturnPayment.length > 0) {
+      const totalPrice = dataReturnPayment[0]?.items.reduce(
+        (sum, item) => sum + item.total_price,
+        0
+      );
+      setReturnPrice(totalPrice);
+      const calculatedNeedReturnPrice =
+        totalPrice - (isPercentage ? (totalPrice * returnFee) / 100 : returnFee);
+      setNeedReturnPrice(calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0);
+      setRefundAmount(calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0);
+    }
+  }, [dataReturnPayment, returnFee, isPercentage]);
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Close the menu if click occurs outside of it
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
         setHiddenPopUpDiscountPrice(false);
       }
     };
@@ -123,6 +138,7 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuRef]);
+
   return (
     <>
       <ToastContainer autoClose={5000} />
@@ -161,19 +177,19 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
             <input
               className="return-fee-input"
               type="text"
-              value={returnFee}
-              onChange={(e) => setReturnFee(parseFloat(e.target.value))}
+              value={returnFee.toLocaleString("vi-VN")}
+              onChange={handleDiscountChangeReturnFee}
               onClick={handleClickDiscountReturn}
             />
           </div>
           {hiddenPopUpDiscountPrice && (
             <div ref={menuRef} className="pop-discount-return">
-              <p>Giảm giá</p>
+              <p>Phí trả hàng</p>
               <input
                 type="text"
                 className="payment-invoice__input"
-                // value={discountPrice.toLocaleString("vi-VN")}
-                // onChange={handleDiscountChange}
+                value={returnFee.toLocaleString("vi-VN")}
+                onChange={handleDiscountChangeReturnFee}
               />
               <button
                 className={`discount-button ${!isPercentage ? "active" : ""}`}
@@ -191,8 +207,8 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
           )}
           <div className="return-item">
             <label style={{ fontWeight: "600" }}>Cần trả khách:</label>
-            <div className="payment-return_price-total">
-              <p>{returnPrice?.toLocaleString("vi-VN")}</p>
+            <div className="payment-return_price-total" style={{ fontWeight: 600, color: "blue" }}>
+              <p>{needReturnPrice?.toLocaleString("vi-VN")}</p>
             </div>
           </div>
           <div className="return-item">
@@ -218,7 +234,6 @@ const ReturnInvoice = ({ dataReturnPayment, productTotals }) => {
           >
             TRẢ HÀNG
           </button>
-          {/* <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}></div> */}
         </div>
       </div>
     </>

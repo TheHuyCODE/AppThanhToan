@@ -474,15 +474,6 @@ const AddProduct = () => {
               >
                 <input
                   type="radio"
-                  id="active"
-                  name="status"
-                  value="0"
-                  // checked={status === "active"}
-                  onChange={handleStatusChange}
-                />
-                <label htmlFor="active">Chưa kích hoạt</label>
-                <input
-                  type="radio"
                   id="notactivate"
                   name="status"
                   value="1"
@@ -490,6 +481,15 @@ const AddProduct = () => {
                   onChange={handleStatusChange}
                 />
                 <label htmlFor="notactivate">Kích hoạt</label>
+                <input
+                  type="radio"
+                  id="active"
+                  name="status"
+                  value="0"
+                  // checked={status === "active"}
+                  onChange={handleStatusChange}
+                />
+                <label htmlFor="active">Chưa kích hoạt</label>
               </div>
             </div>
           </div>

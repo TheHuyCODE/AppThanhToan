@@ -59,7 +59,7 @@ const SalePageDemo: React.FC = () => {
   const [isSelectItemPayment, setIsSelectItemPayment] = useState([]);
   const [dataReturnPayment, setDataReturnPayment] = useState([]);
   const [dataTableInvoice, setDataTableInvoice] = useState([]);
-  const [productTotals, setProductTotals] = useState({});
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [idSearchCategory, setIdSearchCategory] = useState({
@@ -222,9 +222,7 @@ const SalePageDemo: React.FC = () => {
       const updatedProducts = currentProducts.map((product) =>
         product.id === productId ? { ...product, quantity: newQuantity } : product
       );
-
       updateTotal(updatedProducts);
-
       // Update the invoiceList to include the updated products
       setInvoiceList((prevInvoices) =>
         prevInvoices.map((invoice) =>
@@ -274,7 +272,26 @@ const SalePageDemo: React.FC = () => {
       )
     );
   };
-
+  const decrementReturn = (invoiceID: string, productID: string) => {
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) =>
+        invoice.id_payment === invoiceID
+          ? {
+              ...invoice,
+              items: invoice.items.map((product) =>
+                product.id === productID && product.quantity > 1
+                  ? {
+                      ...product,
+                      quantity: product.quantity - 1,
+                      total_price: (product.quantity - 1) * product.price,
+                    }
+                  : product
+              ),
+            }
+          : invoice
+      )
+    );
+  };
   const increment = (invoiceId: string, productId: string) => {
     setInvoiceList((prevInvoices) =>
       prevInvoices.map((invoice) =>
@@ -283,6 +300,26 @@ const SalePageDemo: React.FC = () => {
               ...invoice,
               items: invoice.items.map((product) =>
                 product.id === productId ? { ...product, quantity: product.quantity + 1 } : product
+              ),
+            }
+          : invoice
+      )
+    );
+  };
+  const incrementReturn = (invoiceID: string, productID: string) => {
+    setInvoiceList((prevInvoices) =>
+      prevInvoices.map((invoice) =>
+        invoice.id_payment === invoiceID
+          ? {
+              ...invoice,
+              items: invoice.items.map((product) =>
+                product.id === productID && product.quantity < product.remaining_quantity
+                  ? {
+                      ...product,
+                      quantity: product.quantity + 1,
+                      total_price: (product.quantity + 1) * product.price,
+                    }
+                  : product
               ),
             }
           : invoice
@@ -461,25 +498,31 @@ const SalePageDemo: React.FC = () => {
     try {
       const res = await invoice.getDataDetailInvoiceReturn(id);
       const returnedInvoice = res.data;
+      // Set the quantity of each product to 0
+      const updatedProducts = returnedInvoice.product.map((product) => ({
+        ...product,
+        quantity: 0,
+      }));
       setInvoiceList((prevInvoiceList) => {
         return prevInvoiceList.map((invoice) => {
           if (invoice.type === "return") {
             return {
               ...invoice,
-              items: returnedInvoice.product,
+              items: updatedProducts,
               user: returnedInvoice.create_user,
               id_invoice: returnedInvoice.id,
             };
           }
-          // localStorage.setItem("invoiceList", JSON.stringify(updatedInvoiceList));
           return invoice;
         });
       });
+
       console.log("Updated invoiceList with returned items", invoiceList);
     } catch (err) {
       console.log("Error fetching invoice return details", err);
     }
   };
+
   const removeInvoice = (targetKey: string) => {
     const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
 
@@ -687,13 +730,6 @@ const SalePageDemo: React.FC = () => {
     }
     setIsPercentage(true);
   };
-  const updateProductTotal = (productID: string, totalPrice: number) => {
-    setProductTotals((prev) => ({
-      ...prev,
-      [productID]: totalPrice,
-    }));
-    console.log("productTotals", productTotals);
-  };
   const typeInvoiListDetail = () => {
     const typeInvoiceList = invoiceList.filter(
       (invoice) => invoice.type === "invoice" && invoice.id_payment === activeKey
@@ -794,7 +830,9 @@ const SalePageDemo: React.FC = () => {
               removeProductCarts={removeProductCarts}
               decrement={decrement}
               increment={increment}
-              updateProductTotal={updateProductTotal}
+              // updateProductTotal={updateProductTotal}
+              decrementReturn={decrementReturn}
+              incrementReturn={incrementReturn}
             />
           ) : (
             <LeftPageContent
@@ -812,12 +850,13 @@ const SalePageDemo: React.FC = () => {
               handleChangePriceProduct={handleChangePriceProduct}
               handleBlurPriceProduct={handleBlurPriceProduct}
               editedPrices={editedPrices}
-              // detailTotalInvoice={detailTotalInvoice}
+              detailTotalInvoice={detailTotalInvoice}
+              setInvoiceList={setInvoiceList}
               // selectedProducts={selectedProducts[activeKey] || []}
             />
           )}
           {isOpenPaymentReturn ? (
-            <ReturnInvoice dataReturnPayment={dataReturnPayment} productTotals={productTotals} />
+            <ReturnInvoice dataReturnPayment={dataReturnPayment} />
           ) : (
             <RightPageContent
               selectedProducts={selectedProducts[activeKey] || []}

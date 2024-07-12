@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
+import { domain } from "../TableConfig/TableConfig";
 interface Product {
   id: string;
   barcode: string;
   name: string;
   quantity: number;
   capital_price: number;
+  image_url: string;
 }
 interface Invoice {
   id: number;
@@ -38,15 +40,14 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
   increment,
   handleChangeNumberCards,
   handleChangePriceProduct,
-
   removeProductCarts,
   activeKey,
   invoiceList,
   totalQuantity,
   totalPrice,
-
-  // detailTotalInvoice,
+  detailTotalInvoice,
 }) => {
+  const domainLink = domain.domainLink;
   const deleteProductCarts = (invoiceID: string, productID: string) => {
     removeProductCarts(invoiceID, productID);
   };
@@ -102,6 +103,9 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
                   >
                     <AiOutlinePlus />
                   </button>
+                </div>
+                <div className="show-picture-product">
+                  <img src={`${domainLink}${product.image_url}`} alt="Ảnh sản phẩm" />
                 </div>
                 <div className="cell-change-price">
                   <input
