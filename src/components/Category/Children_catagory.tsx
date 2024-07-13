@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Table, Space, Button, Modal } from "antd";
+import { Table, Space, Button, Modal, Pagination } from "antd";
 import { useParams } from "react-router-dom";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./Children_category.css";
@@ -15,6 +15,7 @@ import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
+import TextArea from "antd/es/input/TextArea";
 
 const ChildrenCategory = ({
   isKeyChild,
@@ -27,6 +28,7 @@ const ChildrenCategory = ({
   // const params = useParams();
   const nameRef = useRef(null);
   const fileRef = useRef(null);
+  const description = useRef(null);
   const reviewImageRefChild = useRef(null);
   const [isHiddenThreeChild, setIsHiddenThreeChild] = useState(false);
   const {
@@ -39,21 +41,24 @@ const ChildrenCategory = ({
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
   const [isImageCategoryChild, setIsImageCategoryChild] = useState("");
   const [isResImageCategoryChild, setResImageCategoryChild] = useState("");
-  const [isPreviewImageChild, setIsPreviewImageChild] = useState("");
-  const [isPreviewImageModifyChild, setIsPreviewImageModifyChild] =
-    useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  // const [isPreviewImageChild, setIsPreviewImageChild] = useState("");
+  const [isPreviewImageModifyChild, setIsPreviewImageModifyChild] = useState("");
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
   const debounceValue = useDebounce(isValueSearchChild, 700);
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
   const [isOpenModalModifyChild, setIsOpenModalModifyChild] = useState(false);
+  const [isDescription, setIsDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
   const [modifyItem, setModifyItem] = useState<any>();
+  const [isInputDataCategoryTwo, setIsInputDataCategoryTwo] = useState<any>();
+
   const [isKeyThreeChild, setIsKeyThreeChild] = useState("");
   // const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
-
   const [viewTableChild, setViewTableChild] = useState(true);
-  const handleSearchCategory = (e) => {
+  const handleSearchCategory = (e: any) => {
     const value = e.target.value.trim();
     setIsValueSearchChild(value);
     console.log("value", value);
@@ -65,43 +70,38 @@ const ChildrenCategory = ({
     if (fileRef.current) {
       fileRef.current.value = "";
     }
-    if (reviewImageRefChild.current) {
-      reviewImageRefChild.current.value = "";
+    if (description.current) {
+      description.current.value = "";
     }
     setIsInputCategoryChild("");
     setIsImageCategoryChild("");
     // setResImageCategoryChild("");
-    setIsPreviewImageChild("");
+    // setIsPreviewImageChild("");
   };
   const openModalChildSecond = () => {
     setIsOpenPopupChild(!isOpenPopupChild);
   };
-  const closePreviewImage = () => {
-    setIsPreviewImageChild("");
-    setIsPreviewImageModifyChild("");
-  };
-  const clickAddItemCategoryChild = async (event) => {
+  const clickAddItemCategoryChild = async (event: any) => {
     console.log("addItemCategoryChild");
     event.preventDefault();
     setIsOpenPopupChild(!isOpenPopupChild);
     const userDataCategoryChild = {
       name: isInputCategoryChild,
-      file_url: isResImageCategoryChild,
+      description: isDescription,
       parent_id: isKeyChild,
     };
     try {
-      const res = await uploadApiImage.postAddItemCategoryChild(
-        userDataCategoryChild
-      );
+      const res = await uploadApiImage.postAddItemCategoryChild(userDataCategoryChild);
       if (res.code === 200) {
         console.log("res", res);
-        toast.success("Đã thêm danh mục cấp 2 thành công!");
+        const successMs = res.message.text;
+        toast.success(successMs);
         await fetchDataCategory();
         await fetchDataCategoryChild(isKeyChild);
         clearInputChildren();
       } else {
-        console.log("Error:", res);
-        toast.error("Danh mục này đã có!");
+        const errorMessage = res.data.message.text;
+        toast.error(errorMessage);
         setIsOpenPopupChild(true);
       }
     } catch (error) {
@@ -139,7 +139,7 @@ const ChildrenCategory = ({
     console.log("modidy child category", modifyItem);
     const dataPutCategoryChild = {
       name: modifyItem.name,
-      file_url: isResImageCategoryChild,
+      description: isDescription,
       parent_id: isKeyChild,
     };
 
@@ -147,13 +147,11 @@ const ChildrenCategory = ({
     console.log("idModifyItemsChild", idModifyItemsChild);
     console.log("dataPutCategoryChild", dataPutCategoryChild);
     try {
-      const res = await category.putModifyCategoryChild(
-        idModifyItemsChild,
-        dataPutCategoryChild
-      );
+      const res = await category.putModifyCategoryChild(idModifyItemsChild, dataPutCategoryChild);
       if (res.code === 200) {
         console.log("res", res);
-        toast.success("Đã sửa danh mục cấp 2 thành công!");
+        const messSuccess = res.message.text;
+        toast.success(messSuccess);
         await fetchDataCategoryChild(isKeyChild);
         setIsOpenModalModifyChild(!isOpenModalModifyChild);
         clearInputChildren();
@@ -168,6 +166,7 @@ const ChildrenCategory = ({
     console.log("onModifyCategories", record);
     setIsOpenModalModifyChild(!isOpenModalModifyChild);
     setModifyItem(record);
+    setIsInputDataCategoryTwo(record);
     console.log("record:", record.key);
     console.log("record:", record.image_url);
 
@@ -186,21 +185,6 @@ const ChildrenCategory = ({
       setModifyItem({ ...modifyItem, name: value });
     }
   };
-  const handleImageChild = (event) => {
-    event.preventDefault();
-    const fileImage = event.target.files[0]; // Corrected here
-    setIsImageCategoryChild(fileImage);
-    setIsPreviewImageChild(URL.createObjectURL(fileImage));
-    console.log("fileImage:", fileImage);
-  };
-  const handleImageModifyChild = (event) => {
-    event.preventDefault();
-    const fileImage = event.target.files[0]; // Corrected here
-    setIsImageCategoryChild(fileImage);
-    setIsPreviewImageModifyChild(URL.createObjectURL(fileImage));
-    console.log("fileImage:", fileImage);
-  };
-
   //get list items children category
 
   const dataTableChild = isResDataChild.items?.map((item, index) => ({
@@ -208,6 +192,7 @@ const ChildrenCategory = ({
     key: item.id,
     name: item.name,
     number_children: item.number_children,
+    description: item.description,
     created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
     image_url: item.image_url,
   }));
@@ -216,9 +201,7 @@ const ChildrenCategory = ({
     if (isImageCategoryChild) {
       const uploadImage = async () => {
         try {
-          const res = await uploadApiImage.postImageCategoryChild(
-            isImageCategoryChild
-          );
+          const res = await uploadApiImage.postImageCategoryChild(isImageCategoryChild);
           if (res.code === 200) {
             const fileUrl = res.data.file_url;
             console.log("fileUrlRes:", fileUrl);
@@ -238,19 +221,30 @@ const ChildrenCategory = ({
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 100,
     },
     {
       title: "Tên danh mục cấp 2",
       dataIndex: "name",
       key: "name",
       align: "center",
+      width: 200,
     },
     {
       title: "Số lượng danh mục cấp 3",
       dataIndex: "number_children",
       key: "number_children",
       align: "center",
-      sorter: (a, b) => a.number_children - b.number_children,
+      editTable: true,
+      width: 250,
+    },
+    {
+      title: "Mô tả ngắn",
+      dataIndex: "description",
+      key: "description",
+      align: "center",
+      editTable: true,
+      width: 300,
     },
     {
       title: "Ngày tạo",
@@ -262,7 +256,7 @@ const ChildrenCategory = ({
       title: "Thao tác",
       key: "action",
       align: "center",
-      render: (record) => (
+      render: (record: any) => (
         <Space size="middle">
           <a onClick={() => onModifyCategories(record)}>
             <FaPencilAlt />
@@ -279,7 +273,7 @@ const ChildrenCategory = ({
     if (index < 4) {
       return {
         ...col,
-        onCell: (record) => ({
+        onCell: (record: any) => ({
           onClick: () => {
             console.log("Click row");
             console.log("record:", record);
@@ -303,6 +297,43 @@ const ChildrenCategory = ({
     }
     return col;
   });
+  const onChangeInputChild = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log("describe", e.target.value);
+    const value = e.target.value;
+    setIsDescription(value);
+    if (isInputDataCategoryTwo) {
+      setIsInputDataCategoryTwo({
+        ...isInputDataCategoryTwo,
+        description: value,
+      });
+    }
+  };
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    // setLoading(true);
+    try {
+      const res = await category.getDataCategoryPaginationChild(isKeyChild, current, size);
+      if (res.data) {
+        const data = res.data;
+        setIsResDataChild(data);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
   //check state category
   useEffect(() => {
     console.log("viewTableChildSecond", viewTableChildSecond);
@@ -313,10 +344,7 @@ const ChildrenCategory = ({
   }, [viewTableChildSecond]);
   const fetchDataSearchCategory = async () => {
     setLoading(true);
-    const res = await category.getDataSearchNameChildCategory(
-      isKeyChild,
-      debounceValue
-    );
+    const res = await category.getDataSearchNameChildCategory(isKeyChild, debounceValue);
     if (res.code === 200) {
       setIsResDataChild(res.data);
       setLoading(false);
@@ -334,7 +362,11 @@ const ChildrenCategory = ({
       {isResDataChild.items == 0 ? (
         <div className="add_children_category">
           <p>Chưa có model cấp 2</p>
-          <Button type="primary" onClick={openModalChildSecond}>
+          <Button
+            type="primary"
+            onClick={openModalChildSecond}
+            style={{ backgroundColor: "var( --kv-success)" }}
+          >
             Thêm danh mục cấp 2
           </Button>
         </div>
@@ -365,8 +397,14 @@ const ChildrenCategory = ({
             <div className="header-btn">
               {viewTableChild && (
                 <>
-                  <Button type="primary">Hướng dẫn sử dụng</Button>
-                  <Button type="primary" onClick={openModalChildSecond}>
+                  <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
+                    Hướng dẫn sử dụng
+                  </Button>
+                  <Button
+                    type="primary"
+                    onClick={openModalChildSecond}
+                    style={{ backgroundColor: "var( --kv-success)" }}
+                  >
                     Thêm danh mục cấp 2
                   </Button>
                 </>
@@ -382,17 +420,31 @@ const ChildrenCategory = ({
                   <Table
                     columns={columnsWithClick}
                     dataSource={dataTableChild}
-                    pagination={{
-                      position: ["bottomCenter"],
-                      defaultPageSize: 15,
-                      showSizeChanger: true,
-                      pageSizeOptions: ["10", "20", "30"],
-                    }}
+                    pagination={false}
                   />
-                  <span
-                    className="total-items"
-                    style={{ color: "black" }}
-                  >{`${dataTableChild?.length} danh mục cấp 2`}</span>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-around",
+                      gap: "10px",
+                      marginTop: "10px",
+                      padding: "10px",
+                    }}
+                  >
+                    <Pagination
+                      showSizeChanger
+                      onShowSizeChange={onShowSizeChange}
+                      onChange={onChangeNumberPagination}
+                      defaultCurrent={1}
+                      total={isResDataChild.total}
+                    />
+                    <span
+                      className="total-items"
+                      style={{ color: "black" }}
+                    >{`${dataTableChild?.length} danh mục cấp 2`}</span>
+                  </div>
                 </>
               )}
             </div>
@@ -406,6 +458,7 @@ const ChildrenCategory = ({
         className="modalDialog-addITems"
         width={500}
         // height={500}
+        okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
         centered
         open={isOpenPopupChild}
         onOk={clickAddItemCategoryChild}
@@ -418,53 +471,20 @@ const ChildrenCategory = ({
           <label htmlFor="">
             Tên danh mục 2 (<span>*</span>)
           </label>
-          <input
-            className="input-name-category"
-            onChange={setHandleInput}
-            ref={nameRef}
-          />
+          <input className="input-name-category" onChange={setHandleInput} ref={nameRef} />
         </div>
-        <div className="picture-item">
+        <div className="decribe-category">
           <label htmlFor="" className="title-picture">
-            Ảnh danh mục(<span>*</span>)
+            Mô tả danh mục cấp 2(<span>*</span>)
           </label>
-          {isPreviewImageChild ? (
-            <div
-              className="preview-image"
-              style={{
-                height: "150px",
-                width: "240px",
-                position: "relative",
-                color: "white",
-                boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-              }}
-            >
-              <button className="btn-close-image" onClick={closePreviewImage}>
-                <CiCircleRemove />
-              </button>
-              <img
-                src={isPreviewImageChild}
-                alt="Preview"
-                style={{ maxHeight: "100%", maxWidth: "100%" }}
-              />
-            </div>
-          ) : (
-            <>
-              <label htmlFor="labelUpload" className="label-upload">
-                <AiOutlinePicture />
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                name="file"
-                id="labelUpload"
-                // style={{display: "none"}}
-                onChange={handleImageChild}
-                ref={fileRef}
-                hidden
-              />
-            </>
-          )}
+          <TextArea
+            showCount
+            maxLength={100}
+            onChange={onChangeInputChild}
+            placeholder="Chú thích danh mục"
+            style={{ height: 100, width: 260 }}
+            ref={description}
+          />
         </div>
       </Modal>
       {/* modal delete child category */}
@@ -497,7 +517,7 @@ const ChildrenCategory = ({
       <Modal
         className="modalDialog-addITems"
         width={500}
-        // height={500}
+        okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
         centered
         open={isOpenModalModifyChild}
         onOk={changeModifyCategoryChild}
@@ -508,7 +528,7 @@ const ChildrenCategory = ({
         <h1 className="title-addItem">Sửa danh mục cấp 2</h1>
         <div className="name-item">
           <label htmlFor="">
-            Tên danh mục 1 (<span>*</span>)
+            Tên danh mục 2 (<span>*</span>)
           </label>
           <input
             className="input-name-category"
@@ -516,47 +536,18 @@ const ChildrenCategory = ({
             value={modifyItem?.name || ""}
           />
         </div>
-        <div className="picture-item">
+        <div className="decribe-category">
           <label htmlFor="" className="title-picture">
-            Ảnh danh mục(<span>*</span>)
+            Mô tả danh mục cấp 2(<span>*</span>)
           </label>
-          {isPreviewImageModifyChild ? (
-            <div
-              className="preview-image"
-              style={{
-                height: "150px",
-                width: "240px",
-                position: "relative",
-                color: "white",
-                boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-              }}
-            >
-              <button className="btn-close-image" onClick={closePreviewImage}>
-                <CiCircleRemove />
-              </button>
-              <img
-                src={isPreviewImageModifyChild}
-                alt="Preview"
-                style={{ maxHeight: "100%", maxWidth: "100%" }}
-              />
-            </div>
-          ) : (
-            <>
-              <label htmlFor="labelUpload" className="label-upload">
-                <AiOutlinePicture />
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                name="file"
-                id="labelUpload"
-                // style={{display: "none"}}
-                onChange={handleImageModifyChild}
-                ref={fileRef}
-                hidden
-              />
-            </>
-          )}
+          <TextArea
+            showCount
+            maxLength={100}
+            onChange={onChangeInputChild}
+            placeholder="Chú thích danh mục"
+            style={{ height: 100, width: 260 }}
+            value={isInputDataCategoryTwo?.description || ""}
+          />
         </div>
       </Modal>
     </>

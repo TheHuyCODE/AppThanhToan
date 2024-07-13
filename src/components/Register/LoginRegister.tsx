@@ -6,14 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/img/logo.png";
 import { Modal } from "antd";
-import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaRegAddressCard,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
+import { FaUser, FaEnvelope, FaPhone, FaRegAddressCard, FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
 import { LuStore } from "react-icons/lu";
 import { toast, ToastContainer } from "react-toastify";
@@ -33,18 +26,15 @@ const LoginRegister = () => {
   const [action, setAction] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
-  const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] =
-    useState(false);
+  const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] = useState(false);
   const { isAuthenticated, accessToken, login, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false);
-  const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] =
-    useState(false);
+  const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] = useState(false);
   const [isEmptyMessageEmail, setIsEmptyMessageEmail] = useState(false);
   const [isShortCodeMessageEmail, setIsShortCodeMessageEmail] = useState(false);
   const [isEmptyMessagePassword, setIsEmptyMessagePassword] = useState(false);
-  const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] =
-    useState(false);
+  const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] = useState(false);
   const [isErrorRegisterEmail, setIsErrorRegisterEmail] = useState("");
   const [inputClicked, setInputClicked] = useState(false);
   const [infoUser, setInfoUser] = useState("");
@@ -196,13 +186,15 @@ const LoginRegister = () => {
     loginApi.postMessage(userData).then((res) => {
       console.log("res", res);
       if (res.code === 200) {
-        toast.success("Login success!");
+        const messageSuccess = res.message.text;
+        toast.success(messageSuccess);
         localStorage.setItem("INFO_USER", JSON.stringify(res.data));
         setTimeout(() => {
           login(res.data.access_token, res.data.refresh_token);
         }, 1000);
       } else {
-        toast.error("Not found User!");
+        const messageSuccess = res.data.message.text;
+        toast.error(messageSuccess);
         console.log("Đăng nhập không thành công");
         setIsLoading(false);
       }
@@ -255,16 +247,12 @@ const LoginRegister = () => {
                 onBlur={handleBlur}
               />
               <label htmlFor="Email" className="form-email">
-                Email
+                Email<span className="required-star">*</span>
               </label>
 
               <FaUser className="icon" />
-              {isEmptyMessageEmail && (
-                <p className="message-error">Email không được để trống!</p>
-              )}
-              {isShortCodeMessageEmail && (
-                <p className="message-error">Email không hợp lệ!</p>
-              )}
+              {isEmptyMessageEmail && <p className="message-error">Email không được để trống!</p>}
+              {isShortCodeMessageEmail && <p className="message-error">Email không hợp lệ!</p>}
             </div>
             <div className="input-box">
               <input
@@ -277,14 +265,10 @@ const LoginRegister = () => {
                 onBlur={handleBlur}
               />
               <label htmlFor="Password" className="form-email">
-                Password
+                Password<span className="required-star">*</span>
               </label>
-
               {showPassword ? (
-                <FaEye
-                  className="icon password"
-                  onClick={() => setShowPassword(!showPassword)}
-                />
+                <FaEye className="icon password" onClick={() => setShowPassword(!showPassword)} />
               ) : (
                 <FaEyeSlash
                   className="icon password"
@@ -303,10 +287,7 @@ const LoginRegister = () => {
                 <a href="#">Quên mật khẩu</a>
               </label>
             </div>
-            <button
-              type="submit"
-              disabled={isLoading || !validateLoginInputs()}
-            >
+            <button type="submit" disabled={isLoading || !validateLoginInputs()}>
               {isLoading ? (
                 <span>
                   <FontAwesomeIcon icon={faCircleNotch} spin />
@@ -353,7 +334,7 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("store_name")}
                 />
                 <label htmlFor="store_name" className="form-email">
-                  Tên cửa hàng
+                  Tên cửa hàng <span className="required-star">*</span>
                 </label>
                 <LuStore className="icon" />
               </div>
@@ -369,7 +350,7 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("full_name")}
                 />
                 <label htmlFor="full_name" className="form-email">
-                  Họ và tên
+                  Họ và tên <span className="required-star">*</span>
                 </label>
                 <FaUser className="icon" />
               </div>
@@ -383,7 +364,7 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("email")}
                 />
                 <label htmlFor="Email" className="form-email">
-                  Email
+                  Email <span className="required-star">*</span>
                 </label>
                 <FaEnvelope className="icon" />
               </div>
@@ -399,7 +380,7 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("address")}
                 />
                 <label htmlFor="address" className="form-email">
-                  Address
+                  Address <span className="required-star">*</span>
                 </label>
                 <FaRegAddressCard className="icon" />
               </div>
@@ -413,21 +394,17 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("password")}
                 />
                 <label htmlFor="password" className="form-email">
-                  Password
+                  Password <span className="required-star">*</span>
                 </label>
                 {showPasswordRegister ? (
                   <FaEye
                     className="icon password"
-                    onClick={() =>
-                      setShowPasswordRegister(!showPasswordRegister)
-                    }
+                    onClick={() => setShowPasswordRegister(!showPasswordRegister)}
                   />
                 ) : (
                   <FaEyeSlash
                     className="icon password"
-                    onClick={() =>
-                      setShowPasswordRegister(!showPasswordRegister)
-                    }
+                    onClick={() => setShowPasswordRegister(!showPasswordRegister)}
                   />
                 )}
               </div>
@@ -443,7 +420,7 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("phone")}
                 />
                 <label htmlFor="phone" className="form-email">
-                  Phone
+                  Phone <span className="required-star">*</span>
                 </label>
                 <FaPhone className="icon" />
               </div>
@@ -458,35 +435,23 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("confirm_password")}
                 />
                 <label htmlFor="confirm_password" className="form-email">
-                  Confirm Password
+                  Confirm Password <span className="required-star">*</span>
                 </label>
                 {showConfirmPasswordRegister ? (
                   <FaEye
                     className="icon password"
-                    onClick={() =>
-                      setshowConfirmPasswordRegister(
-                        !showConfirmPasswordRegister
-                      )
-                    }
+                    onClick={() => setshowConfirmPasswordRegister(!showConfirmPasswordRegister)}
                   />
                 ) : (
                   <FaEyeSlash
                     className="icon password"
-                    onClick={() =>
-                      setshowConfirmPasswordRegister(
-                        !showConfirmPasswordRegister
-                      )
-                    }
+                    onClick={() => setshowConfirmPasswordRegister(!showConfirmPasswordRegister)}
                   />
                 )}
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="button-resgister"
-              disabled={isLoading}
-            >
+            <button type="submit" className="button-resgister" disabled={isLoading}>
               {isLoading ? (
                 <span>
                   <FontAwesomeIcon icon={faCircleNotch} spin />

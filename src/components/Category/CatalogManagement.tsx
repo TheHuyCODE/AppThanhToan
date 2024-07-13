@@ -35,6 +35,7 @@ const CatalogManagement = () => {
   const { isResDataChild, fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
   const fileRef = useRef(null);
+  const description = useRef(null);
   const reviewImageRef = useRef(null);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [image, setIsImage] = useState("");
@@ -61,9 +62,11 @@ const CatalogManagement = () => {
   const [isDescribe, setIsDescribe] = useState("");
   const [isKeyChild, setIsKeyChild] = useState("");
   const [viewTable, setViewTable] = useState(true);
-
+  const [totaCategory, setTotalCategory] = useState(0);
   //editing item
   const [editItem, setEditItem] = useState<any>();
+  const [editDescription, setEditDescription] = useState<any>();
+
   const [deleteItem, setDeleteItem] = useState<any>();
   const handleSelectNameChildCategory = (nameChildCategory: string) => {
     setSelectedCategoryChild(nameChildCategory);
@@ -74,11 +77,12 @@ const CatalogManagement = () => {
     setValueSearch(value);
     console.log("value", value);
   };
+
   const setHiddenThirdTitle = (hidden: boolean) => {
     setHiddenTitleSecondsChild(hidden);
     console.log("hiddenSecondsChild", hidden);
   };
-  const setHandleInput = (e) => {
+  const setHandleInput = (e: any) => {
     const value = e.target.value;
     console.log("value", value);
     setDataCategory(value);
@@ -87,6 +91,18 @@ const CatalogManagement = () => {
       setEditItem({ ...editItem, name: value });
     }
   };
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log("describe", e.target.value);
+    const value = e.target.value;
+    setIsDescribe(value);
+    if (editDescription) {
+      setEditDescription({
+        ...editDescription,
+        description: value,
+      });
+    }
+  };
+
   const onDeleteCategories = (item: any) => {
     console.log("deleteCategories");
     setIsOpenModalDelete(!isOpenModalDetele);
@@ -124,6 +140,7 @@ const CatalogManagement = () => {
   const onModifyCategories = (item: any) => {
     setIsOpenModalModify(!isOpenModalModify);
     setEditItem(item);
+    setEditDescription(item);
     console.log("item", item.key);
     console.log("item", item.image_url);
     if (item.image_url) {
@@ -135,7 +152,7 @@ const CatalogManagement = () => {
     console.log("editItem", editItem);
     const dataPutCategory = {
       name: editItem.name,
-      file_url: resImage,
+      description: editDescription.description,
       parent_id: null,
     };
     const idModifyItems = editItem.key;
@@ -162,24 +179,7 @@ const CatalogManagement = () => {
     setIsPreviewImage(URL.createObjectURL(fileImage));
     console.log(image);
   };
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log("describe", e.target.value);
-    const value = e.target.value;
-    setIsDescribe(value);
-  };
-  const handleImageModify = (e) => {
-    e.preventDefault();
-    const fileImage = e.target.files[0];
-    setIsImage(fileImage);
-    setIsPreviewImageModify(URL.createObjectURL(fileImage));
-    console.log(image);
-  };
-  // useEffect(() => {
-  //   console.log("name", selectedCategory);
-  //   setDataCategory(selectedCategory);
-  //   console.log("dataCategory", dataCategory);
-  // }, [idDeleteItems]);
-  //set quantity children
+
   useEffect(() => {
     if (image) {
       console.log("image:", image);
@@ -209,34 +209,30 @@ const CatalogManagement = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 100,
     },
     {
       title: "Tên danh mục cấp 1",
       dataIndex: "name",
-      align: "center",
       editTable: true,
       key: "name",
+      width: 200,
     },
     {
       title: "Số lượng danh mục cấp 2",
-      // title: (titleProps) => {
-      //   const sortedColumn = titleProps.sortColumns?.find(({ column }) => column.key === "name");
-
-      //   return (
-      //     <div style={{ display: "flex", justifyContent: "spaceBetween" }}>
-      //      some title
-      //      {sortedColumn?.order === 'ascend' ? <SortUpIcon /> : <SortDownIcon />}
-      //    </div>
-      //   )
-      // }
       dataIndex: "number_children",
       key: "number_children",
       align: "center",
       editTable: true,
-      sorter: (record1, record2) => {
-        return record1.Soluong > record2.Soluong;
-      },
-      // sortIcon: ({sortOrder}) =><FaArrowAltCircleDown order={sortOrder}/>
+      width: 250,
+    },
+    {
+      title: "Mô tả ngắn",
+      dataIndex: "description",
+      key: "description",
+      align: "center",
+      editTable: true,
+      width: 300,
     },
     {
       title: "Ngày tạo",
@@ -292,8 +288,8 @@ const CatalogManagement = () => {
     if (fileRef.current) {
       fileRef.current.value = "";
     }
-    if (reviewImageRef.current) {
-      reviewImageRef.current.value = "";
+    if (description.current) {
+      description.current.value = "";
     }
   };
   const clickAddItemCategory = async (e: any) => {
@@ -301,7 +297,7 @@ const CatalogManagement = () => {
     setIsOpenPopups(!isOpenPopups);
     const userDataCategory = {
       name: dataCategory,
-      describe: isDescribe,
+      description: isDescribe,
       parent_id: null,
     };
     try {
@@ -342,7 +338,8 @@ const CatalogManagement = () => {
   const showTableChildSecondCategory = () => {};
   const fetchDataCategory = async () => {
     const res = await category.getAll();
-    setIsDataCategory(res.data);
+    const totalCategory = res.data.total.setIsDataCategory(res.data);
+    setTotalCategory(totalCategory);
     console.log("data category", res.data.items);
     console.log(res.data);
   };
@@ -396,6 +393,7 @@ const CatalogManagement = () => {
     key: item.id,
     name: item.name,
     number_children: item.number_children,
+    description: item.description,
     created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
     image_url: item.image_url,
   }));
@@ -489,7 +487,7 @@ const CatalogManagement = () => {
               </div>
               <div className="decribe-category">
                 <label htmlFor="" className="title-picture">
-                  Ảnh danh mục(<span>*</span>)
+                  Mô tả danh mục cấp 1(<span>*</span>)
                 </label>
                 <TextArea
                   showCount
@@ -497,49 +495,8 @@ const CatalogManagement = () => {
                   onChange={onChangeInput}
                   placeholder="Chú thích danh mục"
                   style={{ height: 100, width: 260 }}
+                  ref={description}
                 />
-                {/* <label htmlFor="" className="title-picture">
-                  Ảnh danh mục(<span>*</span>)
-                </label>
-                {previewImage ? (
-                  <div
-                    className="preview-image"
-                    style={{
-                      height: "150px",
-                      width: "240px",
-                      position: "relative",
-                      color: "white",
-                      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-
-                      // marginRight: "4rem",
-                    }}
-                  >
-                    <button className="btn-close-image" onClick={closePreviewImage}>
-                      <CiCircleRemove />
-                    </button>
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      style={{ maxHeight: "100%", maxWidth: "100%" }}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <label htmlFor="labelUpload" className="label-upload">
-                      <AiOutlinePicture />
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      name="file"
-                      id="labelUpload"
-                      // style={{display: "none"}}
-                      onChange={handleImage}
-                      ref={fileRef}
-                      hidden
-                    />
-                  </>
-                )} */}
               </div>
             </Modal>
 
@@ -547,6 +504,7 @@ const CatalogManagement = () => {
             <Modal
               className="modalDialog-addITems"
               width={500}
+              okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
               // height={500}
               centered
               open={isOpenModalModify}
@@ -566,47 +524,18 @@ const CatalogManagement = () => {
                   value={editItem?.name || ""}
                 />
               </div>
-              <div className="picture-item">
+              <div className="decribe-category">
                 <label htmlFor="" className="title-picture">
-                  Ảnh danh mục(<span>*</span>)
+                  Mô tả danh mục cấp 1(<span>*</span>)
                 </label>
-                {previewImageModify ? (
-                  <div
-                    className="preview-image"
-                    style={{
-                      height: "150px",
-                      width: "240px",
-                      position: "relative",
-                      color: "white",
-                      boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-                    }}
-                  >
-                    <button className="btn-close-image" onClick={closePreviewImage}>
-                      <CiCircleRemove />
-                    </button>
-                    <img
-                      src={previewImageModify}
-                      alt="Preview"
-                      style={{ maxHeight: "100%", maxWidth: "100%" }}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <label htmlFor="labelUpload" className="label-upload">
-                      <AiOutlinePicture />
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      name="file"
-                      id="labelUpload"
-                      // style={{display: "none"}}
-                      onChange={handleImageModify}
-                      ref={fileRef}
-                      hidden
-                    />
-                  </>
-                )}
+                <TextArea
+                  showCount
+                  maxLength={100}
+                  onChange={onChangeInput}
+                  value={editDescription?.description || ""}
+                  placeholder="Chú thích danh mục"
+                  style={{ height: 100, width: 260 }}
+                />
               </div>
             </Modal>
             {/* Modal Delete product */}
@@ -675,7 +604,7 @@ const CatalogManagement = () => {
                     onShowSizeChange={onShowSizeChange}
                     onChange={onChangeNumberPagination}
                     defaultCurrent={1}
-                    total={100}
+                    total={totaCategory}
                   />
                   <span
                     className="total-items"

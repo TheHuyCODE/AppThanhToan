@@ -38,6 +38,7 @@ const ProductMangement = () => {
   const debounceValue = useDebounce(valueSearch, 700);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
   const [sortedColumn, setSortedColumn] = useState({
     key: null,
     direction: null,
@@ -187,7 +188,9 @@ const ProductMangement = () => {
     setLoading(true);
     try {
       const res = await products.getAll();
+      const totalItems = res.data.total;
       setDataProduct(res.data);
+      setTotalItems(totalItems);
       setLoading(false);
     } catch (error) {
       console.log("error:", error);
@@ -562,7 +565,7 @@ const ProductMangement = () => {
                 onShowSizeChange={onShowSizeChange}
                 onChange={onChangeNumberPagination}
                 defaultCurrent={1}
-                total={300}
+                total={totalItems}
               />
               <span
                 className="total-items"

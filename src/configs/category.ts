@@ -31,6 +31,22 @@ const category = {
       params,
     });
   },
+  getDataCategoryPaginationChild: (isChild: string, current: number, size: number) => {
+    const url = "api/v1/manage/category";
+    const params = {
+      parent_id: isChild,
+      page: current,
+      page_size: size,
+    }
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
   getAllChild: (parent_id) => {
     const url = "api/v1/manage/category";
     const params = {

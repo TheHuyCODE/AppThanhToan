@@ -94,6 +94,15 @@ form .input-box {
   pointer-events: none;
   transition: 0.25s ease;
 }
+.required-star {
+  color: transparent;
+  margin-left: 3px;
+  margin-top: 50%;
+  margin-bottom: 50%;
+  align-items: center;
+  font-size: 19px;
+  transition: color 0.25s ease;
+}
 .input-box input:not(:placeholder-shown) + .form-email,
 .input-box input:focus + .form-email {
   top: 0;
@@ -102,7 +111,10 @@ form .input-box {
   background-color: #fff;
   color: black;
 }
-
+.input-box input:not(:placeholder-shown) + .form-email .required-star,
+.input-box input:focus + .form-email .required-star {
+  color: red;
+}
 /* :placeholder-shown */
 
 .input-box .icon {

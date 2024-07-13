@@ -378,6 +378,7 @@ const RightPageContent = ({
             placeholder="Lọc theo danh mục sản phẩm"
             notFoundContent="Không tìm thấy danh mục sản phẩm"
             optionFilterProp="label"
+            allowClear
             style={{ width: 260, height: 40 }}
             onChange={(value) => {
               handleSelectCategory(value);
