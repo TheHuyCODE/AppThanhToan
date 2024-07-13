@@ -28,6 +28,7 @@ import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
+import TextArea from "antd/es/input/TextArea";
 
 const CatalogManagement = () => {
   const domainLink = domain.domainLink;
@@ -57,7 +58,7 @@ const CatalogManagement = () => {
   const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
   const [hiddenTitleSecondsChild, setHiddenTitleSecondsChild] = useState(false);
   const [viewTableChildSecond, setViewTableChildSecond] = useState(false);
-
+  const [isDescribe, setIsDescribe] = useState("");
   const [isKeyChild, setIsKeyChild] = useState("");
   const [viewTable, setViewTable] = useState(true);
 
@@ -160,6 +161,11 @@ const CatalogManagement = () => {
     setIsImage(fileImage);
     setIsPreviewImage(URL.createObjectURL(fileImage));
     console.log(image);
+  };
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log("describe", e.target.value);
+    const value = e.target.value;
+    setIsDescribe(value);
   };
   const handleImageModify = (e) => {
     e.preventDefault();
@@ -290,33 +296,31 @@ const CatalogManagement = () => {
       reviewImageRef.current.value = "";
     }
   };
-  const clickAddItemCategory = async (event) => {
-    event.preventDefault();
+  const clickAddItemCategory = async (e: any) => {
+    e.preventDefault();
     setIsOpenPopups(!isOpenPopups);
     const userDataCategory = {
       name: dataCategory,
-      file_url: resImage,
+      describe: isDescribe,
       parent_id: null,
     };
     try {
-      const response = await uploadApiImage.postAddItemCategory(userDataCategory);
-      if (response.code === 200) {
-        console.log("res", response);
-        toast.success("Đã thêm danh mục thành công!");
+      const res = await uploadApiImage.postAddItemCategory(userDataCategory);
+      if (res.code == 200) {
+        console.log("res", res.data);
+        const successMs = res.message.text;
+        toast.success(successMs);
         await fetchDataCategory();
         clearInputs();
         setIsPreviewImage("");
       } else {
-        console.log("error", response);
-        toast.error("Thêm danh mục không thành công!");
-        const errorMessage = response.data.message.text;
-        setErrorMessageCategories(errorMessage);
+        console.log("error", res);
+        const errorMessage = res.data.message.text;
+        toast.error(errorMessage);
         console.log(errorMessage);
         setIsOpenPopups(isOpenPopups);
       }
     } catch (error) {
-      console.error("Error adding category:", error);
-      toast.error("Có lỗi xảy ra khi thêm danh mục!");
       setIsOpenPopups(isOpenPopups);
     }
   };
@@ -468,6 +472,7 @@ const CatalogManagement = () => {
               className="modalDialog-addITems"
               width={500}
               // height={500}
+              okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
               centered
               open={isOpenPopups}
               onOk={clickAddItemCategory}
@@ -482,8 +487,18 @@ const CatalogManagement = () => {
                 </label>
                 <input className="input-name-category" onChange={setHandleInput} ref={nameRef} />
               </div>
-              <div className="picture-item">
+              <div className="decribe-category">
                 <label htmlFor="" className="title-picture">
+                  Ảnh danh mục(<span>*</span>)
+                </label>
+                <TextArea
+                  showCount
+                  maxLength={100}
+                  onChange={onChangeInput}
+                  placeholder="Chú thích danh mục"
+                  style={{ height: 100, width: 260 }}
+                />
+                {/* <label htmlFor="" className="title-picture">
                   Ảnh danh mục(<span>*</span>)
                 </label>
                 {previewImage ? (
@@ -524,7 +539,7 @@ const CatalogManagement = () => {
                       hidden
                     />
                   </>
-                )}
+                )} */}
               </div>
             </Modal>
 

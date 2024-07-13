@@ -525,13 +525,11 @@ const SalePageDemo: React.FC = () => {
 
   const removeInvoice = (targetKey: string) => {
     const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
-
     if (invoiceToRemove && invoiceToRemove.items.length > 0) {
       // Invoice has items, require confirmation
       openModal();
       setKeyRemove(targetKey);
     } else if (targetKey === "1") {
-      // If the target key is 1, clear the data but do not remove the invoice
       openModal();
       setKeyRemove(targetKey);
     } else {
@@ -555,6 +553,28 @@ const SalePageDemo: React.FC = () => {
       }
     }
   };
+  const removeNotConFirmInvoice = (targetKey: string) => {
+    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
+    if (invoiceToRemove) {
+      if (targetKey === "1") {
+        // Clear items of the invoice with id_payment "1" without removing the invoice
+        const updatedInvoiceList = invoiceList.map((invoice) => {
+          if (invoice.id_payment === targetKey) {
+            return { ...invoice, items: [] };
+          }
+          return invoice;
+        });
+        setInvoiceList(updatedInvoiceList);
+      } else {
+        // Remove the invoice normally for other cases
+        setInvoiceList((prev) => prev.filter((invoice) => invoice.id_payment !== targetKey));
+        setActiveKey("1");
+      }
+    } else {
+      console.log("err");
+    }
+  };
+
   const removeReturnInvoice = (key: string) => {
     const returnInvoiceToRemove = invoiceList.find(
       (invoice) => invoice.id_payment === key && invoice.type === "return"
@@ -787,7 +807,7 @@ const SalePageDemo: React.FC = () => {
   }, []);
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer closeOnClick autoClose={5000} /> */}
       <Modal
         title=""
         okButtonProps={{ style: { backgroundColor: "red" } }}
@@ -896,6 +916,7 @@ const SalePageDemo: React.FC = () => {
               fetchDataProductAfter={fetchDataProductAfter}
               fetchDataProduct={fetchDataProduct}
               getDataCustomer={getDataCustomer}
+              removeNotConFirmInvoice={removeNotConFirmInvoice}
             />
           )}
         </div>

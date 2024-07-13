@@ -13,7 +13,7 @@ const uploadApiImage = {
       },
     });
   },
-  postAddItemCategory: (data) => {
+  postAddItemCategory: (data: object) => {
     const url = "api/v1/manage/category";
     return axiosClient.post(url, data, {});
   },

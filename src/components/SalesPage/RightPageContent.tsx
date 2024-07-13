@@ -46,8 +46,10 @@ const RightPageContent = ({
   fetchDataProductAfter,
   fetchDataProduct,
   getDataCustomer,
+  removeNotConFirmInvoice,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
+  const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
   const [linkQR, setLinkQR] = useState<string>("");
   const [isVoicesID, setIsVoicesID] = useState("");
   const [statePayment, setStatePayment] = useState(false);
@@ -118,6 +120,10 @@ const RightPageContent = ({
       setHiddenErr(false);
     }
   }, [amountPaid]);
+  useEffect(() => {
+    const storedIdActiveInvoice = localStorage.getItem("idActiveInvoice");
+    console.log("storedIdActiveInvoice", storedIdActiveInvoice);
+  }, [idActiveInvoice]);
   //get link picture QR Code
   const getLinkPictureQRCode = (
     Bank_ID: string,
@@ -171,6 +177,7 @@ const RightPageContent = ({
   const handlePrint = useReactToPrint({
     content: () => componentRef.current || null,
     onAfterPrint: () => {
+      removeNotConFirmInvoice(activeKey);
       setStatePayment(false);
       setIsPrintReady(false);
     },
@@ -343,8 +350,8 @@ const RightPageContent = ({
   }, [menuRef]);
   return (
     <>
-      <ToastContainer />
       <div className="right-page-content">
+        <ToastContainer />
         <div className="right-page-content-header">
           <div
             style={{ display: "flex", position: "relative" }}

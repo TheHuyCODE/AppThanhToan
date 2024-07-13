@@ -100,7 +100,7 @@ const AddProduct = () => {
     price: 0,
     capital_price: 0,
     inventory_number: 0,
-    is_active: 0,
+    is_active: 1,
     unit: "",
     category_id: "",
   });
@@ -252,16 +252,15 @@ const AddProduct = () => {
   const closePreviewImage = () => {
     setPreviewImageProduct("");
   };
-  const handleStatusChange = (e) => {
+  const handleStatusChange = (e: any) => {
     const value = e.target.value;
-    // console.log("value:", value);
     const stateProduct = parseInt(value, 10);
     setInputProduct({
       ...inputProduct,
       is_active: stateProduct,
     });
   };
-  const handleInputImage = (e) => {
+  const handleInputImage = (e: any) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
     setIsImageProduct(fileImage);
@@ -477,8 +476,8 @@ const AddProduct = () => {
                   id="notactivate"
                   name="status"
                   value="1"
-                  // checked={status === "notactive"}
                   onChange={handleStatusChange}
+                  defaultChecked
                 />
                 <label htmlFor="notactivate">Kích hoạt</label>
                 <input
@@ -486,7 +485,6 @@ const AddProduct = () => {
                   id="active"
                   name="status"
                   value="0"
-                  // checked={status === "active"}
                   onChange={handleStatusChange}
                 />
                 <label htmlFor="active">Chưa kích hoạt</label>

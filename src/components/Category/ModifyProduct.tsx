@@ -17,7 +17,7 @@ const ModifyProduct = () => {
   const idProduct = params.idProduct;
   const [dataProductModify, setDataProductModify] = useState(null);
   const [isEditable, setIsEditable] = useState(false);
-  const [isActive, setIsActive] = useState("");
+  // const [isActive, setIsActive] = useState(0);
   const [resImageProduct, setResImageProduct] = useState("");
   const [imgUrl, setImageUrl] = useState("");
   const domain = "https://cdtn.boot.ai";
@@ -26,36 +26,36 @@ const ModifyProduct = () => {
     barcode: "",
     name: "",
     description: "",
-    price: 0,
-    capital_price: 0,
-    inventory_number: 0,
-    is_active: 0,
-    unit: "",
+    price: "",
+    capital_price: "",
+    inventory_number: "",
     category_id: "",
     category: "",
+    unit: "",
+    is_active: 0,
     image_url: "",
   });
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
-  const handleStatusChange = (event) => {
-    const value = event.target.id === "active" ? 0 : 1;
-    setInputProduct({
-      ...inputProduct,
+  const handleStatusChange = (event: any) => {
+    const value = event.target.id === "active" ? 1 : 0;
+    setInputProduct((prevState) => ({
+      ...prevState,
       is_active: value,
-    });
+    }));
   };
 
   const getDataModifyProduct = async () => {
     try {
       const res = await products.getDetailProduct(idProduct);
-      setDataProductModify(res.data);
+      const data = res.data;
+      setDataProductModify(data);
       console.log("Fetched product details:", res.data);
     } catch (error) {
       console.error("Error fetching product details:", error);
     }
   };
-
   const handleInputImage = (e) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
@@ -279,11 +279,11 @@ const ModifyProduct = () => {
     } else {
       setIsEditable(true);
     }
-    if (dataProductModify?.is_active) {
-      setIsActive("notactive");
-    } else {
-      setIsActive("active");
-    }
+    // if (dataProductModify?.is_active) {
+    //   setIsActive(1);
+    // } else {
+    //   setIsActive(0);
+    // }
     if (dataProductModify) {
       setInputProduct({
         barcode: dataProductModify.barcode || "",
@@ -292,12 +292,10 @@ const ModifyProduct = () => {
         price: dataProductModify.price || "",
         capital_price: dataProductModify.capital_price || "",
         inventory_number: dataProductModify.inventory_number || "",
-        // is_active: dataProductModify.is_active || "",
-        // unit: dataProductModify.unit || "",
         category_id: dataProductModify.category_id || "",
         category: dataProductModify.category.name || "",
         unit: dataProductModify.unit || "",
-        is_active: dataProductModify.is_active ? 0 : 1,
+        is_active: dataProductModify.is_active ? 1 : 0,
         image_url: dataProductModify.image_url || "",
       });
       if (dataProductModify.image_url) {
@@ -492,7 +490,6 @@ const ModifyProduct = () => {
               <div
                 style={{
                   width: "300px",
-                  // height: "30px",
                   display: "flex",
                   justifyContent: "start",
                   gap: "10px",
@@ -502,18 +499,20 @@ const ModifyProduct = () => {
                   type="radio"
                   id="active"
                   name="status"
-                  value={0}
+                  value="1"
+                  checked={inputProduct.is_active === 1}
                   onChange={handleStatusChange}
                 />
-                <label htmlFor="active">Chưa kích hoạt</label>
+                <label htmlFor="active">Kích hoạt</label>
                 <input
                   type="radio"
                   id="notactivate"
                   name="status"
-                  value={1}
+                  value="0"
+                  checked={inputProduct.is_active === 0}
                   onChange={handleStatusChange}
                 />
-                <label htmlFor="notactivate">Kích hoạt</label>
+                <label htmlFor="notactivate">Chưa kích hoạt</label>
               </div>
             </div>
           </div>
