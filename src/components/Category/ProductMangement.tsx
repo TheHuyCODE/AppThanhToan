@@ -83,8 +83,10 @@ const ProductMangement = () => {
       </div>
     </div>
   );
-  // const [value, setValue] = useState("");
-  // const [dataProduct, setDataProduct] = useState([]);
+  // const handleHeaderClick = (key: string) => {
+  //   console.log('key')
+  // }
+
   const statusProduct = [
     { value: 1, name: "Kích hoạt", id: "00001" },
     { value: 2, name: "Chưa kích hoạt", id: "00002" },
@@ -321,7 +323,7 @@ const ProductMangement = () => {
     capital_price: item.capital_price,
     inventory_number: item.inventory_number,
     unit: item.unit,
-    is_active: item.is_active,
+    is_active: item.is_active ? "kích hoạt" : "Chưa kích hoạt",
     image_url: item.image_url,
   }));
   const columns = [
@@ -369,18 +371,16 @@ const ProductMangement = () => {
       dataIndex: "unit",
       key: "unit",
     },
+    {
+      title: "Trạng thái",
+      dataIndex: "is_active",
+      key: "is_active",
+    },
 
     {
       title: getColumnTitle("Ngày tạo", "created_date"),
       dataIndex: "created_date",
       key: "created_date",
-    },
-    {
-      title: getColumnTitle("Ngày tạo", "create_user"),
-      dataIndex: "create_user",
-      key: "create_user",
-
-      // align: "center",
     },
     {
       title: "Thao tác",

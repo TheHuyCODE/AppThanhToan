@@ -2,16 +2,11 @@ import React, { useState } from "react";
 
 import { Menu, Modal } from "antd";
 import { MdDashboard } from "react-icons/md";
-import {
-  FaBagShopping,
-  FaCartShopping,
-  FaChartColumn,
-  FaKey,
-} from "react-icons/fa6";
+import { FaBagShopping, FaCartShopping, FaChartColumn, FaKey } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { IoIosSettings, IoIosAdd } from "react-icons/io";
 import { RiListSettingsFill } from "react-icons/ri";
-import { FaLock, FaPercent } from "react-icons/fa";
+import { FaLock, FaPercent, FaRegUserCircle } from "react-icons/fa";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
@@ -41,20 +36,14 @@ const MenuList = () => {
   };
   return (
     <div className="sidebar-left">
-      <Menu
-        theme={darkTheme ? "dark" : "light"}
-        mode="inline"
-        className="menu-bar"
-      >
+      <Menu theme={darkTheme ? "dark" : "light"} mode="inline" className="menu-bar">
         <Menu.Item key="SalesPage" icon={<FaBagShopping />}>
           <Link to="/SalesPage">Bán hàng</Link>
         </Menu.Item>
-
-        <Menu.SubMenu
-          key="Dashboard"
-          icon={<RiListSettingsFill />}
-          title="Báo cáo"
-        >
+        <Menu.Item key="profile" icon={<FaRegUserCircle />}>
+          <Link to="/admin/profile">Thông tin cá nhân </Link>
+        </Menu.Item>
+        <Menu.SubMenu key="Dashboard" icon={<RiListSettingsFill />} title="Báo cáo">
           <Menu.Item key="Revenuereport">
             <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>
           </Menu.Item>
@@ -81,9 +70,7 @@ const MenuList = () => {
 
             // onClick={handleDataCategories}
           >
-            <Link to="/admin/productcatalogmanagement">
-              Quản lý danh mục sản phẩm
-            </Link>
+            <Link to="/admin/productcatalogmanagement">Quản lý danh mục sản phẩm</Link>
           </Menu.Item>
         </Menu.SubMenu>
 
@@ -93,9 +80,9 @@ const MenuList = () => {
         <Menu.Item key="paymentmethod" icon={<FaPercent />}>
           <Link to="/admin/paymentmethod">Quản lí phương thức thanh toán</Link>
         </Menu.Item>
-        <Menu.Item key="Setting" icon={<IoIosSettings />}>
+        {/* <Menu.Item key="Setting" icon={<IoIosSettings />}>
           <Link to="/admin">Cài đặt</Link>
-        </Menu.Item>
+        </Menu.Item> */}
         <Menu.Item key="setPassword" icon={<FaKey />}>
           <Link to="/">Đổi mật khẩu</Link>
         </Menu.Item>
