@@ -27,6 +27,7 @@ import Payment from "./components/Payment/Payment";
 import Invoices from "./components/Invoices/invoices";
 import SalePageDemo from "./components/SalesPage/SalePageDemo";
 import Profile from "./components/Profile/Profile";
+import ManagementInvoices from "./components/Invoices/ManagementInvoices/ManagementInvoices";
 // import SalePage from "./components/SalesPage/SalePage";
 // const NotFound = () => {
 //   return (
@@ -51,13 +52,15 @@ function App() {
 
   const location = useLocation();
   const isLoginRoute = location.pathname === "/login";
-  const { isAuthenticated, accessToken, login, logout } = useAuth();
+  const { isAuthenticated, accessToken, logoutAllTabs } = useAuth();
 
   useEffect(() => {
-    // Logic to check if the user is logged in and update stateLogins
     console.log("isAuthenticated", accessToken);
     setStateLogins(true);
   }, []);
+  useEffect(() => {
+    logoutAllTabs;
+  }, [accessToken]);
   const acces = localStorage.getItem("access_token");
   useEffect(() => {
     console.log("acces", acces);
@@ -146,7 +149,7 @@ function App() {
                 colorBgContainer={colorBgContainer}
                 borderRadiusLG={borderRadiusLG}
               >
-                <Invoices />
+                <ManagementInvoices />
               </AppWrapper>
             </ProtectedRouter>
           }

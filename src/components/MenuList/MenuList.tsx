@@ -21,9 +21,6 @@ const MenuList = () => {
     console.log("handle OK");
     const resAccessToken = accessToken;
     logout();
-    // Chuyển hướng đến trang đăng nhập khi hủy modal
-
-    // Sử dụng Axios để gửi yêu cầu DELETE với token được truyền trong header
     if (resAccessToken) {
       logoutApi.deleteTokenLogout(resAccessToken).then((response) => {
         if (response.code === 200) {
@@ -80,12 +77,7 @@ const MenuList = () => {
         <Menu.Item key="paymentmethod" icon={<FaPercent />}>
           <Link to="/admin/paymentmethod">Quản lí phương thức thanh toán</Link>
         </Menu.Item>
-        {/* <Menu.Item key="Setting" icon={<IoIosSettings />}>
-          <Link to="/admin">Cài đặt</Link>
-        </Menu.Item> */}
-        <Menu.Item key="setPassword" icon={<FaKey />}>
-          <Link to="/">Đổi mật khẩu</Link>
-        </Menu.Item>
+
         <Menu.Item
           key="Logout"
           icon={<FaArrowRightFromBracket />}

@@ -170,9 +170,7 @@ const Users = () => {
   });
   return (
     <div className="content">
-      <h1 style={{ fontFamily: "poppins, sans-serif", color: "#03176E" }}>
-        Quản lí người dùng
-      </h1>
+      <h1 style={{ fontFamily: "poppins, sans-serif", color: "#03176E" }}>Quản lí người dùng</h1>
       <div className="header">
         <div
           className="header-top"
@@ -254,12 +252,7 @@ const Users = () => {
             //     }, // click row
             //   };
             // }}
-            pagination={{
-              position: ["bottomCenter"],
-              defaultPageSize: 15,
-              showSizeChanger: true,
-              pageSizeOptions: ["10", "20", "30"],
-            }}
+            pagination={false}
           ></Table>
           <span className="total-items">{`${dataSource?.length} items`}</span>
         </div>

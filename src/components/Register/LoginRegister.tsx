@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/img/logo.png";
-import { Modal } from "antd";
+import { Modal, Popover } from "antd";
 import { FaUser, FaEnvelope, FaPhone, FaRegAddressCard, FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
 import { LuStore } from "react-icons/lu";
@@ -40,9 +40,18 @@ const LoginRegister = () => {
   const [infoUser, setInfoUser] = useState("");
   const validateEmail = (email) => {
     // Regular expression for email validation
-    const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+    const regex =
+      /^(([^<>()[\]\.,;:\s@"]+(\.[^<>()[\]\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.)+[^<>()[\]\.,;:\s@"]{2,})$/;
     return regex.test(email);
   };
+  const content = (
+    <div>
+      <p>Mật khẩu dài từ 8 đến 16 kí tự</p>
+      <p>Chứa chữ thường, chữ hoa và số</p>
+      <p>Không có khoảng trắng</p>
+    </div>
+  );
+  const text = <span>Mật khẩu hợp lệ cần</span>;
   const clearInputRegister = () => {
     setDataRegister({
       email: "",
@@ -385,14 +394,17 @@ const LoginRegister = () => {
                 <FaRegAddressCard className="icon" />
               </div>
               <div className="input-box resgister">
-                <input
-                  type={showPasswordRegister ? "text" : "password"}
-                  placeholder=" "
-                  required
-                  // ref={passWordRef}
-                  value={dataRegister.password}
-                  onChange={handleChangeRegister("password")}
-                />
+                <Popover placement="bottomLeft" title={text} content={content}>
+                  <input
+                    type={showPasswordRegister ? "text" : "password"}
+                    placeholder=" "
+                    required
+                    // ref={passWordRef}
+                    value={dataRegister.password}
+                    onChange={handleChangeRegister("password")}
+                  />
+                </Popover>
+
                 <label htmlFor="password" className="form-email">
                   Password <span className="required-star">*</span>
                 </label>
@@ -419,6 +431,7 @@ const LoginRegister = () => {
                   value={dataRegister.phone}
                   onChange={handleChangeRegister("phone")}
                 />
+
                 <label htmlFor="phone" className="form-email">
                   Phone <span className="required-star">*</span>
                 </label>

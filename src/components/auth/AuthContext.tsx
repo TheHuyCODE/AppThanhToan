@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useCallback,
+} from "react";
 import category from "../../configs/category";
 import products from "../../configs/products";
 
@@ -10,10 +17,11 @@ interface AuthContextType {
   isResDataChild: string;
   isResDataChildSeconds: string;
   isCategoryProduct: object;
-  setIsResDataChild: object;
-  setIsResDataChildSeconds: object;
+  setIsResDataChild: (value: string) => void;
+  setIsResDataChildSeconds: (value: string) => void;
   login: (access_token: string, refresh_token: string) => void;
   logout: () => void;
+  logoutAllTabs: () => void;
   colorSidebar: () => void;
   fetchDataCategoryChild: (isKeyChild: string) => void;
   fetchDataCategorySecondChild: (isKeyChild: string) => void;
@@ -24,11 +32,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(() => {
-    // Check local storage for an existing token on initial load
     return localStorage.getItem("access_token");
   });
   const [refresh_token, setRefresh_token] = useState<string | null>(() => {
-    // Check local storage for an existing token on initial load
     return localStorage.getItem("refresh_token");
   });
   const [darkTheme, setDarkTheme] = useState(true);
@@ -43,15 +49,35 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setAccessToken(access_token);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    localStorage.removeItem("INFO_USER");
+    localStorage.setItem("logout", Date.now().toString());
     setAccessToken(null);
-  };
+    window.location.href = window.location.origin + "/";
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "logout") {
+        console.log("Detected logout in another tab");
+        setAccessToken(null);
+        window.location.href = window.location.origin + "/";
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const colorSidebar = () => {
     setDarkTheme(!darkTheme);
+  };
+
+  const logoutAllTabs = () => {
+    logout();
   };
 
   const fetchDataCategoryChild = async (isKeyChild: string) => {
@@ -103,6 +129,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         refresh_token,
         login,
         logout,
+        logoutAllTabs,
         colorSidebar,
         darkTheme,
         isResDataChild,

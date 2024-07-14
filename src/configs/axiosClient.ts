@@ -1,7 +1,7 @@
+import { Modal } from "antd";
 import axios from "axios";
 import queryString from "query-string";
 const BASEURL = import.meta.env.VITE_APP_API_URL;
-
 const axiosClient = axios.create({
   baseURL: BASEURL,
   headers: {
@@ -29,7 +29,21 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     // Call api có refresh token
-    return error.response;
+    if (error.response && error.response.data && error.response.data.id === "G4") {
+      showLogoutPopup();
+    }
+    return Promise.reject(error);
   }
-);
+  );
+function showLogoutPopup() {
+  Modal.error({
+    title: "Session Expired",
+    content: "Your session has expired. Please log in again.",
+    onOk: () => {
+      // Clear token and redirect to login page
+      localStorage.removeItem("access_token");
+      window.location.href = "/login"; // Adjust the path as needed
+    },
+  });
+}
 export default axiosClient;

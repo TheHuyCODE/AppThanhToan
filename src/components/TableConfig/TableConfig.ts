@@ -7,6 +7,7 @@ export const localCategory = {
 export const localInvoice = {
   emptyText: "Không có hóa đơn",
 };
+
 export const paginationConfig = {
   position: ["bottomCenter"],
   defaultCurrent:6,
@@ -19,8 +20,21 @@ export const domain = {
   domainLink: "https://cdtn.boot.ai",
 };
 
-export const tableReturn = [
-  {
-    
-  }
-]
+// src/TableConfig/TableConfig.ts
+export interface DataProfile {
+  address: string | null;
+  age: number | null;
+  created_date: number;
+  email: string;
+  full_name: string;
+  gender: string | null;
+  group: {
+    key: string;
+    valid: number;
+  };
+  group_id: string;
+  id: string;
+  is_active: boolean;
+  modified_date: number;
+  phone: string;
+}
