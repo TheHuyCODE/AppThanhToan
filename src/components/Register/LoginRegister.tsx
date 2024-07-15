@@ -342,7 +342,7 @@ const LoginRegister = () => {
             </div>
             <div className="remember-forgot">
               <label htmlFor="">
-                <a href="" onClick={getRememberPassword}>
+                <a href="#" onClick={getRememberPassword}>
                   Quên mật khẩu
                 </a>
               </label>
