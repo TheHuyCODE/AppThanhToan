@@ -47,26 +47,27 @@ axiosClient.interceptors.response.use(
 const refreshAccessToken = async () => {
   const refresh_token = localStorage.getItem("refresh_token");
   try {
-    const response = await axios.post(`${BASEURL}/auth/refresh-token`, {
+    const response = await axios.post(`${BASEURL}/v1/auth/refresh`, {
       refresh_token,
     });
     const { access_token } = response.data;
     localStorage.setItem("access_token", access_token);
     return access_token;
   } catch (error) {
-    // Xử lý lỗi refresh token (ví dụ: hiển thị popup yêu cầu đăng nhập lại)
-    showLogoutPopup();
+    const errorMessage = response.message.text;
+    showLogoutPopup(errorMessage);
     throw error;
   }
 };
-function showLogoutPopup() {
+function showLogoutPopup(errorMessage: string) {
   Modal.error({
     title: "Hết phiên đăng nhập",
-    content: "Mời bạn đăng nhập lại",
+    content: errorMessage  || '',
     onOk: () => {
       // Xóa token và chuyển hướng đến trang đăng nhập
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
+      localStorage.removeItem("INFO_USER");
       window.location.href = "/login"; // Điều chỉnh đường dẫn nếu cần
     },
   });

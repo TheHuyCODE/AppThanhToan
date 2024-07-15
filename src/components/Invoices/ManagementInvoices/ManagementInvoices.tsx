@@ -1,24 +1,42 @@
-import React, { useState } from "react";
-import { CiSearch } from "react-icons/ci";
-import {
-  FaArrowAltCircleDown,
-  FaArrowAltCircleUp,
-  FaArrowDown,
-  FaArrowUp,
-  FaEye,
-  FaPencilAlt,
-} from "react-icons/fa";
-import { IoMdAdd } from "react-icons/io";
+import React, { useState, useEffect } from "react";
+// import { CiSearch } from "react-icons/ci";
+import { FaArrowDown, FaArrowUp, FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
+// import { IoMdAdd } from "react-icons/io";
 import HeaderInvoices from "./HeaderInvoices";
-import { Space, Table } from "antd";
+import { Pagination, Space, Table, TableColumnsType } from "antd";
 import { localInvoice } from "../../TableConfig/TableConfig";
+import invoice from "../../../configs/invoice";
+import { format } from "date-fns";
 
-const ManagementInvoices = () => {
-  const [hoveredColumn, setHoveredColumn] = useState(null);
-  const [sortedColumn, setSortedColumn] = useState({
+interface RecordType {
+  stt: number;
+  barcode: string;
+  created_date: string;
+  full_name: string;
+  customer: string;
+  total_amount: number;
+  key: string;
+}
+
+const ManagementInvoices: React.FC = () => {
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+  const [totalInvoice, setTotalInvoice] = useState(0);
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [dataTableInvoice, setDataTableInvoice] = useState<any[]>([]);
+  const [sortedColumn, setSortedColumn] = useState<{
+    key: string | null;
+    direction: string | null;
+  }>({
     key: null,
     direction: null,
   });
+
+  useEffect(() => {
+    getDataInvoices();
+  }, []);
+
   const handleHeaderClick = (key: string) => {
     setSortedColumn((prevState) => {
       if (prevState.key === key) {
@@ -30,13 +48,13 @@ const ManagementInvoices = () => {
       return { key, direction: "up" };
     });
   };
+
   const getColumnTitle = (title: string, key: string) => (
     <div
       className="table-header"
       onClick={() => handleHeaderClick(key)}
       onMouseEnter={() => setHoveredColumn(key)}
       onMouseLeave={() => setHoveredColumn(null)}
-      // style={{ position: "relative", width: width }}
     >
       <span style={{ display: "block" }}>{title}</span>
       <div className="arrow-icon-container">
@@ -52,33 +70,52 @@ const ManagementInvoices = () => {
       </div>
     </div>
   );
-  const columns = [
+
+  const getDataInvoices = async () => {
+    try {
+      const res = await invoice.getAllInvoices();
+      if (res.code === 200) {
+        const data = res.data.items;
+        const totalData = res.data.total;
+        console.log("dataInvoice", data);
+        setDataTableInvoice(data);
+        setTotalInvoice(totalData);
+      } else {
+        console.log("message", res.data);
+      }
+    } catch (err) {
+      console.error("Error fetching data", err);
+    }
+  };
+
+  const columns: TableColumnsType<RecordType> = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 200,
     },
     {
       title: getColumnTitle(`Mã đơn hàng`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
       align: "start",
-      // width: 130,
+      width: 400,
     },
     {
       defaultSortOrder: "descend",
       title: getColumnTitle(`Khách hàng`, "name"),
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "full_name",
+      key: "full_name",
       align: "start",
+      // width: 300,
     },
-
     {
       title: "Tổng tiền",
-      dataIndex: "gender",
-      key: "gender",
+      dataIndex: "total_amount",
+      key: "total_amount",
+      // width: 300,
     },
-
     {
       title: "Thao tác",
       key: "action",
@@ -88,20 +125,52 @@ const ManagementInvoices = () => {
             <FaEye />
           </a>
           <a>
-            <FaPencilAlt />
+            <FaTrash style={{ color: "red" }} />
           </a>
         </Space>
       ),
     },
   ];
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    // setLoading(true);
+    try {
+      const res = await invoice.getDataPagination(current, size);
+      if (res.data) {
+        const data = res.data.items;
+        setDataTableInvoice(data);
+        // setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+  const dataTable: RecordType[] = dataTableInvoice.map((items, index) => ({
+    stt: index + 1,
+    barcode: items.id,
+    created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
+    full_name: items.create_user.full_name,
+    customer: items.customer.full_name,
+    total_amount: items.total_amount.toLocaleString("vi-VN"),
+    key: items.id,
+  }));
+
   return (
     <div className="content">
-      <h1
-        style={{
-          fontFamily: "var( --kv-font-sans-serif)",
-          color: "var(--color-title)",
-        }}
-      >
+      <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
         Quản lí hóa đơn
       </h1>
       <div
@@ -111,49 +180,36 @@ const ManagementInvoices = () => {
           alignItems: "center",
           border: "none",
           color: "white",
-          boxShadow: "0 0 10px rgba(0, 0, 0, 0.4)",
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
         }}
       >
         <HeaderInvoices />
-        {/* <Modal
-          okButtonProps={{ style: { backgroundColor: "red" } }}
-          width={600}
-          centered
-          open={openModalDeleteProduct}
-          onOk={handleDeleteProduct}
-          onCancel={() => setOpenModalDeleteProduct(!openModalDeleteProduct)}
-          okText="Xóa"
-          cancelText="Hủy bỏ"
-        >
-          <h1
-            style={{
-              fontFamily: "Arial",
-              fontSize: "30px",
-              fontWeight: "bold",
-              padding: "5px 10px",
-              marginBottom: "6px",
-            }}
-          >
-            Xóa sản phẩm
-          </h1>
-          <span style={{ fontSize: "15px", padding: "5px 10px" }}>
-            Bạn chắc chắn muốn xóa sản phẩm này không?
-          </span>
-        </Modal> */}
       </div>
       <div className="table-container">
-        <Table
-          columns={columns}
-          // dataSource={dataSource}
-          locale={localInvoice}
-          pagination={false}
-          onHeaderRow={(columns, index) => {
-            return {
-              onClick: () => {}, // click header row
-            };
+        <Table columns={columns} dataSource={dataTable} locale={localInvoice} pagination={false} />
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-around",
+            gap: "10px",
+            marginTop: "10px",
+            padding: "10px",
           }}
-        />
-        {/* <span className="total-items">{`${dataSource?.length} items`}</span> */}
+        >
+          <Pagination
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
+            onChange={onChangeNumberPagination}
+            defaultCurrent={1}
+            total={totalInvoice}
+          />
+          <span
+            className="total-items"
+            style={{ color: "black" }}
+          >{`${dataTable?.length} hóa đơn`}</span>
+        </div>
       </div>
     </div>
   );

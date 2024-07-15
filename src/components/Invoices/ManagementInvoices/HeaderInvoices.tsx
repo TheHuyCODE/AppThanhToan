@@ -1,3 +1,4 @@
+import { Select } from "antd";
 import React from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
@@ -26,47 +27,21 @@ const HeaderInvoices = () => {
               // onChange={handleSearchProduct}
             />
           </div>
-          {/* 
-            <Select
-              placeholder="Danh mục sản phẩm"
-              allowClear
-              onChange={(value) => {
-                handleSelectCategory(value);
-              }}
-              style={{ width: 200, height: 35 }}
-            >
-              {nameProduct.map((option) => (
+
+          <Select
+            placeholder="Trạng thái hóa đơn"
+            allowClear
+            // onChange={(value) => {
+            //   handleSelectActive(value);
+            // }}
+            style={{ width: 200, height: 35 }}
+          >
+            {/* {statusProduct.map((option) => (
                 <option value={option.value} key={option.id}>
                   {option.name}
                 </option>
-              ))}
-            </Select> */}
-          {/* <Select
-              placeholder="Loại giảm giá"
-              allowClear
-              onChange={handleSelectChange}
-              style={{ width: 200, height: 35 }}
-            >
-              {nameProduct.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.name}
-                </option>
-              ))}
-            </Select> */}
-          {/* <Select
-              placeholder="Trạng thái sản phẩm"
-              allowClear
-              onChange={(value) => {
-                handleSelectActive(value);
-              }}
-              style={{ width: 200, height: 35 }}
-            >
-              {statusProduct.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.name}
-                </option>
-              ))}
-            </Select> */}
+              ))} */}
+          </Select>
         </div>
       </div>
       <div

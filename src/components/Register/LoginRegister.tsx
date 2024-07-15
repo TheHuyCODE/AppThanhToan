@@ -188,9 +188,9 @@ const LoginRegister = () => {
       const res = await loginApi.forgotPassword(data);
       if (res.code) {
         const msSuccess = res.message.text;
-        setIsOpenPopups(false);
-        logout();
         setInputPassword("");
+        setIsOpenPopups(false);
+        // logout();
         toast.success(msSuccess);
       } else {
         const msErr = res.data.message.text;

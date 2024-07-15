@@ -68,6 +68,11 @@ const RightContentProfile: React.FC = () => {
         const msSucess = res.message.text;
         toast.success(msSucess);
         // logout();
+        setPasswords({
+          currentPassword: "",
+          newPassword: "",
+          confirmNewPassword: "",
+        });
       } else {
         const msErr = res.data.message.text;
         toast.error(msErr);

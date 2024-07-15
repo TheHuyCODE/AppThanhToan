@@ -35,6 +35,7 @@ type ChildComponentProps = {
   activeKey: string;
   items: [];
   isModalOpen: boolean;
+  totalInvoice: number;
   // dataTableInvoice: [];
   addInvoice: () => void;
   onDetailInvoiceReturn: (id: string) => void;
@@ -54,6 +55,7 @@ const { TabPane } = Tabs;
 const HeaderPageSales: React.FC<ChildComponentProps> = ({
   setActiveKey,
   activeKey,
+  totalInvoice,
   items,
   isModalOpen,
   addInvoice,
@@ -369,12 +371,12 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
                     onShowSizeChange={onShowSizeChange}
                     onChange={onChangeNumberPagination}
                     defaultCurrent={1}
-                    total={50}
+                    total={totalInvoice}
                   />
-                  {/* <span
+                  <span
                     className="total-items"
-                    style={{ color: "var(--cl-dark)" }}
-                  >{`${datatable?.length}/${dataProduct.total}`}</span> */}
+                    style={{ color: "black" }}
+                  >{`${dataTable?.length} hóa đơn`}</span>
                 </div>
               </div>
             </div>
