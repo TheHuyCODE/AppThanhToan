@@ -47,6 +47,7 @@ const RightPageContent = ({
   fetchDataProduct,
   getDataCustomer,
   removeNotConFirmInvoice,
+  totalItems,
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
@@ -58,6 +59,7 @@ const RightPageContent = ({
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [hiddenErr, setHiddenErr] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
+
   const [errorAddCustomer, setErrorAddCustomer] = useState({
     message: "",
   });
@@ -420,11 +422,14 @@ const RightPageContent = ({
             >
               <MdKeyboardArrowLeft className="icon" />
             </button>
-            <span>{numberPage}/2</span>
+            <span>
+              {numberPage}/{numberPage}
+            </span>
             <button
               title="Trang sau"
               className="btn-after-product"
               onClick={fetchDataProductAfterChild}
+              disabled={totalItems <= 14}
             >
               <MdKeyboardArrowRight className="icon" />
             </button>

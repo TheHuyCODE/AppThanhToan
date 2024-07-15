@@ -59,14 +59,15 @@ const SalePageDemo: React.FC = () => {
   const [isSelectItemPayment, setIsSelectItemPayment] = useState([]);
   const [dataReturnPayment, setDataReturnPayment] = useState([]);
   const [dataTableInvoice, setDataTableInvoice] = useState([]);
-
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [idSearchCategory, setIdSearchCategory] = useState({
     id_category: "",
   });
   const [valueSearch, setValueSearch] = useState("");
   const [valueSearchProduct, setValueSearchProduct] = useState("");
+  const [totalInvoice, setTotalInvoice] = useState(0);
   const debounceValueSearch = useDebounce(valueSearch, 700);
   const debouncedSearchTerm = useDebounce(searchTerm, 700); // Delay 500ms
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -140,6 +141,7 @@ const SalePageDemo: React.FC = () => {
       const res = await products.getSellProductPagination();
       if (res.data && Array.isArray(res.data.items)) {
         setDataProduct(res.data.items);
+        setTotalItems(res.data.total); // Corrected this line
       } else {
         console.error("API response is not an array:", res.data);
       }
@@ -147,11 +149,13 @@ const SalePageDemo: React.FC = () => {
       console.log("error:", error);
     }
   };
+
   const fetchDataProductAfter = async (current: number, page_size: number) => {
     try {
       const res = await products.getDataProductPagination(current, page_size);
       if (res.data) {
         setDataProduct(res.data.items);
+        setTotalItems(res.data.total);
       } else {
         console.error("API response is not an array:", res.data);
       }
@@ -643,8 +647,10 @@ const SalePageDemo: React.FC = () => {
       const res = await invoice.getAllInvoices();
       if (res.code === 200) {
         const data = res.data.items;
+        const totalInvoices = res.data.items;
         console.log("dataInvoice", data);
         setDataTableInvoice(data);
+        setTotalInvoice(totalInvoices);
       } else {
         console.log("message", res.data);
       }
@@ -841,6 +847,7 @@ const SalePageDemo: React.FC = () => {
           onSearchInvoices={setSearchTerm}
           handleEnterPress={handleEnterPress}
           setDataTableInvoice={setDataTableInvoice}
+          totalInvoice={totalInvoice}
         />
         <div className="page-content">
           {isOpenPaymentReturn ? (
@@ -917,6 +924,7 @@ const SalePageDemo: React.FC = () => {
               fetchDataProduct={fetchDataProduct}
               getDataCustomer={getDataCustomer}
               removeNotConFirmInvoice={removeNotConFirmInvoice}
+              totalItems={totalItems}
             />
           )}
         </div>
