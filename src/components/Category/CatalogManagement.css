@@ -119,9 +119,9 @@ a.title-category {
   outline: none;
   font-size: 15px;
 }
-
+.input-name-category:hover,
 .input-name-category:focus {
-  border: 1px solid blue;
+  border: 1px solid var(--border-hover-color);
 }
 .picture-item {
   display: flex;

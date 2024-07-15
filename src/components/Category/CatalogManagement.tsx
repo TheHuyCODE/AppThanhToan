@@ -31,24 +31,14 @@ import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
 
 const CatalogManagement = () => {
-  const domainLink = domain.domainLink;
-  const { isResDataChild, fetchDataCategoryChild } = useAuth();
+  // const domainLink = domain.domainLink;
+  const { fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
-  const fileRef = useRef(null);
-  const description = useRef(null);
-  const reviewImageRef = useRef(null);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
-  const [image, setIsImage] = useState("");
-  const [previewImage, setIsPreviewImage] = useState("");
-  const [previewImageModify, setIsPreviewImageModify] = useState("");
   const [valueSearch, setValueSearch] = useState("");
   const debounceValue = useDebounce(valueSearch, 700);
   const [loading, setLoading] = useState(false);
-
   const [dataCategory, setDataCategory] = useState("");
-  // cons navigate = useNavigate();
-
-  const [resImage, setResImage] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
   const [isDataCategory, setIsDataCategory] = useState([]);
@@ -124,10 +114,7 @@ const CatalogManagement = () => {
       }
     }
   };
-  const closePreviewImage = () => {
-    setIsPreviewImage("");
-    setIsPreviewImageModify("");
-  };
+
   useEffect(() => {
     // clickDeleteCategory();
     console.log(deleteItem);
@@ -143,9 +130,6 @@ const CatalogManagement = () => {
     setEditDescription(item);
     console.log("item", item.key);
     console.log("item", item.image_url);
-    if (item.image_url) {
-      setIsPreviewImageModify(`${domainLink}/${item.image_url}`);
-    }
   };
   const changeModifyCategory = async () => {
     //call api change
@@ -156,10 +140,6 @@ const CatalogManagement = () => {
       parent_id: null,
     };
     const idModifyItems = editItem.key;
-    console.log("idModifyItems", idModifyItems);
-    console.log("dataPutCategory", dataPutCategory);
-
-    console.log("editItem", editItem);
     const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
     if (res.code === 200) {
       console.log("res", res);
@@ -171,39 +151,6 @@ const CatalogManagement = () => {
       toast.error("Error Modify category");
     }
   };
-
-  const handleImage = (e) => {
-    e.preventDefault();
-    const fileImage = e.target.files[0];
-    setIsImage(fileImage);
-    setIsPreviewImage(URL.createObjectURL(fileImage));
-    console.log(image);
-  };
-
-  useEffect(() => {
-    if (image) {
-      console.log("image:", image);
-      const formData = new FormData();
-      const prefixImage = "category";
-      formData.append("file", image);
-      console.log("formData:", [...formData]);
-      uploadApiImage
-        .postImage(formData, prefixImage)
-        .then((res) => {
-          if (res.code === 200) {
-            console.log("Success:", res);
-            const fileUrl = res.data.file_url;
-            setResImage(fileUrl);
-          } else {
-            console.log("Error:");
-          }
-        })
-        .catch((error) => {
-          console.error("Error occurred while uploading:", error);
-        });
-    }
-  }, [image]);
-
   const columns = [
     {
       title: "STT",
@@ -263,7 +210,7 @@ const CatalogManagement = () => {
       return {
         ...col,
         key: col.key || `column-${index}`,
-        onCell: (record) => ({
+        onCell: (record: any) => ({
           onClick: () => {
             checkQuatifyItem(record);
             const name = record.name;
@@ -285,15 +232,11 @@ const CatalogManagement = () => {
     if (nameRef.current) {
       nameRef.current.value = "";
     }
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
-    if (description.current) {
-      description.current.value = "";
-    }
+    setIsDescribe("");
   };
   const clickAddItemCategory = async (e: any) => {
     e.preventDefault();
+    setIsOpenPopups(true);
     const userDataCategory = {
       name: dataCategory,
       description: isDescribe,
@@ -305,12 +248,13 @@ const CatalogManagement = () => {
         const successMs = res.message.text;
         await fetchDataCategory();
         toast.success(successMs);
-        setIsOpenPopups(!isOpenPopups);
         clearInputs();
+        setIsOpenPopups(!isOpenPopups);
       } else {
         const errorMessage = res.data.message.text;
         toast.error(errorMessage);
         setIsOpenPopups(isOpenPopups);
+        // setIsOpenPopups(true);
       }
     } catch (error) {
       console.log("err");
@@ -334,7 +278,8 @@ const CatalogManagement = () => {
   const showTableChildSecondCategory = () => {};
   const fetchDataCategory = async () => {
     const res = await category.getAll();
-    const totalCategory = res.data.total.setIsDataCategory(res.data);
+    const totalCategory = res.data.total;
+    setIsDataCategory(res.data);
     setTotalCategory(totalCategory);
     console.log("data category", res.data.items);
     console.log(res.data);
@@ -348,17 +293,15 @@ const CatalogManagement = () => {
   };
   const onChangeNumberPagination = (current: number) => {
     console.log("Current page:", current);
-    getDataPagination(current, pageSize);
+    // getDataPagination(current, pageSize);
     setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
-    // setLoading(true);
     try {
       const res = await category.getDataCategoryPagination(current, size);
       if (res.data) {
         const data = res.data;
         setIsDataCategory(data);
-        // setLoading(false);
       } else {
         console.log("err");
       }
@@ -470,7 +413,7 @@ const CatalogManagement = () => {
               centered
               open={isOpenPopups}
               onOk={clickAddItemCategory}
-              onCancel={() => setIsOpenPopups(!isOpenPopups)}
+              onCancel={() => setIsOpenPopups(false)}
               okText="Thêm"
               cancelText="Hủy bỏ"
             >
@@ -479,7 +422,12 @@ const CatalogManagement = () => {
                 <label htmlFor="">
                   Tên danh mục 1 (<span>*</span>)
                 </label>
-                <input className="input-name-category" onChange={setHandleInput} ref={nameRef} />
+                <input
+                  className="input-name-category"
+                  placeholder="Tên danh mục cấp 1"
+                  onChange={setHandleInput}
+                  ref={nameRef}
+                />
               </div>
               <div className="decribe-category">
                 <label htmlFor="" className="title-picture">
@@ -491,7 +439,7 @@ const CatalogManagement = () => {
                   onChange={onChangeInput}
                   placeholder="Chú thích danh mục"
                   style={{ height: 100, width: 260 }}
-                  ref={description}
+                  value={isDescribe}
                 />
               </div>
             </Modal>
@@ -560,13 +508,13 @@ const CatalogManagement = () => {
               <p
                 style={{
                   fontSize: "13px",
-                  padding: "5px 10px",
+                  padding: "5px 5px",
                   color: "var(--cl-gray)",
                   fontFamily: "Montserrat ,sans-serif",
                 }}
               >
                 Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và
-                sản phẩm đã link với danh mục sẽ bị xóa
+                sản phẩm đã link với danh mục sẽ bị xóa.
               </p>
             </Modal>
           </div>

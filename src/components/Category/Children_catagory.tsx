@@ -25,12 +25,7 @@ const ChildrenCategory = ({
   viewTableChildSecond,
 }) => {
   const domainLink = domain.domainLink;
-  // const params = useParams();
   const nameRef = useRef(null);
-  const fileRef = useRef(null);
-  const description = useRef(null);
-  const reviewImageRefChild = useRef(null);
-  const [isHiddenThreeChild, setIsHiddenThreeChild] = useState(false);
   const {
     isResDataChild,
     setIsResDataChild,
@@ -39,12 +34,9 @@ const ChildrenCategory = ({
   } = useAuth();
   const [isOpenPopupChild, setIsOpenPopupChild] = useState(false);
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
-  const [isImageCategoryChild, setIsImageCategoryChild] = useState("");
-  const [isResImageCategoryChild, setResImageCategoryChild] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   // const [isPreviewImageChild, setIsPreviewImageChild] = useState("");
-  const [isPreviewImageModifyChild, setIsPreviewImageModifyChild] = useState("");
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
   const debounceValue = useDebounce(isValueSearchChild, 700);
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
@@ -54,7 +46,6 @@ const ChildrenCategory = ({
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
   const [modifyItem, setModifyItem] = useState<any>();
   const [isInputDataCategoryTwo, setIsInputDataCategoryTwo] = useState<any>();
-
   const [isKeyThreeChild, setIsKeyThreeChild] = useState("");
   // const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
   const [viewTableChild, setViewTableChild] = useState(true);
@@ -67,16 +58,7 @@ const ChildrenCategory = ({
     if (nameRef.current) {
       nameRef.current.value = "";
     }
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
-    if (description.current) {
-      description.current.value = "";
-    }
-    setIsInputCategoryChild("");
-    setIsImageCategoryChild("");
-    // setResImageCategoryChild("");
-    // setIsPreviewImageChild("");
+    setIsDescription("");
   };
   const openModalChildSecond = () => {
     setIsOpenPopupChild(!isOpenPopupChild);
@@ -84,7 +66,6 @@ const ChildrenCategory = ({
   const clickAddItemCategoryChild = async (event: any) => {
     console.log("addItemCategoryChild");
     event.preventDefault();
-    setIsOpenPopupChild(!isOpenPopupChild);
     const userDataCategoryChild = {
       name: isInputCategoryChild,
       description: isDescription,
@@ -96,6 +77,7 @@ const ChildrenCategory = ({
         console.log("res", res);
         const successMs = res.message.text;
         toast.success(successMs);
+        setIsOpenPopupChild(!isOpenPopupChild);
         await fetchDataCategory();
         await fetchDataCategoryChild(isKeyChild);
         clearInputChildren();
@@ -169,15 +151,11 @@ const ChildrenCategory = ({
     setIsInputDataCategoryTwo(record);
     console.log("record:", record.key);
     console.log("record:", record.image_url);
-
-    if (record.image_url) {
-      setIsPreviewImageModifyChild(`${domainLink}/${record.image_url}`);
-    }
   };
 
   //get input values and file images ChildrenCategory
 
-  const setHandleInput = (event) => {
+  const setHandleInput = (event: any) => {
     const value = event.target.value;
     // console.log("value Category 2:", value);
     setIsInputCategoryChild(value);
@@ -197,25 +175,6 @@ const ChildrenCategory = ({
     image_url: item.image_url,
   }));
 
-  useEffect(() => {
-    if (isImageCategoryChild) {
-      const uploadImage = async () => {
-        try {
-          const res = await uploadApiImage.postImageCategoryChild(isImageCategoryChild);
-          if (res.code === 200) {
-            const fileUrl = res.data.file_url;
-            console.log("fileUrlRes:", fileUrl);
-            setResImageCategoryChild(fileUrl);
-          } else {
-            console.log("Error:", res);
-          }
-        } catch (error) {
-          console.error("Error uploading image:", error);
-        }
-      };
-      uploadImage();
-    }
-  }, [isImageCategoryChild]);
   const columns = [
     {
       title: "STT",
@@ -317,7 +276,7 @@ const ChildrenCategory = ({
   };
   const onChangeNumberPagination = (current: number) => {
     console.log("Current page:", current);
-    getDataPagination(current, pageSize);
+    // getDataPagination(current, pageSize);
     setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
@@ -471,7 +430,12 @@ const ChildrenCategory = ({
           <label htmlFor="">
             Tên danh mục 2 (<span>*</span>)
           </label>
-          <input className="input-name-category" onChange={setHandleInput} ref={nameRef} />
+          <input
+            className="input-name-category"
+            placeholder="Tên danh mục cấp 2"
+            onChange={setHandleInput}
+            ref={nameRef}
+          />
         </div>
         <div className="decribe-category">
           <label htmlFor="" className="title-picture">
@@ -483,7 +447,7 @@ const ChildrenCategory = ({
             onChange={onChangeInputChild}
             placeholder="Chú thích danh mục"
             style={{ height: 100, width: 260 }}
-            ref={description}
+            value={isDescription}
           />
         </div>
       </Modal>
@@ -509,9 +473,17 @@ const ChildrenCategory = ({
         >
           Xóa sản phẩm
         </h1>
-        <span style={{ fontSize: "15px", padding: "5px 10px" }}>
-          Bạn chắc chắn muốn xóa sản phẩm này không?
-        </span>
+        <p
+          style={{
+            fontSize: "13px",
+            padding: "5px 5px",
+            color: "var(--cl-gray)",
+            fontFamily: "Montserrat ,sans-serif",
+          }}
+        >
+          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và sản
+          phẩm đã link với danh mục sẽ bị xóa.
+        </p>
       </Modal>
       {/* modal modify child category */}
       <Modal

@@ -27,6 +27,7 @@ const LoginRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
   const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
@@ -54,6 +55,10 @@ const LoginRegister = () => {
     </div>
   );
   const text = <span>Mật khẩu hợp lệ cần</span>;
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
   const clearInputRegister = () => {
     setDataRegister({
       email: "",
@@ -65,12 +70,7 @@ const LoginRegister = () => {
       phone: "",
     });
   };
-  const error = (error: string) => {
-    Modal.error({
-      title: "Đã xảy ra lỗi đăng kí tài khoản",
-      content: error,
-    });
-  };
+
   const success = () => {
     Modal.success({
       title: "Đã đăng kí tài khoản thành công ",
@@ -101,10 +101,7 @@ const LoginRegister = () => {
   const handleBlur = () => {
     setInputClicked(false);
   };
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-  });
+
   useEffect(() => {
     // console.log("inputClicked", inputClicked);
     if (inputClicked) {
@@ -190,10 +187,12 @@ const LoginRegister = () => {
         const msSuccess = res.message.text;
         setInputPassword("");
         setIsOpenPopups(false);
+        setButtonDisabled(true);
         // logout();
         toast.success(msSuccess);
       } else {
         const msErr = res.data.message.text;
+        console.log("111", msErr);
         toast.error(msErr);
         if (inputRef.current) {
           inputRef.current.focus();
@@ -201,7 +200,6 @@ const LoginRegister = () => {
         }
       }
     } catch (err) {
-      console.log("err");
       if (inputRef.current) {
         inputRef.current.focus();
         inputRef.current.select();
@@ -348,6 +346,7 @@ const LoginRegister = () => {
                 </a>
               </label>
               <Modal
+                okButtonProps={{ disabled: buttonDisabled }}
                 className="modalDialog-addItems"
                 width={450}
                 centered

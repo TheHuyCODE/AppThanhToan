@@ -46,7 +46,7 @@ const products = {
       page_size: 10,
       sort: "name",
       order_by: "asc",
-      // is_active: 1,
+      is_active: 1,
     };
     return axiosClient.get(url, {
       headers: {

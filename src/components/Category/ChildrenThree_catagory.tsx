@@ -15,15 +15,9 @@ import TextArea from "antd/es/input/TextArea";
 const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   const domainLink = domain.domainLink;
   const nameRef = useRef(null);
-  const fileRef = useRef(null);
-  const description = useRef(null);
-
-  const reviewImageRefChild = useRef(null);
   const { isResDataChildSeconds, setIsResDataChildSeconds, fetchDataCategorySecondChild } =
     useAuth();
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
-  const [isImageCategoryChild, setIsImageCategoryChild] = useState("");
-  const [isResImageCategoryChild, setResImageCategoryChild] = useState("");
   const [isDescribeThree, setIsDescribeThree] = useState("");
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
   const debounceValue = useDebounce(isValueSearchChild, 700);
@@ -64,35 +58,11 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
       setIsPreviewImageModifyChild(`${domainLink}/${record.image_url}`);
     }
   };
-  const handleImageChild = (event) => {
-    event.preventDefault();
-    const fileImage = event.target.files[0];
-    setIsImageCategoryChild(fileImage);
-    setIsPreviewImageChild(URL.createObjectURL(fileImage));
-    console.log("fileImage:", fileImage);
-  };
-
-  const handleImageModifyChild = (event) => {
-    event.preventDefault();
-    const fileImage = event.target.files[0]; // Corrected here
-    setIsImageCategoryChild(fileImage);
-    setIsPreviewImageModifyChild(URL.createObjectURL(fileImage));
-    console.log("fileImage:", fileImage);
-  };
-  const closePreviewImage = () => {
-    setIsPreviewImageChild("");
-    setIsPreviewImageModifyChild("");
-  };
   const clearInputChildren = () => {
     if (nameRef.current) {
       nameRef.current.value = "";
     }
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
-    if (description.current) {
-      description.current.value = "";
-    }
+    setIsDescribeThree("");
   };
   const clickAddItemCategoryChild = async (event) => {
     console.log("adding category Seconds");
@@ -139,7 +109,6 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
         toast.success("Đã sửa danh mục cấp 3 thành công!");
         // await fetchDataCategoryChild(isKeyChild);
         await fetchDataCategorySecondChild(isKeyThreeChild);
-        clearInputChildren();
       } else {
         console.log("Error:", res);
       }
@@ -156,7 +125,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   };
   const onChangeNumberPagination = (current: number) => {
     console.log("Current page:", current);
-    getDataPagination(current, pageSize);
+    // getDataPagination(current, pageSize);
     setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
@@ -270,25 +239,6 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     }
     return col;
   });
-  useEffect(() => {
-    if (isImageCategoryChild) {
-      const uploadImage = async () => {
-        try {
-          const res = await uploadApiImage.postImageCategoryChild(isImageCategoryChild);
-          if (res.code === 200) {
-            const fileUrl = res.data.file_url;
-            console.log("fileUrlRes:", fileUrl);
-            setResImageCategoryChild(fileUrl);
-          } else {
-            console.log("Error:", res);
-          }
-        } catch (error) {
-          console.error("Error uploading image:", error);
-        }
-      };
-      uploadImage();
-    }
-  }, [isImageCategoryChild]);
   const fetchDataSearchCategory = async () => {
     // setLoading(true);
     const res = await category.getDataSearchNameThreeCategory(isKeyThreeChild, debounceValue);
@@ -405,7 +355,12 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
           <label htmlFor="">
             Tên danh mục 3 (<span>*</span>)
           </label>
-          <input className="input-name-category" onChange={setHandleInput} ref={nameRef} />
+          <input
+            className="input-name-category"
+            placeholder="Tên danh mục cấp 3"
+            onChange={setHandleInput}
+            ref={nameRef}
+          />
         </div>
         <div className="decribe-category">
           <label htmlFor="" className="title-picture">
@@ -415,6 +370,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
             showCount
             maxLength={100}
             onChange={onChangeInput}
+            value={isDescribeThree}
             placeholder="Chú thích danh mục"
             style={{ height: 100, width: 260 }}
           />
