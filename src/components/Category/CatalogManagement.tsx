@@ -294,7 +294,6 @@ const CatalogManagement = () => {
   };
   const clickAddItemCategory = async (e: any) => {
     e.preventDefault();
-    setIsOpenPopups(!isOpenPopups);
     const userDataCategory = {
       name: dataCategory,
       description: isDescribe,
@@ -303,21 +302,18 @@ const CatalogManagement = () => {
     try {
       const res = await uploadApiImage.postAddItemCategory(userDataCategory);
       if (res.code == 200) {
-        console.log("res", res.data);
         const successMs = res.message.text;
-        toast.success(successMs);
         await fetchDataCategory();
+        toast.success(successMs);
+        setIsOpenPopups(!isOpenPopups);
         clearInputs();
-        setIsPreviewImage("");
       } else {
-        console.log("error", res);
         const errorMessage = res.data.message.text;
         toast.error(errorMessage);
-        console.log(errorMessage);
         setIsOpenPopups(isOpenPopups);
       }
     } catch (error) {
-      setIsOpenPopups(isOpenPopups);
+      console.log("err");
     }
   };
   //show table child when clicked
@@ -573,7 +569,6 @@ const CatalogManagement = () => {
                 sản phẩm đã link với danh mục sẽ bị xóa
               </p>
             </Modal>
-            {/* {isOpenPopups && <PopupAdditem onClose={handleClose}/>} */}
           </div>
         </div>
         {viewTable ? (

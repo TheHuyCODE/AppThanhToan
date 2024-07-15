@@ -21,21 +21,23 @@ const LoginRegister = () => {
   const passWordRef = useRef(null);
   const phoneRef = useRef(null);
   const confirmPasswordRef = useRef(null);
-
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
   const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] = useState(false);
-  const { isAuthenticated, accessToken, login, logout } = useAuth();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false);
   const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] = useState(false);
   const [isEmptyMessageEmail, setIsEmptyMessageEmail] = useState(false);
   const [isShortCodeMessageEmail, setIsShortCodeMessageEmail] = useState(false);
   const [isEmptyMessagePassword, setIsEmptyMessagePassword] = useState(false);
   const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] = useState(false);
-  const [isErrorRegisterEmail, setIsErrorRegisterEmail] = useState("");
+
+  const [inputPassword, setInputPassword] = useState("");
   const [inputClicked, setInputClicked] = useState(false);
   const [infoUser, setInfoUser] = useState("");
   const validateEmail = (email) => {
@@ -152,13 +154,47 @@ const LoginRegister = () => {
       [fieldName]: value,
     });
   };
-  const handleChangeRegister = (fieldName) => (e) => {
-    const value = e.target.value.trim();
+  const handleChangeRegister = (fieldName: string) => (e) => {
+    const value = e.target.value;
     console.log("value", value);
     setDataRegister({
       ...dataRegister,
       [fieldName]: value,
     });
+  };
+  const setHandleInputPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
+    setInputPassword(value);
+  };
+  const getRememberPassword = () => {
+    setIsOpenPopups(!isOpenPopups);
+  };
+  const clickAddUserBanking = async () => {
+    const data = {
+      email: inputPassword,
+    };
+    try {
+      const res = await loginApi.forgotPassword(data);
+      if (res.code) {
+        const msSuccess = res.message.text;
+        toast.success(msSuccess);
+        getRememberPassword;
+        setInputPassword("");
+      } else {
+        const msErr = res.data.message.text;
+        toast.error(msErr);
+        if (inputRef.current) {
+          inputRef.current.focus();
+          inputRef.current.select();
+        }
+      }
+    } catch (err) {
+      console.log("err");
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.select();
+      }
+    }
   };
   const handleSubmitRegister = (event) => {
     event.preventDefault();
@@ -174,13 +210,15 @@ const LoginRegister = () => {
     setIsLoading(true);
     loginApi.postMessageRegister(userData).then((response) => {
       if (response.code === 200) {
+        const successMs = response.message.text;
+        toast.success(successMs);
         clearInputRegister();
-
         success();
       } else {
         console.log(response);
-        const res = response.data.message.text;
-        error(res);
+        const errMs = response.data.message.text;
+        toast.error(errMs);
+        // error(res);
       }
     });
     setIsLoading(false);
@@ -293,8 +331,39 @@ const LoginRegister = () => {
             </div>
             <div className="remember-forgot">
               <label htmlFor="">
-                <a href="#">Quên mật khẩu</a>
+                <a href="" onClick={getRememberPassword}>
+                  Quên mật khẩu
+                </a>
               </label>
+              <Modal
+                className="modalDialog-addItems"
+                width={450}
+                centered
+                open={isOpenPopups}
+                onOk={clickAddUserBanking}
+                onCancel={getRememberPassword}
+                okText="Lấy mật khẩu"
+                cancelText="Hủy bỏ"
+              >
+                <h1 className="title-addItem">Quên mật khẩu?</h1>
+                <div className="containner-forgot-password">
+                  <label htmlFor="number_bank">Vui lòng nhập email để thiết lập lại mật khẩu</label>
+                  <div>
+                    <input
+                      type="text"
+                      className="input-forgot-password"
+                      onChange={setHandleInputPassword}
+                      name="number_bank"
+                      value={inputPassword}
+                      placeholder="Nhập email đăng nhập"
+                      ref={inputRef}
+                    />
+                    {/* {errorAddNameBanking && errorAddNameBanking.error && (
+                      <p className="error-message">{errorAddNameBanking.error}</p>
+                    )} */}
+                  </div>
+                </div>
+              </Modal>
             </div>
             <button type="submit" disabled={isLoading || !validateLoginInputs()}>
               {isLoading ? (

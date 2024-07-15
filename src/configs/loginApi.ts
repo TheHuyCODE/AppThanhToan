@@ -17,6 +17,10 @@ const loginApi = {
     const url = "api/v1/auth/change_password";
         return axiosClient.put(url, data);
   },
+  forgotPassword: (data: object) => {
+    const url = "api/v1/auth/forgot_password ";
+        return axiosClient.put(url, data);
+  },
 };
 
 export default loginApi;

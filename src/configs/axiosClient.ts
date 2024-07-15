@@ -29,21 +29,18 @@ axiosClient.interceptors.response.use(
   },
   (error) => {
     // Call api có refresh token
-    if (error.response && error.response.data && error.response.data.id === "G4") {
-      showLogoutPopup();
-    }
-    return Promise.reject(error);
+    return error.response;
   }
   );
-function showLogoutPopup() {
-  Modal.error({
-    title: "Session Expired",
-    content: "Your session has expired. Please log in again.",
-    onOk: () => {
-      // Clear token and redirect to login page
-      localStorage.removeItem("access_token");
-      window.location.href = "/login"; // Adjust the path as needed
-    },
-  });
-}
+// function showLogoutPopup() {
+//   Modal.error({
+//     title: "Session Expired",
+//     content: "Your session has expired. Please log in again.",
+//     onOk: () => {
+//       // Clear token and redirect to login page
+//       localStorage.removeItem("access_token");
+//       window.location.href = "/login"; // Adjust the path as needed
+//     },
+//   });
+// }
 export default axiosClient;

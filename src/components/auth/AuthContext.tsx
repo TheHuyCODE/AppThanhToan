@@ -65,7 +65,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         window.location.href = window.location.origin + "/";
       }
     };
-
     window.addEventListener("storage", handleStorageChange);
     return () => {
       window.removeEventListener("storage", handleStorageChange);
