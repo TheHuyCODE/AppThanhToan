@@ -67,7 +67,7 @@ const RightContentProfile: React.FC = () => {
       if (res.code === 200) {
         const msSucess = res.message.text;
         toast.success(msSucess);
-        logout();
+        // logout();
       } else {
         const msErr = res.data.message.text;
         toast.error(msErr);

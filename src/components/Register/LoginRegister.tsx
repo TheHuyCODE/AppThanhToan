@@ -36,7 +36,7 @@ const LoginRegister = () => {
   const [isShortCodeMessageEmail, setIsShortCodeMessageEmail] = useState(false);
   const [isEmptyMessagePassword, setIsEmptyMessagePassword] = useState(false);
   const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] = useState(false);
-
+  const { logout } = useAuth();
   const [inputPassword, setInputPassword] = useState("");
   const [inputClicked, setInputClicked] = useState(false);
   const [infoUser, setInfoUser] = useState("");
@@ -180,7 +180,7 @@ const LoginRegister = () => {
   const getRememberPassword = () => {
     setIsOpenPopups(!isOpenPopups);
   };
-  const clickAddUserBanking = async () => {
+  const clickForgotPassword = async () => {
     const data = {
       email: inputPassword,
     };
@@ -188,9 +188,10 @@ const LoginRegister = () => {
       const res = await loginApi.forgotPassword(data);
       if (res.code) {
         const msSuccess = res.message.text;
-        toast.success(msSuccess);
-        getRememberPassword;
+        setIsOpenPopups(false);
+        logout();
         setInputPassword("");
+        toast.success(msSuccess);
       } else {
         const msErr = res.data.message.text;
         toast.error(msErr);
@@ -351,7 +352,7 @@ const LoginRegister = () => {
                 width={450}
                 centered
                 open={isOpenPopups}
-                onOk={clickAddUserBanking}
+                onOk={clickForgotPassword}
                 onCancel={getRememberPassword}
                 okText="Lấy mật khẩu"
                 cancelText="Hủy bỏ"
