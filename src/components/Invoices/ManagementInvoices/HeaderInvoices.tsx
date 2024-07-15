@@ -27,7 +27,6 @@ const HeaderInvoices = () => {
               // onChange={handleSearchProduct}
             />
           </div>
-
           <Select
             placeholder="Trạng thái hóa đơn"
             allowClear

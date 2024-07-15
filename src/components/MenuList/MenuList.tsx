@@ -13,6 +13,7 @@ import logoutApi from "../../configs/logoutApi";
 // import category from "../../configs/category";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { CiBank } from "react-icons/ci";
 
 const MenuList = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -74,7 +75,7 @@ const MenuList = () => {
         <Menu.Item key="percent" icon={<FaPercent />}>
           Quản lý mã giảm giá
         </Menu.Item>
-        <Menu.Item key="paymentmethod" icon={<FaPercent />}>
+        <Menu.Item key="paymentmethod" icon={<CiBank />}>
           <Link to="/admin/paymentmethod">Quản lí phương thức thanh toán</Link>
         </Menu.Item>
 

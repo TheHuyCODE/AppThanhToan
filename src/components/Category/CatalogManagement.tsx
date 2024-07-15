@@ -29,6 +29,7 @@ import { domain } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
+import { handleError } from "../../utils/errorHandler";
 
 const CatalogManagement = () => {
   // const domainLink = domain.domainLink;
@@ -98,20 +99,23 @@ const CatalogManagement = () => {
     setIsOpenModalDelete(!isOpenModalDetele);
     setDeleteItem(item);
   };
+  // call api delete
   const clickDeleteCategory = async () => {
-    // call api delete
     const keyItem = deleteItem.key;
-    if (keyItem) {
+    try {
       const res = await category.deleteCategory(keyItem);
       if (res.code === 200) {
         console.log("res:", res);
+        const successMs = res.message.text;
         setIsOpenModalDelete(!isOpenModalDetele);
-        toast.success("Đã xóa danh mục thành công"); // Fetch the updated data after deletion
+        toast.success(successMs); // Fetch the updated data after deletion
         await fetchDataCategory();
       } else {
         console.log("error:", res);
         toast.error("Error deleting category");
       }
+    } catch (error) {
+      handleError(error);
     }
   };
 
@@ -133,22 +137,26 @@ const CatalogManagement = () => {
   };
   const changeModifyCategory = async () => {
     //call api change
-    console.log("editItem", editItem);
     const dataPutCategory = {
       name: editItem.name,
       description: editDescription.description,
       parent_id: null,
     };
     const idModifyItems = editItem.key;
-    const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
-    if (res.code === 200) {
-      console.log("res", res);
-      toast.success("Đã sửa danh mục thành công"); // Fetch the updated data after deletion
-      setIsOpenModalModify(!isOpenModalModify);
-      await fetchDataCategory();
-    } else {
-      console.log("res", res);
-      toast.error("Error Modify category");
+    try {
+      const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
+      if (res.code === 200) {
+        console.log("res", res);
+        const msSuccess = res.message.text;
+        toast.success(msSuccess); // Fetch the updated data after deletion
+        setIsOpenModalModify(!isOpenModalModify);
+        await fetchDataCategory();
+      } else {
+        console.log("res", res);
+        toast.error("Error Modify category");
+      }
+    } catch (error) {
+      handleError(error);
     }
   };
   const columns = [
@@ -251,13 +259,12 @@ const CatalogManagement = () => {
         clearInputs();
         setIsOpenPopups(!isOpenPopups);
       } else {
-        const errorMessage = res.data.message.text;
-        toast.error(errorMessage);
-        setIsOpenPopups(isOpenPopups);
+        console.log("err");
         // setIsOpenPopups(true);
       }
     } catch (error) {
-      console.log("err");
+      handleError(error);
+      setIsOpenPopups(isOpenPopups);
     }
   };
   //show table child when clicked
@@ -345,7 +352,7 @@ const CatalogManagement = () => {
           onClick={showTableCategory}
           style={{ color: "rgb(3,23,110)" }}
         >
-          Quản lí danh mục sản phẩm{" "}
+          Quản lí danh mục{" "}
         </a>
         <a
           hidden={hiddenTitleChild}

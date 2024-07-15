@@ -41,7 +41,7 @@ axiosClient.interceptors.response.use(
         return Promise.reject(err);
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error.response ? error.response.data : error);
   }
 );
 const refreshAccessToken = async () => {
@@ -54,15 +54,15 @@ const refreshAccessToken = async () => {
     localStorage.setItem("access_token", access_token);
     return access_token;
   } catch (error) {
-    const errorMessage = response.message.text;
-    showLogoutPopup(errorMessage);
+      console.log('err')
+        // showLogoutPopup();
     throw error;
   }
 };
-function showLogoutPopup(errorMessage: string) {
+function showLogoutPopup() {
   Modal.error({
     title: "Hết phiên đăng nhập",
-    content: errorMessage  || '',
+    content:  'Hết phiên đăng nhập' || '',
     onOk: () => {
       // Xóa token và chuyển hướng đến trang đăng nhập
       localStorage.removeItem("access_token");

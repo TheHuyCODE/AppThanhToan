@@ -52,6 +52,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const logout = useCallback(() => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
+    localStorage.removeItem("INFO_USER");
     localStorage.setItem("logout", Date.now().toString());
     setAccessToken(null);
     window.location.href = window.location.origin + "/";

@@ -5,7 +5,7 @@ const loginApi = {
     const url = "/api/v1/auth/login";
     return axiosClient.get(url, { params: params });
   },
-  postMessage: (params) => {
+  postMessage: (params: object) => {
     const url = "/api/v1/auth/login";
     return axiosClient.post(url, params);
   },

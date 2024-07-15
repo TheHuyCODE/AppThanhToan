@@ -13,6 +13,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { AxiosError } from "axios";
+import { handleError } from "../../utils/errorHandler";
 const LoginRegister = () => {
   const storeNameRef = useRef(null);
   const fullNameRef = useRef(null);
@@ -229,19 +231,19 @@ const LoginRegister = () => {
         const errMs = response.data.message.text;
         toast.error(errMs);
         // error(res);
+        setIsLoading(false);
       }
     });
-    setIsLoading(false);
   };
-  const handleSubmitLogin = (event) => {
+  const handleSubmitLogin = async (event: any) => {
     event.preventDefault();
     const userData = {
       email: data.email,
       password: data.password,
     };
     setIsLoading(true);
-    loginApi.postMessage(userData).then((res) => {
-      console.log("res", res);
+    try {
+      const res = await loginApi.postMessage(userData);
       if (res.code === 200) {
         const messageSuccess = res.message.text;
         toast.success(messageSuccess);
@@ -250,12 +252,12 @@ const LoginRegister = () => {
           login(res.data.access_token, res.data.refresh_token);
         }, 1000);
       } else {
-        const messageSuccess = res.data.message.text;
-        toast.error(messageSuccess);
-        console.log("Đăng nhập không thành công");
-        setIsLoading(false);
+        console.log("res", res);
       }
-    });
+    } catch (error) {
+      handleError(error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -269,30 +271,6 @@ const LoginRegister = () => {
         <div className="form-box login">
           <form onSubmit={handleSubmitLogin}>
             <h1 className="title-header">Đăng nhập</h1>
-            {/* <div className="input-box">
-              <input
-                type="text"
-                value={data.store_code}
-                placeholder=" "
-                required
-                onChange={handleChange("store_code")}
-                onFocus={() => setInputClicked(!inputClicked)}
-                onBlur={handleBlur}
-                
-              />
-              <label htmlFor="storeCode" className="form-email">Mã gian hàng</label>
-              <IoMdHome className="icon home" />
-              {isEmptyMessageVisible && (
-                <p className="message-error">
-                  Mã cửa hàng không được để trống!
-                </p>
-              )} 
-              {isShortCodeMessageVisible && (
-                <p className="message-error">
-                  Mã cửa hàng phải lớn hơn 3 ký tự!
-                </p>
-              )}
-            </div> */}
             <div className="input-box">
               <input
                 type="text"

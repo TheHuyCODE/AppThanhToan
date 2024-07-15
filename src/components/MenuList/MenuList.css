@@ -1,10 +1,24 @@
-
 .menu-bar {
-    height: 88vh;
-    margin-top: 2rem ;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    font-size: 0.8rem;
-    position: relative;
+  height: 88vh;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-size: 0.8rem;
+  position: relative;
 }
+
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-inline.ant-menu-root .ant-menu-item,
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-inline.ant-menu-root
+  .ant-menu-submenu-title {
+  height: 50px;
+}
+/* .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.side-bar {
+  flex: 0 0 200px;
+  max-width: 200px;
+  min-width: 240px !important;
+  width: 200px;
+}
+.ant-layout-sider-trigger {
+  width: 240px !important;
+} */
