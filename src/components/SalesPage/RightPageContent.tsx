@@ -12,12 +12,14 @@ import { useReactToPrint } from "react-to-print";
 import products from "../../configs/products";
 import { FiPlusCircle } from "react-icons/fi";
 import { BiSolidError } from "react-icons/bi";
+import { handleError } from "../../utils/errorHandler";
 const RightPageContent = ({
   dataProduct,
   dataCategory,
   handleProductClick,
   handleInputDiscountPrice,
   toggleSidebar,
+  setSidebarVisible,
   isSidebarVisible,
   hiddenPopUpDiscountPrice,
   isDataCustomer,
@@ -49,8 +51,10 @@ const RightPageContent = ({
   removeNotConFirmInvoice,
   totalItems,
 }) => {
-  const [selectedCustomer, setSelectedCustomer] = useState<string>("");
+  const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
+  const [selectedCustomer, setSelectedCustomer] = useState<string>(IDCustomerRetail);
   const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
+  const [disabledPayment, setDisabledPayment] = useState(false);
   const [linkQR, setLinkQR] = useState<string>("");
   const [isVoicesID, setIsVoicesID] = useState("");
   const [statePayment, setStatePayment] = useState(false);
@@ -89,6 +93,11 @@ const RightPageContent = ({
     label: item.full_name,
     id: item.id,
   }));
+  const defaultCustomer = infoCustomer.find((customer) => customer.label === "Khách lẻ");
+
+  useEffect(() => {
+    console.log("defaultCustomer", defaultCustomer);
+  }, [defaultCustomer]);
   const infoBanking =
     bankingData
       ?.filter((item) => item.type === true)
@@ -122,6 +131,13 @@ const RightPageContent = ({
       setHiddenErr(false);
     }
   }, [amountPaid]);
+  useEffect(() => {
+    if (totalPrice === 0) {
+      setDisabledPayment(true);
+    } else {
+      setDisabledPayment(false);
+    }
+  }, [totalPrice]);
   useEffect(() => {
     const storedIdActiveInvoice = localStorage.getItem("idActiveInvoice");
     console.log("storedIdActiveInvoice", storedIdActiveInvoice);
@@ -179,6 +195,7 @@ const RightPageContent = ({
   const handlePrint = useReactToPrint({
     content: () => componentRef.current || null,
     onAfterPrint: () => {
+      setSidebarVisible(false);
       removeNotConFirmInvoice(activeKey);
       setStatePayment(false);
       setIsPrintReady(false);
@@ -221,18 +238,15 @@ const RightPageContent = ({
         await getDataDetailInvoice(resIdIvoices);
         toast.success(success);
         setStatePayment(true);
+        setSidebarVisible(false);
         handlePrint();
       }
       // setIsPrintReady(true);
       else {
-        const error = res.data.message.text;
         console.log("error", error);
-        console.log("data payment", res.data);
-        toast.error(error);
-        setStatePayment(false);
       }
     } catch (error) {
-      console.log("err", error);
+      handleError(error);
     }
   };
   useEffect(() => {
@@ -350,10 +364,17 @@ const RightPageContent = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuRef]);
+  const labelRender = (props) => {
+    const { label, value } = props;
+    if (label) {
+      return value;
+    }
+    return <span>Khách lẻ</span>;
+  };
   return (
     <>
       <div className="right-page-content">
-        <ToastContainer />
+        <ToastContainer closeOnClick autoClose={5000} />
         <div className="right-page-content-header">
           <div
             style={{ display: "flex", position: "relative" }}
@@ -434,7 +455,7 @@ const RightPageContent = ({
               <MdKeyboardArrowRight className="icon" />
             </button>
           </div>
-          <button className="btn-pay" onClick={toggleSidebar}>
+          <button className="btn-pay" onClick={toggleSidebar} disabled={disabledPayment}>
             THANH TOÁN
           </button>
         </div>
@@ -451,8 +472,10 @@ const RightPageContent = ({
               <Select
                 showSearch
                 placeholder="Chọn khách hàng"
+                // labelRender={labelRender}
                 notFoundContent="Không tìm thấy người dùng"
                 optionFilterProp="label"
+                defaultValue="Khách lẻ"
                 onChange={(value) => getCustomerPayment(value)}
                 style={{ width: 400, height: 40, paddingRight: "0px" }}
                 filterOption={(input, option) =>

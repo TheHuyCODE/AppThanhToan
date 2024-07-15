@@ -392,6 +392,7 @@ const LoginRegister = () => {
                   type="text"
                   placeholder=" "
                   required
+                  autoComplete="off"
                   // ref={storeNameRef}
                   value={dataRegister.store_name}
                   onChange={handleChangeRegister("store_name")}
@@ -438,6 +439,7 @@ const LoginRegister = () => {
                   type="text"
                   placeholder=" "
                   required
+                  autoComplete="off"
                   value={dataRegister.address}
                   // ref={adressRef}
                   onChange={handleChangeRegister("address")}
@@ -453,6 +455,7 @@ const LoginRegister = () => {
                     type={showPasswordRegister ? "text" : "password"}
                     placeholder=" "
                     required
+                    autoComplete="off"
                     // ref={passWordRef}
                     value={dataRegister.password}
                     onChange={handleChangeRegister("password")}
@@ -478,6 +481,7 @@ const LoginRegister = () => {
             <div className="input-box-form">
               <div className="input-box resgister">
                 <input
+                  autoComplete="off"
                   type="text"
                   placeholder=" "
                   required
@@ -497,6 +501,7 @@ const LoginRegister = () => {
                   type={showConfirmPasswordRegister ? "text" : "password"}
                   placeholder=" "
                   required
+                  autoComplete="off"
                   // ref={confirmPasswordRef}
                   value={dataRegister.confirm_password}
                   onChange={handleChangeRegister("confirm_password")}

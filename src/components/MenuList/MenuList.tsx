@@ -76,7 +76,7 @@ const MenuList = () => {
           Quản lý mã giảm giá
         </Menu.Item>
         <Menu.Item key="paymentmethod" icon={<CiBank />}>
-          <Link to="/admin/paymentmethod">Quản lí phương thức thanh toán</Link>
+          <Link to="/admin/paymentmethod">Phương thức thanh toán</Link>
         </Menu.Item>
 
         <Menu.Item

@@ -360,12 +360,7 @@ const SalePageDemo: React.FC = () => {
   const toggleSidebar = () => {
     setSidebarVisible(!isSidebarVisible);
     setHiddenPopUpDiscountPrice(false);
-    // const discountInVND = inputPayment.discount_price;
-    // const discountInPercent = (discountInVND / total.price) * 100;
-    // setInputPayment((prev) => ({
-    //   ...prev,
-    //   discount_price: Math.round(discountInPercent),
-    // }));
+    console.log("1111111");
   };
   const addInvoice = () => {
     if (invoiceList.length < maxItems) {
@@ -894,6 +889,7 @@ const SalePageDemo: React.FC = () => {
               dataProduct={dataProduct}
               handleProductClick={handleProductClick}
               toggleSidebar={toggleSidebar}
+              setSidebarVisible={setSidebarVisible}
               isSidebarVisible={isSidebarVisible}
               hiddenPopUpDiscountPrice={hiddenPopUpDiscountPrice}
               isDataCustomer={isDataCustomer}
