@@ -146,7 +146,7 @@ const LoginRegister = () => {
     full_name: "",
     phone: "",
   });
-  const handleChange = (fieldName) => (e) => {
+  const handleChange = (fieldName: string) => (e: any) => {
     const value = e.target.value.trim();
     // console.log("value", value);
     setData({
@@ -154,14 +154,25 @@ const LoginRegister = () => {
       [fieldName]: value,
     });
   };
-  const handleChangeRegister = (fieldName: string) => (e) => {
-    const value = e.target.value;
+  const handleChangeRegister = (fieldName: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+
+    if (fieldName === "phone") {
+      // Allow only numbers
+      const numericValue = value.replace(/\D/g, ""); // Remove all non-numeric characters
+      value = numericValue;
+    } else if (["email", "password", "confirm_password"].includes(fieldName)) {
+      value = value.trim();
+    }
+
     console.log("value", value);
+
     setDataRegister({
       ...dataRegister,
       [fieldName]: value,
     });
   };
+
   const setHandleInputPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setInputPassword(value);
@@ -458,7 +469,7 @@ const LoginRegister = () => {
                   onChange={handleChangeRegister("address")}
                 />
                 <label htmlFor="address" className="form-email">
-                  Address <span className="required-star">*</span>
+                  Địa chỉ <span className="required-star">*</span>
                 </label>
                 <FaRegAddressCard className="icon" />
               </div>
@@ -502,7 +513,7 @@ const LoginRegister = () => {
                 />
 
                 <label htmlFor="phone" className="form-email">
-                  Phone <span className="required-star">*</span>
+                  SĐT <span className="required-star">*</span>
                 </label>
                 <FaPhone className="icon" />
               </div>
