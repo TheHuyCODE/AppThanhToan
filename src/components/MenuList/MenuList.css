@@ -13,7 +13,7 @@
   .ant-menu-submenu-title {
   height: 50px;
 }
-/* .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.side-bar {
+.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.side-bar {
   flex: 0 0 200px;
   max-width: 200px;
   min-width: 240px !important;
@@ -21,4 +21,4 @@
 }
 .ant-layout-sider-trigger {
   width: 240px !important;
-} */
+}

@@ -374,7 +374,7 @@ const LoginRegister = () => {
 
         {/* form register */}
         <div className="form-box register">
-          <form action="" onSubmit={handleSubmitRegister}>
+          <form action="" onSubmit={handleSubmitRegister} autoComplete="off">
             <h1 className="title-header">Đăng kí tài khoản</h1>
             <div className="input-box-form">
               {/* <div className="input-box resgister">
