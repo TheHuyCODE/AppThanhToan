@@ -183,30 +183,26 @@ const LoginRegister = () => {
     const data = {
       email: inputPassword,
     };
+    setButtonDisabled(true);
     try {
       const res = await loginApi.forgotPassword(data);
-      if (res.code) {
+      if (res.code === 200) {
         const msSuccess = res.message.text;
         setInputPassword("");
         setIsOpenPopups(false);
-        setButtonDisabled(true);
-        // logout();
         toast.success(msSuccess);
       } else {
-        const msErr = res.data.message.text;
         console.log("111", msErr);
-        toast.error(msErr);
-        if (inputRef.current) {
-          inputRef.current.focus();
-          inputRef.current.select();
-        }
       }
     } catch (err) {
+      handleError(err);
+      setButtonDisabled(false);
       if (inputRef.current) {
         inputRef.current.focus();
         inputRef.current.select();
       }
     }
+    setButtonDisabled(false);
   };
   const handleSubmitRegister = (event) => {
     event.preventDefault();
