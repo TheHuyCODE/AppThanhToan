@@ -523,6 +523,21 @@ const SalePageDemo: React.FC = () => {
     }
   };
 
+  // Always create Invoice number 1
+  const createInvoiceOne = () => {
+    const newInvoice: Invoice = {
+      id: 1,
+      invoice_number: `Hóa đơn 1`,
+      customer_id: "",
+      customer_name: "",
+      total_price: 0,
+      created_date: Date.now(),
+      items: [],
+      id_payment: "1",
+      type: "invoice", // hóa đơn
+    };
+    setInvoiceList([newInvoice]);
+  };
   const removeInvoice = (targetKey: string) => {
     const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
     const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
@@ -533,18 +548,7 @@ const SalePageDemo: React.FC = () => {
     } else if (invoiceList.length === 1 && targetKey === "1") {
       return;
     } else if (invoiceList.length === 1 && targetKey !== "1") {
-      const newInvoice: Invoice = {
-        id: 1,
-        invoice_number: `Hóa đơn 1`,
-        customer_id: "",
-        customer_name: "",
-        total_price: 0,
-        created_date: Date.now(),
-        items: [],
-        id_payment: "1",
-        type: "invoice", // hóa đơn
-      };
-      setInvoiceList([newInvoice]);
+      createInvoiceOne();
       setActiveKey("1");
       localStorage.setItem("idActiveInvoice", "1");
     } else {
@@ -571,18 +575,7 @@ const SalePageDemo: React.FC = () => {
       const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== key);
       if (remainingInvoices.length === 0) {
         // Nếu chỉ còn lại một hóa đơn trả hàng, quay về hóa đơn 1
-        const newInvoice: Invoice = {
-          id: 1,
-          invoice_number: `Hóa đơn 1`,
-          customer_id: "",
-          customer_name: "",
-          total_price: 0,
-          created_date: Date.now(),
-          items: [],
-          id_payment: "1",
-          type: "invoice", // hóa đơn
-        };
-        setInvoiceList([newInvoice]);
+        createInvoiceOne();
         setActiveKey("1");
         localStorage.setItem("idActiveInvoice", "1");
       } else {
@@ -610,18 +603,8 @@ const SalePageDemo: React.FC = () => {
           setActiveKey(newActiveKey);
           localStorage.setItem("idActiveInvoice", newActiveKey);
         } else {
-          const newInvoice: Invoice = {
-            id: 1,
-            invoice_number: `Hóa đơn 1`,
-            customer_id: "",
-            customer_name: "",
-            total_price: 0,
-            created_date: Date.now(),
-            items: [],
-            id_payment: "1",
-            type: "invoice", // hóa đơn
-          };
-          setInvoiceList([newInvoice]);
+          createInvoiceOne();
+
           setActiveKey("1");
           localStorage.setItem("idActiveInvoice", "1");
         }
@@ -638,18 +621,7 @@ const SalePageDemo: React.FC = () => {
           setActiveKey(newActiveKey);
           localStorage.setItem("idActiveInvoice", newActiveKey);
         } else {
-          const newInvoice: Invoice = {
-            id: 1,
-            invoice_number: `Hóa đơn 1`,
-            customer_id: "",
-            customer_name: "",
-            total_price: 0,
-            created_date: Date.now(),
-            items: [],
-            id_payment: "1",
-            type: "invoice", // hóa đơn
-          };
-          setInvoiceList([newInvoice]);
+          createInvoiceOne();
           setActiveKey("1");
           localStorage.setItem("idActiveInvoice", "1");
         }
@@ -675,18 +647,7 @@ const SalePageDemo: React.FC = () => {
           localStorage.setItem("idActiveInvoice", remainingInvoices[0].id_payment);
         } else {
           // If no remaining invoices, reset to default "Hóa đơn 1"
-          const newInvoice: Invoice = {
-            id: 1,
-            invoice_number: `Hóa đơn 1`,
-            customer_id: "",
-            customer_name: "",
-            total_price: 0,
-            created_date: Date.now(),
-            items: [],
-            id_payment: "1",
-            type: "invoice", // hóa đơn
-          };
-          setInvoiceList([newInvoice]);
+          createInvoiceOne();
           setActiveKey("1");
           localStorage.setItem("idActiveInvoice", "1");
         }
@@ -696,18 +657,7 @@ const SalePageDemo: React.FC = () => {
           setActiveKey(remainingInvoices[0].id_payment);
           localStorage.setItem("idActiveInvoice", remainingInvoices[0].id_payment);
         } else {
-          const newInvoice: Invoice = {
-            id: 1,
-            invoice_number: `Hóa đơn 1`,
-            customer_id: "",
-            customer_name: "",
-            total_price: 0,
-            created_date: Date.now(),
-            items: [],
-            id_payment: "1",
-            type: "invoice", // hóa đơn
-          };
-          setInvoiceList([newInvoice]);
+          createInvoiceOne();
           setActiveKey("1");
           localStorage.setItem("idActiveInvoice", "1");
         }
