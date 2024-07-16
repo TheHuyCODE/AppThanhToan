@@ -168,16 +168,12 @@ const AddProduct = () => {
       // setIsOpenPopups(isOpenPopups);
     }
   };
-  const onChangeSelectTree = (newValue: string, labelList, extra) => {
+  const onChangeSelectTree = (newValue: string) => {
     console.log(newValue);
-    console.log(labelList);
-    console.log(extra);
     // console.log("selectTree", option);
     setValue(newValue);
   };
-  // const onSearch = (newValue: string) => {
-  //   console.log(newValue);
-  // };
+
   const onPopupScroll: TreeSelectProps["onPopupScroll"] = (e) => {
     console.log("onPopupScroll", e);
   };
@@ -408,12 +404,12 @@ const AddProduct = () => {
                 // treeNodeFilterProp="key"
                 style={{ width: "300px", height: "40px" }}
                 notFoundContent="Không có danh mục sản phẩm"
-                value={value}
+                // value={value}
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
                 placeholder="Chọn danh mục sản phẩm"
                 allowClear
                 treeDefaultExpandAll
-                onChange={(value, labelList, extra) => onChangeSelectTree(value, labelList, extra)}
+                onChange={onChangeSelectTree}
                 treeData={demoTreeData}
                 onPopupScroll={onPopupScroll}
                 // searchValue={onSearch}

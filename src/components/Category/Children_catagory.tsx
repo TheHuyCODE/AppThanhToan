@@ -24,6 +24,8 @@ const ChildrenCategory = ({
   onCategoryChange,
   onHiddenTitleChild,
   viewTableChildSecond,
+  viewTableChild,
+  setViewTableChild,
 }) => {
   const nameRef = useRef(null);
   const {
@@ -48,7 +50,7 @@ const ChildrenCategory = ({
   const [isInputDataCategoryTwo, setIsInputDataCategoryTwo] = useState<any>();
   const [isKeyThreeChild, setIsKeyThreeChild] = useState("");
   // const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
-  const [viewTableChild, setViewTableChild] = useState(true);
+
   const handleSearchCategory = (e: any) => {
     const value = e.target.value.trim();
     setIsValueSearchChild(value);
@@ -119,7 +121,7 @@ const ChildrenCategory = ({
   const changeModifyCategoryChild = async () => {
     const dataPutCategoryChild = {
       name: modifyItem.name,
-      description: isDescription,
+      description: isInputDataCategoryTwo.description,
       parent_id: isKeyChild,
     };
     const idModifyItemsChild = modifyItem.key;
@@ -134,10 +136,10 @@ const ChildrenCategory = ({
         setIsOpenModalModifyChild(!isOpenModalModifyChild);
         clearInputChildren();
       } else {
-        console.log("Error:", res);
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      handleError(error);
     }
     setLoading(false);
   };
@@ -282,16 +284,7 @@ const ChildrenCategory = ({
     }
   };
   //check state category
-  useEffect(() => {
-    // console.log("viewTableChildSecond", viewTableChildSecond);
-    if (viewTableChildSecond) {
-      setViewTableChild(true);
-      console.log("viewTableChild", viewTableChild);
-    } else {
-      setViewTableChild(false);
-      console.log("viewTableChild", viewTableChild);
-    }
-  }, [viewTableChildSecond]);
+
   const fetchDataSearchCategory = async () => {
     setLoading(true);
     const res = await category.getDataSearchNameChildCategory(isKeyChild, debounceValue);
