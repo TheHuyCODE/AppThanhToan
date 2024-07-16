@@ -285,8 +285,11 @@ const ChildrenCategory = ({
   useEffect(() => {
     // console.log("viewTableChildSecond", viewTableChildSecond);
     if (viewTableChildSecond) {
-      setViewTableChild(viewTableChild);
-      // console.log("viewTableChild", viewTableChild);
+      setViewTableChild(true);
+      console.log("viewTableChild", viewTableChild);
+    } else {
+      setViewTableChild(false);
+      console.log("viewTableChild", viewTableChild);
     }
   }, [viewTableChildSecond]);
   const fetchDataSearchCategory = async () => {
@@ -302,7 +305,6 @@ const ChildrenCategory = ({
     }
   };
   useEffect(() => {
-    console.log("viewTableChildSecond", viewTableChildSecond);
     fetchDataSearchCategory();
   }, [debounceValue]);
   return (

@@ -118,9 +118,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       console.log("Not get data category", error);
     }
   };
-
   const isAuthenticated = !!accessToken;
-
   return (
     <AuthContext.Provider
       value={{

@@ -23,7 +23,7 @@ import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ChildrenCategory from "./Children_catagory";
 import { useAuth } from "../auth/AuthContext";
-import { localCategory } from "../TableConfig/TableConfig";
+import { localCategory, localCategorySeconds } from "../TableConfig/TableConfig";
 import { AiOutlinePicture } from "react-icons/ai";
 import { domain } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
@@ -50,6 +50,7 @@ const CatalogManagement = () => {
   const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
   const [hiddenTitleSecondsChild, setHiddenTitleSecondsChild] = useState(false);
   const [viewTableChildSecond, setViewTableChildSecond] = useState(false);
+  const [viewTableChild, setViewTableChild] = useState(true);
   const [isDescribe, setIsDescribe] = useState("");
   const [isKeyChild, setIsKeyChild] = useState("");
   const [viewTable, setViewTable] = useState(true);
@@ -285,10 +286,16 @@ const CatalogManagement = () => {
     setViewTable(false);
     setHiddenTitleSecondsChild(true);
     setViewTableChildSecond(true);
+    // setViewTableChild(true);
     fetchDataCategoryChild(isKeyChild);
-    console.log("On click table 2");
-    console.log("viewTableChildSecond", viewTableChildSecond);
   };
+  useEffect(() => {
+    // console.log("viewTableChildSecond", viewTableChildSecond);
+    if (viewTableChildSecond) {
+      setViewTableChild(!viewTableChild);
+      console.log("viewTableChild", viewTableChild);
+    }
+  }, [viewTableChildSecond]);
   const showTableChildSecondCategory = () => {};
   const fetchDataCategory = async () => {
     const res = await category.getAll();
@@ -333,13 +340,12 @@ const CatalogManagement = () => {
       setIsDataCategory(res.data);
     } else {
       console.log("Error:");
-      // setLoading(false);
+      setLoading(false);
     }
     setLoading(false);
   };
   useEffect(() => {
     fetchDataSearchCategory();
-    console.log("valueSearchProduct", valueSearch);
   }, [debounceValue]);
   const dataTable = isDataCategory.items?.map((item, index) => ({
     stt: index + 1,
@@ -542,7 +548,7 @@ const CatalogManagement = () => {
                 <Table
                   columns={columnsWithClick}
                   dataSource={dataTable}
-                  locale={localCategory}
+                  locale={localCategorySeconds}
                   pagination={false}
                 />
                 <div
@@ -578,6 +584,8 @@ const CatalogManagement = () => {
             onCategoryChange={handleSelectNameChildCategory}
             onHiddenTitleChild={setHiddenThirdTitle}
             viewTableChildSecond={viewTableChildSecond}
+            viewTableChild={viewTableChild}
+            setViewTableChild={setViewTableChild}
           />
         )}
       </div>

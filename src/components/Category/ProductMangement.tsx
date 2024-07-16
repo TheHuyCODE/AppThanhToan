@@ -24,6 +24,7 @@ import Spinners from "../SpinnerLoading/Spinners";
 import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
 import { width } from "@fortawesome/free-solid-svg-icons/fa0";
+import { handleError } from "../../utils/errorHandler";
 // let locale = {
 //   emptyText: 'Abc',
 // };
@@ -92,11 +93,11 @@ const ProductMangement = () => {
     { value: 2, name: "Chưa kích hoạt", id: "00002" },
   ];
   const [selectedValue, setSelectedValue] = useState(null);
-  const nameProduct = isCategoryProduct?.map((item, index) => ({
-    name: item.name,
-    value: index + 1,
-    id: item.id,
-  }));
+  // const nameProduct = isCategoryProduct?.map((item, index) => ({
+  //   name: item.name,
+  //   value: index + 1,
+  //   id: item.id,
+  // }));
   const handleSelectChange = (e) => {
     // uploadApiImage.postMessage();
     setSelectedValue(e.target.value);
@@ -197,11 +198,11 @@ const ProductMangement = () => {
     } catch (error) {
       console.log("error:", error);
       setLoading(false);
+      handleError(error);
     }
     // console.log("data category", res.data.items);
     // console.log(res.data);
   };
-
   const fetchDataSearchProduct = async () => {
     setLoading(true);
     const res = await products.getDataSearchNameProduct(debounceValue);
@@ -215,10 +216,8 @@ const ProductMangement = () => {
   };
   useEffect(() => {
     fetchDataSearchProduct();
-    console.log("valueSearchProduct", valueSearch);
   }, [debounceValue]);
   useEffect(() => {
-    console.log("isCategoryProduct:", isCategoryProduct);
     fetchDataCategory();
     fetchDataProduct();
   }, []);
@@ -451,11 +450,11 @@ const ProductMangement = () => {
               }}
               style={{ width: 200, height: 35 }}
             >
-              {nameProduct.map((option) => (
+              {/* {nameProduct.map((option) => (
                 <option value={option.value} key={option.id}>
                   {option.name}
                 </option>
-              ))}
+              ))} */}
             </Select>
             {/* <Select
               placeholder="Loại giảm giá"
@@ -567,10 +566,9 @@ const ProductMangement = () => {
                 defaultCurrent={1}
                 total={totalItems}
               />
-              <span
-                className="total-items"
-                style={{ color: "var(--cl-dark)" }}
-              >{`${datatable?.length}/${dataProduct.total}`}</span>
+              <span className="total-items" style={{ color: "var(--cl-dark)" }}>{`${
+                datatable?.length || 0
+              }/${dataProduct.total || 0}`}</span>
             </div>
           </>
         )}

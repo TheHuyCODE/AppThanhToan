@@ -1,6 +1,6 @@
-import { Select, Input } from "antd";
+import { Select, Input, TreeSelect } from "antd";
 import React, { useEffect, useState } from "react";
-import { IoIosAdd, IoIosArrowBack, IoMdAdd } from "react-icons/io";
+import { IoIosArrowBack, IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
@@ -10,27 +10,29 @@ import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
 
 import { ToastContainer, toast } from "react-toastify";
-import category from "../../configs/category";
+
 import { AiOutlinePicture } from "react-icons/ai";
 const { TextArea } = Input;
+import type { TreeSelectProps } from "antd";
 const AddProduct = () => {
   const navigate = useNavigate();
   const [isImageProduct, setIsImageProduct] = useState("");
   const [previewImageProduct, setPreviewImageProduct] = useState("");
   const [resImageProduct, setResImageProduct] = useState("");
-  const [isPriceProduct, setIsPriceProduct] = useState("");
-
-  // const [isCapitalPriceProduct, setIsCapitalPriceProduct] = useState("");
-  // const [isImageCategory, setIsImageCategory] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [value, setValue] = useState<string>();
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-  const [stateProduct, setStateProduct] = useState("");
   // const [selectedCategory, setSelectedCategory] = useState('');
-  const listCategory = isCategoryProduct?.map((item, index) => ({
-    name: item.name,
-    value: index + 1,
-    id: item.id,
-  }));
+  // const listCategory = isCategoryProduct?.map((item, index) => ({
+  //   name: item.name,
+  //   value: index + 1,
+  //   id: item.id,
+  // }));
+  interface Category {
+    value: string;
+    title: string;
+    children: [];
+    key: string;
+  }
   const unitProduct = [
     {
       name: "Cái",
@@ -166,7 +168,36 @@ const AddProduct = () => {
       // setIsOpenPopups(isOpenPopups);
     }
   };
+  const onChangeSelectTree = (newValue: string, labelList, extra) => {
+    console.log(newValue);
+    console.log(labelList);
+    console.log(extra);
+    // console.log("selectTree", option);
+    setValue(newValue);
+  };
+  // const onSearch = (newValue: string) => {
+  //   console.log(newValue);
+  // };
+  const onPopupScroll: TreeSelectProps["onPopupScroll"] = (e) => {
+    console.log("onPopupScroll", e);
+  };
+  const demoTreeData = isCategoryProduct.map((item) => ({
+    value: item.name,
+    title: item.name,
+    children: (item.children || []).map((child) => ({
+      value: child.name,
+      title: child.name,
+      id: child.id,
+      children: (child.children || []).map((subchild) => ({
+        value: subchild.name,
+        title: subchild.name,
+        id: subchild.id,
+      })),
+    })),
+    id: item.id,
+  }));
 
+  console.log("demoTreeData", demoTreeData);
   const clearInputsAddProduct = () => {
     setInputProduct({
       barcode: "",
@@ -372,22 +403,21 @@ const AddProduct = () => {
               <label htmlFor="">
                 Danh mục sản phẩm(<span>*</span>)
               </label>
-              <Select
-                placeholder="Danh mục sản phẩm"
+              <TreeSelect
+                showSearch
+                // treeNodeFilterProp="key"
+                style={{ width: "300px", height: "40px" }}
+                notFoundContent="Không có danh mục sản phẩm"
+                value={value}
+                dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                placeholder="Chọn danh mục sản phẩm"
                 allowClear
-                // defaultValue="Giới tính"
-                style={{ width: 302, height: 36 }}
-                onChange={(value) => {
-                  handleSelectCategory(value);
-                }}
-              >
-                {listCategory.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.name}
-                  </option>
-                ))}
-                /
-              </Select>
+                treeDefaultExpandAll
+                onChange={(value, labelList, extra) => onChangeSelectTree(value, labelList, extra)}
+                treeData={demoTreeData}
+                onPopupScroll={onPopupScroll}
+                // searchValue={onSearch}
+              />
             </div>
             <div
               className="input-info"
