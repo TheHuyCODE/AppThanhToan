@@ -2,7 +2,13 @@ export const localeProduct = {
   emptyText: "Không có sản phẩm",
 };
 export const localCategory = {
-  emptyText: "Không có danh mục",
+  emptyText: "Không có danh mục cấp 1",
+};
+export const localCategorySeconds = {
+  emptyText: "Không có danh mục cấp 2",
+};
+export const localCategoryThirds = {
+  emptyText: "Không có danh mục cấp 3",
 };
 export const localInvoice = {
   emptyText: "Không có hóa đơn",

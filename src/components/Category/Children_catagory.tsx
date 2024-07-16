@@ -12,10 +12,11 @@ import { format } from "date-fns";
 import { useAuth } from "../auth/AuthContext";
 import ChildrenThree_catagory from "./ChildrenThree_catagory";
 import { AiOutlinePicture } from "react-icons/ai";
-import { domain } from "../TableConfig/TableConfig";
+import { domain, localCategorySeconds } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
+import { handleError } from "../../utils/errorHandler";
 
 const ChildrenCategory = ({
   isKeyChild,
@@ -24,7 +25,6 @@ const ChildrenCategory = ({
   onHiddenTitleChild,
   viewTableChildSecond,
 }) => {
-  const domainLink = domain.domainLink;
   const nameRef = useRef(null);
   const {
     isResDataChild,
@@ -52,7 +52,6 @@ const ChildrenCategory = ({
   const handleSearchCategory = (e: any) => {
     const value = e.target.value.trim();
     setIsValueSearchChild(value);
-    console.log("value", value);
   };
   const clearInputChildren = () => {
     if (nameRef.current) {
@@ -63,18 +62,18 @@ const ChildrenCategory = ({
   const openModalChildSecond = () => {
     setIsOpenPopupChild(!isOpenPopupChild);
   };
+  // Add items category
   const clickAddItemCategoryChild = async (event: any) => {
-    console.log("addItemCategoryChild");
     event.preventDefault();
     const userDataCategoryChild = {
       name: isInputCategoryChild,
       description: isDescription,
       parent_id: isKeyChild,
     };
+    setLoading(true);
     try {
       const res = await uploadApiImage.postAddItemCategoryChild(userDataCategoryChild);
       if (res.code === 200) {
-        console.log("res", res);
         const successMs = res.message.text;
         toast.success(successMs);
         setIsOpenPopupChild(!isOpenPopupChild);
@@ -87,21 +86,20 @@ const ChildrenCategory = ({
         setIsOpenPopupChild(true);
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      handleError(error);
     }
+    setLoading(false);
   };
 
-  //delete items child category
-
-  const onDeleteCategories = (items) => {
-    console.log("onDeleteCategories");
+  const onDeleteCategories = (items: any) => {
     setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
     setIdDeleteItemsChild(items);
-    console.log(items);
   };
+
+  //Delete items child category
   const clickDeleteCategoryChild = async () => {
-    // call api deleteCategoryChild
     const keyItemChild = idDeleteItemsChild.key;
+    setLoading(true);
     if (keyItemChild) {
       const res = await category.deleteCategoryChild(keyItemChild);
       if (res.code === 200) {
@@ -115,19 +113,17 @@ const ChildrenCategory = ({
         setIsOpenModalDeleteChild(isOpenModalDeleteChild);
       }
     }
+    setLoading(false);
   };
-  //modify items child category
+  //Modify items child category
   const changeModifyCategoryChild = async () => {
-    console.log("modidy child category", modifyItem);
     const dataPutCategoryChild = {
       name: modifyItem.name,
       description: isDescription,
       parent_id: isKeyChild,
     };
-
     const idModifyItemsChild = modifyItem.key;
-    console.log("idModifyItemsChild", idModifyItemsChild);
-    console.log("dataPutCategoryChild", dataPutCategoryChild);
+    setLoading(true);
     try {
       const res = await category.putModifyCategoryChild(idModifyItemsChild, dataPutCategoryChild);
       if (res.code === 200) {
@@ -143,8 +139,9 @@ const ChildrenCategory = ({
     } catch (error) {
       console.error("Error uploading image:", error);
     }
+    setLoading(false);
   };
-  const onModifyCategories = (record) => {
+  const onModifyCategories = (record: any) => {
     console.log("onModifyCategories", record);
     setIsOpenModalModifyChild(!isOpenModalModifyChild);
     setModifyItem(record);
@@ -152,29 +149,24 @@ const ChildrenCategory = ({
     console.log("record:", record.key);
     console.log("record:", record.image_url);
   };
-
-  //get input values and file images ChildrenCategory
-
+  //Get input values and file images ChildrenCategory
   const setHandleInput = (event: any) => {
     const value = event.target.value;
-    // console.log("value Category 2:", value);
     setIsInputCategoryChild(value);
     if (modifyItem) {
       setModifyItem({ ...modifyItem, name: value });
     }
   };
-  //get list items children category
-
-  const dataTableChild = isResDataChild.items?.map((item, index) => ({
+  //Get list items children category
+  const dataTableChild = isResDataChild.items?.map((item, index: number) => ({
     stt: index + 1,
     key: item.id,
     name: item.name,
     number_children: item.number_children,
     description: item.description,
     created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
-    image_url: item.image_url,
   }));
-
+  //Data table categories
   const columns = [
     {
       title: "STT",
@@ -187,7 +179,7 @@ const ChildrenCategory = ({
       dataIndex: "name",
       key: "name",
       align: "center",
-      width: 200,
+      width: 250,
     },
     {
       title: "Số lượng danh mục cấp 3",
@@ -227,19 +219,16 @@ const ChildrenCategory = ({
       ),
     },
   ];
-  //set with click table
+
+  //Set with click table
   const columnsWithClick = columns?.map((col, index) => {
     if (index < 4) {
       return {
         ...col,
         onCell: (record: any) => ({
           onClick: () => {
-            console.log("Click row");
-            console.log("record:", record);
             const name = record.name;
-            console.log("nameClicked", name);
             const keyChild = record.key;
-            console.log("keyChild: ", keyChild);
             // setSelectedCategoryChild(name);
             setIsKeyThreeChild(keyChild);
             fetchDataCategorySecondChild(keyChild);
@@ -268,8 +257,6 @@ const ChildrenCategory = ({
     }
   };
   const onShowSizeChange = (current: number, size: number) => {
-    console.log("Current page:", current);
-    console.log("Page size:", size);
     getDataPagination(current, size);
     setPage(current);
     setPageSize(size);
@@ -289,16 +276,17 @@ const ChildrenCategory = ({
       } else {
         console.log("err");
       }
-    } catch (err) {
-      console.log("err", err);
+    } catch (error) {
+      handleError(error);
+      // console.log("err", err);
     }
   };
   //check state category
   useEffect(() => {
-    console.log("viewTableChildSecond", viewTableChildSecond);
+    // console.log("viewTableChildSecond", viewTableChildSecond);
     if (viewTableChildSecond) {
       setViewTableChild(viewTableChild);
-      console.log("viewTableChild", viewTableChild);
+      // console.log("viewTableChild", viewTableChild);
     }
   }, [viewTableChildSecond]);
   const fetchDataSearchCategory = async () => {
@@ -306,6 +294,7 @@ const ChildrenCategory = ({
     const res = await category.getDataSearchNameChildCategory(isKeyChild, debounceValue);
     if (res.code === 200) {
       setIsResDataChild(res.data);
+      console.log("object 11111", res.data);
       setLoading(false);
     } else {
       console.log("Error:");
@@ -318,7 +307,7 @@ const ChildrenCategory = ({
   }, [debounceValue]);
   return (
     <>
-      {isResDataChild.items == 0 ? (
+      {isResDataChild.items === 0 ? (
         <div className="add_children_category">
           <p>Chưa có model cấp 2</p>
           <Button
@@ -379,6 +368,7 @@ const ChildrenCategory = ({
                   <Table
                     columns={columnsWithClick}
                     dataSource={dataTableChild}
+                    locale={localCategorySeconds}
                     pagination={false}
                   />
                   <div

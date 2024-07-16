@@ -7,10 +7,11 @@ import { useAuth } from "../auth/AuthContext";
 import { AiOutlinePicture } from "react-icons/ai";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast } from "react-toastify";
-import { domain } from "../TableConfig/TableConfig";
+import { domain, localCategoryThirds } from "../TableConfig/TableConfig";
 import category from "../../configs/category";
 import useDebounce from "../auth/useDebounce";
 import TextArea from "antd/es/input/TextArea";
+import Spinners from "../SpinnerLoading/Spinners";
 
 const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   const domainLink = domain.domainLink;
@@ -23,12 +24,10 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   const debounceValue = useDebounce(isValueSearchChild, 700);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [isPreviewImageModifyChild, setIsPreviewImageModifyChild] = useState("");
-  const [isPreviewImageChild, setIsPreviewImageChild] = useState("");
   const [isOpenModalAddCategory, setIsOpenModalAddCategory] = useState(false);
   const [isOpenModalModifyChild, setIsOpenModalModifyChild] = useState(false);
   const [isOpenModalDeleteChild, setIsOpenModalDeleteChild] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [modifyItem, setModifyItem] = useState<any>();
   const [decriptionModifyCategoryThird, setDecriptionModifyCategoryThird] = useState<any>();
 
@@ -54,9 +53,6 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     setModifyItem(record);
     setDecriptionModifyCategoryThird(record);
     setIsKeyChildThree(record.key);
-    if (record.image_url) {
-      setIsPreviewImageModifyChild(`${domainLink}/${record.image_url}`);
-    }
   };
   const clearInputChildren = () => {
     if (nameRef.current) {
@@ -92,7 +88,6 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     }
   };
   const changeModifyCategoryChild = async () => {
-    console.log("modidy child category", modifyItem);
     setIsOpenModalModifyChild(!isOpenModalModifyChild);
     const dataPutCategoryChild = {
       name: modifyItem.name,
@@ -100,8 +95,8 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
       parent_id: isKeyThreeChild,
     };
     const idModifyItemsChild = modifyItem.key;
-    console.log("idModifyItemsChild", idModifyItemsChild);
-    console.log("dataPutCategoryChild", dataPutCategoryChild);
+    setLoading(true);
+
     try {
       const res = await category.putModifyCategoryChild(idModifyItemsChild, dataPutCategoryChild);
       if (res.code === 200) {
@@ -114,7 +109,9 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
       }
     } catch (error) {
       console.error("Error uploading image:", error);
+      setLoading(true);
     }
+    setLoading(false);
   };
   const onShowSizeChange = (current: number, size: number) => {
     console.log("Current page:", current);
@@ -125,11 +122,11 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   };
   const onChangeNumberPagination = (current: number) => {
     console.log("Current page:", current);
-    // getDataPagination(current, pageSize);
+    getDataPagination(current, pageSize);
     setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
-    // setLoading(true);
+    setLoading(true);
     try {
       const res = await category.getDataCategoryPaginationChild(isKeyThreeChild, current, size);
       if (res.data) {
@@ -142,9 +139,11 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     } catch (err) {
       console.log("err", err);
     }
+    setLoading(false);
   };
   const clickDeleteCategoryChild = async () => {
     const keyItemChild = idDeleteItemsChild.key;
+    setLoading(true);
     if (keyItemChild) {
       const res = await category.deleteCategoryChild(keyItemChild);
       if (res.code === 200) {
@@ -158,6 +157,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
         setIsOpenModalDeleteChild(isOpenModalDeleteChild);
       }
     }
+    setLoading(false);
   };
   const onDeleteCategoriesThree = (record) => {
     setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
@@ -240,15 +240,15 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     return col;
   });
   const fetchDataSearchCategory = async () => {
-    // setLoading(true);
+    setLoading(true);
     const res = await category.getDataSearchNameThreeCategory(isKeyThreeChild, debounceValue);
     if (res.code === 200) {
       setIsResDataChildSeconds(res.data);
       // setLoading(false);
     } else {
       console.log("Error:");
-      // setLoading(false);
     }
+    setLoading(false);
   };
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     console.log("describe", e.target.value);
@@ -260,12 +260,11 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     });
   };
   useEffect(() => {
-    // console.log("viewTableChildSecond", viewTableChildSecond);
     fetchDataSearchCategory();
   }, [debounceValue]);
   return (
     <>
-      {isResDataChildSeconds.items == 0 ? (
+      {isResDataChildSeconds.items === 0 ? (
         <div className="add_children_category">
           <p>Chưa có model cấp 3</p>
           <Button
@@ -310,30 +309,41 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
             </div>
           </div>
           <div className="table-container">
-            <Table columns={columnsWithClick} dataSource={dataTableChild} pagination={false} />
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-                gap: "10px",
-                marginTop: "10px",
-                padding: "10px",
-              }}
-            >
-              <Pagination
-                showSizeChanger
-                onShowSizeChange={onShowSizeChange}
-                onChange={onChangeNumberPagination}
-                defaultCurrent={1}
-                total={isResDataChildSeconds?.total}
-              />
-              <span
-                className="total-items"
-                style={{ color: "black" }}
-              >{`${dataTableChild?.length} danh mục cấp 1`}</span>
-            </div>
+            {loading ? (
+              <Spinners loading={loading} />
+            ) : (
+              <>
+                <Table
+                  columns={columnsWithClick}
+                  dataSource={dataTableChild}
+                  locale={localCategoryThirds}
+                  pagination={false}
+                />
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-around",
+                    gap: "10px",
+                    marginTop: "10px",
+                    padding: "10px",
+                  }}
+                >
+                  <Pagination
+                    showSizeChanger
+                    onShowSizeChange={onShowSizeChange}
+                    onChange={onChangeNumberPagination}
+                    defaultCurrent={1}
+                    // total={isResDataChildSeconds?.total}
+                  />
+                  <span
+                    className="total-items"
+                    style={{ color: "black" }}
+                  >{`${dataTableChild?.length} danh mục cấp 3`}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
