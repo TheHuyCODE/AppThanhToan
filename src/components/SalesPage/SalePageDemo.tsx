@@ -568,12 +568,33 @@ const SalePageDemo: React.FC = () => {
       (invoice) => invoice.id_payment === key && invoice.type === "return"
     );
     if (returnInvoiceToRemove) {
-      setInvoiceList((prev) => prev.filter((invoice) => invoice.id_payment !== key));
-      setActiveKey("1");
+      const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== key);
+      if (remainingInvoices.length === 0) {
+        // Nếu chỉ còn lại một hóa đơn trả hàng, quay về hóa đơn 1
+        const newInvoice: Invoice = {
+          id: 1,
+          invoice_number: `Hóa đơn 1`,
+          customer_id: "",
+          customer_name: "",
+          total_price: 0,
+          created_date: Date.now(),
+          items: [],
+          id_payment: "1",
+          type: "invoice", // hóa đơn
+        };
+        setInvoiceList([newInvoice]);
+        setActiveKey("1");
+        localStorage.setItem("idActiveInvoice", "1");
+      } else {
+        // Nếu còn nhiều hóa đơn, chỉ xóa hóa đơn được chọn
+        setInvoiceList(remainingInvoices);
+        setActiveKey("1");
+      }
     } else {
       toast.warning("Hóa đơn trả hàng không tồn tại hoặc đã bị xóa.");
     }
   };
+
   const confirmRemoveInvoice = () => {
     if (keyRemove) {
       if (keyRemove === "1") {
