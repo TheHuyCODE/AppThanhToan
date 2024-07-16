@@ -48,7 +48,8 @@ const RightPageContent = ({
   fetchDataProductAfter,
   fetchDataProduct,
   getDataCustomer,
-  removeNotConFirmInvoice,
+  removeNotConFirm,
+
   totalItems,
 }) => {
   const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
@@ -196,7 +197,7 @@ const RightPageContent = ({
     content: () => componentRef.current || null,
     onAfterPrint: () => {
       setSidebarVisible(false);
-      removeNotConFirmInvoice(activeKey);
+      removeNotConFirm(activeKey);
       setStatePayment(false);
       setIsPrintReady(false);
     },

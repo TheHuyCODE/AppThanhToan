@@ -14,6 +14,7 @@ import sellProduct from "../../configs/sellProduct";
 import ReturnInvoice from "../Invoices/ReturnInvoice";
 import { GiCardKingClubs } from "react-icons/gi";
 import LeftReturnInvoice from "../Invoices/LeftReturnInvoice";
+import { previousDay } from "date-fns";
 interface Product {
   id: number;
   name: string;
@@ -524,27 +525,37 @@ const SalePageDemo: React.FC = () => {
 
   const removeInvoice = (targetKey: string) => {
     const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
+    const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
+
     if (invoiceToRemove && invoiceToRemove.items.length > 0) {
-      // Invoice has items, require confirmation
       openModal();
       setKeyRemove(targetKey);
-    } else if (targetKey === "1") {
-      openModal();
-      setKeyRemove(targetKey);
+    } else if (invoiceList.length === 1 && targetKey === "1") {
+      return;
+    } else if (invoiceList.length === 1 && targetKey !== "1") {
+      const newInvoice: Invoice = {
+        id: 1,
+        invoice_number: `Hóa đơn 1`,
+        customer_id: "",
+        customer_name: "",
+        total_price: 0,
+        created_date: Date.now(),
+        items: [],
+        id_payment: "1",
+        type: "invoice", // hóa đơn
+      };
+      setInvoiceList([newInvoice]);
+      setActiveKey("1");
+      localStorage.setItem("idActiveInvoice", "1");
     } else {
       // Invoice has no items, remove directly
-      const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
-      setInvoiceList(newInvoiceList);
-      console.log("111", newInvoiceList);
-      if (newInvoiceList.length) {
-        // Find the index of the target invoice and set the active key to the adjacent one
+      setInvoiceList(remainingInvoices);
+      if (remainingInvoices.length) {
         const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === targetKey);
-        let newActiveKey;
-        if (targetIndex > 0) {
-          newActiveKey = newInvoiceList[targetIndex - 1].id_payment;
-        } else {
-          newActiveKey = newInvoiceList[0].id_payment;
-        }
+        const newActiveKey =
+          targetIndex > 0
+            ? remainingInvoices[targetIndex - 1].id_payment
+            : remainingInvoices[0].id_payment;
         setActiveKey(newActiveKey);
         localStorage.setItem("idActiveInvoice", newActiveKey);
       } else {
@@ -552,28 +563,6 @@ const SalePageDemo: React.FC = () => {
       }
     }
   };
-  const removeNotConFirmInvoice = (targetKey: string) => {
-    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
-    if (invoiceToRemove) {
-      if (targetKey === "1") {
-        // Clear items of the invoice with id_payment "1" without removing the invoice
-        const updatedInvoiceList = invoiceList.map((invoice) => {
-          if (invoice.id_payment === targetKey) {
-            return { ...invoice, items: [] };
-          }
-          return invoice;
-        });
-        setInvoiceList(updatedInvoiceList);
-      } else {
-        // Remove the invoice normally for other cases
-        setInvoiceList((prev) => prev.filter((invoice) => invoice.id_payment !== targetKey));
-        setActiveKey("1");
-      }
-    } else {
-      console.log("err");
-    }
-  };
-
   const removeReturnInvoice = (key: string) => {
     const returnInvoiceToRemove = invoiceList.find(
       (invoice) => invoice.id_payment === key && invoice.type === "return"
@@ -585,36 +574,125 @@ const SalePageDemo: React.FC = () => {
       toast.warning("Hóa đơn trả hàng không tồn tại hoặc đã bị xóa.");
     }
   };
-
   const confirmRemoveInvoice = () => {
     if (keyRemove) {
       if (keyRemove === "1") {
-        setInvoiceList((prev) => {
-          // Find the invoice with id === 1 and set its items to an empty array
-          return prev.map((invoice) => (invoice.id === 1 ? { ...invoice, items: [] } : invoice));
-        });
-        setActiveKey("1"); // Set to the initial invoice
-        localStorage.setItem("idActiveInvoice", "1");
+        const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== keyRemove);
+        setInvoiceList(newInvoiceList);
+
+        if (newInvoiceList.length) {
+          const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === keyRemove);
+          const newActiveKey =
+            targetIndex > 0
+              ? newInvoiceList[targetIndex - 1].id_payment
+              : newInvoiceList[0].id_payment;
+          setActiveKey(newActiveKey);
+          localStorage.setItem("idActiveInvoice", newActiveKey);
+        } else {
+          const newInvoice: Invoice = {
+            id: 1,
+            invoice_number: `Hóa đơn 1`,
+            customer_id: "",
+            customer_name: "",
+            total_price: 0,
+            created_date: Date.now(),
+            items: [],
+            id_payment: "1",
+            type: "invoice", // hóa đơn
+          };
+          setInvoiceList([newInvoice]);
+          setActiveKey("1");
+          localStorage.setItem("idActiveInvoice", "1");
+        }
       } else {
         const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== keyRemove);
         setInvoiceList(newInvoiceList);
 
         if (newInvoiceList.length) {
-          // Find the index of the target invoice and set the active key to the adjacent one
           const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === keyRemove);
-          let newActiveKey;
-          if (targetIndex > 0) {
-            newActiveKey = newInvoiceList[targetIndex - 1].id_payment;
-          } else {
-            newActiveKey = newInvoiceList[0].id_payment;
-          }
+          const newActiveKey =
+            targetIndex > 0
+              ? newInvoiceList[targetIndex - 1].id_payment
+              : newInvoiceList[0].id_payment;
           setActiveKey(newActiveKey);
           localStorage.setItem("idActiveInvoice", newActiveKey);
         } else {
+          const newInvoice: Invoice = {
+            id: 1,
+            invoice_number: `Hóa đơn 1`,
+            customer_id: "",
+            customer_name: "",
+            total_price: 0,
+            created_date: Date.now(),
+            items: [],
+            id_payment: "1",
+            type: "invoice", // hóa đơn
+          };
+          setInvoiceList([newInvoice]);
           setActiveKey("1");
+          localStorage.setItem("idActiveInvoice", "1");
         }
       }
       openModal();
+    }
+  };
+  const removeNotConFirmInvoice = (targetKey: string) => {
+    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
+    const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
+
+    if (invoiceToRemove) {
+      if (invoiceList.length === 1 && targetKey === "1") {
+        // Only one invoice left and it's "Hóa đơn 1", do not allow removal
+        console.log("Cannot remove the only invoice 1");
+        return;
+      }
+      setInvoiceList(remainingInvoices);
+      if (targetKey === "1") {
+        // If "Hóa đơn 1" is removed, set the active key to the first remaining invoice
+        if (remainingInvoices.length) {
+          setActiveKey(remainingInvoices[0].id_payment);
+          localStorage.setItem("idActiveInvoice", remainingInvoices[0].id_payment);
+        } else {
+          // If no remaining invoices, reset to default "Hóa đơn 1"
+          const newInvoice: Invoice = {
+            id: 1,
+            invoice_number: `Hóa đơn 1`,
+            customer_id: "",
+            customer_name: "",
+            total_price: 0,
+            created_date: Date.now(),
+            items: [],
+            id_payment: "1",
+            type: "invoice", // hóa đơn
+          };
+          setInvoiceList([newInvoice]);
+          setActiveKey("1");
+          localStorage.setItem("idActiveInvoice", "1");
+        }
+      } else {
+        // If other invoice is removed, ensure "Hóa đơn 1" is visible
+        if (remainingInvoices.length) {
+          setActiveKey(remainingInvoices[0].id_payment);
+          localStorage.setItem("idActiveInvoice", remainingInvoices[0].id_payment);
+        } else {
+          const newInvoice: Invoice = {
+            id: 1,
+            invoice_number: `Hóa đơn 1`,
+            customer_id: "",
+            customer_name: "",
+            total_price: 0,
+            created_date: Date.now(),
+            items: [],
+            id_payment: "1",
+            type: "invoice", // hóa đơn
+          };
+          setInvoiceList([newInvoice]);
+          setActiveKey("1");
+          localStorage.setItem("idActiveInvoice", "1");
+        }
+      }
+    } else {
+      console.log("err");
     }
   };
   const getInfoBanking = async () => {
@@ -642,8 +720,7 @@ const SalePageDemo: React.FC = () => {
       const res = await invoice.getAllInvoices();
       if (res.code === 200) {
         const data = res.data.items;
-        const totalInvoices = res.data.items;
-        console.log("dataInvoice", data);
+        const totalInvoices = res.data.total;
         setDataTableInvoice(data);
         setTotalInvoice(totalInvoices);
       } else {
@@ -919,7 +996,7 @@ const SalePageDemo: React.FC = () => {
               fetchDataProductAfter={fetchDataProductAfter}
               fetchDataProduct={fetchDataProduct}
               getDataCustomer={getDataCustomer}
-              removeNotConFirmInvoice={removeNotConFirmInvoice}
+              removeNotConFirm={removeNotConFirmInvoice}
               totalItems={totalItems}
             />
           )}

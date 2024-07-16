@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { AxiosError } from "axios";
 import { handleError } from "../../utils/errorHandler";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 const LoginRegister = () => {
   const storeNameRef = useRef(null);
   const fullNameRef = useRef(null);
@@ -320,15 +321,20 @@ const LoginRegister = () => {
                 </a>
               </label>
               <Modal
-                okButtonProps={{ disabled: buttonDisabled }}
+                okButtonProps={{
+                  disabled: buttonDisabled,
+                  style: { height: "45px", alignItems: "center" },
+                }}
+                cancelButtonProps={{ style: { display: "none" } }}
                 className="modalDialog-addItems"
                 width={450}
                 centered
                 open={isOpenPopups}
                 onOk={clickForgotPassword}
-                onCancel={getRememberPassword}
+                // onCancel={getRememberPassword}
                 okText="Lấy mật khẩu"
-                cancelText="Hủy bỏ"
+                // footer={null}
+                // cancelText={false}
               >
                 <h1 className="title-addItem">Quên mật khẩu?</h1>
                 <div className="containner-forgot-password">

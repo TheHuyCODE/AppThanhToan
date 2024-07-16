@@ -216,17 +216,17 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       ),
     },
   ];
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
   const onShowSizeChange = (current: number, size: number) => {
     console.log("Current page:", current);
     console.log("Page size:", size);
     getDataPagination(current, size);
     setPage(current);
     setPageSize(size);
-  };
-  const onChangeNumberPagination = (current: number) => {
-    console.log("Current page:", current);
-    getDataPagination(current, pageSize);
-    setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
     // setLoading(true);

@@ -102,6 +102,8 @@ const CatalogManagement = () => {
   // call api delete
   const clickDeleteCategory = async () => {
     const keyItem = deleteItem.key;
+    setLoading(true);
+
     try {
       const res = await category.deleteCategory(keyItem);
       if (res.code === 200) {
@@ -117,6 +119,7 @@ const CatalogManagement = () => {
     } catch (error) {
       handleError(error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -143,6 +146,7 @@ const CatalogManagement = () => {
       parent_id: null,
     };
     const idModifyItems = editItem.key;
+    setLoading(true);
     try {
       const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
       if (res.code === 200) {
@@ -158,6 +162,7 @@ const CatalogManagement = () => {
     } catch (error) {
       handleError(error);
     }
+    setLoading(false);
   };
   const columns = [
     {
@@ -250,6 +255,7 @@ const CatalogManagement = () => {
       description: isDescribe,
       parent_id: null,
     };
+    setLoading(true);
     try {
       const res = await uploadApiImage.postAddItemCategory(userDataCategory);
       if (res.code == 200) {
@@ -266,6 +272,7 @@ const CatalogManagement = () => {
       handleError(error);
       setIsOpenPopups(isOpenPopups);
     }
+    setLoading(false);
   };
   //show table child when clicked
   const showTableCategory = async () => {
@@ -288,8 +295,6 @@ const CatalogManagement = () => {
     const totalCategory = res.data.total;
     setIsDataCategory(res.data);
     setTotalCategory(totalCategory);
-    console.log("data category", res.data.items);
-    console.log(res.data);
   };
   const onShowSizeChange = (current: number, size: number) => {
     console.log("Current page:", current);
@@ -300,10 +305,11 @@ const CatalogManagement = () => {
   };
   const onChangeNumberPagination = (current: number) => {
     console.log("Current page:", current);
-    // getDataPagination(current, pageSize);
+    getDataPagination(current, pageSize);
     setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
+    setLoading(true);
     try {
       const res = await category.getDataCategoryPagination(current, size);
       if (res.data) {
@@ -315,6 +321,7 @@ const CatalogManagement = () => {
     } catch (err) {
       console.log("err", err);
     }
+    setLoading(false);
   };
   useEffect(() => {
     fetchDataCategory();
@@ -324,11 +331,11 @@ const CatalogManagement = () => {
     const res = await category.getDataSearchNameCategory(debounceValue);
     if (res.data) {
       setIsDataCategory(res.data);
-      setLoading(false);
     } else {
       console.log("Error:");
-      setLoading(false);
+      // setLoading(false);
     }
+    setLoading(false);
   };
   useEffect(() => {
     fetchDataSearchCategory();
