@@ -14,6 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { AiOutlinePicture } from "react-icons/ai";
 const { TextArea } = Input;
 import type { TreeSelectProps } from "antd";
+import { handleError } from "../../utils/errorHandler";
 const AddProduct = () => {
   const navigate = useNavigate();
   const [isImageProduct, setIsImageProduct] = useState("");
@@ -27,12 +28,7 @@ const AddProduct = () => {
   //   value: index + 1,
   //   id: item.id,
   // }));
-  interface Category {
-    value: string;
-    title: string;
-    children: [];
-    key: string;
-  }
+
   const unitProduct = [
     {
       name: "Cái",
@@ -107,7 +103,7 @@ const AddProduct = () => {
     category_id: "",
   });
 
-  const onChangeInput = (fieldName) => (e) => {
+  const onChangeInput = (fieldName: string) => (e) => {
     let value = e.target.value.trim();
     // If the field is 'inventory_number', convert the value to a number
     if (fieldName === "inventory_number") {
@@ -121,7 +117,7 @@ const AddProduct = () => {
   };
 
   // add product
-  const onClickAddProduct = async (e) => {
+  const onClickAddProduct = async (e: any) => {
     e.preventDefault();
     const dataAddProduct = {
       barcode: inputProduct.barcode,
@@ -136,64 +132,71 @@ const AddProduct = () => {
       unit: inputProduct.unit,
     };
     // console.log("dataProduct:", data);
-    console.log("inputProduct", inputProduct);
-    console.log("inputProduct", dataAddProduct);
-
-    console.log(typeof inputProduct.barcode);
-    console.log(typeof inputProduct.price);
-    console.log(typeof inputProduct.capital_price);
-    console.log(typeof inputProduct.inventory_number);
     try {
       const response = await products.postAddProduct(dataAddProduct);
       if (response.code === 200) {
-        console.log("res", response);
-        toast.success("Đã thêm sản phẩm thành công!");
-        setTimeout(() => {
-          onClickBackPageProduct();
-        }, 1000); // Adjust the delay as needed (1000ms = 1 second)
+        const msSuccess = response.message.text;
+        toast.success(msSuccess);
+        onClickBackPageProduct();
+        // Adjust the delay as needed (1000ms = 1 second)
         await fetchDataCategory();
         clearInputsAddProduct;
         // setIsPreviewImage("");
       } else {
         console.log("error", response);
-        const errorMessage = response.data.message.text;
-        toast.error(`${errorMessage}`);
-        // setErrorMessageCategories(errorMessage);
-        console.log(errorMessage);
-        // setIsOpenPopups(isOpenPopups);
       }
     } catch (error) {
-      console.error("Error adding category:", error);
-      toast.error("Có lỗi xảy ra khi thêm danh mục!");
-      // setIsOpenPopups(isOpenPopups);
+      handleError(error);
     }
-  };
-  const onChangeSelectTree = (newValue: string) => {
-    console.log(newValue);
-    // console.log("selectTree", option);
-    setValue(newValue);
   };
 
   const onPopupScroll: TreeSelectProps["onPopupScroll"] = (e) => {
     console.log("onPopupScroll", e);
   };
-  const demoTreeData = isCategoryProduct.map((item) => ({
-    value: item.name,
-    title: item.name,
-    children: (item.children || []).map((child) => ({
-      value: child.name,
-      title: child.name,
-      id: child.id,
-      children: (child.children || []).map((subchild) => ({
-        value: subchild.name,
-        title: subchild.name,
-        id: subchild.id,
+  const demoTreeData = isCategoryProduct.map(
+    (item: { name: string; children: []; id: string }) => ({
+      value: item.name,
+      title: item.name,
+      children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
+        value: child.name,
+        title: child.name,
+        id: child.id,
+        children: (child.children || []).map((subchief: { name: string; id: string }) => ({
+          value: subchief.name,
+          title: subchief.name,
+          id: subchief.id,
+        })),
       })),
-    })),
-    id: item.id,
-  }));
+      id: item.id,
+    })
+  );
 
-  console.log("demoTreeData", demoTreeData);
+  //Just get id parents
+  const onChangeSelectTree = (newValue: string) => {
+    setValue(newValue);
+    const selectedNode = findNodeByValue(demoTreeData, newValue);
+    if (selectedNode) {
+      console.log("Selected ID:", selectedNode.id);
+      setInputProduct({
+        ...inputProduct,
+        category_id: selectedNode.id,
+      });
+    } else {
+      console.log("Node not found");
+    }
+  };
+  const findNodeByValue = (nodes: any, value: string): any => {
+    for (let node of nodes) {
+      if (node.value === value) return node;
+      if (node.children) {
+        const found = findNodeByValue(node.children, value);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  // console.log("demoTreeData", demoTreeData);
   const clearInputsAddProduct = () => {
     setInputProduct({
       barcode: "",
@@ -207,21 +210,21 @@ const AddProduct = () => {
       category_id: "",
     });
   };
-  const handleSelectCategory = (value) => {
-    const selectedCategory = listCategory.find((item) => item.value === value);
-    if (selectedCategory) {
-      console.log("Name tương ứng với value:", selectedCategory);
-      console.log("Name tương ứng với id:", selectedCategory.id);
-      setInputProduct({
-        ...inputProduct,
-        category_id: selectedCategory.id,
-      });
-      // setSelectedCategory(selectedName);
-    } else {
-      console.log("Không tìm thấy name cho giá trị:", value);
-    }
-  };
-  const handleSelectUnit = (value) => {
+  // const handleSelectCategory = (value) => {
+  //   const selectedCategory = listCategory.find((item) => item.value === value);
+  //   if (selectedCategory) {
+  //     console.log("Name tương ứng với value:", selectedCategory);
+  //     console.log("Name tương ứng với id:", selectedCategory.id);
+  //     setInputProduct({
+  //       ...inputProduct,
+  //       category_id: selectedCategory.id,
+  //     });
+  //     // setSelectedCategory(selectedName);
+  //   } else {
+  //     console.log("Không tìm thấy name cho giá trị:", value);
+  //   }
+  // };
+  const handleSelectUnit = (value: any) => {
     const selectedName = unitProduct.find((item) => item.value === value)?.name;
     if (selectedName) {
       console.log("Name tương ứng với value:", selectedName);
