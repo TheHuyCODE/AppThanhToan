@@ -1,7 +1,7 @@
-import { Flex, Select } from "antd";
+import { Select, TreeSelect } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React, { useEffect, useState } from "react";
-import { IoIosAdd, IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import products from "../../configs/products";
@@ -9,28 +9,50 @@ import { useAuth } from "../auth/AuthContext";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBan, FaRegSave } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";
-
+import { unitProductList } from "../TableConfig/unitProduct";
+import { handleError } from "../../utils/errorHandler";
+interface Product {
+  barcode: string;
+  name: string;
+  description: string;
+  price: number;
+  capital_price: number;
+  inventory_number: number;
+  category_id: string;
+  unit: string;
+  is_active: number;
+  image_url: string;
+}
+interface TreeDataNode {
+  id: string;
+  pId: string | null;
+  value: string;
+  title: string;
+  children?: TreeDataNode[];
+  name: string;
+}
 const ModifyProduct = () => {
   const navigate = useNavigate();
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-  const params = useParams();
+  const params = useParams<{ idProduct: string }>();
   const idProduct = params.idProduct;
-  const [dataProductModify, setDataProductModify] = useState(null);
+  const [dataProductModify, setDataProductModify] = useState<Product | null>(null);
   const [isEditable, setIsEditable] = useState(false);
-  // const [isActive, setIsActive] = useState(0);
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  const [selectedPath, setSelectedPath] = useState<string>("");
   const [resImageProduct, setResImageProduct] = useState("");
   const [imgUrl, setImageUrl] = useState("");
   const domain = "https://cdtn.boot.ai";
+
   // const imageUrl = `${domain}/${inputProduct.image_url}`;
   const [inputProduct, setInputProduct] = useState({
     barcode: "",
     name: "",
     description: "",
-    price: "",
-    capital_price: "",
+    price: 0,
+    capital_price: 0,
     inventory_number: 0,
     category_id: "",
-    category: "",
     unit: "",
     is_active: 0,
     image_url: "",
@@ -51,12 +73,11 @@ const ModifyProduct = () => {
       const res = await products.getDetailProduct(idProduct);
       const data = res.data;
       setDataProductModify(data);
-      console.log("Fetched product details:", res.data);
     } catch (error) {
       console.error("Error fetching product details:", error);
     }
   };
-  const handleInputImage = (e) => {
+  const handleInputImage = (e: any) => {
     e.preventDefault();
     const fileImage = e.target.files[0];
     // setIsImageProduct(fileImage);
@@ -66,18 +87,13 @@ const ModifyProduct = () => {
         ...inputProduct,
         image_url: fileImage,
       });
-
       setImageUrl(url);
     }
     // setPreviewImageProduct(URL.createObjectURL(fileImage));
-    console.log("Linked image", fileImage);
-    // console.log("isImageProduct", isImageProduct);
   };
-
   const closePreviewImage = () => {
     setImageUrl("");
   };
-
   useEffect(() => {
     const fileImageModify = inputProduct.image_url;
     console.log("inputProduct.image_url", fileImageModify);
@@ -102,23 +118,75 @@ const ModifyProduct = () => {
     }
   }, [inputProduct.image_url]);
 
-  const handleSelectCategory = (value) => {
-    const selectedCategory = listCategory.find((item) => item.value === value);
-    if (selectedCategory) {
-      console.log("Name tương ứng với value:", selectedCategory);
-      console.log("Name tương ứng với id:", selectedCategory.id);
-      setInputProduct({
-        ...inputProduct,
-        category_id: selectedCategory.id,
-        category: selectedCategory.name,
+  const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
+    id: item.id,
+    name: item.name,
+    children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
+      id: child.id,
+      name: child.name,
+      // id: child.id,
+      children: (child.children || []).map((subchief: { name: string; id: string }) => ({
+        id: subchief.id,
+        name: subchief.name,
+        // id: subchief.id,
+      })),
+    })),
+  }));
+  const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
+    let result: TreeDataNode[] = [];
+    data.forEach((item) => {
+      result.push({
+        id: item.id,
+        pId: parentId,
+        value: item.id,
+        title: item.name,
+        name: "",
       });
-      // setSelectedCategory(selectedName);
-    } else {
-      console.log("Không tìm thấy name cho giá trị:", value);
-    }
+      if (item.children && item.children.length > 0) {
+        result = result.concat(transformToSimpleMode(item.children, item.id));
+      }
+    });
+    return result;
   };
-
-  const handleSelectUnit = (value) => {
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    // Chỉ tìm kiếm trong các nút cuối cùng
+    if (!treeNode.children) {
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+    }
+    return false;
+  };
+  const simpleTreeData = transformToSimpleMode(treeData);
+  const findPath = (id: string, data: TreeDataNode[]): string => {
+    const item = data.find((d) => d.value === id);
+    if (!item) return "";
+    const parentPath = item.pId ? findPath(item.pId, data) : "";
+    return parentPath ? `${parentPath} -> ${item.title}` : item.title;
+  };
+  const findPathById = (id: string, data: TreeDataNode[]): string => {
+    for (const item of data) {
+      if (item.id === id) {
+        return item.name;
+      }
+      if (item.children && item.children.length > 0) {
+        const childPath = findPathById(id, item.children);
+        if (childPath) {
+          return `${item.name} -> ${childPath}`;
+        }
+      }
+    }
+    return "";
+  };
+  const onSelect = (value: string) => {
+    setSelectedKeys(value);
+    const path = findPath(value, simpleTreeData);
+    setSelectedPath(path);
+    console.log("Selected ID:", value, "Path:", path);
+    setInputProduct({
+      ...inputProduct,
+      category_id: value,
+    });
+  };
+  const handleSelectUnit = (value: any) => {
     const selectedName = unitProduct.find((item) => item.value === value)?.name;
     if (selectedName) {
       console.log("Name tương ứng với value:", selectedName);
@@ -131,9 +199,8 @@ const ModifyProduct = () => {
       console.log("Không tìm thấy name cho giá trị:", value);
     }
   };
-  const onChangeInput = (fieldName) => (e) => {
+  const onChangeInput = (fieldName: any) => (e: any) => {
     let value = e.target.value;
-
     if (fieldName === "inventory_number") {
       value = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
       value = value === "" ? 0 : parseInt(value, 10); // Convert to number or set to 0 if empty
@@ -170,24 +237,15 @@ const ModifyProduct = () => {
         // setIsPreviewImage("");
       } else {
         console.log("error", response);
-        toast.error("Sửa Sản phẩm không thành công!");
-        const errorMessage = response.data.message.text;
-        // setErrorMessageCategories(errorMessage);
-        console.log(errorMessage);
-        // setIsOpenPopups(isOpenPopups);
       }
     } catch (error) {
-      console.error("Error adding category:", error);
-      toast.error("Có lỗi xảy ra khi thêm danh mục!");
+      handleError(error);
+      // toast.error("Sửa Sản phẩm không thành công!");
       // setIsOpenPopups(isOpenPopups);
     }
   };
-  const listCategory = isCategoryProduct?.map((item, index) => ({
-    name: item.name,
-    value: index + 1,
-    id: item.id,
-  }));
-  const onChangeValuePrice = (e) => {
+
+  const onChangeValuePrice = (e: any) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
     if (value === "") {
@@ -199,7 +257,6 @@ const ModifyProduct = () => {
       return;
     }
     const numericValue = parseInt(value, 10);
-    // Format the value as a locale string
     e.target.value = numericValue.toLocaleString("vi-VN");
     setInputProduct({
       ...inputProduct,
@@ -207,7 +264,7 @@ const ModifyProduct = () => {
     });
     console.log("value", value);
   };
-  const onChangeValueCapitalPrice = (e) => {
+  const onChangeValueCapitalPrice = (e: any) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
     if (value == "") {
@@ -226,49 +283,7 @@ const ModifyProduct = () => {
     });
     console.log("value", value);
   };
-  const unitProduct = [
-    {
-      name: "Cái",
-      value: 1,
-    },
-    {
-      name: "Bộ",
-      value: 2,
-    },
-    {
-      name: "Cặp",
-      value: 3,
-    },
-    {
-      name: "Miếng",
-      value: 4,
-    },
-    {
-      name: "Đôi",
-      value: 5,
-    },
-    {
-      name: "Tá",
-      value: 6,
-    },
-    {
-      name: "Chiếc",
-      value: 7,
-    },
-    {
-      name: "Gam",
-      value: 8,
-    },
-    {
-      name: "Tấn",
-      value: 9,
-    },
-    {
-      name: "Yến",
-      value: 10,
-    },
-  ];
-
+  const unitProduct = unitProductList;
   useEffect(() => {
     getDataModifyProduct();
     fetchDataCategory();
@@ -279,27 +294,26 @@ const ModifyProduct = () => {
     } else {
       setIsEditable(true);
     }
-    // if (dataProductModify?.is_active) {
-    //   setIsActive(1);
-    // } else {
-    //   setIsActive(0);
-    // }
     if (dataProductModify) {
       setInputProduct({
         barcode: dataProductModify.barcode || "",
         name: dataProductModify.name || "",
         description: dataProductModify.description || "",
-        price: dataProductModify.price || "",
-        capital_price: dataProductModify.capital_price || "",
+        price: dataProductModify.price || 0,
+        capital_price: dataProductModify.capital_price || 0,
         inventory_number: dataProductModify.inventory_number || 0,
         category_id: dataProductModify.category_id || "",
-        category: dataProductModify.category.name || "",
         unit: dataProductModify.unit || "",
         is_active: dataProductModify.is_active ? 1 : 0,
         image_url: dataProductModify.image_url || "",
       });
       if (dataProductModify.image_url) {
         setImageUrl(`${domain}/${dataProductModify.image_url}`);
+      }
+      if (dataProductModify.category_id) {
+        const path = findPathById(dataProductModify.category_id, treeData);
+        setSelectedPath(path);
+        console.log("selectPath", selectedPath);
       }
     }
   }, [dataProductModify]);
@@ -383,32 +397,34 @@ const ModifyProduct = () => {
             <div className="input-info">
               <label htmlFor="">Mô tả</label>
               <TextArea
-                rows={4}
+                rows={5}
                 style={{ width: "300px" }}
                 value={inputProduct.description}
                 onChange={onChangeInput("description")}
+                showCount
+                maxLength={100}
               />
             </div>
             <div className="input-info">
               <label htmlFor="">
                 Danh mục sản phẩm(<span>*</span>)
               </label>
-              <Select
-                placeholder="Danh mục sản phẩm"
+              <TreeSelect
+                showSearch
+                style={{ width: "300px", height: "35px" }}
+                value={selectedPath}
+                notFoundContent="Không có danh mục sản phẩm"
+                dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                placeholder="Chọn danh mục sản phẩm"
                 allowClear
-                // defaultValue="Giới tính"
-                style={{ width: 302, height: 36 }}
-                value={inputProduct.category}
-                onChange={(value) => {
-                  handleSelectCategory(value);
-                }}
-              >
-                {listCategory.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.name}
-                  </option>
-                ))}
-              </Select>
+                multiple={false}
+                treeDefaultExpandAll
+                onChange={onSelect}
+                treeDataSimpleMode
+                treeData={simpleTreeData}
+                treeNodeLabelProp="title"
+                filterTreeNode={filterTreeNode}
+              />
             </div>
             <div
               className="input-info"
