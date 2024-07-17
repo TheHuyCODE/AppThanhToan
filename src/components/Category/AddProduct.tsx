@@ -137,8 +137,7 @@ const AddProduct = () => {
     try {
       const response = await products.postAddProduct(dataAddProduct);
       if (response.code === 200) {
-        const msSuccess = response.message.text;
-        toast.success(msSuccess);
+        toast.success("Thêm sản phẩm thành công");
         onClickBackPageProduct();
         await fetchDataCategory();
         clearInputsAddProduct;
@@ -150,6 +149,7 @@ const AddProduct = () => {
     }
   };
 
+  //map data into treeData
   const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
     id: item.id,
     name: item.name,
@@ -180,7 +180,13 @@ const AddProduct = () => {
     });
     return result;
   };
-
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    // Chỉ tìm kiếm trong các nút cuối cùng
+    if (!treeNode.children) {
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+    }
+    return false;
+  };
   const simpleTreeData = transformToSimpleMode(treeData);
   const findPath = (id: string, data: TreeDataNode[]): string => {
     const item = data.find((d) => d.value === id);
@@ -394,10 +400,11 @@ const AddProduct = () => {
               </label>
               <TreeSelect
                 showSearch
-                style={{ width: "300px" }}
+                style={{ width: "300px", height: "35px" }}
                 value={selectedPath}
+                notFoundContent="Không có danh mục sản phẩm"
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-                placeholder="Please select"
+                placeholder="Chọn danh mục sản phẩm"
                 allowClear
                 multiple={false}
                 treeDefaultExpandAll
@@ -405,20 +412,8 @@ const AddProduct = () => {
                 treeDataSimpleMode
                 treeData={simpleTreeData}
                 treeNodeLabelProp="title"
+                filterTreeNode={filterTreeNode}
               />
-              {/* <TreeSelect
-                showSearch
-                style={{ width: "300px" }}
-                value={selectedKeys}
-                dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-                placeholder="Please select"
-                allowClear
-                multiple={false}
-                treeDefaultExpandAll
-                onChange={onSelect}
-              >
-                {generateTreeNodes(treeData)}
-              </TreeSelect> */}
             </div>
             <div
               className="input-info"
