@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Select } from "antd";
+import { Modal, Select, Space, Table, TableColumnsType } from "antd";
 import sellProduct from "../../configs/sellProduct";
 import { ToastContainer, toast } from "react-toastify";
 import "../Payment/Payment.css";
 import "../styles/valiables.css";
+import HeaderPayment from "./HeaderPayment/HeaderPayment";
+import { FaEye, FaTrash } from "react-icons/fa";
+import { localPayment } from "../TableConfig/TableConfig";
 
 interface BankData {
   id: number;
@@ -26,16 +29,81 @@ interface BankOption {
   bank_id: string;
   account_name: string;
 }
-
+interface RecordType {
+  stt: number;
+  barcode: string;
+  created_date: string;
+  full_name: string;
+  customer: string;
+  total_amount: number;
+  key: string;
+}
 const Payment = () => {
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [nameBanking, setNameBanking] = useState<BankData[]>([]);
+  const [dataPayment, setDataPayment] = useState([]);
+
   const [errorAddNameBanking, setErrorAddNameBanking] = useState({ error: "" });
 
   const handleOpenModal = () => {
     setIsOpenPopups(true);
   };
+  const columns: TableColumnsType<RecordType> = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      key: "stt",
+    },
+    {
+      title: "Tên chủ khoản",
+      dataIndex: "account_name",
+      key: "account_name",
+      align: "start",
+    },
+    {
+      title: "Số tài khoản",
+      dataIndex: "account_no",
+      key: "account_no",
+      align: "start",
+      // width: 300,
+    },
+    {
+      title: "Tên ngân hàng",
+      dataIndex: "bank_name",
+      key: "bank_name",
+      // width: 300,
+    },
+    {
+      title: "Thao tác",
+      key: "action",
+      render: (record) => (
+        <Space size="middle">
+          <a>
+            <FaEye />
+          </a>
+          <a>
+            <FaTrash style={{ color: "red" }} />
+          </a>
+        </Space>
+      ),
+    },
+  ];
+  const dataTable = dataPayment
+    .filter((item: any) => item.type === true)
+    .map((item: any, index: number) => ({
+      stt: index + 1,
+      id: item.id,
+      key: item.id,
+      name: item.name,
+      account_name: item.account_name,
+      account_no: item.account_no,
+      bank_id: item.bank_id,
+      bank_name: item.bank_name,
+      store_id: item.store_id,
+      template: item.template,
+    }));
 
+  console.log("dataPayment", dataTable);
   const handleCloseModal = () => {
     setIsOpenPopups(false);
   };
@@ -46,7 +114,6 @@ const Payment = () => {
     number_bank: "",
     admin_bank: "",
   });
-
   const setHandleInputBanking = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "number_bank") {
@@ -109,9 +176,20 @@ const Payment = () => {
       console.log("error", error);
     }
   };
-
+  const getDataPayments = async () => {
+    try {
+      const res = await sellProduct.getInfoBank();
+      if (res.code === 200) {
+        const data = res.data.items;
+        setDataPayment(data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
   useEffect(() => {
     getNameBanking();
+    getDataPayments();
   }, []);
 
   const formatNameBanking: BankOption[] = nameBanking.map((item) => ({
@@ -151,72 +229,113 @@ const Payment = () => {
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
-      <button onClick={handleOpenModal}>Thêm tài khoản ngân hàng</button>
-      <Modal
-        className="modalDialog-addItems"
-        width={500}
-        centered
-        open={isOpenPopups}
-        onOk={clickAddUserBanking}
-        onCancel={handleCloseModal}
-        okText="Thêm"
-        cancelText="Hủy bỏ"
-      >
-        <h1 className="title-addItem">Thêm tài khoản</h1>
-        <div className="name-bank bank-input-container">
-          <label htmlFor="name_bank">Ngân hàng</label>
-          <Select
-            showSearch
-            onSearch={onSearch}
-            notFoundContent="Không tìm thấy ngân hàng"
-            placeholder="Chọn ngân hàng"
-            optionFilterProp="label"
-            onChange={onChange}
-            style={{ width: 260 }}
-            filterOption={(input, option) => {
-              const labelValue = option?.label?.props?.children;
-              if (typeof labelValue === "string") {
-                return labelValue.toLowerCase().includes(input.toLowerCase());
-              } else if (
-                React.isValidElement(labelValue) &&
-                typeof labelValue.props.children === "string"
-              ) {
-                return labelValue.props.children.toLowerCase().includes(input.toLowerCase());
-              }
-              return false;
-            }}
-            options={formatNameBanking}
-          />
+      <div className="content">
+        <div
+          className="header"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "none",
+            color: "white",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          <HeaderPayment />
         </div>
-        <div className="number-bank bank-input-container">
-          <label htmlFor="number_bank">Số tài khoản</label>
-          <div>
+
+        <button onClick={handleOpenModal}>Thêm tài khoản ngân hàng</button>
+        <Modal
+          className="modalDialog-addItems"
+          width={500}
+          centered
+          open={isOpenPopups}
+          onOk={clickAddUserBanking}
+          onCancel={handleCloseModal}
+          okText="Thêm"
+          cancelText="Hủy bỏ"
+        >
+          <h1 className="title-addItem">Thêm tài khoản</h1>
+          <div className="name-bank bank-input-container">
+            <label htmlFor="name_bank">Ngân hàng</label>
+            <Select
+              showSearch
+              onSearch={onSearch}
+              notFoundContent="Không tìm thấy ngân hàng"
+              placeholder="Chọn ngân hàng"
+              optionFilterProp="label"
+              onChange={onChange}
+              style={{ width: 260 }}
+              filterOption={(input, option) => {
+                const labelValue = option?.label?.props?.children;
+                if (typeof labelValue === "string") {
+                  return labelValue.toLowerCase().includes(input.toLowerCase());
+                } else if (
+                  React.isValidElement(labelValue) &&
+                  typeof labelValue.props.children === "string"
+                ) {
+                  return labelValue.props.children.toLowerCase().includes(input.toLowerCase());
+                }
+                return false;
+              }}
+              options={formatNameBanking}
+            />
+          </div>
+          <div className="number-bank bank-input-container">
+            <label htmlFor="number_bank">Số tài khoản</label>
+            <div>
+              <input
+                type="text"
+                className="input-name-category"
+                onChange={setHandleInputBanking}
+                name="number_bank"
+                value={inputBanking.number_bank}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="Nhập số tài khoản"
+              />
+              {errorAddNameBanking && errorAddNameBanking.error && (
+                <p className="error-message">{errorAddNameBanking.error}</p>
+              )}
+            </div>
+          </div>
+          <div className="admin-bank bank-input-container">
+            <label htmlFor="admin_bank">Chủ tài khoản</label>
             <input
-              type="text"
+              placeholder="Nhập tên chủ tài khoản"
               className="input-name-category"
               onChange={setHandleInputBanking}
-              name="number_bank"
-              value={inputBanking.number_bank}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              placeholder="Nhập số tài khoản"
+              name="admin_bank"
+              value={inputBanking.admin_bank}
             />
-            {errorAddNameBanking && errorAddNameBanking.error && (
-              <p className="error-message">{errorAddNameBanking.error}</p>
-            )}
           </div>
+        </Modal>
+      </div>
+      <div className="table-container">
+        <Table columns={columns} dataSource={dataTable} locale={localPayment} pagination={false} />
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-around",
+            gap: "10px",
+            marginTop: "10px",
+            padding: "10px",
+          }}
+        >
+          {/* <Pagination
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
+            onChange={onChangeNumberPagination}
+            defaultCurrent={1}
+            total={totalInvoice}
+          /> */}
+          {/* <span
+            className="total-items"
+            style={{ color: "black" }}
+          >{`${dataTable?.length} hóa đơn`}</span> */}
         </div>
-        <div className="admin-bank bank-input-container">
-          <label htmlFor="admin_bank">Chủ tài khoản</label>
-          <input
-            placeholder="Nhập tên chủ tài khoản"
-            className="input-name-category"
-            onChange={setHandleInputBanking}
-            name="admin_bank"
-            value={inputBanking.admin_bank}
-          />
-        </div>
-      </Modal>
+      </div>
     </>
   );
 };

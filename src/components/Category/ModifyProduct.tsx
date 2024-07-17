@@ -412,7 +412,7 @@ const ModifyProduct = () => {
               <TreeSelect
                 showSearch
                 style={{ width: "300px", height: "35px" }}
-                value={selectedPath}
+                value={selectedPath || undefined}
                 notFoundContent="Không có danh mục sản phẩm"
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
                 placeholder="Chọn danh mục sản phẩm"
@@ -532,17 +532,7 @@ const ModifyProduct = () => {
               </div>
             </div>
           </div>
-          <div
-            className="content-add-product-right"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "50%",
-              flexDirection: "column",
-              height: "480px",
-            }}
-          >
+          <div className="content-add-product-right">
             <div
               className="picture-item"
               style={{

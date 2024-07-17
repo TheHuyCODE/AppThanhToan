@@ -13,7 +13,9 @@ export const localCategoryThirds = {
 export const localInvoice = {
   emptyText: "Không có hóa đơn",
 };
-
+export const localPayment = {
+  emptyText: "Không có phương thức thanh toán",
+};
 export const paginationConfig = {
   position: ["bottomCenter"],
   defaultCurrent:6,

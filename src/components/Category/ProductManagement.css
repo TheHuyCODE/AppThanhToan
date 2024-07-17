@@ -104,7 +104,7 @@
 
 .footer-add-product {
   position: absolute;
-  bottom: 0px;
+  bottom: -4rem;
   right: 0;
   display: flex;
   align-items: center;
@@ -115,8 +115,8 @@
 
 .footer-modify-product {
   position: absolute;
-  bottom: 13rem;
-  right: 3rem;
+  bottom: -4rem;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: end;
@@ -198,10 +198,11 @@
 }
 .content-add-product-right {
   display: flex;
+  position: relative;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  width: 40%;
+  width: 50%;
   height: 480px;
   margin-left: 20px;
 }

@@ -28,6 +28,8 @@ interface TreeDataNode {
   pId: string | null;
   value: string;
   title: string;
+  children?: TreeDataNode[];
+  isLeaf?: boolean;
 }
 const ProductMangement = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
@@ -121,51 +123,51 @@ const ProductMangement = () => {
 
   //search product by category
 
-  // const handleSelectCategory = (value) => {
-  //   const selectedCategory = nameProduct.find((item) => item.value === value);
-  //   if (selectedCategory) {
-  //     console.log("Name tương ứng với value:", selectedCategory);
-  //     console.log("Name tương ứng với id:", selectedCategory.id);
-  //     const idSearch = selectedCategory.id;
-  //     setIdSearchCategory({
-  //       ...idSearchCategory,
-  //       id_category: idSearch,
-  //     });
-  //     console.log("idSearchCategory", idSearchCategory);
-  //     // setSelectedCategory(selectedName);
-  //   } else {
-  //     console.log("Không tìm thấy name cho giá trị:", value);
-  //     fetchDataProduct();
-  //   }
-  // };
-  const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
+  const treeData = isCategoryProduct.map((item: any) => ({
     id: item.id,
-    name: item.name,
-    children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
+    pId: null,
+    value: item.id,
+    title: item.name,
+    isLeaf: !(item.children && item.children.length > 0),
+    children: item.children?.map((child: any) => ({
       id: child.id,
-      name: child.name,
-      // id: child.id,
-      children: (child.children || []).map((subchief: { name: string; id: string }) => ({
-        id: subchief.id,
-        name: subchief.name,
-        // id: subchief.id,
+      pId: item.id,
+      value: child.id,
+      title: child.name,
+      isLeaf: !(child.children && child.children.length > 0),
+      children: child.children?.map((subchild: any) => ({
+        id: subchild.id,
+        pId: child.id,
+        value: subchild.id,
+        title: subchild.name,
+        isLeaf: true,
       })),
     })),
   }));
-  const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
+  const transformToSimpleMode = (
+    data: TreeDataNode[],
+    parentId: string | null = null
+  ): TreeDataNode[] => {
     let result: TreeDataNode[] = [];
     data.forEach((item) => {
       result.push({
         id: item.id,
         pId: parentId,
         value: item.id,
-        title: item.name,
+        title: item.title,
+        isLeaf: item.isLeaf,
       });
       if (item.children && item.children.length > 0) {
         result = result.concat(transformToSimpleMode(item.children, item.id));
       }
     });
     return result;
+  };
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    if (!treeNode.children) {
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+    }
+    return false;
   };
   const simpleTreeData = transformToSimpleMode(treeData);
   const findPath = (id: string, data: TreeDataNode[]): string => {
@@ -174,26 +176,30 @@ const ProductMangement = () => {
     const parentPath = item.pId ? findPath(item.pId, data) : "";
     return parentPath ? `${parentPath} -> ${item.title}` : item.title;
   };
+
   const onSelect = (value: string) => {
-    if (value) {
-      setSelectedKeys(value);
-      const path = findPath(value, simpleTreeData);
-      setSelectedPath(path);
-      console.log("Selected ID:", value, "Path:", path);
-      setIdSearchCategory({
-        ...idSearchCategory,
-        id_category: value,
-      });
-    } else {
+    setSelectedKeys(value);
+    const path = findPath(value, simpleTreeData);
+    setSelectedPath(path);
+    console.log("Selected ID:", value, "Path:", path);
+    setIdSearchCategory({
+      ...idSearchCategory,
+      id_category: value,
+    });
+    if (value === undefined || path === "") {
       fetchDataProduct();
     }
   };
-  const filterTreeNode = (inputValue: string, treeNode: any) => {
-    // Chỉ tìm kiếm trong các nút cuối cùng
-    if (!treeNode.children) {
-      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
-    }
-    return false;
+  const onLoadData = (node: any) => {
+    return new Promise<void>((resolve) => {
+      if (node.children && node.children.length > 0) {
+        resolve();
+        return;
+      }
+      const newData = simpleTreeData.filter((item) => item.pId === node.value);
+      node.children = newData;
+      resolve();
+    });
   };
   // search products by active
   const handleSelectActive = (value: number) => {
@@ -495,19 +501,20 @@ const ProductMangement = () => {
 
             <TreeSelect
               showSearch
-              placeholder="Mô tả"
-              style={{ width: "220px", height: "35px" }}
-              value={selectedPath}
+              placeholder="Danh mục sản phẩm"
+              style={{ width: "210px", height: "35px" }}
+              value={selectedPath || undefined}
               notFoundContent="Không có danh mục sản phẩm"
               dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
               allowClear
               multiple={false}
-              treeDefaultExpandAll
+              treeDefaultExpandAll={false}
               onChange={onSelect}
               treeDataSimpleMode
               treeData={simpleTreeData}
               treeNodeLabelProp="title"
               filterTreeNode={filterTreeNode}
+              loadData={onLoadData}
             />
             <Select
               placeholder="Trạng thái sản phẩm"
