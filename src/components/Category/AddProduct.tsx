@@ -103,7 +103,6 @@ const AddProduct = () => {
         // id: subchief.id,
       })),
     })),
-    // id: item.id,
   }));
   const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
     let result: TreeDataNode[] = [];
@@ -290,41 +289,29 @@ const AddProduct = () => {
         >
           <h2 style={{ fontSize: "25px" }}>Thông tin sản phẩm</h2>
         </div>
-        <div
-          className="content-add-product"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-around",
-            // border: "1px solid lightgray",
-            borderRadius: "10px",
-            padding: "30px",
-            gap: "5px",
-            color: "white",
-            boxShadow: " 0 0 10px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <div
-            className="content-add-product-left"
-            style={{
-              width: "50%",
-              height: "auto",
-              display: "flex",
-              flexDirection: "column",
-              marginLeft: "20px",
-            }}
-          >
+        <div className="content-add-product">
+          <div className="content-add-product-left">
             <div className="input-info">
               <label htmlFor="">
                 Mã sản phẩm gốc(<span>*</span>)
               </label>
-              <input type="text" className="input-form" onChange={onChangeInput("barcode")} />
+              <input
+                type="text"
+                className="input-form"
+                onChange={onChangeInput("barcode")}
+                placeholder="Mã sản phẩm gốc "
+              />
             </div>
             <div className="input-info">
               <label htmlFor="">
                 Tên sản phẩm chính(<span>*</span>)
               </label>
-              <input type="text" className="input-form" onChange={onChangeInput("name")} />
+              <input
+                type="text"
+                className="input-form"
+                onChange={onChangeInput("name")}
+                placeholder="Tên sản phẩm"
+              />
             </div>
             <div className="input-info">
               <label htmlFor="">Mô tả</label>
@@ -332,6 +319,9 @@ const AddProduct = () => {
                 rows={4}
                 style={{ width: "300px" }}
                 onChange={onChangeInput("description")}
+                placeholder="Mô tả"
+                showCount
+                maxLength={100}
               />
             </div>
             <div className="input-info">
@@ -340,11 +330,11 @@ const AddProduct = () => {
               </label>
               <TreeSelect
                 showSearch
+                placeholder="Mô tả"
                 style={{ width: "300px", height: "35px" }}
                 value={selectedPath}
                 notFoundContent="Không có danh mục sản phẩm"
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-                placeholder="Chọn danh mục sản phẩm"
                 allowClear
                 multiple={false}
                 treeDefaultExpandAll
@@ -371,6 +361,7 @@ const AddProduct = () => {
                 style={{
                   position: "relative",
                 }}
+                placeholder="Giá vốn"
               />
               <p className="overlay-text">đ</p>
             </div>
@@ -390,6 +381,7 @@ const AddProduct = () => {
                 style={{
                   position: "relative",
                 }}
+                placeholder="Giá bán"
               />
               <p className="overlay-text">đ</p>
             </div>
@@ -401,6 +393,7 @@ const AddProduct = () => {
                 type="text"
                 className="input-form"
                 onChange={onChangeInput("inventory_number")}
+                placeholder="Số lượng"
               />
             </div>
             <div className="input-info">
@@ -486,7 +479,7 @@ const AddProduct = () => {
               {!previewImageProduct ? (
                 <>
                   <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
-                    <AiOutlinePicture />
+                    <AiOutlinePicture style={{ fontSize: "50px" }} />
                   </label>
                   <input
                     type="file"
@@ -501,8 +494,8 @@ const AddProduct = () => {
                 <div
                   className="preview-image"
                   style={{
-                    height: "150px",
-                    width: "240px",
+                    height: "220px",
+                    width: "320px",
                     position: "relative",
                     color: "white",
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",

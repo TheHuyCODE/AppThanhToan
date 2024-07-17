@@ -560,7 +560,7 @@ const ModifyProduct = () => {
               {!imgUrl ? (
                 <>
                   <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
-                    <AiOutlinePicture />
+                    <AiOutlinePicture style={{ fontSize: "50px" }} />
                   </label>
                   <input
                     type="file"
@@ -575,8 +575,8 @@ const ModifyProduct = () => {
                 <div
                   className="preview-image"
                   style={{
-                    height: "150px",
-                    width: "240px",
+                    height: "220px",
+                    width: "320px",
                     position: "relative",
                     color: "white",
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",

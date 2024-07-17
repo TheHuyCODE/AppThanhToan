@@ -135,7 +135,7 @@ const DetailProduct: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="content-add-product-left">
+        <div className="content-modify-product-left">
           <div className="content-add-product-left-container-main">
             <ProductDetail label="Mã sản phẩm gốc:" value={dataProductDetail?.barcode} />
             <ProductDetail label="Tên sản phẩm chính:" value={dataProductDetail?.name} />

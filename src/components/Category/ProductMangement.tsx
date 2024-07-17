@@ -13,17 +13,15 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import AddProduct from "./AddProduct";
 import { useNavigate } from "react-router-dom";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
 import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
-import { localeProduct, paginationConfig } from "../TableConfig/TableConfig";
+import { localeProduct } from "../TableConfig/TableConfig";
 import Spinners from "../SpinnerLoading/Spinners";
 import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 import { handleError } from "../../utils/errorHandler";
 // let locale = {
 //   emptyText: 'Abc',
@@ -84,9 +82,6 @@ const ProductMangement = () => {
       </div>
     </div>
   );
-  // const handleHeaderClick = (key: string) => {
-  //   console.log('key')
-  // }
 
   const statusProduct = [
     { value: 1, name: "Kích hoạt", id: "00001" },
@@ -107,10 +102,10 @@ const ProductMangement = () => {
   const addProduct = () => {
     navigate("/admin/products/add");
   };
-  const detailProduct = (record) => {
+  const detailProduct = (record: any) => {
     navigate(`/admin/products/${record.key}`);
   };
-  const modifyProduct = (record) => {
+  const modifyProduct = (record: any) => {
     navigate(`/admin/products/edit/${record.key}`);
   };
   const deleteProduct = async (record: any) => {
@@ -121,23 +116,23 @@ const ProductMangement = () => {
 
   //search product by category
 
-  const handleSelectCategory = (value) => {
-    const selectedCategory = nameProduct.find((item) => item.value === value);
-    if (selectedCategory) {
-      console.log("Name tương ứng với value:", selectedCategory);
-      console.log("Name tương ứng với id:", selectedCategory.id);
-      const idSearch = selectedCategory.id;
-      setIdSearchCategory({
-        ...idSearchCategory,
-        id_category: idSearch,
-      });
-      console.log("idSearchCategory", idSearchCategory);
-      // setSelectedCategory(selectedName);
-    } else {
-      console.log("Không tìm thấy name cho giá trị:", value);
-      fetchDataProduct();
-    }
-  };
+  // const handleSelectCategory = (value) => {
+  //   const selectedCategory = nameProduct.find((item) => item.value === value);
+  //   if (selectedCategory) {
+  //     console.log("Name tương ứng với value:", selectedCategory);
+  //     console.log("Name tương ứng với id:", selectedCategory.id);
+  //     const idSearch = selectedCategory.id;
+  //     setIdSearchCategory({
+  //       ...idSearchCategory,
+  //       id_category: idSearch,
+  //     });
+  //     console.log("idSearchCategory", idSearchCategory);
+  //     // setSelectedCategory(selectedName);
+  //   } else {
+  //     console.log("Không tìm thấy name cho giá trị:", value);
+  //     fetchDataProduct();
+  //   }
+  // };
   // search products by active
   const handleSelectActive = (value: number) => {
     console.log("value", value);
@@ -155,10 +150,6 @@ const ProductMangement = () => {
         });
       }
       // Log the updated state after the state update
-      console.log("active", stateActiveProduct.is_active);
-      // Log additional information about the active product
-      console.log("Name tương ứng với value:", isActiveProduct);
-      console.log("Name tương ứng với id:", isActiveProduct.id);
     } else {
       console.log("Không tìm thấy value:", value);
       fetchDataProduct();
@@ -318,8 +309,8 @@ const ProductMangement = () => {
     create_user: item.user.full_name,
     category_id: item.category_id,
     category: item.category.name,
-    price: item.price,
-    capital_price: item.capital_price,
+    price: item.price?.toLocaleString("vi-VN") || 0,
+    capital_price: item.capital_price?.toLocaleString("vi-VN") || 0,
     inventory_number: item.inventory_number,
     unit: item.unit,
     is_active: item.is_active ? "kích hoạt" : "Chưa kích hoạt",
