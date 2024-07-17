@@ -3,7 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
 // import uploadApiImage from "../../configs/uploadApiImage";
-import { Select, Table, Space, Modal, Pagination } from "antd";
+import { Select, Table, Space, Modal, Pagination, TreeSelect } from "antd";
 import {
   FaArrowAltCircleDown,
   FaArrowAltCircleUp,
@@ -23,9 +23,12 @@ import Spinners from "../SpinnerLoading/Spinners";
 import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
 import { handleError } from "../../utils/errorHandler";
-// let locale = {
-//   emptyText: 'Abc',
-// };
+interface TreeDataNode {
+  id: string;
+  pId: string | null;
+  value: string;
+  title: string;
+}
 const ProductMangement = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [dataProduct, setDataProduct] = useState([]);
@@ -33,6 +36,8 @@ const ProductMangement = () => {
   const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  const [selectedPath, setSelectedPath] = useState<string>("");
   const [valueSearch, setValueSearch] = useState("");
   const debounceValue = useDebounce(valueSearch, 700);
   const [page, setPage] = useState(1);
@@ -133,6 +138,63 @@ const ProductMangement = () => {
   //     fetchDataProduct();
   //   }
   // };
+  const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
+    id: item.id,
+    name: item.name,
+    children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
+      id: child.id,
+      name: child.name,
+      // id: child.id,
+      children: (child.children || []).map((subchief: { name: string; id: string }) => ({
+        id: subchief.id,
+        name: subchief.name,
+        // id: subchief.id,
+      })),
+    })),
+  }));
+  const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
+    let result: TreeDataNode[] = [];
+    data.forEach((item) => {
+      result.push({
+        id: item.id,
+        pId: parentId,
+        value: item.id,
+        title: item.name,
+      });
+      if (item.children && item.children.length > 0) {
+        result = result.concat(transformToSimpleMode(item.children, item.id));
+      }
+    });
+    return result;
+  };
+  const simpleTreeData = transformToSimpleMode(treeData);
+  const findPath = (id: string, data: TreeDataNode[]): string => {
+    const item = data.find((d) => d.value === id);
+    if (!item) return "";
+    const parentPath = item.pId ? findPath(item.pId, data) : "";
+    return parentPath ? `${parentPath} -> ${item.title}` : item.title;
+  };
+  const onSelect = (value: string) => {
+    if (value) {
+      setSelectedKeys(value);
+      const path = findPath(value, simpleTreeData);
+      setSelectedPath(path);
+      console.log("Selected ID:", value, "Path:", path);
+      setIdSearchCategory({
+        ...idSearchCategory,
+        id_category: value,
+      });
+    } else {
+      fetchDataProduct();
+    }
+  };
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    // Chỉ tìm kiếm trong các nút cuối cùng
+    if (!treeNode.children) {
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+    }
+    return false;
+  };
   // search products by active
   const handleSelectActive = (value: number) => {
     console.log("value", value);
@@ -253,14 +315,8 @@ const ProductMangement = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("idSearchCategory", idSearchCategory.id_category);
-    fetchSearchDataCategory();
-  }, [idSearchCategory.id_category]);
-
   const fetchSearchDataActive = async () => {
     if (stateActiveProduct.is_active) {
-      // Check if idSearchCategory is not empty
       const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
       if (res.code === 200) {
         console.log(res.data);
@@ -270,6 +326,10 @@ const ProductMangement = () => {
       }
     }
   };
+  useEffect(() => {
+    console.log("idSearchCategory", idSearchCategory.id_category);
+    fetchSearchDataCategory();
+  }, [idSearchCategory.id_category]);
   useEffect(() => {
     console.log("active", stateActiveProduct.is_active);
     fetchSearchDataActive();
@@ -433,32 +493,22 @@ const ProductMangement = () => {
               />
             </div>
 
-            <Select
-              placeholder="Danh mục sản phẩm"
+            <TreeSelect
+              showSearch
+              placeholder="Mô tả"
+              style={{ width: "220px", height: "35px" }}
+              value={selectedPath}
+              notFoundContent="Không có danh mục sản phẩm"
+              dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
               allowClear
-              onChange={(value) => {
-                handleSelectCategory(value);
-              }}
-              style={{ width: 200, height: 35 }}
-            >
-              {/* {nameProduct.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.name}
-                </option>
-              ))} */}
-            </Select>
-            {/* <Select
-              placeholder="Loại giảm giá"
-              allowClear
-              onChange={handleSelectChange}
-              style={{ width: 200, height: 35 }}
-            >
-              {nameProduct.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.name}
-                </option>
-              ))}
-            </Select> */}
+              multiple={false}
+              treeDefaultExpandAll
+              onChange={onSelect}
+              treeDataSimpleMode
+              treeData={simpleTreeData}
+              treeNodeLabelProp="title"
+              filterTreeNode={filterTreeNode}
+            />
             <Select
               placeholder="Trạng thái sản phẩm"
               allowClear
