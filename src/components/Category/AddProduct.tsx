@@ -8,13 +8,20 @@ import { CiCircleRemove } from "react-icons/ci";
 import { FaBan } from "react-icons/fa";
 import products from "../../configs/products";
 import { useAuth } from "../auth/AuthContext";
-
+import { Tree } from "antd";
+const { TreeNode } = Tree;
 import { ToastContainer, toast } from "react-toastify";
 
 import { AiOutlinePicture } from "react-icons/ai";
 const { TextArea } = Input;
 import type { TreeSelectProps } from "antd";
 import { handleError } from "../../utils/errorHandler";
+interface TreeDataNode {
+  id: string;
+  pId: string | null;
+  value: string;
+  title: string;
+}
 const AddProduct = () => {
   const navigate = useNavigate();
   const [isImageProduct, setIsImageProduct] = useState("");
@@ -22,13 +29,8 @@ const AddProduct = () => {
   const [resImageProduct, setResImageProduct] = useState("");
   const [value, setValue] = useState<string>();
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-  // const [selectedCategory, setSelectedCategory] = useState('');
-  // const listCategory = isCategoryProduct?.map((item, index) => ({
-  //   name: item.name,
-  //   value: index + 1,
-  //   id: item.id,
-  // }));
-
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  const [selectedPath, setSelectedPath] = useState<string>("");
   const unitProduct = [
     {
       name: "Cái",
@@ -138,10 +140,8 @@ const AddProduct = () => {
         const msSuccess = response.message.text;
         toast.success(msSuccess);
         onClickBackPageProduct();
-        // Adjust the delay as needed (1000ms = 1 second)
         await fetchDataCategory();
         clearInputsAddProduct;
-        // setIsPreviewImage("");
       } else {
         console.log("error", response);
       }
@@ -150,53 +150,57 @@ const AddProduct = () => {
     }
   };
 
-  const onPopupScroll: TreeSelectProps["onPopupScroll"] = (e) => {
-    console.log("onPopupScroll", e);
-  };
-  const demoTreeData = isCategoryProduct.map(
-    (item: { name: string; children: []; id: string }) => ({
-      value: item.name,
-      title: item.name,
-      children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
-        value: child.name,
-        title: child.name,
-        id: child.id,
-        children: (child.children || []).map((subchief: { name: string; id: string }) => ({
-          value: subchief.name,
-          title: subchief.name,
-          id: subchief.id,
-        })),
+  const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
+    id: item.id,
+    name: item.name,
+    children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
+      id: child.id,
+      name: child.name,
+      // id: child.id,
+      children: (child.children || []).map((subchief: { name: string; id: string }) => ({
+        id: subchief.id,
+        name: subchief.name,
+        // id: subchief.id,
       })),
-      id: item.id,
-    })
-  );
-
-  //Just get id parents
-  const onChangeSelectTree = (newValue: string) => {
-    setValue(newValue);
-    const selectedNode = findNodeByValue(demoTreeData, newValue);
-    if (selectedNode) {
-      console.log("Selected ID:", selectedNode.id);
-      setInputProduct({
-        ...inputProduct,
-        category_id: selectedNode.id,
+    })),
+    // id: item.id,
+  }));
+  const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
+    let result: TreeDataNode[] = [];
+    data.forEach((item) => {
+      result.push({
+        id: item.id,
+        pId: parentId,
+        value: item.id,
+        title: item.name,
       });
-    } else {
-      console.log("Node not found");
-    }
-  };
-  const findNodeByValue = (nodes: any, value: string): any => {
-    for (let node of nodes) {
-      if (node.value === value) return node;
-      if (node.children) {
-        const found = findNodeByValue(node.children, value);
-        if (found) return found;
+      if (item.children && item.children.length > 0) {
+        result = result.concat(transformToSimpleMode(item.children, item.id));
       }
-    }
-    return null;
+    });
+    return result;
   };
 
-  // console.log("demoTreeData", demoTreeData);
+  const simpleTreeData = transformToSimpleMode(treeData);
+  const findPath = (id: string, data: TreeDataNode[]): string => {
+    const item = data.find((d) => d.value === id);
+    if (!item) return "";
+    const parentPath = item.pId ? findPath(item.pId, data) : "";
+    return parentPath ? `${parentPath} -> ${item.title}` : item.title;
+  };
+
+  const onSelect = (value: string) => {
+    setSelectedKeys(value);
+
+    const path = findPath(value, simpleTreeData);
+    setSelectedPath(path);
+    console.log("Selected ID:", value, "Path:", path);
+    setInputProduct({
+      ...inputProduct,
+      category_id: value,
+    });
+  };
+
   const clearInputsAddProduct = () => {
     setInputProduct({
       barcode: "",
@@ -210,20 +214,6 @@ const AddProduct = () => {
       category_id: "",
     });
   };
-  // const handleSelectCategory = (value) => {
-  //   const selectedCategory = listCategory.find((item) => item.value === value);
-  //   if (selectedCategory) {
-  //     console.log("Name tương ứng với value:", selectedCategory);
-  //     console.log("Name tương ứng với id:", selectedCategory.id);
-  //     setInputProduct({
-  //       ...inputProduct,
-  //       category_id: selectedCategory.id,
-  //     });
-  //     // setSelectedCategory(selectedName);
-  //   } else {
-  //     console.log("Không tìm thấy name cho giá trị:", value);
-  //   }
-  // };
   const handleSelectUnit = (value: any) => {
     const selectedName = unitProduct.find((item) => item.value === value)?.name;
     if (selectedName) {
@@ -404,19 +394,31 @@ const AddProduct = () => {
               </label>
               <TreeSelect
                 showSearch
-                // treeNodeFilterProp="key"
-                style={{ width: "300px", height: "40px" }}
-                notFoundContent="Không có danh mục sản phẩm"
-                // value={value}
+                style={{ width: "300px" }}
+                value={selectedPath}
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-                placeholder="Chọn danh mục sản phẩm"
+                placeholder="Please select"
                 allowClear
+                multiple={false}
                 treeDefaultExpandAll
-                onChange={onChangeSelectTree}
-                treeData={demoTreeData}
-                onPopupScroll={onPopupScroll}
-                // searchValue={onSearch}
+                onChange={onSelect}
+                treeDataSimpleMode
+                treeData={simpleTreeData}
+                treeNodeLabelProp="title"
               />
+              {/* <TreeSelect
+                showSearch
+                style={{ width: "300px" }}
+                value={selectedKeys}
+                dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+                placeholder="Please select"
+                allowClear
+                multiple={false}
+                treeDefaultExpandAll
+                onChange={onSelect}
+              >
+                {generateTreeNodes(treeData)}
+              </TreeSelect> */}
             </div>
             <div
               className="input-info"
