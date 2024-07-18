@@ -64,7 +64,7 @@ const CatalogManagement = () => {
     setSelectedCategoryChild(nameChildCategory);
     console.log("nameChildCategory", nameChildCategory);
   };
-  const handleSearchCategory = (e) => {
+  const handleSearchCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setValueSearch(value);
     console.log("value", value);
@@ -74,7 +74,7 @@ const CatalogManagement = () => {
     setHiddenTitleSecondsChild(hidden);
     console.log("hiddenSecondsChild", hidden);
   };
-  const setHandleInput = (e: any) => {
+  const setHandleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     console.log("value", value);
     setDataCategory(value);

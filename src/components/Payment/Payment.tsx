@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Select, Space, Table, TableColumnsType } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { Modal, Pagination, Select, Space, Table, TableColumnsType } from "antd";
 import sellProduct from "../../configs/sellProduct";
 import { ToastContainer, toast } from "react-toastify";
 import "../Payment/Payment.css";
@@ -7,6 +7,9 @@ import "../styles/valiables.css";
 import HeaderPayment from "./HeaderPayment/HeaderPayment";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { localPayment } from "../TableConfig/TableConfig";
+import { handleError } from "../../utils/errorHandler";
+import payments from "../../configs/Payment";
+import DeletePayment from "./ModalDeletePayment/DeletePayment";
 
 interface BankData {
   id: number;
@@ -40,11 +43,19 @@ interface RecordType {
 }
 const Payment = () => {
   const [isOpenPopups, setIsOpenPopups] = useState(false);
+  const [hiddenSelect, setHiddenSelect] = useState(true);
+
+  const [idDeletePayment, setIdDeletePayment] = useState("");
   const [nameBanking, setNameBanking] = useState<BankData[]>([]);
+  const [totalPage, setTotalPage] = useState(0);
+  const [page, setPage] = useState(1);
+
+  const [pageSize, setPageSize] = useState(10);
   const [dataPayment, setDataPayment] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [errorAddNameBanking, setErrorAddNameBanking] = useState({ error: "" });
-
+  const [openModalDelete, setIsOpenModalDelete] = useState(false);
+  const numberRef = useRef<HTMLInputElement>(null);
   const handleOpenModal = () => {
     setIsOpenPopups(true);
   };
@@ -76,18 +87,24 @@ const Payment = () => {
     {
       title: "Thao tác",
       key: "action",
+      align: "center",
       render: (record) => (
         <Space size="middle">
           <a>
-            <FaEye />
-          </a>
-          <a>
-            <FaTrash style={{ color: "red" }} />
+            <FaTrash style={{ color: "red" }} onClick={() => deleteDataPayment(record)} />
           </a>
         </Space>
       ),
     },
   ];
+  const deleteDataPayment = (record: any) => {
+    console.log("record", record);
+    setIsOpenModalDelete(true);
+    setIdDeletePayment(record.id);
+  };
+  const onCloseModal = () => {
+    setIsOpenModalDelete(!openModalDelete);
+  };
   const dataTable = dataPayment
     .filter((item: any) => item.type === true)
     .map((item: any, index: number) => ({
@@ -102,12 +119,10 @@ const Payment = () => {
       store_id: item.store_id,
       template: item.template,
     }));
-
-  console.log("dataPayment", dataTable);
+  // console.log("dataPayment", dataTable);
   const handleCloseModal = () => {
     setIsOpenPopups(false);
   };
-
   const [inputBanking, setInputBanking] = useState({
     bank_id: "",
     bank_name: "",
@@ -134,7 +149,15 @@ const Payment = () => {
       });
     }
   };
-
+  const clearInputAddPayment = () => {
+    setInputBanking({
+      bank_id: "",
+      number_bank: "",
+      admin_bank: "",
+      bank_name: "",
+    });
+    setHiddenSelect(true);
+  };
   const clickAddUserBanking = async () => {
     const inputUserBanking = {
       bank_id: inputBanking.bank_id,
@@ -143,26 +166,29 @@ const Payment = () => {
       bank_name: inputBanking.bank_name,
       name: "Chuyển khoản",
     };
-
+    setLoading(true);
     try {
       const res = await sellProduct.postDataUserBanking(inputUserBanking);
       if (res.code === 200) {
         handleCloseModal();
-        toast.success(`${res.message.text}`);
-        setInputBanking({
-          bank_id: "",
-          number_bank: "",
-          admin_bank: "",
-          bank_name: "",
-        });
+        const msSuccess = res.message.text;
+        toast.success(msSuccess);
+        clearInputAddPayment();
         setErrorAddNameBanking({ error: "" });
+        await getDataPayments();
+        setLoading(false);
       } else {
         setErrorAddNameBanking({ error: res.data.message.text });
         handleOpenModal();
       }
     } catch (error) {
       setIsOpenPopups(true);
-      console.error("Error occurred while calling API:", error);
+      setLoading(false);
+      handleError(error);
+      if (numberRef.current) {
+        numberRef.current.focus();
+        numberRef.current.select();
+      }
     }
   };
 
@@ -171,27 +197,59 @@ const Payment = () => {
       const res = await sellProduct.getNameBank();
       if (res.code === "00") {
         setNameBanking(res.data);
+        await getDataPayments();
       }
     } catch (error) {
-      console.log("error", error);
+      handleError(error);
     }
   };
   const getDataPayments = async () => {
+    setLoading(true);
     try {
       const res = await sellProduct.getInfoBank();
       if (res.code === 200) {
         const data = res.data.items;
+        const total = res.data.total;
+        const revertPage = total - 1; // Perform subtraction here
+        setTotalPage(revertPage);
+        setLoading(false);
         setDataPayment(data);
       }
     } catch (error) {
-      console.log("error", error);
+      setLoading(true);
     }
   };
   useEffect(() => {
     getNameBanking();
     getDataPayments();
   }, []);
-
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    setLoading(true);
+    try {
+      const res = await payments.getDataPaginationPayment(current, size);
+      if (res.data) {
+        const data = res.data.items;
+        setDataPayment(data);
+        setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
   const formatNameBanking: BankOption[] = nameBanking.map((item) => ({
     value: item.id,
     label: (
@@ -199,9 +257,14 @@ const Payment = () => {
         <img
           src={item.logo}
           alt={item.shortName}
-          style={{ width: 30, height: 30, marginRight: 10 }}
+          style={{
+            width: 45,
+            height: 40,
+            marginRight: 15,
+            imageRendering: "crisp-edges",
+          }}
         />
-        <span style={{ fontWeight: "bold" }}>{item.code}</span> {`-${item.shortName}`}
+        <span style={{ fontWeight: "bold" }}>{item.code} &nbsp; </span> {`-  ${item.shortName}`}
       </div>
     ),
     bank_id: item.bin,
@@ -221,15 +284,16 @@ const Payment = () => {
       console.log(`value: ${value}`);
     }
   }
-
   function onSearch(val: string) {
     console.log("search:", val);
   }
-
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
+        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+          Quản lí phương thức thanh toán
+        </h1>
         <div
           className="header"
           style={{
@@ -240,12 +304,16 @@ const Payment = () => {
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
           }}
         >
-          <HeaderPayment />
+          <HeaderPayment
+            handleOpenModal={handleOpenModal}
+            setDataPayment={setDataPayment}
+            setLoadingSearch={setLoading}
+          />
         </div>
-
-        <button onClick={handleOpenModal}>Thêm tài khoản ngân hàng</button>
+        {/* Modal add payment */}
         <Modal
           className="modalDialog-addItems"
+          okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
           width={500}
           centered
           open={isOpenPopups}
@@ -256,34 +324,28 @@ const Payment = () => {
         >
           <h1 className="title-addItem">Thêm tài khoản</h1>
           <div className="name-bank bank-input-container">
-            <label htmlFor="name_bank">Ngân hàng</label>
+            <label htmlFor="name_bank">Ngân hàng:</label>
             <Select
               showSearch
+              allowClear={hiddenSelect}
               onSearch={onSearch}
               notFoundContent="Không tìm thấy ngân hàng"
               placeholder="Chọn ngân hàng"
-              optionFilterProp="label"
+              optionFilterProp="children"
               onChange={onChange}
-              style={{ width: 260 }}
+              style={{ width: 300, height: 40 }}
               filterOption={(input, option) => {
-                const labelValue = option?.label?.props?.children;
-                if (typeof labelValue === "string") {
-                  return labelValue.toLowerCase().includes(input.toLowerCase());
-                } else if (
-                  React.isValidElement(labelValue) &&
-                  typeof labelValue.props.children === "string"
-                ) {
-                  return labelValue.props.children.toLowerCase().includes(input.toLowerCase());
-                }
-                return false;
+                const labelText = option.label.props.children[1].props.children.join(" ");
+                return labelText.toLowerCase().includes(input.toLowerCase());
               }}
               options={formatNameBanking}
             />
           </div>
           <div className="number-bank bank-input-container">
-            <label htmlFor="number_bank">Số tài khoản</label>
+            <label htmlFor="number_bank">Số tài khoản:</label>
             <div>
               <input
+                ref={numberRef}
                 type="text"
                 className="input-name-category"
                 onChange={setHandleInputBanking}
@@ -292,6 +354,7 @@ const Payment = () => {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 placeholder="Nhập số tài khoản"
+                style={{ width: "300px" }}
               />
               {errorAddNameBanking && errorAddNameBanking.error && (
                 <p className="error-message">{errorAddNameBanking.error}</p>
@@ -299,19 +362,33 @@ const Payment = () => {
             </div>
           </div>
           <div className="admin-bank bank-input-container">
-            <label htmlFor="admin_bank">Chủ tài khoản</label>
+            <label htmlFor="admin_bank">Chủ tài khoản:</label>
             <input
               placeholder="Nhập tên chủ tài khoản"
               className="input-name-category"
               onChange={setHandleInputBanking}
               name="admin_bank"
               value={inputBanking.admin_bank}
+              style={{ width: "300px" }}
             />
           </div>
         </Modal>
+        <DeletePayment
+          isOpenModalDetele={openModalDelete}
+          onCloseModal={onCloseModal}
+          idDeletePayment={idDeletePayment}
+          getDataPayments={getDataPayments}
+          setLoadingData={setLoading}
+        />
       </div>
       <div className="table-container">
-        <Table columns={columns} dataSource={dataTable} locale={localPayment} pagination={false} />
+        <Table
+          columns={columns}
+          dataSource={dataTable}
+          locale={localPayment}
+          pagination={false}
+          loading={loading}
+        />
         <div
           style={{
             width: "100%",
@@ -323,17 +400,14 @@ const Payment = () => {
             padding: "10px",
           }}
         >
-          {/* <Pagination
+          <Pagination
             showSizeChanger
             onShowSizeChange={onShowSizeChange}
             onChange={onChangeNumberPagination}
             defaultCurrent={1}
-            total={totalInvoice}
-          /> */}
-          {/* <span
-            className="total-items"
-            style={{ color: "black" }}
-          >{`${dataTable?.length} hóa đơn`}</span> */}
+            total={totalPage}
+          />
+          <span className="total-items" style={{ color: "black" }}>{`${totalPage} Tài khoản`}</span>
         </div>
       </div>
     </>

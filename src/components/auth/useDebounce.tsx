@@ -1,7 +1,5 @@
-import React from "react";
-
 import { useEffect, useState } from "react";
-const useDebounce = (value, delay) => {
+const useDebounce = (value: string, delay: number) => {
   const [useDebounceValue, setUseDebounceValue] = useState(value);
   useEffect(() => {
     const handler = setTimeout(() => {
