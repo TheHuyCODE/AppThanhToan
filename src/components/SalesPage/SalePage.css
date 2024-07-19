@@ -796,11 +796,11 @@
   height: 40px;
 }
 .name-customer input:hover {
-  border-color: var(--cl-dark);
+  border-color: var(--kv-primary);
 }
 .name-customer input:focus {
-  border-color: var(--border-focus-color);
-  border-width: 2px;
+  border-color: var(--kv-primary);
+  border-width: 1px;
 }
 .number-customer {
   width: 100%;
@@ -815,11 +815,11 @@
   height: 40px;
 }
 .number-customer input:hover {
-  border-color: var(--cl-dark);
+  border-color: var(--kv-primary);
 }
 .number-customer input:focus {
-  border-color: var(--border-focus-color);
-  border-width: 2px;
+  border-color: var(--kv-primary);
+  border-width: 1px;
 }
 .option_payment {
   width: 100%;

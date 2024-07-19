@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
 import { Menu, Modal } from "antd";
-import { MdDashboard } from "react-icons/md";
-import { FaBagShopping, FaCartShopping, FaChartColumn, FaKey } from "react-icons/fa6";
+
+import { FaBagShopping, FaCartShopping, FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
-import { IoIosSettings, IoIosAdd } from "react-icons/io";
+
 import { RiListSettingsFill } from "react-icons/ri";
-import { FaLock, FaPercent, FaRegUserCircle } from "react-icons/fa";
+import { FaPercent, FaRegUserCircle } from "react-icons/fa";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
@@ -63,22 +63,22 @@ const MenuList = () => {
           <Menu.Item key="Product_management_child">
             <Link to="/admin/products">Quản lý sản phẩm</Link>
           </Menu.Item>
-          <Menu.Item
-            key="Product_catalog_management_child"
-
-            // onClick={handleDataCategories}
-          >
+          <Menu.Item key="Product_catalog_management_child">
             <Link to="/admin/productcatalogmanagement">Quản lý danh mục sản phẩm</Link>
           </Menu.Item>
         </Menu.SubMenu>
-
+        <Menu.Item key="customer_management" icon={<FaPeopleGroup />}>
+          <Link to="/admin/customers">Quản lý khách hàng</Link>
+        </Menu.Item>
         <Menu.Item key="percent" icon={<FaPercent />}>
           Quản lý mã giảm giá
         </Menu.Item>
         <Menu.Item key="paymentmethod" icon={<CiBank />}>
           <Link to="/admin/paymentmethod">Phương thức thanh toán</Link>
         </Menu.Item>
-
+        {/* <Menu.Item key="paymentmethod" icon={<CiBank />}>
+          <Link to="/admin/paymentmethod">Quản lí người dùng</Link>
+        </Menu.Item> */}
         <Menu.Item
           key="Logout"
           icon={<FaArrowRightFromBracket />}

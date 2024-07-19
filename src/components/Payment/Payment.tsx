@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, Pagination, Select, Space, Table, TableColumnsType } from "antd";
+import { Input, Modal, Pagination, Select, Space, Table, TableColumnsType } from "antd";
 import sellProduct from "../../configs/sellProduct";
 import { ToastContainer, toast } from "react-toastify";
 import "../Payment/Payment.css";
 import "../styles/valiables.css";
 import HeaderPayment from "./HeaderPayment/HeaderPayment";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { localPayment } from "../TableConfig/TableConfig";
 import { handleError } from "../../utils/errorHandler";
 import payments from "../../configs/Payment";
@@ -344,17 +344,17 @@ const Payment = () => {
           <div className="number-bank bank-input-container">
             <label htmlFor="number_bank">Số tài khoản:</label>
             <div>
-              <input
+              <Input
                 ref={numberRef}
                 type="text"
-                className="input-name-category"
+                // className="input-name-category"
                 onChange={setHandleInputBanking}
                 name="number_bank"
                 value={inputBanking.number_bank}
                 inputMode="numeric"
                 pattern="[0-9]*"
                 placeholder="Nhập số tài khoản"
-                style={{ width: "300px" }}
+                style={{ width: "300px", height: "40px" }}
               />
               {errorAddNameBanking && errorAddNameBanking.error && (
                 <p className="error-message">{errorAddNameBanking.error}</p>
@@ -363,13 +363,13 @@ const Payment = () => {
           </div>
           <div className="admin-bank bank-input-container">
             <label htmlFor="admin_bank">Chủ tài khoản:</label>
-            <input
+            <Input
               placeholder="Nhập tên chủ tài khoản"
-              className="input-name-category"
+              // className="input-name-category"
               onChange={setHandleInputBanking}
               name="admin_bank"
               value={inputBanking.admin_bank}
-              style={{ width: "300px" }}
+              style={{ width: "300px", height: "40px" }}
             />
           </div>
         </Modal>

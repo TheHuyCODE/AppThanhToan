@@ -56,5 +56,14 @@ const invoice = {
     
     });
   },
+  deleteInvoices: (idInvoices: string) => {
+    const url = `api/v1/manage/invoice/${idInvoices}`;
+    return axiosClient.delete(url, {
+      headers: {
+    
+      },
+    
+    });
+  },
 };
 export default invoice;

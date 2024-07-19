@@ -63,12 +63,13 @@ const HeaderPayment: React.FC<HeaderPaymentProps> = ({
       <div
         className="header-right"
         style={{
+          width: "50%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "end",
           gap: "10px",
           padding: "10px",
-          marginLeft: "80px",
+          marginRight: "10px",
         }}
       >
         <button className="btn-header-right">Hướng dẫn sử dụng</button>

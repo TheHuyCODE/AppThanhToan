@@ -1,9 +1,12 @@
-import { Select } from "antd";
 import React from "react";
 import { CiSearch } from "react-icons/ci";
-import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
-
-const HeaderInvoices = () => {
+import { IoMdAdd } from "react-icons/io";
+interface HeaderCustomerProps {
+  handleClickOpenModal: () => void;
+  // setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  // setDataPayment: React.Dispatch<React.SetStateAction<any>>;
+}
+const HeaderCustomer: React.FC<HeaderCustomerProps> = ({ handleClickOpenModal }) => {
   return (
     <>
       <div className="header-left">
@@ -21,26 +24,12 @@ const HeaderInvoices = () => {
             />
             <input
               type="text"
-              placeholder="Tìm kiếm hóa đơn"
+              placeholder="Tìm kiếm khách hàng"
               className="search-category"
               style={{ width: "250px" }}
-              // onChange={handleSearchProduct}
+              //   onChange={handleSearchPayment}
             />
           </div>
-          <Select
-            placeholder="Trạng thái hóa đơn"
-            allowClear
-            // onChange={(value) => {
-            //   handleSelectActive(value);
-            // }}
-            style={{ width: 200, height: 35 }}
-          >
-            {/* {statusProduct.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.name}
-                </option>
-              ))} */}
-          </Select>
         </div>
       </div>
       <div
@@ -56,18 +45,17 @@ const HeaderInvoices = () => {
         }}
       >
         <button className="btn-header-right">Hướng dẫn sử dụng</button>
-        <button className="btn-header-right" style={{ width: "100px" }}>
-          <FaArrowAltCircleUp /> &nbsp; Export
+
+        <button
+          className="btn-header-right"
+          style={{ width: "150px" }}
+          onClick={handleClickOpenModal}
+        >
+          <IoMdAdd className="icon" /> Thêm khách hàng
         </button>
-        <button className="btn-header-right" style={{ width: "100px" }}>
-          <FaArrowAltCircleDown /> &nbsp; Import
-        </button>
-        {/* <button className="btn-header-right">
-            <IoMdAdd className="icon" /> Thêm sản phẩm
-          </button> */}
       </div>
     </>
   );
 };
 
-export default HeaderInvoices;
+export default HeaderCustomer;

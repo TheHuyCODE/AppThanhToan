@@ -104,14 +104,13 @@ const CatalogManagement = () => {
   const clickDeleteCategory = async () => {
     const keyItem = deleteItem.key;
     setLoading(true);
-
     try {
       const res = await category.deleteCategory(keyItem);
       if (res.code === 200) {
         console.log("res:", res);
         const successMs = res.message.text;
-        setIsOpenModalDelete(!isOpenModalDetele);
         toast.success(successMs); // Fetch the updated data after deletion
+        setIsOpenModalDelete(!isOpenModalDetele);
         await fetchDataCategory();
       } else {
         console.log("error:", res);

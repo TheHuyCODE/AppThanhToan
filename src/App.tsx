@@ -28,6 +28,7 @@ import Invoices from "./components/Invoices/invoices";
 import SalePageDemo from "./components/SalesPage/SalePageDemo";
 import Profile from "./components/Profile/Profile";
 import ManagementInvoices from "./components/Invoices/ManagementInvoices/ManagementInvoices";
+import Customers from "./components/Customers/Customers";
 // import SalePage from "./components/SalesPage/SalePage";
 // const NotFound = () => {
 //   return (
@@ -99,6 +100,23 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <RevenueReport />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/customers"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Customers />
               </AppWrapper>
             </ProtectedRouter>
           }

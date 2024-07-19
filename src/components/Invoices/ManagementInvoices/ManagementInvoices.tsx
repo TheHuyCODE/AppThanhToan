@@ -7,13 +7,15 @@ import { Pagination, Space, Table, TableColumnsType } from "antd";
 import { localInvoice } from "../../TableConfig/TableConfig";
 import invoice from "../../../configs/invoice";
 import { format } from "date-fns";
+import ModalDeleteInvoices from "../ModalDeleteInvoices/ModalDeleteInvoices";
+import { ToastContainer } from "react-toastify";
 
 interface RecordType {
   stt: number;
   barcode: string;
   created_date: string;
+  create_user: string;
   full_name: string;
-  customer: string;
   total_amount: number;
   key: string;
 }
@@ -21,7 +23,9 @@ interface RecordType {
 const ManagementInvoices: React.FC = () => {
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   const [totalInvoice, setTotalInvoice] = useState(0);
-
+  const [idDelete, setIdDelete] = useState("");
+  const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [dataTableInvoice, setDataTableInvoice] = useState<any[]>([]);
@@ -48,7 +52,16 @@ const ManagementInvoices: React.FC = () => {
       return { key, direction: "up" };
     });
   };
-
+  const handleClickDeleteInvoices = (record: any) => {
+    console.log("record", record);
+    const IdDelete = record.key;
+    setIdDelete(IdDelete);
+    setOpenModalDelete(!openModalDelete);
+  };
+  const onCloseModal = () => {
+    setOpenModalDelete(false);
+    console.log("openModalDelete", openModalDelete);
+  };
   const getColumnTitle = (title: string, key: string) => (
     <div
       className="table-header"
@@ -72,6 +85,7 @@ const ManagementInvoices: React.FC = () => {
   );
 
   const getDataInvoices = async () => {
+    setLoading(true);
     try {
       const res = await invoice.getAllInvoices();
       if (res.code === 200) {
@@ -80,6 +94,7 @@ const ManagementInvoices: React.FC = () => {
         console.log("dataInvoice", data);
         setDataTableInvoice(data);
         setTotalInvoice(totalData);
+        setLoading(false);
       } else {
         console.log("message", res.data);
       }
@@ -93,20 +108,33 @@ const ManagementInvoices: React.FC = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      width: 200,
+      // width: 100,
     },
     {
       title: getColumnTitle(`Mã đơn hàng`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
       align: "start",
-      width: 400,
+      // width: 250,
     },
     {
-      defaultSortOrder: "descend",
-      title: getColumnTitle(`Khách hàng`, "name"),
+      title: getColumnTitle(`Người tạo hóa đơn`, "create_user"),
+      dataIndex: "create_user",
+      key: "create_user",
+      align: "start",
+      // width: 300,
+    },
+    {
+      title: getColumnTitle(`Khách hàng`, "full_name"),
       dataIndex: "full_name",
       key: "full_name",
+      align: "start",
+      // width: 300,
+    },
+    {
+      title: getColumnTitle(`Ngày tạo`, "created_date"),
+      dataIndex: "created_date",
+      key: "created_date",
       align: "start",
       // width: 300,
     },
@@ -119,13 +147,13 @@ const ManagementInvoices: React.FC = () => {
     {
       title: "Thao tác",
       key: "action",
-      render: (record) => (
+      render: (record: any) => (
         <Space size="middle">
           <a>
             <FaEye />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} />
+            <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteInvoices(record)} />
           </a>
         </Space>
       ),
@@ -144,13 +172,13 @@ const ManagementInvoices: React.FC = () => {
     setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
-    // setLoading(true);
+    setLoading(true);
     try {
       const res = await invoice.getDataPagination(current, size);
       if (res.data) {
         const data = res.data.items;
         setDataTableInvoice(data);
-        // setLoading(false);
+        setLoading(false);
       } else {
         console.log("err");
       }
@@ -162,56 +190,66 @@ const ManagementInvoices: React.FC = () => {
     stt: index + 1,
     barcode: items.id,
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
-    full_name: items.create_user.full_name,
-    customer: items.customer.full_name,
+    create_user: items.create_user.full_name,
+    full_name: items.customer.full_name,
     total_amount: items.total_amount.toLocaleString("vi-VN"),
     key: items.id,
   }));
 
   return (
-    <div className="content">
-      <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-        Quản lí hóa đơn
-      </h1>
-      <div
-        className="header"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          border: "none",
-          color: "white",
-          boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <HeaderInvoices />
-      </div>
-      <div className="table-container">
-        <Table columns={columns} dataSource={dataTable} locale={localInvoice} pagination={false} />
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-around",
-            gap: "10px",
-            marginTop: "10px",
-            padding: "10px",
-          }}
-        >
-          <Pagination
-            showSizeChanger
-            onShowSizeChange={onShowSizeChange}
-            onChange={onChangeNumberPagination}
-            defaultCurrent={1}
-            total={totalInvoice}
+    <>
+      <ToastContainer closeOnClick autoClose={5000} />
+      <div className="content">
+        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+          Quản lí hóa đơn
+        </h1>
+        <div className="header-customers">
+          <HeaderInvoices />
+        </div>
+        <ModalDeleteInvoices
+          openModalDelete={openModalDelete}
+          onCloseModal={onCloseModal}
+          idDelete={idDelete}
+          getDataInvoices={getDataInvoices}
+          setLoading={setLoading}
+        />
+        <div className="table-container">
+          <Table
+            columns={columns}
+            dataSource={dataTable}
+            locale={localInvoice}
+            pagination={false}
+            loading={loading}
+            scroll={{
+              y: 500,
+            }}
           />
-          <span
-            className="total-items"
-            style={{ color: "black" }}
-          >{`${dataTable?.length} hóa đơn`}</span>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              gap: "10px",
+              marginTop: "10px",
+              padding: "10px",
+            }}
+          >
+            <Pagination
+              showSizeChanger
+              onShowSizeChange={onShowSizeChange}
+              onChange={onChangeNumberPagination}
+              defaultCurrent={1}
+              total={totalInvoice}
+            />
+            <span
+              className="total-items"
+              style={{ color: "black" }}
+            >{`${dataTable?.length} hóa đơn`}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
