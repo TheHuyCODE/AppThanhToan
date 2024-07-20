@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button, Result, theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
@@ -28,11 +28,9 @@ import ManagementInvoices from "./components/Invoices/ManagementInvoices/Managem
 import Customers from "./components/Customers/Customers";
 import Categories from "./components/Category/Categories";
 import SubCategories from "./components/Category/SubCategories";
+import ShirtSubCategories from "./components/Category/ShirtSubCategories";
 // import SalePage from "./components/SalesPage/SalePage";
-// interface notFound {
 
-//   const NotFound: () => void
-// }
 const NotFound = () => {
   const navigate = useNavigate();
 
@@ -54,7 +52,9 @@ const NotFound = () => {
 };
 
 function App() {
+  const { idCategories } = useParams();
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedChildCategory, setSelectedChildCategory] = useState("");
   const [darkTheme, setDarkTheme] = useState(true);
   const [collapsedTheme, setCollapsedTheme] = useState(false);
   const [stateLogins, setStateLogins] = useState(false);
@@ -288,6 +288,8 @@ function App() {
               >
                 <Categories
                   selectedCategory={selectedCategory}
+                  selectedChildCategory={selectedChildCategory}
+                  setSelectedChildCategory={setSelectedChildCategory}
                   setSelectedCategory={setSelectedCategory}
                 />
               </AppWrapper>
@@ -306,7 +308,35 @@ function App() {
                 colorBgContainer={colorBgContainer}
                 borderRadiusLG={borderRadiusLG}
               >
-                <SubCategories selectedCategory={selectedCategory} />
+                <SubCategories
+                  selectedCategory={selectedCategory}
+                  selectedChildCategory={selectedChildCategory}
+                  setSelectedChildCategory={setSelectedChildCategory}
+                  setSelectedCategory={setSelectedCategory}
+                />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/categories/view/:idShirtCategories"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <ShirtSubCategories
+                  selectedCategory={selectedCategory}
+                  selectedChildCategory={selectedChildCategory}
+                  setSelectedChildCategory={setSelectedChildCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  idChildCategories={idCategories}
+                />
               </AppWrapper>
             </ProtectedRouter>
           }

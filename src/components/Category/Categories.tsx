@@ -23,9 +23,16 @@ import { useNavigate } from "react-router-dom";
 import TitleCategories from "./TitleCategories";
 interface CategoriesProp {
   selectedCategory: string;
+  selectedChildCategory: string;
   setSelectedCategory: (name: string) => void;
+  setSelectedChildCategory: (name: string) => void;
 }
-const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCategory }) => {
+const Categories: React.FC<CategoriesProp> = ({
+  selectedCategory,
+  selectedChildCategory,
+  setSelectedChildCategory,
+  setSelectedCategory,
+}) => {
   const navigate = useNavigate();
   const { fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
@@ -39,19 +46,30 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
   const [isDataCategory, setIsDataCategory] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
-  const [hiddenTitleSecondsChild, setHiddenTitleSecondsChild] = useState(false);
-  const [viewTableChildSecond, setViewTableChildSecond] = useState(false);
-  const [viewTableChild, setViewTableChild] = useState(true);
   const [isDescribe, setIsDescribe] = useState("");
   const [isKeyChild, setIsKeyChild] = useState("");
-  const [viewTable, setViewTable] = useState(true);
   const [totaCategory, setTotalCategory] = useState(0);
   //editing item
   const [editItem, setEditItem] = useState<any>();
   const [editDescription, setEditDescription] = useState<any>();
   const [deleteItem, setDeleteItem] = useState<any>();
-
+  const showTableCategory = async () => {
+    setSelectedChildCategory("");
+    localStorage.setItem("selectedCategory", "");
+    localStorage.setItem("selectedChildCategory", "");
+    navigate("/admin/categories");
+    await fetchDataCategory();
+  };
+  //Clear value categories
+  const clearInputs = () => {
+    if (nameRef.current) {
+      nameRef.current.value = "";
+    }
+    setIsDescribe("");
+  };
+  const showTableChildCategory = () => {
+    setSelectedChildCategory("");
+  };
   const handleSearchCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setValueSearch(value);
@@ -67,7 +85,6 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
     }
   };
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log("describe", e.target.value);
     const value = e.target.value;
     setIsDescribe(value);
     if (editDescription) {
@@ -107,19 +124,14 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
   };
 
   //check number category
-  const checkQuatifyItem = (record) => {
-    console.log("number_children:", record.number_children);
-    setHiddenTitleChild(false);
-  };
+
   const onModifyCategories = (item: any) => {
     setIsOpenModalModify(!isOpenModalModify);
     setEditItem(item);
     setEditDescription(item);
-    console.log("item", item.key);
-    console.log("item", item.image_url);
   };
+
   const changeModifyCategory = async () => {
-    //call api change
     const dataPutCategory = {
       name: editItem.name,
       description: editDescription.description,
@@ -130,19 +142,20 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
     try {
       const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
       if (res.code === 200) {
-        console.log("res", res);
         const msSuccess = res.message.text;
         toast.success(msSuccess); // Fetch the updated data after deletion
         setIsOpenModalModify(!isOpenModalModify);
         await fetchDataCategory();
+        setLoading(false);
+        clearInputs();
       } else {
         console.log("res", res);
         toast.error("Error Modify category");
       }
     } catch (error) {
       handleError(error);
+      setLoading(false);
     }
-    setLoading(false);
   };
   const columns = [
     {
@@ -157,7 +170,7 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
       editTable: true,
       key: "name",
       align: "center",
-      width: 250,
+      // width: 250,
     },
     {
       title: "Số lượng danh mục cấp 2",
@@ -165,7 +178,7 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
       key: "number_children",
       align: "center",
       editTable: true,
-      width: 250,
+      // width: 250,
     },
     {
       title: "Mô tả ngắn",
@@ -173,7 +186,7 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
       key: "description",
       align: "center",
       editTable: true,
-      width: 300,
+      // width: 300,
     },
     {
       title: "Ngày tạo",
@@ -206,15 +219,15 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
         key: col.key || `column-${index}`,
         onCell: (record: any) => ({
           onClick: () => {
-            checkQuatifyItem(record);
             const name = record.name;
-            console.log("record", record);
+
             const keyChild = record.key;
-            console.log("keyChild: ", keyChild);
+
+            localStorage.setItem("keyCategories", keyChild);
             nagigateSubCategories(record);
             setSelectedCategory(name);
             setIsKeyChild(keyChild);
-            setViewTable(false);
+
             fetchDataCategoryChild(keyChild);
           },
         }),
@@ -229,13 +242,7 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
       navigate("/admin/categories");
     }
   };
-  //Clear value categories
-  const clearInputs = () => {
-    if (nameRef.current) {
-      nameRef.current.value = "";
-    }
-    setIsDescribe("");
-  };
+
   const clickAddItemCategory = async (e: any) => {
     e.preventDefault();
     setIsOpenPopups(true);
@@ -264,30 +271,7 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
     setLoading(false);
   };
   //show table child when clicked
-  const showTableCategory = async () => {
-    setSelectedCategory("");
-    console.log("selected", selectedCategory);
-    navigate("/admin/categories");
-    await fetchDataCategory();
-  };
-  useEffect(() => {
-    console.log("selectedCategory changed:", selectedCategory);
-  }, [selectedCategory]);
-  const showTableSubCategory = () => {
-    setViewTable(false);
-    setHiddenTitleSecondsChild(true);
-    setViewTableChildSecond(true);
-    // setViewTableChild(true);
-    fetchDataCategoryChild(isKeyChild);
-  };
-  useEffect(() => {
-    // console.log("viewTableChildSecond", viewTableChildSecond);
-    if (viewTableChildSecond) {
-      setViewTableChild(!viewTableChild);
-      console.log("viewTableChild", viewTableChild);
-    }
-  }, [viewTableChildSecond]);
-  const showTableChildSecondCategory = () => {};
+
   const fetchDataCategory = async () => {
     const res = await category.getAll();
     const totalCategory = res.data.total;
@@ -351,7 +335,12 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
   return (
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
-      <TitleCategories showTableCategory={showTableCategory} selectedCategory={selectedCategory} />
+      <TitleCategories
+        selectedCategory={selectedCategory}
+        selectedChildCategory={selectedChildCategory}
+        showTableCategory={showTableCategory}
+        showTableChildCategory={showTableChildCategory}
+      />
       <div className="header-customers">
         <div className="header-left">
           <div className="header-left-top">
@@ -429,7 +418,6 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
           />
         </div>
       </Modal>
-
       {/* Modal Modify product */}
       <Modal
         className="modalDialog-addITems"
@@ -462,14 +450,13 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
             showCount
             maxLength={100}
             onChange={onChangeInput}
-            value={editDescription?.description || ""}
             placeholder="Chú thích danh mục"
             style={{ height: 100, width: 260 }}
+            value={editDescription?.description || ""}
           />
         </div>
       </Modal>
       {/* Modal Delete product */}
-
       <Modal
         okButtonProps={{ style: { backgroundColor: "red" } }}
         width={600}
@@ -535,18 +522,6 @@ const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCat
           >{`${dataTable?.length} danh mục cấp 1`}</span>
         </div>
       </div>
-      {/* ) : (
-        <ChildrenCategory
-          isKeyChild={isKeyChild}
-          fetchDataCategory={fetchDataCategory}
-          onCategoryChange={handleSelectNameChildCategory}
-          onHiddenTitleChild={setHiddenThirdTitle}
-          viewTableChildSecond={viewTableChildSecond}
-          viewTableChild={viewTableChild}
-          setViewTableChild={setViewTableChild}
-        />
-      )} */}
-      {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}
     </div>
   );
 };

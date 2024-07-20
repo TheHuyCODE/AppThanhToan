@@ -2,16 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Table, Space, Button, Modal, Pagination } from "antd";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./Children_category.css";
-import { IoIosAdd } from "react-icons/io";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
-import { CiCircleRemove, CiSearch } from "react-icons/ci";
+import { CiSearch } from "react-icons/ci";
 import category from "../../configs/category";
 import { format } from "date-fns";
 import { useAuth } from "../auth/AuthContext";
-import ChildrenThree_catagory from "./ChildrenThree_catagory";
-import { AiOutlinePicture } from "react-icons/ai";
-import { domain, localCategorySeconds } from "../TableConfig/TableConfig";
+import { localCategorySeconds } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
@@ -20,17 +17,20 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import TitleCategories from "./TitleCategories";
 interface SubCategoriesProp {
   selectedCategory: string;
+  selectedChildCategory: string;
+  setSelectedCategory: (name: string) => void;
+  setSelectedChildCategory: (name: string) => void;
 }
-const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
+const SubCategories: React.FC<SubCategoriesProp> = ({
+  selectedCategory,
+  selectedChildCategory,
+  setSelectedChildCategory,
+  setSelectedCategory,
+}) => {
   const params = useParams<{ idCategories: string }>();
-  const idCategories = params.idCategories;
+  const idCategories: string | undefined = params.idCategories;
   const nameRef = useRef(null);
-  const {
-    isResDataChild,
-    setIsResDataChild,
-    fetchDataCategoryChild,
-    fetchDataCategorySecondChild,
-  } = useAuth();
+  const { isResDataChild, setIsResDataChild, fetchDataCategoryChild } = useAuth();
   const [isOpenPopupChild, setIsOpenPopupChild] = useState(false);
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
   const [page, setPage] = useState(1);
@@ -45,11 +45,18 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
   const [modifyItem, setModifyItem] = useState<any>();
   const [isInputDataCategoryTwo, setIsInputDataCategoryTwo] = useState<any>();
-  const [isKeyThreeChild, setIsKeyThreeChild] = useState("");
   const navigate = useNavigate();
-  // const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
   const showTableCategory = () => {
-    navigate("/admin/categories");
+    navigate("/admin/categories/");
+    setSelectedCategory("");
+    setSelectedChildCategory("");
+    localStorage.setItem("selectedCategory", "");
+    localStorage.setItem("selectedChildCategory", "");
+  };
+  const showTableChildCategory = () => {
+    navigate(`/admin/categories/${idCategories}`);
+    setSelectedChildCategory("");
+    localStorage.setItem("selectedChildCategory", "");
   };
   const handleSearchCategory = (e: any) => {
     const value = e.target.value.trim();
@@ -96,7 +103,6 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
     setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
     setIdDeleteItemsChild(items);
   };
-
   //Delete items child category
   const clickDeleteCategoryChild = async () => {
     const keyItemChild = idDeleteItemsChild.key;
@@ -108,20 +114,21 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
         setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
         toast.success("Đã xóa sản phẩm cấp 2 thành công");
         // await fetchDataCategory();
-        await fetchDataCategoryChild(isKeyChild);
+        await fetchDataCategoryChild(idCategories);
+        setLoading(false);
       } else {
         console.log("error:", res);
         setIsOpenModalDeleteChild(isOpenModalDeleteChild);
+        setLoading(false);
       }
     }
-    setLoading(false);
   };
   //Modify items child category
   const changeModifyCategoryChild = async () => {
     const dataPutCategoryChild = {
       name: modifyItem.name,
       description: isInputDataCategoryTwo.description,
-      parent_id: isKeyChild,
+      parent_id: idCategories,
     };
     const idModifyItemsChild = modifyItem.key;
     setLoading(true);
@@ -131,7 +138,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
         console.log("res", res);
         const messSuccess = res.message.text;
         toast.success(messSuccess);
-        await fetchDataCategoryChild(isKeyChild);
+        await fetchDataCategoryChild(idCategories);
         setIsOpenModalModifyChild(!isOpenModalModifyChild);
         clearInputChildren();
       } else {
@@ -143,12 +150,9 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
     setLoading(false);
   };
   const onModifyCategories = (record: any) => {
-    console.log("onModifyCategories", record);
     setIsOpenModalModifyChild(!isOpenModalModifyChild);
     setModifyItem(record);
     setIsInputDataCategoryTwo(record);
-    console.log("record:", record.key);
-    console.log("record:", record.image_url);
   };
   //Get input values and file images ChildrenCategory
   const setHandleInput = (event: any) => {
@@ -220,7 +224,6 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
       ),
     },
   ];
-
   //Set with click table
   const columnsWithClick = columns?.map((col, index) => {
     if (index < 4) {
@@ -229,18 +232,20 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
         onCell: (record: any) => ({
           onClick: () => {
             const name = record.name;
-            const keyChild = record.key;
-            // setSelectedCategoryChild(name);
-            setIsKeyThreeChild(keyChild);
-            fetchDataCategorySecondChild(keyChild);
+            nagigateShirtSubCategories(record);
+            setSelectedChildCategory(name);
           },
         }),
       };
     }
     return col;
   });
+  const nagigateShirtSubCategories = (record: any) => {
+    if (record) {
+      navigate(`/admin/categories/view/${record.key}`);
+    }
+  };
   const onChangeInputChild = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log("describe", e.target.value);
     const value = e.target.value;
     setIsDescription(value);
     if (isInputDataCategoryTwo) {
@@ -299,6 +304,8 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
         <TitleCategories
           showTableCategory={showTableCategory}
           selectedCategory={selectedCategory}
+          selectedChildCategory={selectedChildCategory}
+          showTableChildCategory={showTableChildCategory}
         />
         <div className="header-customers">
           <div className="header-left">
@@ -324,9 +331,6 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
             </div>
           </div>
           <div className="header-right">
-            {/* <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
-              Hướng dẫn sử dụng
-            </Button> */}
             <Button
               type="primary"
               onClick={openModalChildSecond}
@@ -337,45 +341,40 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
           </div>
         </div>
         <div className="table-container">
-          {loading ? (
-            <Spinners loading={loading} />
-          ) : (
-            <>
-              <Table
-                columns={columnsWithClick}
-                dataSource={dataTableChild}
-                locale={localCategorySeconds}
-                pagination={false}
-              />
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-around",
-                  gap: "10px",
-                  marginTop: "10px",
-                  padding: "10px",
-                }}
-              >
-                <Pagination
-                  showSizeChanger
-                  onShowSizeChange={onShowSizeChange}
-                  onChange={onChangeNumberPagination}
-                  defaultCurrent={1}
-                  total={isResDataChild.total}
-                />
-                <span
-                  className="total-items"
-                  style={{ color: "black" }}
-                >{`${dataTableChild?.length} danh mục cấp 2`}</span>
-              </div>
-            </>
-          )}
+          <Table
+            columns={columnsWithClick}
+            dataSource={dataTableChild}
+            locale={localCategorySeconds}
+            loading={loading}
+            pagination={false}
+          />
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              gap: "10px",
+              marginTop: "10px",
+              padding: "10px",
+            }}
+          >
+            <Pagination
+              showSizeChanger
+              onShowSizeChange={onShowSizeChange}
+              onChange={onChangeNumberPagination}
+              defaultCurrent={1}
+              total={isResDataChild.total}
+            />
+            <span
+              className="total-items"
+              style={{ color: "black" }}
+            >{`${dataTableChild?.length} danh mục cấp 2`}</span>
+          </div>
         </div>
       </div>
 
-      {/* modal add child category */}
+      {/* Modal add child category */}
       <Modal
         className="modalDialog-addITems"
         width={500}
@@ -414,7 +413,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
           />
         </div>
       </Modal>
-      {/* modal delete child category */}
+      {/* Modal delete child category */}
       <Modal
         okButtonProps={{ style: { backgroundColor: "red" } }}
         width={600}
@@ -427,7 +426,6 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
       >
         <h1
           style={{
-            fontFamily: "Arial",
             fontSize: "30px",
             fontWeight: "bold",
             padding: "5px 10px",
@@ -448,7 +446,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
           phẩm đã link với danh mục sẽ bị xóa.
         </p>
       </Modal>
-      {/* modal modify child category */}
+      {/* Modal modify child category */}
       <Modal
         className="modalDialog-addITems"
         width={500}

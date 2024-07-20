@@ -31,7 +31,7 @@ const category = {
       params,
     });
   },
-  getDataCategoryPaginationChild: (isChild: string, current: number, size: number) => {
+  getDataCategoryPaginationChild: (isChild: string | undefined, current: number, size: number) => {
     const url = "api/v1/manage/category";
     const params = {
       parent_id: isChild,

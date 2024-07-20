@@ -131,7 +131,7 @@ a.title-category {
   margin-top: 30px;
 }
 .input-name-category {
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   border-radius: 5px;
   padding: 5px 5px 5px 10px;
   width: 260px;
@@ -209,4 +209,12 @@ label.label-upload {
 label.label-upload:hover {
   border-color: lightgrey;
   background: var(--cl-btn-cancel-hover);
+}
+a.title-category:hover {
+  color: red;
+}
+
+a.title-category.selected:hover,
+a.title-category.selected-child:hover {
+  color: red !important;
 }

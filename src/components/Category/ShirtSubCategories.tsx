@@ -1,21 +1,33 @@
 import { Button, Modal, Pagination, Space, Table } from "antd";
 import { format } from "date-fns";
 import { useEffect, useRef, useState } from "react";
-import { CiCircleRemove, CiSearch } from "react-icons/ci";
+import { CiSearch } from "react-icons/ci";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useAuth } from "../auth/AuthContext";
-import { AiOutlinePicture } from "react-icons/ai";
 import uploadApiImage from "../../configs/uploadApiImage";
-import { toast } from "react-toastify";
-import { domain, localCategoryThirds } from "../TableConfig/TableConfig";
+import { toast, ToastContainer } from "react-toastify";
+import { localCategoryThirds } from "../TableConfig/TableConfig";
 import category from "../../configs/category";
 import useDebounce from "../auth/useDebounce";
 import TextArea from "antd/es/input/TextArea";
-import Spinners from "../SpinnerLoading/Spinners";
-
-const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
-  const domainLink = domain.domainLink;
+import { useNavigate, useParams } from "react-router-dom";
+import TitleCategories from "./TitleCategories";
+import { handleError } from "../../utils/errorHandler";
+interface shirtSubCategoriesProp {
+  selectedCategory: string;
+  selectedChildCategory: string;
+  setSelectedCategory: (name: string) => void;
+  setSelectedChildCategory: (name: string) => void;
+}
+const ShirtSubCategories: React.FC<shirtSubCategoriesProp> = ({
+  selectedCategory,
+  selectedChildCategory,
+  setSelectedCategory,
+  setSelectedChildCategory,
+}) => {
   const nameRef = useRef(null);
+  const params = useParams<{ idShirtCategories: string }>();
+  const idCategories: string | undefined = params.idShirtCategories;
   const { isResDataChildSeconds, setIsResDataChildSeconds, fetchDataCategorySecondChild } =
     useAuth();
   const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
@@ -30,61 +42,74 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   const [loading, setLoading] = useState(false);
   const [modifyItem, setModifyItem] = useState<any>();
   const [decriptionModifyCategoryThird, setDecriptionModifyCategoryThird] = useState<any>();
-
   const [idDeleteItemsChild, setIdDeleteItemsChild] = useState<any>();
   const [isKeyChildThree, setIsKeyChildThree] = useState("");
-  const handleSearchCategory = (e) => {
-    const value = e.target.value.trim();
-    setIsValueSearchChild(value);
-  };
-  const openModalChildSecond = () => {
-    setIsOpenModalAddCategory(!isOpenModalAddCategory);
-  };
-  const setHandleInput = (event) => {
-    const value = event.target.value;
-    console.log("value Category 2:", value);
-    setIsInputCategoryChild(value);
-    if (modifyItem) {
-      setModifyItem({ ...modifyItem, name: value });
-    }
-  };
-  const onModifyCategoriesThree = (record) => {
-    setIsOpenModalModifyChild(!isOpenModalModifyChild);
-    setModifyItem(record);
-    setDecriptionModifyCategoryThird(record);
-    setIsKeyChildThree(record.key);
-  };
+  const keyChild = localStorage.getItem("keyCategories");
+  const navigate = useNavigate();
   const clearInputChildren = () => {
     if (nameRef.current) {
       nameRef.current.value = "";
     }
     setIsDescribeThree("");
   };
-  const clickAddItemCategoryChild = async (event) => {
-    console.log("adding category Seconds");
+  const showTableCategory = () => {
+    navigate("/admin/categories");
+    setSelectedCategory("");
+    setSelectedChildCategory("");
+    localStorage.setItem("selectedCategory", "");
+    localStorage.setItem("selectedChildCategory", "");
+  };
+  const showTableChildCategory = () => {
+    navigate(`/admin/categories/${keyChild}`);
+    setSelectedChildCategory("");
+    localStorage.setItem("selectedChildCategory", "");
+  };
+  const handleSearchCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
+    setIsValueSearchChild(value);
+  };
+  const openModalChildSecond = () => {
+    setIsOpenModalAddCategory(!isOpenModalAddCategory);
+  };
+  const setHandleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setIsInputCategoryChild(value);
+    if (modifyItem) {
+      setModifyItem({ ...modifyItem, name: value });
+    }
+  };
+  const onModifyCategoriesThree = (record: any) => {
+    setIsOpenModalModifyChild(!isOpenModalModifyChild);
+    setModifyItem(record);
+    setDecriptionModifyCategoryThird(record);
+    setIsKeyChildThree(record.key);
+  };
+
+  const clickAddItemCategoryChild = async (event: any) => {
     event.preventDefault();
+
     setIsOpenModalAddCategory(!isOpenModalAddCategory);
     const userDataCategoryChild = {
       name: isInputCategoryChild,
       description: isDescribeThree,
-      parent_id: isKeyThreeChild,
+      parent_id: idCategories,
     };
+    setLoading(true);
     try {
       const res = await uploadApiImage.postAddItemCategoryChild(userDataCategoryChild);
       if (res.code === 200) {
-        console.log("res", res);
-        toast.success("Đã thêm danh mục cấp 3 thành công!");
-        // await fetchDataCategory();
-        await fetchDataCategorySecondChild(isKeyThreeChild);
+        const msSucces = res.message.text;
+        toast.success(msSucces);
+        await fetchDataCategorySecondChild(idCategories);
         clearInputChildren();
+        setLoading(false);
       } else {
-        toast.error("Danh mục này đã có");
         setIsOpenModalAddCategory(true);
-
         console.log("Error:", res);
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      handleError(error);
+      setLoading(false);
     }
   };
   const changeModifyCategoryChild = async () => {
@@ -92,7 +117,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     const dataPutCategoryChild = {
       name: modifyItem.name,
       description: decriptionModifyCategoryThird.description,
-      parent_id: isKeyThreeChild,
+      parent_id: idCategories,
     };
     const idModifyItemsChild = modifyItem.key;
     setLoading(true);
@@ -101,17 +126,18 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
       const res = await category.putModifyCategoryChild(idModifyItemsChild, dataPutCategoryChild);
       if (res.code === 200) {
         console.log("res", res);
-        toast.success("Đã sửa danh mục cấp 3 thành công!");
-        // await fetchDataCategoryChild(isKeyChild);
-        await fetchDataCategorySecondChild(isKeyThreeChild);
+        const msSucces = res.message.text;
+        toast.success(msSucces);
+        setLoading(false);
+        await fetchDataCategorySecondChild(idCategories);
+        clearInputChildren();
       } else {
         console.log("Error:", res);
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
-      setLoading(true);
+      handleError(error);
+      setLoading(false);
     }
-    setLoading(false);
   };
   const onShowSizeChange = (current: number, size: number) => {
     console.log("Current page:", current);
@@ -128,7 +154,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   const getDataPagination = async (current: number, size: number) => {
     setLoading(true);
     try {
-      const res = await category.getDataCategoryPaginationChild(isKeyThreeChild, current, size);
+      const res = await category.getDataCategoryPaginationChild(idCategories, current, size);
       if (res.data) {
         const data = res.data;
         setIsResDataChildSeconds(data);
@@ -151,7 +177,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
         setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
         toast.success("Đã xóa sản phẩm cấp 3 thành công");
         // await fetchDataCategory();
-        await fetchDataCategorySecondChild(isKeyThreeChild);
+        await fetchDataCategorySecondChild(idCategories);
       } else {
         console.log("error:", res);
         setIsOpenModalDeleteChild(isOpenModalDeleteChild);
@@ -159,7 +185,7 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     }
     setLoading(false);
   };
-  const onDeleteCategoriesThree = (record) => {
+  const onDeleteCategoriesThree = (record: any) => {
     setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
     setIdDeleteItemsChild(record);
   };
@@ -221,27 +247,14 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
     if (index < 4) {
       return {
         ...col,
-        onCell: (record) => ({
-          onClick: () => {
-            console.log("Click row");
-            console.log("record:", record);
-            // checkQuatifyItem(record);
-            // const name = record.name;
-            // console.log(name);
-            const keyChild = record.key;
-            console.log("keyChild: ", keyChild);
-            // setSelectedCategory(name);
-            // setIsKeyThreeChild(keyChild);
-            // setViewTable(false);
-          },
-        }),
+        onCell: () => ({}),
       };
     }
     return col;
   });
   const fetchDataSearchCategory = async () => {
     setLoading(true);
-    const res = await category.getDataSearchNameThreeCategory(isKeyThreeChild, debounceValue);
+    const res = await category.getDataSearchNameThreeCategory(idCategories, debounceValue);
     if (res.code === 200) {
       setIsResDataChildSeconds(res.data);
       // setLoading(false);
@@ -264,89 +277,81 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   }, [debounceValue]);
   return (
     <>
-      {isResDataChildSeconds.items === 0 ? (
-        <div className="add_children_category">
-          <p>Chưa có model cấp 3</p>
-          <Button
-            type="primary"
-            onClick={openModalChildSecond}
-            style={{ backgroundColor: "var( --kv-success)" }}
-          >
-            Thêm danh mục cấp 3
-          </Button>
-        </div>
-      ) : (
-        <div>
-          <div className="header-top">
-            <div className="header-top-right">
-              <CiSearch
-                style={{
-                  position: "absolute",
-                  top: "7px",
-                  left: "5px",
-                  transform: "translateY(5%)",
-                  fontSize: "20px",
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Tìm danh mục cấp 3"
-                className="search-categories"
-                onChange={handleSearchCategory}
-              />
-            </div>
-            <div className="header-btn">
-              <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
-                Hướng dẫn sử dụng
-              </Button>
-              <Button
-                type="primary"
-                onClick={openModalChildSecond}
-                style={{ backgroundColor: "var( --kv-success)" }}
-              >
-                Thêm danh mục cấp 3
-              </Button>
-            </div>
-          </div>
-          <div className="table-container">
-            {loading ? (
-              <Spinners loading={loading} />
-            ) : (
-              <>
-                <Table
-                  columns={columnsWithClick}
-                  dataSource={dataTableChild}
-                  locale={localCategoryThirds}
-                  pagination={false}
-                />
-                <div
+      <div className="content">
+        <ToastContainer closeOnClick autoClose={5000} />
+        <TitleCategories
+          showTableCategory={showTableCategory}
+          selectedCategory={selectedCategory}
+          selectedChildCategory={selectedChildCategory}
+          showTableChildCategory={showTableChildCategory}
+        />
+        <div className="header-customers">
+          <div className="header-left">
+            <div className="header-left-top">
+              <div className="search-product" style={{ display: "flex", position: "relative" }}>
+                <CiSearch
                   style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-around",
-                    gap: "10px",
-                    marginTop: "10px",
-                    padding: "10px",
+                    position: "absolute",
+                    top: "6px",
+                    left: "5px",
+                    transform: "translateY(5%)",
+                    fontSize: "20px",
+                    color: "var(--cl-dark)",
                   }}
-                >
-                  <Pagination
-                    showSizeChanger
-                    onShowSizeChange={onShowSizeChange}
-                    onChange={onChangeNumberPagination}
-                    defaultCurrent={1}
-                    // total={isResDataChildSeconds?.total}
-                  />
-                  <span
-                    className="total-items"
-                    style={{ color: "black" }}
-                  >{`${dataTableChild?.length} danh mục cấp 3`}</span>
-                </div>
-              </>
-            )}
+                />
+                <input
+                  type="text"
+                  placeholder="Tìm danh mục cấp 3"
+                  className="search-categories"
+                  onChange={handleSearchCategory}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="header-right">
+            <Button
+              type="primary"
+              onClick={openModalChildSecond}
+              style={{ backgroundColor: "var( --kv-success)" }}
+            >
+              Thêm danh mục cấp 3
+            </Button>
           </div>
         </div>
-      )}
+        <div className="table-container">
+          <Table
+            columns={columnsWithClick}
+            dataSource={dataTableChild}
+            locale={localCategoryThirds}
+            pagination={false}
+            loading={loading}
+          />
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              gap: "10px",
+              marginTop: "10px",
+              padding: "10px",
+            }}
+          >
+            <Pagination
+              showSizeChanger
+              onShowSizeChange={onShowSizeChange}
+              onChange={onChangeNumberPagination}
+              defaultCurrent={1}
+              // total={isResDataChildSeconds?.total}
+            />
+            <span
+              className="total-items"
+              style={{ color: "black" }}
+            >{`${dataTableChild?.length} danh mục cấp 3`}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Modal Add Category level third */}
       <Modal
         className="modalDialog-addITems"
@@ -380,9 +385,9 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
             showCount
             maxLength={100}
             onChange={onChangeInput}
-            value={isDescribeThree}
             placeholder="Chú thích danh mục"
             style={{ height: 100, width: 260 }}
+            value={isDescribeThree}
           />
         </div>
       </Modal>
@@ -456,4 +461,4 @@ const ChildrenThree_catagory = ({ isKeyThreeChild }) => {
   );
 };
 
-export default ChildrenThree_catagory;
+export default ShirtSubCategories;

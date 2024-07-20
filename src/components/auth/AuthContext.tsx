@@ -23,8 +23,8 @@ interface AuthContextType {
   logout: () => void;
   logoutAllTabs: () => void;
   colorSidebar: () => void;
-  fetchDataCategoryChild: (isKeyChild: string) => void;
-  fetchDataCategorySecondChild: (isKeyChild: string) => void;
+  fetchDataCategoryChild: (isKeyChild: string | undefined) => void;
+  fetchDataCategorySecondChild: (isKeyChild: string | undefined) => void;
   fetchDataCategory: () => void;
 }
 
@@ -80,7 +80,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     logout();
   };
 
-  const fetchDataCategoryChild = async (isKeyChild: string) => {
+  const fetchDataCategoryChild = async (isKeyChild: string | undefined) => {
     try {
       const res = await category.getAllChild(isKeyChild);
       if (res.code === 200) {
@@ -93,7 +93,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const fetchDataCategorySecondChild = async (isKeyChild: string) => {
+  const fetchDataCategorySecondChild = async (isKeyChild: string | undefined) => {
     try {
       const res = await category.getAllChildThirds(isKeyChild);
       if (res.code === 200) {
