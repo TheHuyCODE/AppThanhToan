@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Table, Space, Button, Modal, Pagination } from "antd";
-import { useParams } from "react-router-dom";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./Children_category.css";
 import { IoIosAdd } from "react-icons/io";
 import uploadApiImage from "../../configs/uploadApiImage";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { CiCircleRemove, CiSearch } from "react-icons/ci";
 import category from "../../configs/category";
 import { format } from "date-fns";
@@ -17,16 +16,14 @@ import useDebounce from "../auth/useDebounce";
 import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
 import { handleError } from "../../utils/errorHandler";
-
-const ChildrenCategory = ({
-  isKeyChild,
-  fetchDataCategory,
-  onCategoryChange,
-  onHiddenTitleChild,
-  viewTableChildSecond,
-  viewTableChild,
-  setViewTableChild,
-}) => {
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import TitleCategories from "./TitleCategories";
+interface SubCategoriesProp {
+  selectedCategory: string;
+}
+const SubCategories: React.FC<SubCategoriesProp> = ({ selectedCategory }) => {
+  const params = useParams<{ idCategories: string }>();
+  const idCategories = params.idCategories;
   const nameRef = useRef(null);
   const {
     isResDataChild,
@@ -49,8 +46,11 @@ const ChildrenCategory = ({
   const [modifyItem, setModifyItem] = useState<any>();
   const [isInputDataCategoryTwo, setIsInputDataCategoryTwo] = useState<any>();
   const [isKeyThreeChild, setIsKeyThreeChild] = useState("");
+  const navigate = useNavigate();
   // const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
-
+  const showTableCategory = () => {
+    navigate("/admin/categories");
+  };
   const handleSearchCategory = (e: any) => {
     const value = e.target.value.trim();
     setIsValueSearchChild(value);
@@ -70,7 +70,7 @@ const ChildrenCategory = ({
     const userDataCategoryChild = {
       name: isInputCategoryChild,
       description: isDescription,
-      parent_id: isKeyChild,
+      parent_id: idCategories,
     };
     setLoading(true);
     try {
@@ -79,8 +79,7 @@ const ChildrenCategory = ({
         const successMs = res.message.text;
         toast.success(successMs);
         setIsOpenPopupChild(!isOpenPopupChild);
-        await fetchDataCategory();
-        await fetchDataCategoryChild(isKeyChild);
+        await fetchDataCategoryChild(idCategories);
         clearInputChildren();
       } else {
         const errorMessage = res.data.message.text;
@@ -234,13 +233,6 @@ const ChildrenCategory = ({
             // setSelectedCategoryChild(name);
             setIsKeyThreeChild(keyChild);
             fetchDataCategorySecondChild(keyChild);
-            if (typeof onCategoryChange === "function") {
-              onCategoryChange(name); // Gọi hàm từ component cha
-            }
-            if (typeof onCategoryChange === "function") {
-              onHiddenTitleChild(false); // Gọi hàm từ component cha
-            }
-            setViewTableChild(false);
           },
         }),
       };
@@ -271,7 +263,7 @@ const ChildrenCategory = ({
   const getDataPagination = async (current: number, size: number) => {
     // setLoading(true);
     try {
-      const res = await category.getDataCategoryPaginationChild(isKeyChild, current, size);
+      const res = await category.getDataCategoryPaginationChild(idCategories, current, size);
       if (res.data) {
         const data = res.data;
         setIsResDataChild(data);
@@ -287,7 +279,7 @@ const ChildrenCategory = ({
 
   const fetchDataSearchCategory = async () => {
     setLoading(true);
-    const res = await category.getDataSearchNameChildCategory(isKeyChild, debounceValue);
+    const res = await category.getDataSearchNameChildCategory(idCategories, debounceValue);
     if (res.code === 200) {
       setIsResDataChild(res.data);
       console.log("object 11111", res.data);
@@ -302,101 +294,87 @@ const ChildrenCategory = ({
   }, [debounceValue]);
   return (
     <>
-      {isResDataChild.items === 0 ? (
-        <div className="add_children_category">
-          <p>Chưa có model cấp 2</p>
-          <Button
-            type="primary"
-            onClick={openModalChildSecond}
-            style={{ backgroundColor: "var( --kv-success)" }}
-          >
-            Thêm danh mục cấp 2
-          </Button>
-        </div>
-      ) : (
-        <div>
-          <div className="header-top">
-            <div className="header-top-right">
-              {viewTableChild && (
-                <>
-                  <CiSearch
-                    style={{
-                      position: "absolute",
-                      top: "7px",
-                      left: "5px",
-                      transform: "translateY(5%)",
-                      fontSize: "20px",
-                    }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Tìm danh mục cấp 2"
-                    className="search-categories"
-                    onChange={handleSearchCategory}
-                  />
-                </>
-              )}
-            </div>
-            <div className="header-btn">
-              {viewTableChild && (
-                <>
-                  <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
-                    Hướng dẫn sử dụng
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={openModalChildSecond}
-                    style={{ backgroundColor: "var( --kv-success)" }}
-                  >
-                    Thêm danh mục cấp 2
-                  </Button>
-                </>
-              )}
+      <div className="content">
+        <ToastContainer closeOnClick autoClose={5000} />
+        <TitleCategories
+          showTableCategory={showTableCategory}
+          selectedCategory={selectedCategory}
+        />
+        <div className="header-customers">
+          <div className="header-left">
+            <div className="header-left-top">
+              <div className="search-product" style={{ display: "flex", position: "relative" }}>
+                <CiSearch
+                  style={{
+                    position: "absolute",
+                    top: "6px",
+                    left: "5px",
+                    transform: "translateY(5%)",
+                    fontSize: "20px",
+                    color: "var(--cl-dark)",
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Tìm danh mục cấp 2"
+                  className="search-categories"
+                  onChange={handleSearchCategory}
+                />
+              </div>
             </div>
           </div>
-          {viewTableChild ? (
-            <div className="table-container">
-              {loading ? (
-                <Spinners loading={loading} />
-              ) : (
-                <>
-                  <Table
-                    columns={columnsWithClick}
-                    dataSource={dataTableChild}
-                    locale={localCategorySeconds}
-                    pagination={false}
-                  />
-                  <div
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-around",
-                      gap: "10px",
-                      marginTop: "10px",
-                      padding: "10px",
-                    }}
-                  >
-                    <Pagination
-                      showSizeChanger
-                      onShowSizeChange={onShowSizeChange}
-                      onChange={onChangeNumberPagination}
-                      defaultCurrent={1}
-                      total={isResDataChild.total}
-                    />
-                    <span
-                      className="total-items"
-                      style={{ color: "black" }}
-                    >{`${dataTableChild?.length} danh mục cấp 2`}</span>
-                  </div>
-                </>
-              )}
-            </div>
+          <div className="header-right">
+            {/* <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
+              Hướng dẫn sử dụng
+            </Button> */}
+            <Button
+              type="primary"
+              onClick={openModalChildSecond}
+              style={{ backgroundColor: "var( --kv-success)" }}
+            >
+              Thêm danh mục cấp 2
+            </Button>
+          </div>
+        </div>
+        <div className="table-container">
+          {loading ? (
+            <Spinners loading={loading} />
           ) : (
-            <ChildrenThree_catagory isKeyThreeChild={isKeyThreeChild} />
+            <>
+              <Table
+                columns={columnsWithClick}
+                dataSource={dataTableChild}
+                locale={localCategorySeconds}
+                pagination={false}
+              />
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                  gap: "10px",
+                  marginTop: "10px",
+                  padding: "10px",
+                }}
+              >
+                <Pagination
+                  showSizeChanger
+                  onShowSizeChange={onShowSizeChange}
+                  onChange={onChangeNumberPagination}
+                  defaultCurrent={1}
+                  total={isResDataChild.total}
+                />
+                <span
+                  className="total-items"
+                  style={{ color: "black" }}
+                >{`${dataTableChild?.length} danh mục cấp 2`}</span>
+              </div>
+            </>
           )}
         </div>
-      )}
+      </div>
+
       {/* modal add child category */}
       <Modal
         className="modalDialog-addITems"
@@ -511,4 +489,4 @@ const ChildrenCategory = ({
   );
 };
 
-export default ChildrenCategory;
+export default SubCategories;

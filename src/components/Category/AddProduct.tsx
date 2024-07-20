@@ -11,10 +11,8 @@ import { useAuth } from "../auth/AuthContext";
 import { Tree } from "antd";
 const { TreeNode } = Tree;
 import { ToastContainer, toast } from "react-toastify";
-
 import { AiOutlinePicture } from "react-icons/ai";
 const { TextArea } = Input;
-import type { TreeSelectProps } from "antd";
 import { handleError } from "../../utils/errorHandler";
 import { unitProductList } from "../TableConfig/unitProduct";
 interface TreeDataNode {
@@ -30,7 +28,6 @@ const AddProduct = () => {
   const [isImageProduct, setIsImageProduct] = useState("");
   const [previewImageProduct, setPreviewImageProduct] = useState("");
   const [resImageProduct, setResImageProduct] = useState("");
-  const [value, setValue] = useState<string>();
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
@@ -59,7 +56,6 @@ const AddProduct = () => {
       [fieldName]: value,
     });
   };
-
   // add product
   const onClickAddProduct = async (e: any) => {
     e.preventDefault();

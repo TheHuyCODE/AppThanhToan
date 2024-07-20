@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button, Layout } from 'antd';
-import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai';
+import React from "react";
+import { Button, Layout } from "antd";
+import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
 
 interface AppHeaderProps {
   collapsedTheme: boolean;
@@ -8,13 +8,22 @@ interface AppHeaderProps {
   colorBgContainer: string;
 }
 
-const AppHeader: React.FC<AppHeaderProps> = ({ collapsedTheme, setCollapsedTheme, colorBgContainer }) => {
+const AppHeader: React.FC<AppHeaderProps> = ({
+  collapsedTheme,
+  setCollapsedTheme,
+  colorBgContainer,
+}) => {
   return (
     <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
       <Button
         type="text"
         className="toggle"
         onClick={() => setCollapsedTheme(!collapsedTheme)}
+        style={{
+          fontSize: "16px",
+          width: 64,
+          height: 64,
+        }}
         icon={collapsedTheme ? <AiOutlineMenuUnfold /> : <AiOutlineMenuFold />}
       />
     </Layout.Header>

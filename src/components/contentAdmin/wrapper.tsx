@@ -4,7 +4,16 @@ import AppSider from "./AppSider";
 import AppHeader from "./AppHeader";
 import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 const { Content } = Layout;
-const AppWrapper = ({
+interface AppWrapperProps {
+  children: any;
+  darkTheme: any;
+  collapsedTheme: any;
+  toggleDarkTheme: any;
+  setCollapsedTheme: any;
+  colorBgContainer: any;
+  borderRadiusLG: any;
+}
+const AppWrapper: React.FC<AppWrapperProps> = ({
   children,
   darkTheme,
   collapsedTheme,
@@ -21,7 +30,7 @@ const AppWrapper = ({
           collapsedTheme={collapsedTheme}
           toggleTheme={toggleDarkTheme}
           setCollapsedTheme={setCollapsedTheme}
-          style={{ width: "500" }}
+          style={{ width: 500 }}
         />
         <Layout>
           <AppHeader

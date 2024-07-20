@@ -1,38 +1,32 @@
-import { CiCircleRemove, CiSearch } from "react-icons/ci";
-import {
-  FaArrowDown,
-  FaPencilAlt,
-  FaTrash,
-  FaArrowAltCircleDown,
-  FaArrowAltCircleUp,
-} from "react-icons/fa";
+import { CiSearch } from "react-icons/ci";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import "./CatalogManagement.css";
 import "../styles/valiables.css";
-import { IoIosAdd } from "react-icons/io";
-import { Input, Select, Pagination } from "antd";
-import { Space, Table, Tag } from "antd";
+
+import { Pagination } from "antd";
+import { Space, Table } from "antd";
 import uploadApiImage from "../../configs/uploadApiImage";
 import { toast, ToastContainer } from "react-toastify";
 import category from "../../configs/category";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { IoIosArrowForward } from "react-icons/io";
 // import PopupAdditem from "../listitem/PopupAddItem";
 import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal } from "antd";
-import { Navigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import ChildrenCategory from "./Children_catagory";
 import { useAuth } from "../auth/AuthContext";
-import { localCategory, localCategorySeconds } from "../TableConfig/TableConfig";
-import { AiOutlinePicture } from "react-icons/ai";
-import { domain } from "../TableConfig/TableConfig";
+import { localCategorySeconds } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
-import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
 import { handleError } from "../../utils/errorHandler";
-
-const CatalogManagement = () => {
-  // const domainLink = domain.domainLink;
+import { useNavigate } from "react-router-dom";
+import TitleCategories from "./TitleCategories";
+interface CategoriesProp {
+  selectedCategory: string;
+  setSelectedCategory: (name: string) => void;
+}
+const Categories: React.FC<CategoriesProp> = ({ selectedCategory, setSelectedCategory }) => {
+  const navigate = useNavigate();
   const { fetchDataCategoryChild } = useAuth();
   const nameRef = useRef(null);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
@@ -43,8 +37,6 @@ const CatalogManagement = () => {
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
   const [isDataCategory, setIsDataCategory] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedCategoryChild, setSelectedCategoryChild] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [hiddenTitleChild, setHiddenTitleChild] = useState(false);
@@ -58,21 +50,12 @@ const CatalogManagement = () => {
   //editing item
   const [editItem, setEditItem] = useState<any>();
   const [editDescription, setEditDescription] = useState<any>();
-
   const [deleteItem, setDeleteItem] = useState<any>();
-  const handleSelectNameChildCategory = (nameChildCategory: string) => {
-    setSelectedCategoryChild(nameChildCategory);
-    console.log("nameChildCategory", nameChildCategory);
-  };
+
   const handleSearchCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setValueSearch(value);
     console.log("value", value);
-  };
-
-  const setHiddenThirdTitle = (hidden: boolean) => {
-    setHiddenTitleSecondsChild(hidden);
-    console.log("hiddenSecondsChild", hidden);
   };
   const setHandleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -97,12 +80,13 @@ const CatalogManagement = () => {
 
   const onDeleteCategories = (item: any) => {
     console.log("deleteCategories");
+    const idDelete = item.key;
     setIsOpenModalDelete(!isOpenModalDetele);
-    setDeleteItem(item);
+    setDeleteItem(idDelete);
   };
   // call api delete
   const clickDeleteCategory = async () => {
-    const keyItem = deleteItem.key;
+    const keyItem = deleteItem;
     setLoading(true);
     try {
       const res = await category.deleteCategory(keyItem);
@@ -112,20 +96,16 @@ const CatalogManagement = () => {
         toast.success(successMs); // Fetch the updated data after deletion
         setIsOpenModalDelete(!isOpenModalDetele);
         await fetchDataCategory();
+        setLoading(false);
       } else {
         console.log("error:", res);
-        toast.error("Error deleting category");
       }
     } catch (error) {
       handleError(error);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  useEffect(() => {
-    // clickDeleteCategory();
-    console.log(deleteItem);
-  }, [deleteItem]);
   //check number category
   const checkQuatifyItem = (record) => {
     console.log("number_children:", record.number_children);
@@ -176,7 +156,8 @@ const CatalogManagement = () => {
       dataIndex: "name",
       editTable: true,
       key: "name",
-      width: 200,
+      align: "center",
+      width: 250,
     },
     {
       title: "Số lượng danh mục cấp 2",
@@ -227,9 +208,10 @@ const CatalogManagement = () => {
           onClick: () => {
             checkQuatifyItem(record);
             const name = record.name;
-            console.log(name);
+            console.log("record", record);
             const keyChild = record.key;
             console.log("keyChild: ", keyChild);
+            nagigateSubCategories(record);
             setSelectedCategory(name);
             setIsKeyChild(keyChild);
             setViewTable(false);
@@ -240,6 +222,13 @@ const CatalogManagement = () => {
     }
     return col;
   });
+  const nagigateSubCategories = (record: any) => {
+    if (record) {
+      navigate(`/admin/categories/${record.key}`);
+    } else {
+      navigate("/admin/categories");
+    }
+  };
   //Clear value categories
   const clearInputs = () => {
     if (nameRef.current) {
@@ -276,12 +265,15 @@ const CatalogManagement = () => {
   };
   //show table child when clicked
   const showTableCategory = async () => {
-    setViewTable(true);
-    setHiddenTitleChild(true);
-    setHiddenTitleSecondsChild(true);
+    setSelectedCategory("");
+    console.log("selected", selectedCategory);
+    navigate("/admin/categories");
     await fetchDataCategory();
   };
-  const showTableChildCategory = () => {
+  useEffect(() => {
+    console.log("selectedCategory changed:", selectedCategory);
+  }, [selectedCategory]);
+  const showTableSubCategory = () => {
     setViewTable(false);
     setHiddenTitleSecondsChild(true);
     setViewTableChildSecond(true);
@@ -329,9 +321,7 @@ const CatalogManagement = () => {
     }
     setLoading(false);
   };
-  useEffect(() => {
-    fetchDataCategory();
-  }, []);
+
   const fetchDataSearchCategory = async () => {
     setLoading(true);
     const res = await category.getDataSearchNameCategory(debounceValue);
@@ -346,6 +336,9 @@ const CatalogManagement = () => {
   useEffect(() => {
     fetchDataSearchCategory();
   }, [debounceValue]);
+  useEffect(() => {
+    fetchDataCategory();
+  }, []);
   const dataTable = isDataCategory.items?.map((item, index) => ({
     stt: index + 1,
     key: item.id,
@@ -358,238 +351,203 @@ const CatalogManagement = () => {
   return (
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
-      <div>
-        <a
-          className="title-category"
-          onClick={showTableCategory}
-          style={{ color: "rgb(3,23,110)" }}
-        >
-          Quản lí danh mục{" "}
-        </a>
-        <a
-          hidden={hiddenTitleChild}
-          className="title-category"
-          onClick={showTableChildCategory}
-          style={{ color: "rgb(3,23,110)" }}
-        >
-          {!hiddenTitleChild && <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />}
-          {selectedCategory}
-        </a>
-        <a
-          hidden={hiddenTitleSecondsChild}
-          className="title-category"
-          onClick={showTableChildSecondCategory}
-          style={{ color: "rgb(3,23,110)", pointerEvents: "none" }}
-        >
-          {!viewTable && <IoIosArrowForward style={{ color: "black", fontSize: 15 }} />}
-          {selectedCategoryChild}
-        </a>
-      </div>
-      <div className="header">
-        <div className="header-top">
-          <div className="header-top right">
-            {viewTable && (
-              <>
-                <CiSearch
-                  style={{
-                    position: "absolute",
-                    top: "7px",
-                    left: "5px",
-                    transform: "translateY(5%)",
-                    fontSize: "20px",
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="Tìm danh mục"
-                  className="search-categories"
-                  onChange={handleSearchCategory}
-                />
-              </>
-            )}
-          </div>
-          <div className="header-btn">
-            {viewTable && (
-              <>
-                <Button type="primary" style={{ backgroundColor: "var( --kv-success)" }}>
-                  Hướng dẫn sử dụng
-                </Button>
-                <Button
-                  type="primary"
-                  onClick={() => setIsOpenPopups(!isOpenPopups)}
-                  style={{ backgroundColor: "var( --kv-success)" }}
-                >
-                  Thêm danh mục cấp 1
-                </Button>
-              </>
-            )}
-            {/* modal add catalog */}
-            <Modal
-              className="modalDialog-addITems"
-              width={500}
-              // height={500}
-              okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
-              centered
-              open={isOpenPopups}
-              onOk={clickAddItemCategory}
-              onCancel={() => setIsOpenPopups(false)}
-              okText="Thêm"
-              cancelText="Hủy bỏ"
-            >
-              <h1 className="title-addItem">Thêm danh mục cấp 1</h1>
-              <div className="name-item">
-                <label htmlFor="">
-                  Tên danh mục 1 (<span>*</span>)
-                </label>
-                <input
-                  className="input-name-category"
-                  placeholder="Tên danh mục cấp 1"
-                  onChange={setHandleInput}
-                  ref={nameRef}
-                />
-              </div>
-              <div className="decribe-category">
-                <label htmlFor="" className="title-picture">
-                  Mô tả danh mục cấp 1(<span>*</span>)
-                </label>
-                <TextArea
-                  showCount
-                  maxLength={100}
-                  onChange={onChangeInput}
-                  placeholder="Chú thích danh mục"
-                  style={{ height: 100, width: 260 }}
-                  value={isDescribe}
-                />
-              </div>
-            </Modal>
-
-            {/* Modal Modify product */}
-            <Modal
-              className="modalDialog-addITems"
-              width={500}
-              okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
-              // height={500}
-              centered
-              open={isOpenModalModify}
-              onOk={changeModifyCategory}
-              onCancel={() => setIsOpenModalModify(!isOpenModalModify)}
-              okText="Sửa đổi"
-              cancelText="Hủy bỏ"
-            >
-              <h1 className="title-addItem">Sửa danh mục cấp 1</h1>
-              <div className="name-item">
-                <label htmlFor="">
-                  Tên danh mục 1 (<span>*</span>)
-                </label>
-                <input
-                  className="input-name-category"
-                  onChange={setHandleInput}
-                  value={editItem?.name || ""}
-                />
-              </div>
-              <div className="decribe-category">
-                <label htmlFor="" className="title-picture">
-                  Mô tả danh mục cấp 1(<span>*</span>)
-                </label>
-                <TextArea
-                  showCount
-                  maxLength={100}
-                  onChange={onChangeInput}
-                  value={editDescription?.description || ""}
-                  placeholder="Chú thích danh mục"
-                  style={{ height: 100, width: 260 }}
-                />
-              </div>
-            </Modal>
-            {/* Modal Delete product */}
-
-            <Modal
-              okButtonProps={{ style: { backgroundColor: "red" } }}
-              width={600}
-              centered
-              open={isOpenModalDetele}
-              onOk={clickDeleteCategory}
-              onCancel={() => setIsOpenModalDelete(!isOpenModalDetele)}
-              okText="Xóa"
-              cancelText="Hủy bỏ"
-            >
-              <h1
+      <TitleCategories showTableCategory={showTableCategory} selectedCategory={selectedCategory} />
+      <div className="header-customers">
+        <div className="header-left">
+          <div className="header-left-top">
+            <div className="search-product" style={{ display: "flex", position: "relative" }}>
+              <CiSearch
                 style={{
-                  fontFamily: "Arial",
-                  fontSize: "30px",
-                  fontWeight: "bold",
-                  padding: "5px 10px",
-                  marginBottom: "6px",
+                  position: "absolute",
+                  top: "6px",
+                  left: "5px",
+                  transform: "translateY(5%)",
+                  fontSize: "20px",
+                  color: "var(--cl-dark)",
                 }}
-              >
-                Xóa sản phẩm
-              </h1>
-              <p
-                style={{
-                  fontSize: "13px",
-                  padding: "5px 5px",
-                  color: "var(--cl-gray)",
-                  fontFamily: "Montserrat ,sans-serif",
-                }}
-              >
-                Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và
-                sản phẩm đã link với danh mục sẽ bị xóa.
-              </p>
-            </Modal>
+              />
+              <input
+                type="text"
+                placeholder="Tìm danh mục"
+                className="search-categories"
+                onChange={handleSearchCategory}
+              />
+            </div>
           </div>
         </div>
-        {viewTable ? (
-          <div className="table-container">
-            {loading ? (
-              <Spinners loading={loading} />
-            ) : (
-              <>
-                <Table
-                  columns={columnsWithClick}
-                  dataSource={dataTable}
-                  locale={localCategorySeconds}
-                  pagination={false}
-                />
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-around",
-                    gap: "10px",
-                    marginTop: "10px",
-                    padding: "10px",
-                  }}
-                >
-                  <Pagination
-                    showSizeChanger
-                    onShowSizeChange={onShowSizeChange}
-                    onChange={onChangeNumberPagination}
-                    defaultCurrent={1}
-                    total={totaCategory}
-                  />
-                  <span
-                    className="total-items"
-                    style={{ color: "black" }}
-                  >{`${dataTable?.length} danh mục cấp 1`}</span>
-                </div>
-              </>
-            )}
-          </div>
-        ) : (
-          <ChildrenCategory
-            isKeyChild={isKeyChild}
-            fetchDataCategory={fetchDataCategory}
-            onCategoryChange={handleSelectNameChildCategory}
-            onHiddenTitleChild={setHiddenThirdTitle}
-            viewTableChildSecond={viewTableChildSecond}
-            viewTableChild={viewTableChild}
-            setViewTableChild={setViewTableChild}
-          />
-        )}
+        <div className="header-right">
+          <>
+            <Button type="primary" style={{ backgroundColor: "var( --kv-success)", height: 35 }}>
+              Hướng dẫn sử dụng
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => setIsOpenPopups(!isOpenPopups)}
+              style={{ backgroundColor: "var( --kv-success)", height: 35 }}
+            >
+              Thêm danh mục cấp 1
+            </Button>
+          </>
+        </div>
       </div>
+      {/* modal add catalog */}
+      <Modal
+        className="modalDialog-addITems"
+        width={500}
+        // height={500}
+        okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
+        centered
+        open={isOpenPopups}
+        onOk={clickAddItemCategory}
+        onCancel={() => setIsOpenPopups(false)}
+        okText="Thêm"
+        cancelText="Hủy bỏ"
+      >
+        <h1 className="title-addItem">Thêm danh mục cấp 1</h1>
+        <div className="name-item">
+          <label htmlFor="">
+            Tên danh mục 1 (<span>*</span>)
+          </label>
+          <input
+            className="input-name-category"
+            placeholder="Tên danh mục cấp 1"
+            onChange={setHandleInput}
+            ref={nameRef}
+          />
+        </div>
+        <div className="decribe-category">
+          <label htmlFor="" className="title-picture">
+            Mô tả danh mục cấp 1(<span>*</span>)
+          </label>
+          <TextArea
+            showCount
+            maxLength={100}
+            onChange={onChangeInput}
+            placeholder="Chú thích danh mục"
+            style={{ height: 100, width: 260 }}
+            value={isDescribe}
+          />
+        </div>
+      </Modal>
+
+      {/* Modal Modify product */}
+      <Modal
+        className="modalDialog-addITems"
+        width={500}
+        okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
+        // height={500}
+        centered
+        open={isOpenModalModify}
+        onOk={changeModifyCategory}
+        onCancel={() => setIsOpenModalModify(!isOpenModalModify)}
+        okText="Sửa đổi"
+        cancelText="Hủy bỏ"
+      >
+        <h1 className="title-addItem">Sửa danh mục cấp 1</h1>
+        <div className="name-item">
+          <label htmlFor="">
+            Tên danh mục 1 (<span>*</span>)
+          </label>
+          <input
+            className="input-name-category"
+            onChange={setHandleInput}
+            value={editItem?.name || ""}
+          />
+        </div>
+        <div className="decribe-category">
+          <label htmlFor="" className="title-picture">
+            Mô tả danh mục cấp 1(<span>*</span>)
+          </label>
+          <TextArea
+            showCount
+            maxLength={100}
+            onChange={onChangeInput}
+            value={editDescription?.description || ""}
+            placeholder="Chú thích danh mục"
+            style={{ height: 100, width: 260 }}
+          />
+        </div>
+      </Modal>
+      {/* Modal Delete product */}
+
+      <Modal
+        okButtonProps={{ style: { backgroundColor: "red" } }}
+        width={600}
+        centered
+        open={isOpenModalDetele}
+        onOk={clickDeleteCategory}
+        onCancel={() => setIsOpenModalDelete(!isOpenModalDetele)}
+        okText="Xóa"
+        cancelText="Hủy bỏ"
+      >
+        <h1
+          style={{
+            fontSize: "30px",
+            fontWeight: "bold",
+            padding: "5px 10px",
+            marginBottom: "6px",
+          }}
+        >
+          Xóa sản phẩm
+        </h1>
+        <p
+          style={{
+            fontSize: "13px",
+            padding: "5px 5px",
+            color: "var(--cl-gray)",
+            fontFamily: "Montserrat ,sans-serif",
+          }}
+        >
+          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và sản
+          phẩm đã link với danh mục sẽ bị xóa.
+        </p>
+      </Modal>
+      {/* {viewTable ? ( */}
+      <div className="table-container">
+        <Table
+          columns={columnsWithClick}
+          dataSource={dataTable}
+          locale={localCategorySeconds}
+          pagination={false}
+          loading={loading}
+        />
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-around",
+            gap: "10px",
+            marginTop: "10px",
+            padding: "10px",
+          }}
+        >
+          <Pagination
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
+            onChange={onChangeNumberPagination}
+            defaultCurrent={1}
+            total={totaCategory}
+          />
+          <span
+            className="total-items"
+            style={{ color: "black" }}
+          >{`${dataTable?.length} danh mục cấp 1`}</span>
+        </div>
+      </div>
+      {/* ) : (
+        <ChildrenCategory
+          isKeyChild={isKeyChild}
+          fetchDataCategory={fetchDataCategory}
+          onCategoryChange={handleSelectNameChildCategory}
+          onHiddenTitleChild={setHiddenThirdTitle}
+          viewTableChildSecond={viewTableChildSecond}
+          viewTableChild={viewTableChild}
+          setViewTableChild={setViewTableChild}
+        />
+      )} */}
       {/* {isOpenPopups && <PopupAdditem onClose={handleClose} />} */}
     </div>
   );
 };
-export default CatalogManagement;
+export default Categories;

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { theme } from "antd";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Button, Result, theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
-
 import LoginRegister from "./components/Register/LoginRegister";
-import CatalogManagement from "./components/Category/CatalogManagement";
 import ProductMangement from "./components/Category/ProductMangement";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
 import PublicRouter from "./components/auth/PublicRouter";
@@ -24,21 +22,39 @@ import ModifyProduct from "./components/Category/ModifyProduct";
 import RevenueReport from "./components/Dashboard/RevenueReport";
 import InventoryReport from "./components/Dashboard/InventoryReport";
 import Payment from "./components/Payment/Payment";
-import Invoices from "./components/Invoices/invoices";
 import SalePageDemo from "./components/SalesPage/SalePageDemo";
 import Profile from "./components/Profile/Profile";
 import ManagementInvoices from "./components/Invoices/ManagementInvoices/ManagementInvoices";
 import Customers from "./components/Customers/Customers";
+import Categories from "./components/Category/Categories";
+import SubCategories from "./components/Category/SubCategories";
 // import SalePage from "./components/SalesPage/SalePage";
-// const NotFound = () => {
-//   return (
-//     <div>
-//       <h1 style={{ color: "red", marginTop: "50px", marginLeft: "50px" }}>404 Not Found</h1>
-//     </div>
-//   );
-// };
+// interface notFound {
+
+//   const NotFound: () => void
+// }
+const NotFound = () => {
+  const navigate = useNavigate();
+
+  const handleBackHome = () => {
+    navigate("/admin/products");
+  };
+  return (
+    <Result
+      status="404"
+      title="404"
+      subTitle="Xin lỗi. Trang này không tồn tại"
+      extra={
+        <Button type="primary" onClick={handleBackHome}>
+          Quay lại
+        </Button>
+      }
+    />
+  );
+};
 
 function App() {
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [darkTheme, setDarkTheme] = useState(true);
   const [collapsedTheme, setCollapsedTheme] = useState(false);
   const [stateLogins, setStateLogins] = useState(false);
@@ -259,7 +275,7 @@ function App() {
           }
         />
         <Route
-          path="admin/productcatalogmanagement"
+          path="admin/categories"
           element={
             <ProtectedRouter>
               <AppWrapper
@@ -270,7 +286,27 @@ function App() {
                 colorBgContainer={colorBgContainer}
                 borderRadiusLG={borderRadiusLG}
               >
-                <CatalogManagement />
+                <Categories
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/categories/:idCategories"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <SubCategories selectedCategory={selectedCategory} />
               </AppWrapper>
             </ProtectedRouter>
           }
@@ -385,7 +421,7 @@ function App() {
             </PublicRouter>
           }
         />
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
 
         <Route
           path="/SalesPage"

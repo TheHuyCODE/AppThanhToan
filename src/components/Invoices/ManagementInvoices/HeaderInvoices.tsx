@@ -1,9 +1,37 @@
 import { Select } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
+import useDebounce from "../../auth/useDebounce";
+import invoice from "../../../configs/invoice";
+interface HeadeInvoicesProps {
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataTableInvoice: React.Dispatch<React.SetStateAction<any>>;
+}
+const HeaderInvoices: React.FC<HeadeInvoicesProps> = ({ setLoading, setDataTableInvoice }) => {
+  const [valueOnSearch, setValueOnSearch] = useState("");
+  const debounceValue = useDebounce(valueOnSearch, 700);
 
-const HeaderInvoices = () => {
+  const handleOnSearchProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log("value", value);
+    setValueOnSearch(value);
+  };
+  const getDataSearchInvoices = async () => {
+    setLoading(true);
+    try {
+      const res = await invoice.getDataSearchInvoice(debounceValue);
+      const data = res.data.items;
+      setDataTableInvoice(data);
+      setLoading(false);
+    } catch (error) {
+      console.log("errror", error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getDataSearchInvoices();
+  }, [debounceValue]);
   return (
     <>
       <div className="header-left">
@@ -24,7 +52,7 @@ const HeaderInvoices = () => {
               placeholder="Tìm kiếm hóa đơn"
               className="search-category"
               style={{ width: "250px" }}
-              // onChange={handleSearchProduct}
+              onChange={handleOnSearchProduct}
             />
           </div>
           <Select

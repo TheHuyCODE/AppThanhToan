@@ -19,25 +19,45 @@ a.title-category {
 .header {
   width: 100%;
   height: auto;
-  border: 1px solid lightgrey;
   border-radius: 10px;
   padding: 15px;
   margin-top: 30px;
 }
 .search-categories {
-  border: 1px solid grey;
+  border: 1px solid lightgray;
   border-radius: 5px;
   padding: 5px 5px 5px 28px;
-  width: 200px;
+  width: 220px;
   height: 35px;
   outline: none;
 }
-
+.search-categories:hover {
+  border-color: var(--kv-primary);
+}
+.search-categories:focus {
+  border-color: var(--kv-primary-600);
+}
 .header-top {
+  width: 100%;
   display: flex;
+  align-items: center;
+  border: none;
+  color: white;
+  padding: 15px;
+  margin-top: 30px;
   justify-content: space-between;
   position: relative;
   margin-top: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.header-right {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+  padding: 10px;
+  margin-right: 10px;
 }
 .header-top .icon {
   position: absolute;

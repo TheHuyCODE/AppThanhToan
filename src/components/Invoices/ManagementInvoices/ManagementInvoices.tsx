@@ -204,7 +204,7 @@ const ManagementInvoices: React.FC = () => {
           Quản lí hóa đơn
         </h1>
         <div className="header-customers">
-          <HeaderInvoices />
+          <HeaderInvoices setLoading={setLoading} setDataTableInvoice={setDataTableInvoice} />
         </div>
         <ModalDeleteInvoices
           openModalDelete={openModalDelete}

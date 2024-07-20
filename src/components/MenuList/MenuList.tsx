@@ -34,7 +34,14 @@ const MenuList = () => {
   };
   return (
     <div className="sidebar-left">
-      <Menu theme={darkTheme ? "dark" : "light"} mode="inline" className="menu-bar">
+      <Menu
+        theme={darkTheme ? "dark" : "light"}
+        mode="inline"
+        className="menu-bar"
+        // style={{
+        //   width: 256,
+        // }}
+      >
         <Menu.Item key="SalesPage" icon={<FaBagShopping />}>
           <Link to="/SalesPage">Bán hàng</Link>
         </Menu.Item>
@@ -63,8 +70,8 @@ const MenuList = () => {
           <Menu.Item key="Product_management_child">
             <Link to="/admin/products">Quản lý sản phẩm</Link>
           </Menu.Item>
-          <Menu.Item key="Product_catalog_management_child">
-            <Link to="/admin/productcatalogmanagement">Quản lý danh mục sản phẩm</Link>
+          <Menu.Item key="categories">
+            <Link to="/admin/categories">Quản lý danh mục sản phẩm</Link>
           </Menu.Item>
         </Menu.SubMenu>
         <Menu.Item key="customer_management" icon={<FaPeopleGroup />}>
