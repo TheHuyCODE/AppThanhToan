@@ -47,7 +47,7 @@ const category = {
       params,
     });
   },
-  getAllChild: (parent_id) => {
+  getAllChild: (parent_id: string) => {
     const url = "api/v1/manage/category";
     const params = {
       parent_id: parent_id,
@@ -62,7 +62,7 @@ const category = {
     });
   },
 
-  getAllChildThirds: (parent_id) => {
+  getAllChildThirds: (parent_id: string) => {
     const url = "api/v1/manage/category";
     const params = {
       parent_id: parent_id,
@@ -80,17 +80,8 @@ const category = {
     const url = "/api/v1/auth/login";
     return axiosClient.post(url);
   },
-  postImageCatalog: () => {
-    const url = "api/v1/upload_file";
-    const formData = new FormData();
-    formData.append("file", value1);
-    return axiosClient.post(url, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-  },
-  deleteCategory: (idItems) => {
+
+  deleteCategory: (idItems: string) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.delete(url, {
       headers: {
@@ -100,7 +91,7 @@ const category = {
     });
   },
 
-  deleteCategoryChild: (idItems) => {
+  deleteCategoryChild: (idItems: string) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.delete(url, {
       headers: {
@@ -109,7 +100,7 @@ const category = {
       },
     });
   },
-  putModifyCategory: (idItems, data) => {
+  putModifyCategory: (idItems: string, data: any) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.put(url, data, {
       headers: {
@@ -118,7 +109,7 @@ const category = {
       },
     });
   },
-  putModifyCategoryChild: (idItems, data) => {
+  putModifyCategoryChild: (idItems: string, data: any) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.put(url, data, {
       headers: {
@@ -127,7 +118,7 @@ const category = {
       },
     });
   },
-  getDataSearchNameCategory: (value) => {
+  getDataSearchNameCategory: (value: string) => {
     const url = `api/v1/manage/category`;
     const params = {
       search: value,
@@ -141,7 +132,7 @@ const category = {
       params,
     });
   },
-  getDataSearchNameChildCategory: (parent_id, value) => {
+  getDataSearchNameChildCategory: (parent_id: string, value: string) => {
     const url = `api/v1/manage/category`;
     const params = {
       parent_id: parent_id,
@@ -156,7 +147,7 @@ const category = {
       params,
     });
   },
-  getDataSearchNameThreeCategory: (parent_id, value) => {
+  getDataSearchNameThreeCategory: (parent_id:string, value: string) => {
     const url = `api/v1/manage/category`;
     const params = {
       parent_id: parent_id,

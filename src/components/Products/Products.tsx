@@ -31,7 +31,7 @@ interface TreeDataNode {
   children?: TreeDataNode[];
   isLeaf?: boolean;
 }
-const ProductMangement = () => {
+const Products = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [dataProduct, setDataProduct] = useState([]);
   const navigate = useNavigate();
@@ -582,47 +582,42 @@ const ProductMangement = () => {
         </Modal>
       </div>
       <div className="table-container">
-        {loading ? (
-          <Spinners loading={loading} />
-        ) : (
-          <>
-            <Table
-              columns={columns}
-              height={900}
-              dataSource={datatable}
-              locale={localeProduct}
-              pagination={false}
-              scroll={{
-                y: 500,
-              }}
-            />
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-                gap: "10px",
-                marginTop: "10px",
-                padding: "10px",
-              }}
-            >
-              <Pagination
-                showSizeChanger
-                onShowSizeChange={onShowSizeChange}
-                onChange={onChangeNumberPagination}
-                defaultCurrent={1}
-                total={totalItems}
-              />
-              <span className="total-items" style={{ color: "var(--cl-dark)" }}>{`${
-                datatable?.length || 0
-              }/${dataProduct.total || 0}`}</span>
-            </div>
-          </>
-        )}
+        <Table
+          columns={columns}
+          height={900}
+          dataSource={datatable}
+          locale={localeProduct}
+          pagination={false}
+          loading={loading}
+          scroll={{
+            y: 500,
+          }}
+        />
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-around",
+            gap: "10px",
+            marginTop: "10px",
+            padding: "10px",
+          }}
+        >
+          <Pagination
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
+            onChange={onChangeNumberPagination}
+            defaultCurrent={1}
+            total={totalItems}
+          />
+          <span className="total-items" style={{ color: "var(--cl-dark)" }}>{`${
+            datatable?.length || 0
+          }/${dataProduct.total || 0}`}</span>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ProductMangement;
+export default Products;

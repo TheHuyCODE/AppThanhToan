@@ -129,7 +129,7 @@ const products = {
       },
          });
   },
-  getDetailProduct: (idItems) => {
+  getDetailProduct: (idItems: string) => {
     const url = `api/v1/manage/product/${idItems}`;
     return axiosClient.get(url, {
       headers: {
@@ -139,7 +139,7 @@ const products = {
       },
     });
   },
-  getDataSearchProduct: (parent_id) => {
+  getDataSearchProduct: (parent_id: string) => {
     const url = `api/v1/manage/product`;
     const params = {
       category_id: parent_id,
@@ -154,7 +154,7 @@ const products = {
       params,
     });
   },
-  getDataSortProduct: (key, order) => {
+  getDataSortProduct: (key: string, order: any) => {
     const url = `api/v1/manage/product`;
     const params = {
       sort: key,
@@ -170,7 +170,7 @@ const products = {
     });
   },
 
-  getDataSearchProductActive: (status) => {
+  getDataSearchProductActive: (status: any) => {
     const url = `api/v1/manage/product`;
     const params = {
       is_active: status,
@@ -185,7 +185,7 @@ const products = {
     });
   },
 
-  getDataSearchNameProduct: (value) => {
+  getDataSearchNameProduct: (value: string) => {
     const url = `api/v1/manage/product`;
     const params = {
       search: value,
@@ -228,16 +228,16 @@ const products = {
   //     params,
   //   });
   // },
-  postAddProduct: (data) => {
+  postAddProduct: (data: any) => {
     const url = "api/v1/manage/product";
     return axiosClient.post(url, data, {});
   },
 
-  postImageModifyProduct: (data) => {
+  postImageModifyProduct: (data: any) => {
     const url = "api/v1/manage/product";
     return axiosClient.post(url, data, {});
   },
-  deleProduct: (idItems) => {
+  deleProduct: (idItems: string) => {
     const url = `api/v1/manage/category/${idItems}`;
     return axiosClient.delete(url, {
       headers: {
@@ -247,7 +247,7 @@ const products = {
     });
   },
 
-  deleteProduct: (idItems) => {
+  deleteProduct: (idItems: string) => {
     const url = `api/v1/manage/product/${idItems}`;
     return axiosClient.delete(url, {
       headers: {
@@ -256,7 +256,7 @@ const products = {
       },
     });
   },
-  postImageProduct: (data) => {
+  postImageProduct: (data:string) => {
     const prefixImage = "products";
     const url = `/api/v1/upload_file?prefix=${prefixImage}`;
     return axiosClient.post(url, data, {
@@ -266,7 +266,7 @@ const products = {
     });
   },
 
-  putModifyProduct: (idItems, data) => {
+  putModifyProduct: (idItems: string, data: any) => {
     const url = `api/v1/manage/product/${idItems}`;
     return axiosClient.put(url, data, {
       headers: {

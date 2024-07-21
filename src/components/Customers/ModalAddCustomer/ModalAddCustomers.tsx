@@ -1,16 +1,25 @@
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 import { Input, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { toast } from "react-toastify";
+import customer from "../../../configs/customer";
+import { handleError } from "../../../utils/errorHandler";
 interface ModalsCustomerProps {
   isOpenPopupAddCustomers: boolean;
   handleOpenModalAddCustomer: () => void;
-  // setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  getDataCustomers: () => void;
+  setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpenPopupAddCustomers: React.Dispatch<React.SetStateAction<boolean>>;
   // setDataPayment: React.Dispatch<React.SetStateAction<any>>;
 }
 const ModalAddCustomers: React.FC<ModalsCustomerProps> = ({
   isOpenPopupAddCustomers,
   handleOpenModalAddCustomer,
+  getDataCustomers,
+  setLoadingSearch,
+  setIsOpenPopupAddCustomers,
 }) => {
+  const nameRef = useRef<HTMLInputElement>(null);
+
   const [inputCustomer, setInputCustomer] = useState({
     full_name: "",
     phone: "",
@@ -32,7 +41,40 @@ const ModalAddCustomers: React.FC<ModalsCustomerProps> = ({
       });
     }
   };
-  const handleClickAddCustomer = () => {};
+  const clearInputCustomer = () => {
+    setInputCustomer({
+      full_name: "",
+      phone: "",
+    });
+  };
+  const handleClickAddCustomer = async () => {
+    const dataCustomer = {
+      full_name: inputCustomer.full_name,
+      phone: inputCustomer.phone,
+    };
+    setLoadingSearch(true);
+    try {
+      const res = await customer.addDataCustomer(dataCustomer);
+      if (res.code === 200) {
+        const success = res.message.text;
+        toast.success(success);
+        clearInputCustomer();
+        await getDataCustomers();
+        setLoadingSearch(false);
+        setIsOpenPopupAddCustomers(false);
+      } else {
+        setLoadingSearch(false);
+      }
+    } catch (error) {
+      handleError(error);
+      setIsOpenPopupAddCustomers(true);
+      setLoadingSearch(false);
+      if (nameRef.current) {
+        nameRef.current.focus();
+        nameRef.current.select();
+      }
+    }
+  };
   return (
     <>
       <Modal
@@ -65,6 +107,7 @@ const ModalAddCustomers: React.FC<ModalsCustomerProps> = ({
           </label>
           <div>
             <Input
+              ref={nameRef}
               type="text"
               onChange={setHandleInputCustomer}
               name="phone"

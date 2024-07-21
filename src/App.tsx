@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Button, Result, theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
 import LoginRegister from "./components/Register/LoginRegister";
-import ProductMangement from "./components/Category/ProductMangement";
+import ProductMangement from "./components/Products/Products";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
 import PublicRouter from "./components/auth/PublicRouter";
 import Users from "./components/Users/Users";
@@ -15,9 +15,9 @@ import ModifyUsers from "./components/Users/ModifyUsers";
 import Admins from "./components/Admin/Admins";
 import Groups from "./components/Admin/Groups";
 import Permissions from "./components/Admin/Permissions";
-import AddProduct from "./components/Category/AddProduct";
-import DetailProduct from "./components/Category/DetailProduct";
-import ModifyProduct from "./components/Category/ModifyProduct";
+import AddProduct from "./components/Products/AddProducts/AddProduct";
+import DetailProduct from "./components/Products/DetailProduct/DetailProduct";
+import ModifyProduct from "./components/Products/ModifyProduct/ModifyProduct";
 // import SalePage from './components/SalesPage/SalePage';
 import RevenueReport from "./components/Dashboard/RevenueReport";
 import InventoryReport from "./components/Dashboard/InventoryReport";
@@ -52,7 +52,6 @@ const NotFound = () => {
 };
 
 function App() {
-  const { idCategories } = useParams();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedChildCategory, setSelectedChildCategory] = useState("");
   const [darkTheme, setDarkTheme] = useState(true);
@@ -335,7 +334,6 @@ function App() {
                   selectedChildCategory={selectedChildCategory}
                   setSelectedChildCategory={setSelectedChildCategory}
                   setSelectedCategory={setSelectedCategory}
-                  idChildCategories={idCategories}
                 />
               </AppWrapper>
             </ProtectedRouter>

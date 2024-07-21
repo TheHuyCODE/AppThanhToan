@@ -53,16 +53,6 @@ const sellProduct = {
     });
   },
 
-  putDataCustomer: (data: object) => {
-    const url = "api/v1/manage/customer";
-    return axiosClient.post(url, data, {
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "true",
-      },
-    });
-  },
-
   postDataUserBanking: (data: object) => {
     const url = "api/v1/manage/payment";
     return axiosClient.post(url, data, {

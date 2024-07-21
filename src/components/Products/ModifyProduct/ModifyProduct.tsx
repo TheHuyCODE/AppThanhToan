@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import products from "../../configs/products";
-import { useAuth } from "../auth/AuthContext";
+import products from "../../../configs/products";
+import { useAuth } from "../../auth/AuthContext";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBan, FaRegSave } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";
-import { unitProductList } from "../TableConfig/unitProduct";
-import { handleError } from "../../utils/errorHandler";
+import { unitProductList } from "../../TableConfig/unitProduct";
+import { handleError } from "../../../utils/errorHandler";
 interface Product {
   barcode: string;
   name: string;

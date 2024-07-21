@@ -1,12 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
+import useDebounce from "../../auth/useDebounce";
+import customer from "../../../configs/customer";
+import { handleError } from "../../../utils/errorHandler";
 interface HeaderCustomerProps {
   handleClickOpenModal: () => void;
-  // setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  // setDataPayment: React.Dispatch<React.SetStateAction<any>>;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataCustomer: React.Dispatch<React.SetStateAction<any>>;
 }
-const HeaderCustomer: React.FC<HeaderCustomerProps> = ({ handleClickOpenModal }) => {
+const HeaderCustomer: React.FC<HeaderCustomerProps> = ({
+  handleClickOpenModal,
+  setLoading,
+  setDataCustomer,
+}) => {
+  const [valueSearchCustomer, setValueSearchCustomer] = useState("");
+  const debounceValue = useDebounce(valueSearchCustomer, 700);
+  const handleSearchPayment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setValueSearchCustomer(value);
+  };
+  const getDataSearchPayment = async () => {
+    setLoading(true);
+    try {
+      const res = await customer.getDataSearchCustomer(debounceValue);
+      const data = res.data.items;
+      setDataCustomer(data);
+      setLoading(false);
+    } catch (error) {
+      console.log("errror", error);
+      handleError(error);
+    }
+  };
+  useEffect(() => {
+    getDataSearchPayment();
+  }, [debounceValue]);
   return (
     <>
       <div className="header-left">
@@ -27,7 +55,7 @@ const HeaderCustomer: React.FC<HeaderCustomerProps> = ({ handleClickOpenModal })
               placeholder="Tìm kiếm khách hàng"
               className="search-category"
               style={{ width: "250px" }}
-              //   onChange={handleSearchPayment}
+              onChange={handleSearchPayment}
             />
           </div>
         </div>

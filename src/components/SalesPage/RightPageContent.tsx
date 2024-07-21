@@ -13,6 +13,7 @@ import products from "../../configs/products";
 import { FiPlusCircle } from "react-icons/fi";
 import { BiSolidError } from "react-icons/bi";
 import { handleError } from "../../utils/errorHandler";
+import customer from "../../configs/customer";
 const RightPageContent = ({
   dataProduct,
   dataCategory,
@@ -314,7 +315,7 @@ const RightPageContent = ({
     };
 
     try {
-      const res = await sellProduct.putDataCustomer(dataCustomer);
+      const res = await customer.addDataCustomer(dataCustomer);
       if (res.code === 200) {
         setIsOpenPopups(false);
         const success = res.message.text;

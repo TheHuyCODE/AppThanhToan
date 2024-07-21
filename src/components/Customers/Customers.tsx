@@ -1,88 +1,177 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "./Customers.css";
 import "../styles/valiables.css";
 import TiltleCustomer from "./TiltleCustomer/TiltleCustomer";
 import HeaderCustomer from "./HeaderCustomer/HeaderCustomer";
-import { Space, Table, TableColumnsType } from "antd";
+import { Pagination, Space, Table, TableColumnsType } from "antd";
 import { FaTrash } from "react-icons/fa";
 import { localCustomer } from "../TableConfig/TableConfig";
-import ModalAddCustomers from "./HeaderCustomer/ModalAddCustomers";
+import ModalAddCustomers from "./ModalAddCustomer/ModalAddCustomers";
+import customer from "../../configs/customer";
+import { handleError } from "../../utils/errorHandler";
+import ModalDeleteCustomer from "./ModalDeleteCustomer/ModalDeleteCustomer";
 interface RecordType {
   stt: number;
-  barcode: string;
-  created_date: string;
   full_name: string;
-  customer: string;
-  total_amount: number;
+  phone: number | string;
   key: string;
+  net_amount: number;
+  total_invoice_amount: number;
 }
 const Customers = () => {
   const [loading, setLoading] = useState(false);
+  const [dataCustomer, setDataCustomer] = useState<any[]>([]);
+  const [totalPageCustomer, setTotalPageCustomer] = useState(0);
+  const [isIdDelete, setIsIdDelete] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [isOpenPopupAddCustomers, setIsOpenPopupAddCustomers] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
+
   const columns: TableColumnsType<RecordType> = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 100,
     },
     {
       title: "Tên khách hàng",
-      dataIndex: "account_name",
-      key: "account_name",
-      align: "start",
+      dataIndex: "full_name",
+      key: "full_name",
+      width: 250,
     },
     {
       title: "Số điện thoại",
-      dataIndex: "account_no",
-      key: "account_no",
-      align: "start",
+      dataIndex: "phone",
+      key: "phone",
+      width: 400,
+    },
+    {
+      title: "Tổng tiền hóa đơn",
+      dataIndex: "net_amount",
+      key: "net_amount",
       // width: 300,
     },
     {
-      title: "Số lượng đơn hàng",
-      dataIndex: "bank_name",
-      key: "bank_name",
-      // width: 300,
-    },
-    {
-      title: "Tổng tiền mua hàng",
-      dataIndex: "total",
-      key: "total",
+      title: "Tổng bán trừ trả hàng",
+      dataIndex: "total_invoice_amount",
+      key: "total_invoice_amount",
       // width: 300,
     },
     {
       title: "Thao tác",
       key: "action",
       align: "center",
+
+      width: 150,
       render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaTrash style={{ color: "red" }} />
+            <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteCustomer(record)} />
           </a>
         </Space>
       ),
     },
   ];
+  const dataTableCustomer: RecordType[] = dataCustomer.map((items, index) => ({
+    stt: index + 1,
+    full_name: items.full_name,
+    phone: items.phone || "-",
+    net_amount: items.net_amount.toLocaleString("vi-VN") || 0,
+    total_invoice_amount: items.total_invoice_amount.toLocaleString("vi-VN") || 0,
+    key: items.id,
+  }));
+  const handleClickDeleteCustomer = (record: any) => {
+    const id = record.key;
+    setOpenModalDelete(!openModalDelete);
+    setIsIdDelete(id);
+  };
   const handleOpenModalAddCustomer = () => {
     setIsOpenPopupAddCustomers(!isOpenPopupAddCustomers);
   };
+  const onCloseModalDelete = () => {
+    setOpenModalDelete(!openModalDelete);
+  };
+  const getDataCustomers = async () => {
+    setLoading(true);
+    try {
+      const res = await customer.getAll();
+      const dataCustomer = res.data.items;
+      const totalPage = res.data.total;
+      setDataCustomer(dataCustomer);
+      setTotalPageCustomer(totalPage);
+      setLoading(false);
+    } catch (error) {
+      console.log("err", error);
+      setTimeout(() => {
+        handleError(error);
+      }, 1000);
+      setLoading(false);
+    }
+  };
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    setLoading(true);
+    try {
+      const res = await customer.getDataPaginationCustomer(current, size);
+      if (res.data) {
+        const data = res.data.items;
+        setDataCustomer(data);
+        setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getDataCustomers();
+  }, []);
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
         <TiltleCustomer />
         <div className="header-customers">
-          <HeaderCustomer handleClickOpenModal={handleOpenModalAddCustomer} />
+          <HeaderCustomer
+            handleClickOpenModal={handleOpenModalAddCustomer}
+            setLoading={setLoading}
+            setDataCustomer={setDataCustomer}
+          />
           <ModalAddCustomers
             isOpenPopupAddCustomers={isOpenPopupAddCustomers}
             handleOpenModalAddCustomer={handleOpenModalAddCustomer}
+            getDataCustomers={getDataCustomers}
+            setLoadingSearch={setLoading}
+            setIsOpenPopupAddCustomers={setIsOpenPopupAddCustomers}
+          />
+          <ModalDeleteCustomer
+            isIdDelete={isIdDelete}
+            openModalDelete={openModalDelete}
+            onCloseModalDelete={onCloseModalDelete}
+            setLoadingDelete={setLoading}
+            getDataCustomers={getDataCustomers}
           />
         </div>
         <div className="table-container">
           <Table
             columns={columns}
-            // dataSource={dataTable}
+            dataSource={dataTableCustomer}
             locale={localCustomer}
             pagination={false}
             loading={loading}
@@ -98,17 +187,17 @@ const Customers = () => {
               padding: "10px",
             }}
           >
-            {/* <Pagination
+            <Pagination
               showSizeChanger
               onShowSizeChange={onShowSizeChange}
               onChange={onChangeNumberPagination}
               defaultCurrent={1}
-              total={totalPage}
+              total={totalPageCustomer}
             />
             <span
               className="total-items"
               style={{ color: "black" }}
-            >{`${totalPage} Tài khoản`}</span> */}
+            >{`${totalPageCustomer} Tài khoản`}</span>
           </div>
         </div>
       </div>

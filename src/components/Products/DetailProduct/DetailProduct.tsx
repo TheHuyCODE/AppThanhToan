@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
-import products, { ProductDetailData } from "../../configs/products";
+import products, { ProductDetailData } from "../../../configs/products";
 import { format } from "date-fns";
-import "./ProductManagement.css";
+import "../ProductManagement.css";
 
 interface ProductDetailProps {
   label: string;
   value?: string | number | boolean | null;
   unit?: string | undefined;
 }
-
 const ProductDetail: React.FC<ProductDetailProps> = ({ label, value, unit }) => (
   <div className="detail-product-row">
     <label htmlFor="" className="product-detail">
