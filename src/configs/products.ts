@@ -38,6 +38,21 @@ const products = {
       params,
     });
   },
+  sortDataProduct: (colName: string, typeSort: string) => {
+    const url = "api/v1/manage/product";
+    const params = {
+      sort: `${colName}`,
+      order_by: `${typeSort}`,
+      is_active: 1,
+    };
+    return axiosClient.get(url, {
+      headers: {
+            "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
   getSellProductPagination: () => {
     const url = "api/v1/manage/product";
     const params = {

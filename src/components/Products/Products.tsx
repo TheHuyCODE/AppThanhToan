@@ -19,7 +19,6 @@ import { useAuth } from "../auth/AuthContext";
 import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 import { localeProduct } from "../TableConfig/TableConfig";
-import Spinners from "../SpinnerLoading/Spinners";
 import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
 import { handleError } from "../../utils/errorHandler";
@@ -31,6 +30,11 @@ interface TreeDataNode {
   children?: TreeDataNode[];
   isLeaf?: boolean;
 }
+type SortState = {
+  key: string | null;
+  direction: "asc" | "desc" | null;
+};
+
 const Products = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [dataProduct, setDataProduct] = useState([]);
@@ -45,10 +49,7 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const [sortedColumn, setSortedColumn] = useState({
-    key: null,
-    direction: null,
-  });
+  const [sortedColumn, setSortedColumn] = useState<SortState>({ key: null, direction: null });
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const [idSearchCategory, setIdSearchCategory] = useState({
     id_category: "",
@@ -56,15 +57,30 @@ const Products = () => {
   const [stateActiveProduct, setStateActiveProduct] = useState({
     is_active: "",
   });
+  const sortDataCustomer = async (colName: string, typeSort: string) => {
+    setLoading(true);
+    try {
+      const res = await products.sortDataProduct(colName, typeSort);
+      const totalItems = res.data.total;
+      setDataProduct(res.data);
+      setTotalItems(totalItems);
+      setLoading(false);
+    } catch (error) {
+      console.log("error:", error);
+      setLoading(false);
+      handleError(error);
+    }
+  };
   const handleHeaderClick = (key: string) => {
     setSortedColumn((prevState) => {
       if (prevState.key === key) {
-        const newDirection = prevState.direction === "up" ? "down" : "up";
+        const newDirection = prevState.direction === "asc" ? "desc" : "asc";
         console.log(`New direction for column ${key}: ${newDirection}`);
+        sortDataCustomer(key, newDirection);
         return { key, direction: newDirection };
       }
-      console.log(`Sorting direction for column ${key}: up`);
-      return { key, direction: "up" };
+      console.log(`Sorting direction for column ${key}: asc`);
+      return { key, direction: "asc" };
     });
   };
   const getColumnTitle = (title: string, key: string) => (
@@ -77,10 +93,10 @@ const Products = () => {
     >
       <span style={{ display: "block" }}>{title}</span>
       <div className="arrow-icon-container">
-        {sortedColumn.key === key && sortedColumn.direction === "up" && (
+        {sortedColumn.key === key && sortedColumn.direction === "asc" && (
           <FaArrowUp className="arrow-icon arrow-icon-visible" />
         )}
-        {sortedColumn.key === key && sortedColumn.direction === "down" && (
+        {sortedColumn.key === key && sortedColumn.direction === "desc" && (
           <FaArrowDown className="arrow-icon arrow-icon-visible" />
         )}
         {sortedColumn.key !== key && hoveredColumn === key && (
@@ -94,17 +110,6 @@ const Products = () => {
     { value: 1, name: "Kích hoạt", id: "00001" },
     { value: 2, name: "Chưa kích hoạt", id: "00002" },
   ];
-  const [selectedValue, setSelectedValue] = useState(null);
-  // const nameProduct = isCategoryProduct?.map((item, index) => ({
-  //   name: item.name,
-  //   value: index + 1,
-  //   id: item.id,
-  // }));
-  const handleSelectChange = (e) => {
-    // uploadApiImage.postMessage();
-    setSelectedValue(e.target.value);
-    console.log("setSelectedValue", selectedValue);
-  };
 
   const addProduct = () => {
     navigate("/admin/products/add");
@@ -120,7 +125,6 @@ const Products = () => {
     console.log("deleteProduct", record);
     setDeleteItemProduct(record);
   };
-
   //search product by category
 
   const treeData = isCategoryProduct.map((item: any) => ({
@@ -259,8 +263,6 @@ const Products = () => {
       setLoading(false);
       handleError(error);
     }
-    // console.log("data category", res.data.items);
-    // console.log(res.data);
   };
   const fetchDataSearchProduct = async () => {
     setLoading(true);
@@ -387,7 +389,7 @@ const Products = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      width: 80,
+      width: 60,
     },
     {
       title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
@@ -400,47 +402,61 @@ const Products = () => {
       title: getColumnTitle("Tên sản phẩm", "name"),
       dataIndex: "name",
       key: "name",
+      align: "center",
+      width: 160,
     },
     {
       title: getColumnTitle("Danh mục \n sản phẩm", "category"),
       dataIndex: "category",
       key: "category",
+      width: 160,
     },
     {
       title: getColumnTitle("Giá bán", "price"),
       dataIndex: "price",
       key: "price",
+      width: 140,
+      align: "center",
     },
     {
       title: getColumnTitle("Giá vốn", "capital_price"),
       dataIndex: "capital_price",
       key: "capital_price",
+      width: 140,
+      align: "center",
     },
     {
       title: getColumnTitle("Số lượng tồn kho", "inventory_number"),
       dataIndex: "inventory_number",
       key: "inventory_number",
+      width: 140,
     },
 
     {
       title: "Đơn vị tính",
       dataIndex: "unit",
       key: "unit",
+      width: 80,
     },
     {
       title: "Trạng thái",
       dataIndex: "is_active",
       key: "is_active",
+      width: 80,
     },
 
     {
       title: getColumnTitle("Ngày tạo", "created_date"),
       dataIndex: "created_date",
       key: "created_date",
+      width: 140,
+      align: "center",
     },
     {
       title: "Thao tác",
       key: "action",
+      width: 100,
+
       render: (record) => (
         <Space size="middle">
           <a>
