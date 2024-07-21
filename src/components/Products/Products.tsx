@@ -364,7 +364,7 @@ const Products = () => {
     fetchSortDataProduct();
   }, [stateActiveProduct.is_active]);
 
-  const datatable = dataProduct.items?.map((item, index) => ({
+  const datatable = dataProduct.items?.map((item: any, index: number) => ({
     stt: index + 1,
     key: item.id,
     barcode: item.barcode,
@@ -409,7 +409,7 @@ const Products = () => {
       title: getColumnTitle("Danh mục \n sản phẩm", "category"),
       dataIndex: "category",
       key: "category",
-      width: 160,
+      width: 130,
     },
     {
       title: getColumnTitle("Giá bán", "price"),
@@ -457,16 +457,16 @@ const Products = () => {
       key: "action",
       width: 100,
 
-      render: (record) => (
+      render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaEye onClick={() => detailProduct(record)} />
+            <FaEye onClick={() => detailProduct(record)} title="Xem" />
           </a>
           <a>
-            <FaPencilAlt onClick={() => modifyProduct(record)} />
+            <FaPencilAlt onClick={() => modifyProduct(record)} title="Sửa" />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} onClick={() => deleteProduct(record)} />
+            <FaTrash style={{ color: "red" }} onClick={() => deleteProduct(record)} title="Xóa" />
           </a>
         </Space>
       ),

@@ -76,7 +76,9 @@ const AddProduct = () => {
       const response = await products.postAddProduct(dataAddProduct);
       if (response.code === 200) {
         toast.success("Thêm sản phẩm thành công");
-        onClickBackPageProduct();
+        setTimeout(() => {
+          onClickBackPageProduct();
+        }, 500);
         await fetchDataCategory();
         clearInputsAddProduct;
       } else {
@@ -352,7 +354,7 @@ const AddProduct = () => {
               <TreeSelect
                 showSearch
                 placeholder="Danh mục sản phẩm"
-                style={{ width: "300px", height: "35px" }}
+                style={{ width: 300, height: 40 }}
                 value={selectedPath || undefined}
                 notFoundContent="Không có danh mục sản phẩm"
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
@@ -426,7 +428,7 @@ const AddProduct = () => {
                 placeholder="Đơn vị tính"
                 allowClear
                 // defaultValue="Giới tính"
-                style={{ width: 302, height: 36 }}
+                style={{ width: 300, height: 40 }}
                 onChange={(value) => {
                   handleSelectUnit(value);
                 }}

@@ -46,3 +46,7 @@
   justify-content: center;
   font-size: 2rem;
 }
+::placeholder {
+  color: lightgray;
+  opacity: 1; /* Firefox */
+}

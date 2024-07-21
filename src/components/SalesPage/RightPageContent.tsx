@@ -102,8 +102,8 @@ const RightPageContent = ({
   }, [defaultCustomer]);
   const infoBanking =
     bankingData
-      ?.filter((item) => item.type === true)
-      .map((item, index) => ({
+      ?.filter((item: any) => item.type === true)
+      .map((item: any, index: number) => ({
         value: index + 1,
         id: item.id,
         account_name: item.account_name,
@@ -245,7 +245,7 @@ const RightPageContent = ({
       }
       // setIsPrintReady(true);
       else {
-        console.log("error", error);
+        console.log("error");
       }
     } catch (error) {
       handleError(error);
@@ -338,7 +338,8 @@ const RightPageContent = ({
         setIsOpenPopups(true);
       }
     } catch (error) {
-      console.log("err", err);
+      handleError(error);
+      // console.log("err", err);
     }
   };
   useEffect(() => {
