@@ -4,11 +4,14 @@ import { CiSearch } from "react-icons/ci";
 import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
 import useDebounce from "../../auth/useDebounce";
 import invoice from "../../../configs/invoice";
+import { IoMdAdd } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 interface HeadeInvoicesProps {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataTableInvoice: React.Dispatch<React.SetStateAction<any>>;
 }
 const HeaderInvoices: React.FC<HeadeInvoicesProps> = ({ setLoading, setDataTableInvoice }) => {
+  const navigate = useNavigate();
   const [valueOnSearch, setValueOnSearch] = useState("");
   const debounceValue = useDebounce(valueOnSearch, 700);
 
@@ -16,6 +19,10 @@ const HeaderInvoices: React.FC<HeadeInvoicesProps> = ({ setLoading, setDataTable
     const value = e.target.value;
     console.log("value", value);
     setValueOnSearch(value);
+  };
+  const handleClickToSalesPage = () => {
+    console.log("111");
+    navigate("/SalesPage");
   };
   const getDataSearchInvoices = async () => {
     setLoading(true);
@@ -90,9 +97,9 @@ const HeaderInvoices: React.FC<HeadeInvoicesProps> = ({ setLoading, setDataTable
         <button className="btn-header-right" style={{ width: "100px" }}>
           <FaArrowAltCircleDown /> &nbsp; Import
         </button>
-        {/* <button className="btn-header-right">
-            <IoMdAdd className="icon" /> Thêm sản phẩm
-          </button> */}
+        <button className="btn-header-right" onClick={handleClickToSalesPage}>
+          <IoMdAdd className="icon" /> Thêm hóa đơn
+        </button>
       </div>
     </>
   );

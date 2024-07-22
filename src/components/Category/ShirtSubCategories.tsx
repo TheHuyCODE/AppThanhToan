@@ -342,12 +342,11 @@ const ShirtSubCategories: React.FC<shirtSubCategoriesProp> = ({
               onShowSizeChange={onShowSizeChange}
               onChange={onChangeNumberPagination}
               defaultCurrent={1}
-              // total={isResDataChildSeconds?.total}
+              total={isResDataChildSeconds?.total || 0}
             />
-            <span
-              className="total-items"
-              style={{ color: "black" }}
-            >{`${dataTableChild?.length} danh mục cấp 3`}</span>
+            <span className="total-items" style={{ color: "black" }}>{`${
+              dataTableChild?.length || 0
+            } danh mục cấp 3`}</span>
           </div>
         </div>
       </div>

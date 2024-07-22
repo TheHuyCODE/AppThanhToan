@@ -9,12 +9,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import logoutApi from "../../configs/logoutApi";
 
-import { localeProduct, localInvoice, paginationConfig } from "../TableConfig/TableConfig";
+import { localInvoice } from "../TableConfig/TableConfig";
 import { format } from "date-fns";
 import { IoMdClose } from "react-icons/io";
-import products from "../../configs/products";
 import invoice from "../../configs/invoice";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
+import { handleError } from "../../utils/errorHandler";
 
 interface User {
   access_token: string;
@@ -35,6 +34,7 @@ type ChildComponentProps = {
   activeKey: string;
   items: [];
   isModalOpen: boolean;
+  loading: boolean;
   totalInvoice: number;
   // dataTableInvoice: [];
   addInvoice: () => void;
@@ -48,6 +48,7 @@ type ChildComponentProps = {
   onSearchInvoices: (value: string) => void;
   handleEnterPress: () => void;
   setDataTableInvoice: () => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
   // setIsOpenPaymentReturn: (value: boolean) => void;
 };
@@ -58,6 +59,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   totalInvoice,
   items,
   isModalOpen,
+  loading,
   addInvoice,
   removeInvoice,
   handleAddReturnInvoice,
@@ -69,6 +71,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   onSearchInvoices,
   handleEnterPress,
   setDataTableInvoice,
+  setLoading,
   // setIsOpenPaymentReturn,
 }) => {
   const [infouser, setInfoUser] = useState<User | null>(null);
@@ -84,8 +87,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleSearchInvoice = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
+  const handleSearchInvoice = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     console.log(value);
     onSearchInvoices(value);
@@ -127,8 +129,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     }
   };
 
-  const detailInvoiceReturn = (record: object) => {
-    console.log("record", record.id);
+  const detailInvoiceReturn = (record: any) => {
     onDetailInvoiceReturn(record.id);
     closeModal();
     handleAddReturnInvoice();
@@ -154,7 +155,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     };
   }, [menuRef]);
 
-  const dataTable: RecordType[] = dataTableInvoice.map((items, index) => ({
+  const dataTable: RecordType[] = dataTableInvoice.map((items: any, index: number) => ({
     stt: index + 1,
     id: items.id,
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
@@ -229,18 +230,19 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     setPageSize(size);
   };
   const getDataPagination = async (current: number, size: number) => {
-    // setLoading(true);
+    setLoading(true);
     try {
       const res = await invoice.getDataPagination(current, size);
       if (res.data) {
         const data = res.data.items;
         setDataTableInvoice(data);
-        // setLoading(false);
+        setLoading(false);
       } else {
         console.log("err");
       }
     } catch (err) {
-      console.log("err", err);
+      handleError(err);
+      setLoading(false);
     }
   };
   return (
@@ -350,6 +352,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
                   columns={columns}
                   dataSource={dataTable}
                   locale={localInvoice}
+                  loading={loading}
                   pagination={false}
                   scroll={{
                     y: 400,

@@ -341,7 +341,7 @@
 }
 .quantity-product-return {
   width: 90%;
-  max-width: 150px;
+  max-width: 200px;
   margin-top: 5px;
   height: auto;
   padding: 5px;
@@ -356,26 +356,26 @@
 }
 .cell-change-price-return {
   width: 90%;
-  max-width: 150px;
+  max-width: 200px;
   margin-top: 5px;
   height: auto;
   padding: 5px;
   margin-top: 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: end;
   justify-content: start;
 }
 
 .cell-total-price-return {
   width: 90%;
-  max-width: 150px;
+  max-width: 200px;
   margin-top: 10px;
   height: auto;
   padding: 5px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: end;
   justify-content: start;
   font-weight: 600;
 }

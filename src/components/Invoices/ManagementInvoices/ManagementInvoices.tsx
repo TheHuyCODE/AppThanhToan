@@ -58,6 +58,9 @@ const ManagementInvoices: React.FC = () => {
     setIdDelete(IdDelete);
     setOpenModalDelete(!openModalDelete);
   };
+  const handleClickDetailInvoices = (record: any) => {
+    console.log("record", record);
+  };
   const onCloseModal = () => {
     setOpenModalDelete(false);
     console.log("openModalDelete", openModalDelete);
@@ -108,49 +111,55 @@ const ManagementInvoices: React.FC = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
-      // width: 100,
+      width: 100,
     },
     {
       title: getColumnTitle(`Mã đơn hàng`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
-      align: "start",
+      align: "center",
       // width: 250,
     },
     {
       title: getColumnTitle(`Người tạo hóa đơn`, "create_user"),
       dataIndex: "create_user",
       key: "create_user",
-      align: "start",
-      // width: 300,
+      align: "center",
+      width: 200,
     },
     {
       title: getColumnTitle(`Khách hàng`, "full_name"),
       dataIndex: "full_name",
       key: "full_name",
-      align: "start",
+      align: "center",
+
       // width: 300,
     },
     {
       title: getColumnTitle(`Ngày tạo`, "created_date"),
       dataIndex: "created_date",
       key: "created_date",
-      align: "start",
+      align: "center",
+
       // width: 300,
     },
     {
-      title: "Tổng tiền",
+      title: getColumnTitle(`Tổng tiền`, "total_amount"),
       dataIndex: "total_amount",
       key: "total_amount",
+      align: "center",
+
       // width: 300,
     },
     {
       title: "Thao tác",
       key: "action",
+      width: 150,
+
       render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaEye />
+            <FaEye onClick={() => handleClickDetailInvoices(record)} />
           </a>
           <a>
             <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteInvoices(record)} />

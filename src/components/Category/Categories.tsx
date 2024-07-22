@@ -273,10 +273,17 @@ const Categories: React.FC<CategoriesProp> = ({
   //show table child when clicked
 
   const fetchDataCategory = async () => {
-    const res = await category.getAll();
-    const totalCategory = res.data.total;
-    setIsDataCategory(res.data);
-    setTotalCategory(totalCategory);
+    setLoading(true);
+    try {
+      const res = await category.getAll();
+      const totalCategory = res.data.total;
+      setIsDataCategory(res.data);
+      setTotalCategory(totalCategory);
+      setLoading(false);
+    } catch (err) {
+      handleError(err);
+      setLoading(false);
+    }
   };
   const onShowSizeChange = (current: number, size: number) => {
     console.log("Current page:", current);
@@ -514,12 +521,11 @@ const Categories: React.FC<CategoriesProp> = ({
             onShowSizeChange={onShowSizeChange}
             onChange={onChangeNumberPagination}
             defaultCurrent={1}
-            total={totaCategory}
+            total={totaCategory || 0}
           />
-          <span
-            className="total-items"
-            style={{ color: "black" }}
-          >{`${dataTable?.length} danh mục cấp 1`}</span>
+          <span className="total-items" style={{ color: "black" }}>{`${
+            dataTable?.length || 0
+          } danh mục cấp 1`}</span>
         </div>
       </div>
     </div>

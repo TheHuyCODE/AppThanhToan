@@ -29,6 +29,7 @@ import Customers from "./components/Customers/Customers";
 import Categories from "./components/Category/Categories";
 import SubCategories from "./components/Category/SubCategories";
 import ShirtSubCategories from "./components/Category/ShirtSubCategories";
+import Return from "./components/Returns/Return";
 // import SalePage from "./components/SalesPage/SalePage";
 
 const NotFound = () => {
@@ -183,6 +184,23 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <ManagementInvoices />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/returns"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Return />
               </AppWrapper>
             </ProtectedRouter>
           }

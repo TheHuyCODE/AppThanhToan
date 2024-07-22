@@ -364,12 +364,11 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
               onShowSizeChange={onShowSizeChange}
               onChange={onChangeNumberPagination}
               defaultCurrent={1}
-              total={isResDataChild.total}
+              total={isResDataChild.total || 0}
             />
-            <span
-              className="total-items"
-              style={{ color: "black" }}
-            >{`${dataTableChild?.length} danh mục cấp 2`}</span>
+            <span className="total-items" style={{ color: "black" }}>{`${
+              dataTableChild?.length || 0
+            } danh mục cấp 2`}</span>
           </div>
         </div>
       </div>

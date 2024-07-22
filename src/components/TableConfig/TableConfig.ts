@@ -19,6 +19,9 @@ export const localPayment = {
 export const localCustomer = {
   emptyText: "Không có khách hàng",
 };
+export const localReturn = {
+  emptyText: "Không có trả hàng",
+};
 export const paginationConfig = {
   position: ["bottomCenter"],
   defaultCurrent:6,

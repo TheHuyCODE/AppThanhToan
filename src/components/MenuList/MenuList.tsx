@@ -6,7 +6,7 @@ import { FaBagShopping, FaCartShopping, FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 
 import { RiListSettingsFill } from "react-icons/ri";
-import { FaPercent, FaRegUserCircle } from "react-icons/fa";
+import { FaFileInvoiceDollar, FaPercent, FaRegUserCircle } from "react-icons/fa";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
@@ -14,6 +14,7 @@ import logoutApi from "../../configs/logoutApi";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { CiBank } from "react-icons/ci";
+import { TiArrowBack } from "react-icons/ti";
 
 const MenuList = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -56,8 +57,11 @@ const MenuList = () => {
             <Link to="/admin/inventoryreport">Báo cáo tồn kho</Link>
           </Menu.Item>
         </Menu.SubMenu>
-        <Menu.Item key="invoices" icon={<FaCartShopping />}>
+        <Menu.Item key="invoices" icon={<FaFileInvoiceDollar />}>
           <Link to="/admin/invoices">Quản lý hóa đơn</Link>
+        </Menu.Item>
+        <Menu.Item key="returns" icon={<TiArrowBack />}>
+          <Link to="/admin/returns">Quản lý trả hàng</Link>
         </Menu.Item>
         <Menu.Item key="User_management" icon={<IoPerson />}>
           <Link to="/admin/users">Quản lý người dùng</Link>

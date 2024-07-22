@@ -3,8 +3,6 @@ import "./detailInvoices.css";
 import "../styles/valiables.css";
 import { FaPen, FaRegTrashAlt } from "react-icons/fa";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-import { FaEllipsisVertical } from "react-icons/fa6";
-import { IoMdAdd } from "react-icons/io";
 
 type Product = {
   id: string;
@@ -16,9 +14,15 @@ type Product = {
 };
 
 type Invoice = {
+  id: number;
+  invoice_number: string;
+  customer_id: string;
+  customer_name: string;
+  total_price: number;
+  created_date: number;
+  items: Product[];
   id_payment: string;
   type: string;
-  items: Product[];
 };
 
 type LeftContentReturn = {
@@ -27,30 +31,18 @@ type LeftContentReturn = {
   removeProductCarts: (invoiceID: string, productID: string) => void;
   decrementReturn: (invoiceID: string, productID: string) => void;
   incrementReturn: (invoiceID: string, productID: string) => void;
-  // updateProductTotal: (productID: string, total: number) => void;
+  setInvoiceList: any;
 };
 
 const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   invoiceList,
   activeKey,
   removeProductCarts,
-  // updateProductTotal,
   decrementReturn,
   incrementReturn,
   setInvoiceList,
 }) => {
   const [quantityState, setQuantityState] = useState<{ [key: string]: number }>({});
-  // Filter the invoice list to get the active return invoice
-  // useEffect(() => {
-  //   // Initialize quantity state with quantities from the active return invoice
-  //   if (typeInvoiceList.length > 0) {
-  //     const initialQuantities: { [key: string]: number } = {};
-  //     typeInvoiceList[0].items.forEach((product) => {
-  //       initialQuantities[product.id] = product.quantity;
-  //     });
-  //     setQuantityState(initialQuantities);
-  //   }
-  // }, [typeInvoiceList]);
 
   const deleteProductCartsReturn = (invoiceID: string, productID: string) => {
     removeProductCarts(invoiceID, productID);
@@ -74,12 +66,12 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
       value = product.remaining_quantity.toString();
     }
     const newQuantity = parseInt(value, 10) || 0;
-    setInvoiceList((prevInvoices) =>
+    setInvoiceList((prevInvoices: any[]) =>
       prevInvoices.map((invoice) =>
         invoice.id_payment === typeInvoiceList[0].id_payment
           ? {
               ...invoice,
-              items: invoice.items.map((product) =>
+              items: invoice.items.map((product: any) =>
                 product.id === productId
                   ? {
                       ...product,

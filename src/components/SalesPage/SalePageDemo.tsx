@@ -76,6 +76,8 @@ const SalePageDemo: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenPaymentReturn, setIsOpenPaymentReturn] = useState(false);
   const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   // const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
   const [open, setOpen] = useState(false);
   const [keyRemove, setKeyRemove] = useState<string | null>(null);
@@ -499,7 +501,7 @@ const SalePageDemo: React.FC = () => {
       const res = await invoice.getDataDetailInvoiceReturn(id);
       const returnedInvoice = res.data;
       // Set the quantity of each product to 0
-      const updatedProducts = returnedInvoice.product.map((product) => ({
+      const updatedProducts = returnedInvoice.product.map((product: any) => ({
         ...product,
         quantity: 0,
       }));
@@ -511,6 +513,7 @@ const SalePageDemo: React.FC = () => {
               items: updatedProducts,
               user: returnedInvoice.create_user,
               id_invoice: returnedInvoice.id,
+              customer_id: returnedInvoice.customer.id,
             };
           }
           return invoice;
@@ -541,7 +544,6 @@ const SalePageDemo: React.FC = () => {
   const removeInvoice = (targetKey: string) => {
     const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
     const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
-
     if (invoiceToRemove && invoiceToRemove.items.length > 0) {
       openModal();
       setKeyRemove(targetKey);
@@ -574,12 +576,10 @@ const SalePageDemo: React.FC = () => {
     if (returnInvoiceToRemove) {
       const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== key);
       if (remainingInvoices.length === 0) {
-        // Nếu chỉ còn lại một hóa đơn trả hàng, quay về hóa đơn 1
         createInvoiceOne();
         setActiveKey("1");
         localStorage.setItem("idActiveInvoice", "1");
       } else {
-        // Nếu còn nhiều hóa đơn, chỉ xóa hóa đơn được chọn
         setInvoiceList(remainingInvoices);
         setActiveKey("1");
       }
@@ -593,7 +593,6 @@ const SalePageDemo: React.FC = () => {
       if (keyRemove === "1") {
         const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== keyRemove);
         setInvoiceList(newInvoiceList);
-
         if (newInvoiceList.length) {
           const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === keyRemove);
           const newActiveKey =
@@ -604,7 +603,6 @@ const SalePageDemo: React.FC = () => {
           localStorage.setItem("idActiveInvoice", newActiveKey);
         } else {
           createInvoiceOne();
-
           setActiveKey("1");
           localStorage.setItem("idActiveInvoice", "1");
         }
@@ -632,11 +630,12 @@ const SalePageDemo: React.FC = () => {
   const removeNotConFirmInvoice = (targetKey: string) => {
     const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
     const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
-
     if (invoiceToRemove) {
       if (invoiceList.length === 1 && targetKey === "1") {
         // Only one invoice left and it's "Hóa đơn 1", do not allow removal
-        console.log("Cannot remove the only invoice 1");
+        clearInvoiceOneData();
+        setActiveKey("1");
+        localStorage.setItem("idActiveInvoice", "1");
         return;
       }
       setInvoiceList(remainingInvoices);
@@ -666,6 +665,15 @@ const SalePageDemo: React.FC = () => {
       console.log("err");
     }
   };
+  const clearInvoiceOneData = () => {
+    // Logic to clear data in "Hóa đơn 1"
+    const updatedInvoiceList = invoiceList.map((invoice) =>
+      invoice.id_payment === "1"
+        ? { ...invoice, items: [], total: 0 } // Clear specific fields
+        : invoice
+    );
+    setInvoiceList(updatedInvoiceList);
+  };
   const getInfoBanking = async () => {
     try {
       const res = await sellProduct.getInfoBank();
@@ -687,6 +695,7 @@ const SalePageDemo: React.FC = () => {
     }
   };
   const getDataInvoiceReturn = async () => {
+    setLoading(true);
     try {
       const res = await invoice.getAllInvoices();
       if (res.code === 200) {
@@ -694,11 +703,13 @@ const SalePageDemo: React.FC = () => {
         const totalInvoices = res.data.total;
         setDataTableInvoice(data);
         setTotalInvoice(totalInvoices);
+        setLoading(false);
       } else {
         console.log("message", res.data);
       }
     } catch (err) {
       console.error("Error fetching data", err);
+      setLoading(false);
     }
   };
   const getDataCustomer = async () => {
@@ -715,16 +726,19 @@ const SalePageDemo: React.FC = () => {
   };
   const handleSearchInvoices = async (searchTerm: string) => {
     console.log("valueSearch", searchTerm);
+    setLoading(true);
     try {
       const res = await invoice.getDataSearchInvoice(searchTerm);
       if (res.code === 200) {
         const data = res.data.items;
         setDataTableInvoice(data);
+        setLoading(false);
       } else {
         console.log("message", res.data);
       }
     } catch (err) {
       console.error("Error fetching data", err);
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -746,7 +760,7 @@ const SalePageDemo: React.FC = () => {
     }
     return { totalQuantity: 0, totalPrice: 0 };
   };
-  const calculateFinalPrice = (totalPrice, discountPrice, isPercentage) => {
+  const calculateFinalPrice = (totalPrice: any, discountPrice: any, isPercentage: any) => {
     let finalPrice = totalPrice;
     if (isPercentage) {
       finalPrice -= (totalPrice * discountPrice) / 100;
@@ -891,6 +905,8 @@ const SalePageDemo: React.FC = () => {
           handleEnterPress={handleEnterPress}
           setDataTableInvoice={setDataTableInvoice}
           totalInvoice={totalInvoice}
+          setLoading={setLoading}
+          loading={loading}
         />
         <div className="page-content">
           {isOpenPaymentReturn ? (
@@ -926,7 +942,11 @@ const SalePageDemo: React.FC = () => {
             />
           )}
           {isOpenPaymentReturn ? (
-            <ReturnInvoice dataReturnPayment={dataReturnPayment} />
+            <ReturnInvoice
+              dataReturnPayment={dataReturnPayment}
+              removeReturnInvoice={removeReturnInvoice}
+              activeKey={activeKey}
+            />
           ) : (
             <RightPageContent
               selectedProducts={selectedProducts[activeKey] || []}
