@@ -1,8 +1,39 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
-
-const HeaderReturn = () => {
+import useDebounce from "../../auth/useDebounce";
+import returnProduct from "../../../configs/return";
+interface HeaderPropsReturn {
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataReturn: React.Dispatch<React.SetStateAction<any>>;
+}
+const HeaderReturn: React.FC<HeaderPropsReturn> = ({ setLoading, setDataReturn }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [valueOnSearch, setValueOnSearch] = useState("");
+  const debounceValue = useDebounce(valueOnSearch, 700);
+  const handleSearchPayment = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log("value", value);
+    setValueOnSearch(value);
+  };
+  const getDataSearchReturn = async () => {
+    setLoading(true);
+    try {
+      const res = await returnProduct.getDataSearchReturn(debounceValue);
+      const data = res.data.items;
+      setDataReturn(data);
+      setLoading(false);
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+    } catch (error) {
+      console.log("errror", error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getDataSearchReturn();
+  }, [debounceValue]);
   return (
     <>
       <div className="header-left">
@@ -19,11 +50,12 @@ const HeaderReturn = () => {
               }}
             />
             <input
+              ref={inputRef}
               type="text"
               placeholder="Tìm kiếm trả hàng"
               className="search-category"
               style={{ width: "250px" }}
-              // onChange={handleSearchPayment}
+              onChange={handleSearchPayment}
             />
           </div>
         </div>

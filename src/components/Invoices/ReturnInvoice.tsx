@@ -3,7 +3,7 @@ import "./detailInvoices.css";
 import "../SalesPage/SalePage.css";
 // import "../styles/variables.css";
 import { FaUser } from "react-icons/fa";
-import ReturnProduct from "../../configs/return";
+import returnProduct from "../../configs/return";
 import { toast, ToastContainer } from "react-toastify";
 import { handleError } from "../../utils/errorHandler";
 interface ReturnInvoiceProp {
@@ -125,7 +125,7 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
       customer_id: idCustomer,
     };
     try {
-      const res = await ReturnProduct.postDataPayment(dataReturn);
+      const res = await returnProduct.postDataPayment(dataReturn);
       if (res.code === 200) {
         // const texSS = res.massage.text;
         toast.success("Trả hàng thành công");

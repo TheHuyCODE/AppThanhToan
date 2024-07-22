@@ -280,7 +280,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
               onEdit={onEdit}
               className="custom-tabs"
             >
-              {items.map((item) => (
+              {items.map((item: any) => (
                 <TabPane
                   tab={item.invoice_number}
                   key={item.id_payment}
@@ -304,12 +304,12 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
           </button>
           {isMenuOpen && (
             <div ref={menuRef} className="menu-dropdown">
-              <div>
-                <MdOutlinePoll style={{ fontSize: "20px" }} />
-                <Link to="/admin/products" style={{ textDecoration: "none", color: "black" }}>
+              <Link to="/admin/products" style={{ textDecoration: "none", color: "black" }}>
+                <div>
+                  <MdOutlinePoll style={{ fontSize: "20px" }} />
                   <span>Trang quản lý</span>
-                </Link>
-              </div>
+                </div>
+              </Link>
               <div onClick={clickLogoutUser}>
                 <FaArrowRightFromBracket />
                 <span style={{ marginLeft: "8px" }}>Đăng xuất</span>
