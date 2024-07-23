@@ -47,6 +47,6 @@
   font-size: 2rem;
 }
 ::placeholder {
-  color: lightgray;
+  color: rgb(159, 159, 159);
   opacity: 1; /* Firefox */
 }

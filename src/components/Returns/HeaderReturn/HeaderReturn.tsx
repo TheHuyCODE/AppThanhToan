@@ -3,14 +3,21 @@ import { CiSearch } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 import useDebounce from "../../auth/useDebounce";
 import returnProduct from "../../../configs/return";
+import { useNavigate } from "react-router-dom";
 interface HeaderPropsReturn {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataReturn: React.Dispatch<React.SetStateAction<any>>;
+  getDataReturn: () => void;
 }
-const HeaderReturn: React.FC<HeaderPropsReturn> = ({ setLoading, setDataReturn }) => {
+const HeaderReturn: React.FC<HeaderPropsReturn> = ({
+  setLoading,
+  setDataReturn,
+  getDataReturn,
+}) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [valueOnSearch, setValueOnSearch] = useState("");
   const debounceValue = useDebounce(valueOnSearch, 700);
+  const navigate = useNavigate();
   const handleSearchPayment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     console.log("value", value);
@@ -31,8 +38,15 @@ const HeaderReturn: React.FC<HeaderPropsReturn> = ({ setLoading, setDataReturn }
       setLoading(false);
     }
   };
+  const handleBackSalesPage = () => {
+    navigate("/SalesPage");
+  };
   useEffect(() => {
-    getDataSearchReturn();
+    if (debounceValue) {
+      getDataSearchReturn();
+    } else {
+      getDataReturn();
+    }
   }, [debounceValue]);
   return (
     <>
@@ -77,7 +91,7 @@ const HeaderReturn: React.FC<HeaderPropsReturn> = ({ setLoading, setDataReturn }
         <button
           className="btn-header-right"
           style={{ width: "150px" }}
-          // onClick={handleClickOpenModal}
+          onClick={handleBackSalesPage}
         >
           <IoMdAdd className="icon" /> Thêm trả hàng
         </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // import { CiSearch } from "react-icons/ci";
-import { FaArrowDown, FaArrowUp, FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaEye, FaTrash } from "react-icons/fa";
 // import { IoMdAdd } from "react-icons/io";
 import HeaderInvoices from "./HeaderInvoices";
 import { Pagination, Space, Table, TableColumnsType } from "antd";
@@ -9,6 +9,7 @@ import invoice from "../../../configs/invoice";
 import { format } from "date-fns";
 import ModalDeleteInvoices from "../ModalDeleteInvoices/ModalDeleteInvoices";
 import { ToastContainer } from "react-toastify";
+import ModalDetailInvoice from "../ModalDetailInvoice/ModalDetailInvoice";
 
 interface RecordType {
   stt: number;
@@ -17,14 +18,24 @@ interface RecordType {
   create_user: string;
   full_name: string;
   total_amount: number;
+  customer_money: string;
+  payment_methods: string;
+  total_product: number;
+  discount: string;
+  refund: number;
   key: string;
+  product: [];
 }
 
 const ManagementInvoices: React.FC = () => {
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   const [totalInvoice, setTotalInvoice] = useState(0);
   const [idDelete, setIdDelete] = useState("");
+  const [dataDetail, setDataDetail] = useState("");
+
   const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [openModalModify, setOpenModalModify] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -60,10 +71,15 @@ const ManagementInvoices: React.FC = () => {
   };
   const handleClickDetailInvoices = (record: any) => {
     console.log("record", record);
+    setOpenModalModify(true);
+    setDataDetail(record);
   };
   const onCloseModal = () => {
     setOpenModalDelete(false);
     console.log("openModalDelete", openModalDelete);
+  };
+  const onCloseModalModify = () => {
+    setOpenModalModify(!openModalModify);
   };
   const getColumnTitle = (title: string, key: string) => (
     <div
@@ -201,7 +217,13 @@ const ManagementInvoices: React.FC = () => {
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
     create_user: items.create_user.full_name,
     full_name: items.customer.full_name,
+    customer_money: items.customer_money.toLocaleString("vi-VN"),
     total_amount: items.total_amount.toLocaleString("vi-VN"),
+    payment_methods: items.payment_methods[0].payment_method_name,
+    product: items.product,
+    discount: items.discount.toLocaleString("vi-VN") || 0,
+    total_product: items.total_product,
+    refund: items.refund,
     key: items.id,
   }));
 
@@ -213,15 +235,13 @@ const ManagementInvoices: React.FC = () => {
           Quản lí hóa đơn
         </h1>
         <div className="header-customers">
-          <HeaderInvoices setLoading={setLoading} setDataTableInvoice={setDataTableInvoice} />
+          <HeaderInvoices
+            setLoading={setLoading}
+            setDataTableInvoice={setDataTableInvoice}
+            getDataInvoices={getDataInvoices}
+          />
         </div>
-        <ModalDeleteInvoices
-          openModalDelete={openModalDelete}
-          onCloseModal={onCloseModal}
-          idDelete={idDelete}
-          getDataInvoices={getDataInvoices}
-          setLoading={setLoading}
-        />
+
         <div className="table-container">
           <Table
             columns={columns}
@@ -249,15 +269,26 @@ const ManagementInvoices: React.FC = () => {
               onShowSizeChange={onShowSizeChange}
               onChange={onChangeNumberPagination}
               defaultCurrent={1}
-              total={totalInvoice}
+              total={totalInvoice | 0}
             />
-            <span
-              className="total-items"
-              style={{ color: "black" }}
-            >{`${dataTable?.length} hóa đơn`}</span>
+            <span className="total-items" style={{ color: "black" }}>{`${
+              dataTable.length | 0
+            } hóa đơn`}</span>
           </div>
         </div>
       </div>
+      <ModalDeleteInvoices
+        openModalDelete={openModalDelete}
+        onCloseModal={onCloseModal}
+        idDelete={idDelete}
+        getDataInvoices={getDataInvoices}
+        setLoading={setLoading}
+      />
+      <ModalDetailInvoice
+        openModalModify={openModalModify}
+        onCloseModalModify={onCloseModalModify}
+        dataDetail={dataDetail}
+      />
     </>
   );
 };

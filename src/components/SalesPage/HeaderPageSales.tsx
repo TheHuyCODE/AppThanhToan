@@ -89,7 +89,6 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
 
   const handleSearchInvoice = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log(value);
     onSearchInvoices(value);
   };
 
@@ -120,7 +119,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     if (action === "add") {
       addInvoice();
     } else {
-      const invoiceToRemove = items.find((invoice) => invoice.id_payment === targetKey);
+      const invoiceToRemove: any = items.find((invoice: any) => invoice.id_payment === targetKey);
       if (invoiceToRemove && invoiceToRemove.type === "return") {
         removeReturnInvoice(targetKey);
       } else {

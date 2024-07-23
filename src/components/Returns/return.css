@@ -1,0 +1,71 @@
+.content-detail {
+  width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  padding: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.content-detail-invoice {
+  width: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  padding: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.price-detail {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: end;
+  margin-bottom: 20px;
+}
+.price-detail-row {
+  width: 100%;
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  gap: 10px;
+  padding: 5px;
+}
+.price-detail-row .title-price-detail {
+  width: 160px;
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  font-weight: 600;
+}
+.left-content-detail {
+  width: 48%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: 10px;
+}
+.right-content-detail {
+  width: 48%;
+  /* height: 100%; */
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  align-content: start;
+  justify-content: start;
+  gap: 10px;
+}
+.row-detail {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 5px 5px 5px 0;
+  margin-bottom: 5px;
+  border-bottom: 1px solid lightgray;
+}
+.row-detail .title-row {
+  width: 130px;
+}

@@ -1030,7 +1030,7 @@
 }
 .search_invoices input:focus {
   border-width: 2px;
-  border-color: #000;
+  border-color: var(--kv-primary);
 }
 .modal-content .table_invoices {
   width: 80%;

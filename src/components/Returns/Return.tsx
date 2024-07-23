@@ -3,29 +3,36 @@ import { ToastContainer } from "react-toastify";
 import HeaderReturn from "./HeaderReturn/HeaderReturn";
 import { Pagination, Space, Table, TableColumnsType } from "antd";
 import { FaEye, FaTrash } from "react-icons/fa";
+import "./return.css";
+import "../styles/valiables.css";
 import { localReturn } from "../TableConfig/TableConfig";
 import returnProduct from "../../configs/return";
 import { handleError } from "../../utils/errorHandler";
 import { format } from "date-fns";
 import ModalDeleteReturn from "./ModalDeleteReturn/ModalDeleteReturn";
+import ModalDetailReturn from "./ModalDetailReturn/ModalDetailReturn";
 interface RecordType {
   stt: number;
   id: string;
-  // full_name: string;
-  created_date: number;
-  key: string;
+  created_date: string;
+  create_user: string;
+  full_name: string;
   total_amount: number;
   total_product: number;
-  created_user_id: string;
+  // created_user_id: string;
   invoice_id: string;
+  reason: string;
+  key: string;
 }
 const Return = () => {
   const [loading, setLoading] = useState(false);
   const [dataReturn, setDataReturn] = useState<any[]>([]);
   const [totalPageReturn, setTotalPageReturn] = useState(0);
   const [idDeleteReturn, setIdDeleteReturn] = useState("");
-
+  const [detailReturn, setDetailReturn] = useState({});
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
+  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const columns: TableColumnsType<RecordType> = [
@@ -39,46 +46,50 @@ const Return = () => {
       title: "Mã trả hàng",
       dataIndex: "id",
       key: "id",
-      width: 250,
+      width: 200,
     },
     {
       title: "Người bán",
-      dataIndex: "phone",
-      key: "phone",
+      dataIndex: "create_user",
+      key: "create_user",
       width: 200,
     },
     {
       title: "Thời gian",
       dataIndex: "created_date",
       key: "created_date",
-      // width: 300,
+      width: 200,
     },
     {
       title: "Khách hàng",
-      dataIndex: "total_invoice_amount",
-      key: "total_invoice_amount",
-      // width: 300,
+      dataIndex: "full_name",
+      key: "full_name",
+      width: 250,
     },
 
     {
       title: "Tiền tiền trả khách",
       dataIndex: "total_amount",
       key: "total_amount",
-      // width: 300,
+      width: 150,
       align: "center",
     },
     {
       title: "Thao tác",
       key: "action",
-      align: "center",
-      width: 150,
+      // align: "center",
+      width: 200,
       render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaEye />
+            <FaEye onClick={() => handleDetailReturn(record)} title="Xem" />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} onClick={() => handleDeleteModalReturn(record)} />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => handleDeleteModalReturn(record)}
+              title="Xóa"
+            />
           </a>
         </Space>
       ),
@@ -89,11 +100,22 @@ const Return = () => {
     stt: index + 1,
     id: items.id,
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
-    // create_user: items.create_user.full_name,
-    // full_name: items.customer.full_name,
+    create_user: items.create_user.full_name,
+    full_name: items.customer.full_name,
     total_amount: items.total_amount.toLocaleString("vi-VN"),
+    total_product: items.total_product || 0,
+    reason: items.reason,
+    invoice_id: items.invoice_id,
     key: items.id,
   }));
+  const handleDetailReturn = (record: any) => {
+    setIsOpenModalDetail(true);
+    console.log("record", record);
+    setDetailReturn(record);
+  };
+  const onCloseModalDetail = () => {
+    setIsOpenModalDetail(!isOpenModalDetail);
+  };
   const handleDeleteModalReturn = (record: any) => {
     console.log("111");
     setIsOpenModalDelete(true);
@@ -156,7 +178,11 @@ const Return = () => {
           Quản lí hóa đơn trả hàng
         </h1>
         <div className="header-customers">
-          <HeaderReturn setLoading={setLoading} setDataReturn={setDataReturn} />
+          <HeaderReturn
+            setLoading={setLoading}
+            setDataReturn={setDataReturn}
+            getDataReturn={getDataReturn}
+          />
         </div>
       </div>
       <div className="table-container">
@@ -196,6 +222,11 @@ const Return = () => {
         setLoading={setLoading}
         idDeleteReturn={idDeleteReturn}
         getDataReturn={getDataReturn}
+      />
+      <ModalDetailReturn
+        onCloseModalDetail={onCloseModalDetail}
+        isOpenModalDetail={isOpenModalDetail}
+        detailReturn={detailReturn}
       />
     </>
   );
