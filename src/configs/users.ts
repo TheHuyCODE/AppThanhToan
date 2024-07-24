@@ -1,8 +1,8 @@
 import axiosClient from "./axiosClient";
 
-const Users = {
+const users = {
   getAll: () => {
-    const url = "api/v1/manage/category";
+    const url = "api/v1/manage/user";
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
@@ -12,7 +12,17 @@ const Users = {
     });
   },
   getDataUsers: () => {
-    const url = "api/v1/users";
+    const url = "api/v1/manage/user";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
+  getDataRole: () => {
+    const url = "api/v1/manage/role";
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
@@ -21,6 +31,6 @@ const Users = {
       },
     });
   }
- 
+
 };
-export default Users;
+export default users;

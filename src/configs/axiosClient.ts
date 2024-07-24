@@ -54,15 +54,15 @@ const refreshAccessToken = async () => {
     localStorage.setItem("access_token", access_token);
     return access_token;
   } catch (error) {
-      console.log('err')
-        // showLogoutPopup();
+    console.log('err')
+    // showLogoutPopup();
     throw error;
   }
 };
 function showLogoutPopup() {
   Modal.error({
     title: "Hết phiên đăng nhập",
-    content:  'Hết phiên đăng nhập' || '',
+    content: 'Vui lòng đăng nhập lại' || '',
     onOk: () => {
       // Xóa token và chuyển hướng đến trang đăng nhập
       localStorage.removeItem("access_token");

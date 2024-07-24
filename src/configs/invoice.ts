@@ -31,6 +31,21 @@ const invoice = {
       params,
     });
   },
+  sortDataInvoice: (colName: string, typeSort: string) => {
+    const url = "api/v1/manage/invoice";
+    const params = {
+      sort: `${colName}`,
+      order_by: `${typeSort}`,
+    }
+    return axiosClient.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+
+  },
   getDataSearchInvoice: (value: string) => {
     const url = `api/v1/manage/invoice`;
     const params = {
@@ -47,22 +62,22 @@ const invoice = {
   },
   getDataDetailInvoiceReturn: (id: string) => {
     const url = `api/v1/manage/invoice/${id}`;
-        return axiosClient.get(url, {
+    return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
-    
+
     });
   },
   deleteInvoices: (idInvoices: string) => {
     const url = `api/v1/manage/invoice/${idInvoices}`;
     return axiosClient.delete(url, {
       headers: {
-    
+
       },
-    
+
     });
   },
 };

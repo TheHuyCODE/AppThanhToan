@@ -6,7 +6,7 @@ const PublicRouter = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, accessToken, login, logout } = useAuth();
   console.log("tokenProtected", isAuthenticated);
   if (isAuthenticated) {
-    return <Navigate to="/admin/products" replace />;
+    return <Navigate to="/SalesPage" replace />;
   }
 
   return children;

@@ -10,13 +10,14 @@ import { format } from "date-fns";
 import ModalDeleteInvoices from "../ModalDeleteInvoices/ModalDeleteInvoices";
 import { ToastContainer } from "react-toastify";
 import ModalDetailInvoice from "../ModalDetailInvoice/ModalDetailInvoice";
+import { handleError } from "../../../utils/errorHandler";
 
 interface RecordType {
   stt: number;
-  barcode: string;
+  id: string;
   created_date: string;
-  create_user: string;
-  full_name: string;
+  created_user: string;
+  customer: string;
   total_amount: number;
   customer_money: string;
   payment_methods: string;
@@ -51,12 +52,27 @@ const ManagementInvoices: React.FC = () => {
   useEffect(() => {
     getDataInvoices();
   }, []);
-
+  const sortDataInvoice = async (colName: string, typeSort: string) => {
+    setLoading(true);
+    try {
+      const res = await invoice.sortDataInvoice(colName, typeSort);
+      const data = res.data.items;
+      const totalData = res.data.total;
+      setDataTableInvoice(data);
+      setTotalInvoice(totalData);
+      setLoading(false);
+    } catch (error) {
+      console.log("error:", error);
+      setLoading(false);
+      handleError(error);
+    }
+  };
   const handleHeaderClick = (key: string) => {
     setSortedColumn((prevState) => {
       if (prevState.key === key) {
-        const newDirection = prevState.direction === "up" ? "down" : "up";
+        const newDirection = prevState.direction === "asc" ? "desc" : "asc";
         console.log(`New direction for column ${key}: ${newDirection}`);
+        sortDataInvoice(key, newDirection);
         return { key, direction: newDirection };
       }
       console.log(`Sorting direction for column ${key}: up`);
@@ -90,10 +106,10 @@ const ManagementInvoices: React.FC = () => {
     >
       <span style={{ display: "block" }}>{title}</span>
       <div className="arrow-icon-container">
-        {sortedColumn.key === key && sortedColumn.direction === "up" && (
+        {sortedColumn.key === key && sortedColumn.direction === "asc" && (
           <FaArrowUp className="arrow-icon arrow-icon-visible" />
         )}
-        {sortedColumn.key === key && sortedColumn.direction === "down" && (
+        {sortedColumn.key === key && sortedColumn.direction === "desc" && (
           <FaArrowDown className="arrow-icon arrow-icon-visible" />
         )}
         {sortedColumn.key !== key && hoveredColumn === key && (
@@ -110,7 +126,6 @@ const ManagementInvoices: React.FC = () => {
       if (res.code === 200) {
         const data = res.data.items;
         const totalData = res.data.total;
-        console.log("dataInvoice", data);
         setDataTableInvoice(data);
         setTotalInvoice(totalData);
         setLoading(false);
@@ -130,23 +145,23 @@ const ManagementInvoices: React.FC = () => {
       width: 100,
     },
     {
-      title: getColumnTitle(`Mã đơn hàng`, "barcode"),
-      dataIndex: "barcode",
-      key: "barcode",
+      title: getColumnTitle(`Mã đơn hàng`, "id"),
+      dataIndex: "id",
+      key: "id",
       align: "center",
       // width: 250,
     },
     {
-      title: getColumnTitle(`Người tạo hóa đơn`, "create_user"),
-      dataIndex: "create_user",
-      key: "create_user",
+      title: getColumnTitle(`Người tạo hóa đơn`, "created_user"),
+      dataIndex: "created_user",
+      key: "created_user",
       align: "center",
       width: 200,
     },
     {
-      title: getColumnTitle(`Khách hàng`, "full_name"),
-      dataIndex: "full_name",
-      key: "full_name",
+      title: getColumnTitle(`Khách hàng`, "customer"),
+      dataIndex: "customer",
+      key: "customer",
       align: "center",
 
       // width: 300,
@@ -213,10 +228,10 @@ const ManagementInvoices: React.FC = () => {
   };
   const dataTable: RecordType[] = dataTableInvoice.map((items, index) => ({
     stt: index + 1,
-    barcode: items.id,
+    id: items.id,
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
-    create_user: items.create_user.full_name,
-    full_name: items.customer.full_name,
+    created_user: items.create_user.full_name,
+    customer: items.customer.full_name,
     customer_money: items.customer_money.toLocaleString("vi-VN"),
     total_amount: items.total_amount.toLocaleString("vi-VN"),
     payment_methods: items.payment_methods[0].payment_method_name,

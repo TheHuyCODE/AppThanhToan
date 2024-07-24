@@ -24,7 +24,7 @@ export const localReturn = {
 };
 export const paginationConfig = {
   position: ["bottomCenter"],
-  defaultCurrent:6,
+  defaultCurrent: 6,
   defaultPageSize: 10,
   showSizeChanger: true,
   pageSizeOptions: ["10", "20", "30"],
@@ -51,4 +51,14 @@ export interface DataProfile {
   is_active: boolean;
   modified_date: number;
   phone: string;
+}
+export interface DataUser {
+  stt: number;
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  role: string;
+  key: string;
 }
