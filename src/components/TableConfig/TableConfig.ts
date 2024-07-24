@@ -13,6 +13,9 @@ export const localCategoryThirds = {
 export const localInvoice = {
   emptyText: "Không có hóa đơn",
 };
+export const localUsers = {
+  emptyText: "Không có người dùng",
+};
 export const localPayment = {
   emptyText: "Không có phương thức thanh toán",
 };
@@ -29,7 +32,7 @@ export const paginationConfig = {
   showSizeChanger: true,
   pageSizeOptions: ["10", "20", "30"],
 };
-
+export const REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/;
 export const domain = {
   domainLink: "https://cdtn.boot.ai",
 };

@@ -1,19 +1,62 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
+import useDebounce from "../../auth/useDebounce";
+import users from "../../../configs/users";
+interface HeaderUserProps {
+  handleAddUsers: () => void;
+  getDataUsers: () => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataUsers: React.Dispatch<React.SetStateAction<any>>;
+}
+const HeaderUser: React.FC<HeaderUserProps> = ({
+  handleAddUsers,
+  setLoading,
+  setDataUsers,
+  getDataUsers,
+}) => {
+  const inputSearchRef = useRef<HTMLInputElement | null>(null);
 
-const HeaderUser = ({ handleAddUsers }) => {
+  const [valueOnSearch, setValueOnSearch] = useState("");
+  const debounceValue = useDebounce(valueOnSearch, 700);
+  const onChangeSearchUsers = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setValueOnSearch(value);
+  };
+  const getDataSearchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await users.getDataSearchUsers(debounceValue);
+      const data = res.data.items;
+      setDataUsers(data);
+      setLoading(false);
+      if (inputSearchRef.current) {
+        inputSearchRef.current.blur();
+      }
+    } catch (error) {
+      console.log("errror", error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (debounceValue) {
+      getDataSearchUsers();
+    } else {
+      getDataUsers();
+    }
+  }, [debounceValue]);
   return (
     <>
       <div className="header-left">
         <div className="header-left-top">
           <div className="" style={{ display: "flex", position: "relative" }}>
             <input
+              ref={inputSearchRef}
               type="text"
               className="search-users"
               placeholder="Tìm nguời dùng"
-              //   onChange={onChangeSearchUsers}
+              onChange={onChangeSearchUsers}
             />
             <CiSearch
               style={{

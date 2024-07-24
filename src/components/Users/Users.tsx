@@ -1,4 +1,14 @@
-import { Alert, Button, DatePicker, Select, Space, Table, TableColumnsType, Tag } from "antd";
+import {
+  Alert,
+  Button,
+  DatePicker,
+  Pagination,
+  Select,
+  Space,
+  Table,
+  TableColumnsType,
+  Tag,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./User.css";
@@ -9,17 +19,23 @@ import "../styles/valiables.css";
 import { ToastContainer } from "react-toastify";
 import HeaderUser from "./HeaderUsers/HeaderUser";
 import users from "../../configs/users";
-import { DataUser } from "../TableConfig/TableConfig";
+import { DataUser, localUsers } from "../TableConfig/TableConfig";
 import ModalAddUsers from "./ModalAddUsers/ModalAddUsers";
+import ModalDeleteUsers from "./ModalDeleteUsers/ModalDeleteUsers";
 type RecordType = DataUser;
 
 const Users = () => {
   const navigate = useNavigate();
-  const [value, setValue] = useState("");
+  const [idDelete, setIdDelete] = useState("");
   const [dataUsers, setDataUsers] = useState<any[]>([]);
   const [dataRole, setDataRole] = useState();
+  const [totalInvoice, setTotalInvoice] = useState(0);
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
   const [openModalAdd, setOpenModalAdd] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
 
   //search for users
   const detailUsers = (items: any) => {
@@ -29,6 +45,13 @@ const Users = () => {
   const modifyUsers = (items: any) => {
     console.log("itemsId", items.key);
     navigate(`/admin/users/edit/${items.key}`);
+  };
+  const deleteUsers = (record: any) => {
+    setIdDelete(record.id);
+    setOpenModalDelete(true);
+  };
+  const onCloseModalDelete = () => {
+    setOpenModalDelete(!openModalDelete);
   };
   const columns: TableColumnsType<RecordType> = [
     {
@@ -70,13 +93,10 @@ const Users = () => {
       render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaEye />
+            <FaPencilAlt title="Sửa" onClick={() => modifyUsers(record)} />
           </a>
           <a>
-            <FaPencilAlt onClick={() => modifyUsers(record)} />
-          </a>
-          <a>
-            <FaTrash style={{ color: "red" }} />
+            <FaTrash title="Xóa" style={{ color: "red" }} onClick={() => deleteUsers(record)} />
           </a>
         </Space>
       ),
@@ -89,7 +109,7 @@ const Users = () => {
     email: items.email,
     phone: items.phone || "-",
     gender: items.gender === 1 ? "Nam" : "Nữ" || "", // Corrected the gender assignment
-    role: items.role_id === 3 ? "Chủ của hàng" : "",
+    role: items.role.name,
     key: items.id,
   }));
   const handleAddUsers = () => {
@@ -99,15 +119,17 @@ const Users = () => {
     setOpenModalAdd(!openModalAdd);
   };
   const getDataUsers = async () => {
+    setLoading(true);
     try {
       const res = await users.getDataUsers();
-      if (res.code === 200) {
-        const data = res.data.items;
-        console.log("data", data);
-        setDataUsers(data);
-      }
+      const data = res.data.items;
+      const totalItems = res.data.total;
+      setTotalInvoice(totalItems);
+      setLoading(false);
+      setDataUsers(data);
     } catch (error) {
       <Alert message="Error" type="error" showIcon />;
+      setLoading(true);
     }
   };
   const getRoleUsers = async () => {
@@ -119,7 +141,34 @@ const Users = () => {
       setLoading(false);
     } catch (error) {
       <Alert message="Error" type="error" showIcon />;
-      setLoading(false);
+      setLoading(true);
+    }
+  };
+  const onShowSizeChange = (current: number, size: number) => {
+    console.log("Current page:", current);
+    console.log("Page size:", size);
+    getDataPagination(current, size);
+    setPage(current);
+    setPageSize(size);
+  };
+  const onChangeNumberPagination = (current: number) => {
+    console.log("Current page:", current);
+    getDataPagination(current, pageSize);
+    setPage(current);
+  };
+  const getDataPagination = async (current: number, size: number) => {
+    setLoading(true);
+    try {
+      const res = await users.getDataPagination(current, size);
+      if (res.data) {
+        const data = res.data.items;
+        setDataUsers(data);
+        setLoading(false);
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log("err", err);
     }
   };
   useEffect(() => {
@@ -134,19 +183,62 @@ const Users = () => {
           Quản lí người dùng
         </h1>
         <div className="header-customers">
-          <HeaderUser handleAddUsers={handleAddUsers} />
+          <HeaderUser
+            handleAddUsers={handleAddUsers}
+            setLoading={setLoading}
+            setDataUsers={setDataUsers}
+            getDataUsers={getDataUsers}
+          />
         </div>
         <div className="table-container">
           <Table
             columns={columns}
             dataSource={dataTableUsers}
+            locale={localUsers}
             pagination={false}
             loading={loading}
+            scroll={{
+              y: 500,
+            }}
           />
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              gap: "10px",
+              marginTop: "10px",
+              padding: "10px",
+            }}
+          >
+            <Pagination
+              showSizeChanger
+              onShowSizeChange={onShowSizeChange}
+              onChange={onChangeNumberPagination}
+              defaultCurrent={1}
+              total={totalInvoice | 0}
+            />
+            <span className="total-items" style={{ color: "black" }}>{`${
+              dataUsers.length | 0
+            } hóa đơn`}</span>
+          </div>
           {/* <span className="total-items">{`${dataSource?.length} items`}</span> */}
         </div>
       </div>
-      <ModalAddUsers openModalAdd={openModalAdd} handleCloseModalAdd={handleCloseModalAdd} />
+      <ModalAddUsers
+        openModalAdd={openModalAdd}
+        handleCloseModalAdd={handleCloseModalAdd}
+        dataRole={dataRole}
+        getDataUsers={getDataUsers}
+      />
+      <ModalDeleteUsers
+        openModalDelete={openModalDelete}
+        idDelete={idDelete}
+        onCloseModalDelete={onCloseModalDelete}
+        setLoading={setLoading}
+        getDataUsers={getDataUsers}
+      />
     </>
   );
 };

@@ -47,7 +47,7 @@ const products = {
     };
     return axiosClient.get(url, {
       headers: {
-            "Content-Type": "application/json",
+        "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
       params,
@@ -142,9 +142,9 @@ const products = {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
-         });
+    });
   },
-  getDetailProduct: (idItems: string) => {
+  getDetailProduct: (idItems: string | undefined) => {
     const url = `api/v1/manage/product/${idItems}`;
     return axiosClient.get(url, {
       headers: {
@@ -158,7 +158,7 @@ const products = {
     const url = `api/v1/manage/product`;
     const params = {
       category_id: parent_id,
-   
+
     };
     return axiosClient.get(url, {
       headers: {
@@ -271,7 +271,7 @@ const products = {
       },
     });
   },
-  postImageProduct: (data:string) => {
+  postImageProduct: (data: string) => {
     const prefixImage = "products";
     const url = `/api/v1/upload_file?prefix=${prefixImage}`;
     return axiosClient.post(url, data, {

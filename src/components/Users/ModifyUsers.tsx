@@ -1,16 +1,16 @@
 import { DatePicker, Select } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/valiables.css";
 import "./User.css";
+import users from "../../configs/users";
 const ModifyUsers = () => {
   const navigate = useNavigate();
-  const genders = [
-    { name: "Nam", value: 1 },
-    { name: "Nữ", value: 2 },
-    { name: "Không xác định", value: 3 },
-  ];
+  const params = useParams<{ userId: string }>();
+  const [dataModifyUsery, setDataModifyUser] = useState(null);
+
+  const idProduct = params.userId;
   const onChange = (date, dateString) => {
     console.log(date, dateString);
   };
@@ -18,6 +18,18 @@ const ModifyUsers = () => {
     //call api User before navigate to detail
     navigate("/admin/users/");
   };
+  const getDataModifyUser = async () => {
+    try {
+      const res = await users.getDetailUsers(idProduct);
+      const data = res.data;
+      setDataModifyUser(data);
+    } catch (error) {
+      alert(error);
+    }
+  };
+  useEffect(() => {
+    getDataModifyUser();
+  }, []);
   return (
     <>
       <div className="modify-users">
@@ -32,11 +44,10 @@ const ModifyUsers = () => {
           <h1
             style={{
               fontSize: "26px",
-              fontFamily: "poppins, sans-serif",
               color: "#03176E",
             }}
           >
-            Sửa đổi User
+            Sửa đổi người dùng
           </h1>
         </div>
         <div
@@ -61,39 +72,35 @@ const ModifyUsers = () => {
           </div>
           <div className="input-info">
             <label htmlFor="">
-              Số điện thoại(<span>*</span>)
+              Email(<span>*</span>)
             </label>
             <input type="text" className="input-form" />
           </div>
           <div className="input-info">
-            <label htmlFor="">Mã số khách hàng</label>
+            <label htmlFor="">Số điện thoại</label>
             <input type="text" className="input-form" />
           </div>
+
           <div className="input-info">
-            <label htmlFor="">Giới tính</label>
+            <label htmlFor="">
+              Nhóm quyền (<span>*</span>)
+            </label>
             <Select
-              placeholder="Giới tính"
+              notFoundContent="Không tìm quyền"
+              placeholder="Chọn nhóm quyền"
               allowClear
-              // onChange={handleSelectChange}
-              // defaultValue="Giới tính"
-              style={{ width: 302, height: 36 }}
-            >
-              {genders.map((option) => (
-                <option value={option.value}>{option.name}</option>
-              ))}
-              /
-            </Select>
-          </div>
-          <div className="input-info">
-            <label htmlFor="">Ngày sinh</label>
-            <DatePicker
-              onChange={onChange}
-              placeholder="DD/MM/YYYY"
-              style={{ width: 302, height: 36 }}
+              // onSearch={}
+              optionFilterProp="children"
+              // onChange={findIdByName}
+              style={{ width: 300, height: 40 }}
+              // options={selectAuth}
             />
           </div>
+
           <div className="input-info">
-            <label htmlFor="">Email</label>
+            <label htmlFor="">
+              Trạng thái(<span>*</span>)
+            </label>
             <input type="text" className="input-form" />
           </div>
           <div className="btn-info">

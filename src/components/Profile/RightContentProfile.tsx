@@ -12,24 +12,11 @@ const RightContentProfile: React.FC = () => {
   const { logout } = useAuth();
   const [errValidate, setErrValidate] = React.useState(false);
   const REGEX_VALID_PASSWORD = /^(?=.*[0-9])(?=.*[a-zA-Z])(?!.* ).{8,16}$/;
-  //   const REGEX_VALID_PASSWORD = {
-  //     capital: /(?=.*[A-Z])/,
-  //     length: /(?=.{8,16}$)/,
-  //     digit: /(?=.*[0-9])/,
-  //   };
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
-  //   const content = (
-  //     <div>
-  //       <p>Mật khẩu dài từ 8 đến 16 kí tự</p>
-  //       <p>Chứa chữ thường, chữ hoa và số</p>
-  //       <p>Không có khoảng trắng</p>
-  //     </div>
-  //   );
-  //   const text = <span>Mật khẩu hợp lệ cần</span>;
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     const value = e.target.value;
     setPasswords((prevState) => ({

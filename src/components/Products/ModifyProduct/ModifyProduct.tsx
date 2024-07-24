@@ -35,7 +35,7 @@ const ModifyProduct = () => {
   const navigate = useNavigate();
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const params = useParams<{ idProduct: string }>();
-  const idProduct = params.idProduct;
+  const idProduct: string | undefined = params.idProduct;
   const [dataProductModify, setDataProductModify] = useState<Product | null>(null);
   const [isEditable, setIsEditable] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);

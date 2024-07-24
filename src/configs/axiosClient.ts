@@ -63,6 +63,9 @@ function showLogoutPopup() {
   Modal.error({
     title: "Hết phiên đăng nhập",
     content: 'Vui lòng đăng nhập lại' || '',
+    width: 600,
+
+    centered: true,
     onOk: () => {
       // Xóa token và chuyển hướng đến trang đăng nhập
       localStorage.removeItem("access_token");
