@@ -331,7 +331,7 @@ const LoginRegister = () => {
                 centered
                 open={isOpenPopups}
                 onOk={clickForgotPassword}
-                // onCancel={getRememberPassword}
+                onCancel={getRememberPassword}
                 okText="Lấy mật khẩu"
                 // footer={null}
                 // cancelText={false}
@@ -540,9 +540,9 @@ const LoginRegister = () => {
             </button>
             <div className="register-link">
               <p>
-                Quay lại trang login?{" "}
+                Bạn đã có tài khoản?{" "}
                 <a href="#" onClick={loginLink}>
-                  Login
+                  Đăng nhập
                 </a>
               </p>
             </div>

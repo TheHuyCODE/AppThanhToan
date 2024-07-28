@@ -376,7 +376,7 @@ const Products = () => {
     store_id: item.store_id,
     create_user: item.user.full_name,
     category_id: item.category_id,
-    category: item.category.name,
+    category: item.category?.name || null,
     price: item.price?.toLocaleString("vi-VN") || 0,
     capital_price: item.capital_price?.toLocaleString("vi-VN") || 0,
     inventory_number: item.inventory_number,
@@ -538,7 +538,7 @@ const Products = () => {
               onChange={(value) => {
                 handleSelectActive(value);
               }}
-              style={{ width: 200, height: 35 }}
+              style={{ width: 210, height: 35 }}
             >
               {statusProduct.map((option) => (
                 <option value={option.value} key={option.id}>

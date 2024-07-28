@@ -478,7 +478,7 @@ const Categories: React.FC<CategoriesProp> = ({
           style={{
             fontSize: "30px",
             fontWeight: "bold",
-            padding: "5px 10px",
+            padding: "5px 5px",
             marginBottom: "6px",
           }}
         >

@@ -22,8 +22,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  font-family: "Poppins", sans-serif;
-  box-shadow: 8px 19px 45px 23px lightgrey;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 .wrapper.active {
   height: 670px;

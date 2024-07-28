@@ -3,10 +3,10 @@ import TextArea from "antd/es/input/TextArea";
 import React from "react";
 interface DetailInvoice {
   stt: number;
-  barcode: string;
+  id: string;
   created_date: string;
-  create_user: string;
-  full_name: string;
+  created_user: string;
+  customer: string;
   total_amount: number;
   customer_money: number;
   payment_methods: string;
@@ -120,7 +120,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
             <div className="row-detail">
               <span className="title-row">Mã hóa đơn:</span>
               <span className="value-row" style={{ color: "black", fontWeight: "600" }}>
-                {dataDetail.barcode}
+                {dataDetail.id}
               </span>
             </div>
             <div className="row-detail">
@@ -132,7 +132,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
             <div className="row-detail">
               <span className="title-row">Khách hàng:</span>
               <span className="value-row" style={{ color: "blue" }}>
-                {dataDetail.full_name}
+                {dataDetail.customer}
               </span>
             </div>
             <div className="row-detail">
@@ -146,11 +146,11 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
           <div className="right-content-detail">
             <div className="row-detail">
               <span className="title-row">Người tạo:</span>
-              <span className="value-row">{dataDetail.create_user}</span>
+              <span className="value-row">{dataDetail.created_user}</span>
             </div>
             <div className="row-detail">
               <span className="title-row">Người bán:</span>
-              <span className="value-row">{dataDetail.create_user}</span>
+              <span className="value-row">{dataDetail.created_user}</span>
             </div>
             <div className="row-detail">
               <span className="title-row">Kênh bán:</span>

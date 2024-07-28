@@ -14,7 +14,12 @@ import { FiPlusCircle } from "react-icons/fi";
 import { BiSolidError } from "react-icons/bi";
 import { handleError } from "../../utils/errorHandler";
 import customer from "../../configs/customer";
-const RightPageContent = ({
+interface RightPageContentProps {
+  dataProduct: any;
+  dataCategory: any;
+  handleProductClick: (product: any) => void;
+}
+const RightPageContent: React.FC<RightPageContentProps> = ({
   dataProduct,
   dataCategory,
   handleProductClick,
@@ -50,7 +55,6 @@ const RightPageContent = ({
   fetchDataProduct,
   getDataCustomer,
   removeNotConFirm,
-
   totalItems,
 }) => {
   const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
@@ -95,8 +99,7 @@ const RightPageContent = ({
     label: item.full_name,
     id: item.id,
   }));
-  const defaultCustomer = infoCustomer.find((customer) => customer.label === "Khách lẻ");
-
+  const defaultCustomer = infoCustomer.find((customer: any) => customer.label === "Khách lẻ");
   useEffect(() => {
     console.log("defaultCustomer", defaultCustomer);
   }, [defaultCustomer]);

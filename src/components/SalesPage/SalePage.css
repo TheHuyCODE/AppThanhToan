@@ -139,10 +139,10 @@
   border-width: 1px;
 }
 
-/* .input-search-customer:hover {
-  border-color: var(--border-focus-color);
-  border-width: 2px;
-} */
+.input-search-customer:hover {
+  border-color: var(--kv-primary);
+  border-width: 1px;
+}
 .box-input-search-customer {
   border-color: var(--border-focus-color);
   border-width: 2px;
@@ -237,7 +237,7 @@
   gap: 10px;
 }
 .btn-return-goods {
-  width: 76px;
+  width: 100px;
   height: 35px;
   border-radius: 6px;
   padding: 5px;
@@ -245,12 +245,13 @@
   align-items: center;
   font-weight: 600;
   cursor: pointer;
-  color: lightslategrey;
-  background-color: #f0f0f0;
+  color: grey;
+  background-color: white;
 }
 .btn-return-goods:hover,
 .btn-return-goods:focus {
   background-color: #ccc;
+  color: white;
 }
 .product-info-img {
   padding-top: 0;

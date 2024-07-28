@@ -426,15 +426,15 @@ const SalePageDemo: React.FC = () => {
   };
   const handleSelectCategory = (value: number) => {
     const selectedCategory = dataCategorySearch.find((item) => item.value === value);
-    console.log("selectedCategory", selectedCategory);
     if (selectedCategory) {
       console.log("select", selectedCategory.id);
       setIdSearchCategory({
         ...idSearchCategory,
-        id_category: selectedCategory,
+        id_category: selectedCategory.id,
       });
     } else {
       console.log("Invalid category index:", value);
+      fetchDataProduct();
     }
   };
   const fetchDataSearchProduct = async () => {
@@ -451,14 +451,13 @@ const SalePageDemo: React.FC = () => {
   }, [debounceValueSearch]);
   const fetchSearchDataCategory = async () => {
     try {
-      const res = await products.getDataSearchProduct(idSearchCategory.id_category.id);
+      const res = await products.getDataSearchProduct(idSearchCategory.id_category);
       setDataProduct(res.data.items);
     } catch (err) {
       console.log("err", err);
-    } // Check if idSearchCategory is not empty
+    }
   };
   useEffect(() => {
-    console.log("idSearchCategory", idSearchCategory.id_category.id);
     if (idSearchCategory.id_category) {
       fetchSearchDataCategory();
     }

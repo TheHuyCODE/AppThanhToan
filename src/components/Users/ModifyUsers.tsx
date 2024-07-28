@@ -47,7 +47,7 @@ const ModifyUsers = () => {
               color: "#03176E",
             }}
           >
-            Sửa đổi người dùng
+            Sửa thông tin người dùng
           </h1>
         </div>
         <div
