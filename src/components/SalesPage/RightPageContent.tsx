@@ -17,7 +17,13 @@ import customer from "../../configs/customer";
 interface RightPageContentProps {
   dataProduct: any;
   dataCategory: any;
+  totalItems: any;
+  isPercentage: boolean;
+  amountPaid: any;
   handleProductClick: (product: any) => void;
+  removeNotConFirm: (id: string) => void;
+  handleVNDClick: () => void;
+  handlePercentageClick: () => void;
 }
 const RightPageContent: React.FC<RightPageContentProps> = ({
   dataProduct,
@@ -62,7 +68,6 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
   const [disabledPayment, setDisabledPayment] = useState(false);
   const [linkQR, setLinkQR] = useState<string>("");
-  const [isVoicesID, setIsVoicesID] = useState("");
   const [statePayment, setStatePayment] = useState(false);
   const [isPrintReady, setIsPrintReady] = useState(false);
   const [hiddenPayment, setHiddenPayment] = useState(false);
@@ -88,13 +93,13 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   });
   const domainLink = domain.domainLink;
   const menuRef = useRef(null);
-  const formatDataCategory = dataCategory?.map((item, index) => ({
+  const formatDataCategory = dataCategory?.map((item: any, index: number) => ({
     value: index + 1,
     label: item.name,
     id: item.id,
   }));
 
-  const infoCustomer = isDataCustomer?.map((item, index) => ({
+  const infoCustomer = isDataCustomer?.map((item: any, index: number) => ({
     value: index + 1,
     label: item.full_name,
     id: item.id,
@@ -116,7 +121,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
         name: `${item.bank_name} - ${item.account_no} - ${item.account_name}`,
       })) || [];
   const getCustomerPayment = (value: number) => {
-    const isActiveCustomer = infoCustomer.find((item) => item.value === value);
+    const isActiveCustomer = infoCustomer.find((item: any) => item.value === value);
     if (isActiveCustomer) {
       const IDCustomer = isActiveCustomer.id;
       setSelectedCustomer(IDCustomer);
@@ -234,22 +239,17 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
     };
     try {
       const res = await sellProduct.postDataPayment(dataPayment);
-      if (res.code === 200) {
-        console.log("data payment", res.data);
-        const resIdIvoices = res.data.invoice_id;
-        const success = res.message.text;
-        console.log("success", success);
-        // await setIsVoicesID();
-        await getDataDetailInvoice(resIdIvoices);
-        toast.success(success);
-        setStatePayment(true);
-        setSidebarVisible(false);
-        handlePrint();
-      }
+      console.log("data payment", res.data);
+      const resIdIvoices = res.data.invoice_id;
+      const success = res.message.text;
+      console.log("success", success);
+      // await setIsVoicesID();
+      await getDataDetailInvoice(resIdIvoices);
+      toast.success(success);
+      setStatePayment(true);
+      setSidebarVisible(false);
+      handlePrint();
       // setIsPrintReady(true);
-      else {
-        console.log("error");
-      }
     } catch (error) {
       handleError(error);
     }
@@ -319,27 +319,18 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
 
     try {
       const res = await customer.addDataCustomer(dataCustomer);
-      if (res.code === 200) {
-        setIsOpenPopups(false);
-        const success = res.message.text;
-        console.log("success", success);
-        toast.success(success);
-        setInputCustomer({
-          full_name: "",
-          phone: "",
-        });
-        setErrorAddCustomer({
-          message: "",
-        });
-        await getDataCustomer();
-      } else {
-        const errMs = res.data.message.text;
-        toast.error(errMs);
-        setErrorAddCustomer({
-          message: res.data.message.text,
-        });
-        setIsOpenPopups(true);
-      }
+      setIsOpenPopups(false);
+      const success = res.message.text;
+      console.log("success", success);
+      toast.success(success);
+      setInputCustomer({
+        full_name: "",
+        phone: "",
+      });
+      setErrorAddCustomer({
+        message: "",
+      });
+      await getDataCustomer();
     } catch (error) {
       handleError(error);
       // console.log("err", err);
@@ -420,7 +411,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
         </div>
         <div className="right-page-content-container">
           <ul className="list-product">
-            {dataProduct?.map((product, index) => (
+            {dataProduct?.map((product: any, index: any) => (
               <li key={index} className="box-product" onClick={() => handleProductClick(product)}>
                 <div className="product-info-img">
                   <img

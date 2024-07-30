@@ -11,7 +11,7 @@ const logoutApi = {
     const url = "/api/v1/auth/logout";
     return axiosClient.post(url);
   },
-  postAddImageCategory: (data, token) => {
+  postAddImageCategory: (data: any, token: any) => {
     const url = "api/v1/manage/category";
     return axiosClient.post(url, data, {
       headers: {
@@ -19,7 +19,7 @@ const logoutApi = {
       }
     });
   },
-  deleteTokenLogout: (token) => {
+  deleteTokenLogout: (token: any) => {
     const url = "api/v1/auth/logout";
     return axiosClient.delete(url, {
       headers: {

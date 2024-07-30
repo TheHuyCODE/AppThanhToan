@@ -23,6 +23,7 @@ const ModalDeleteUsers: React.FC<ModalDeleteUsersProp> = ({
     try {
       const res = await users.deleteUsers(dataId);
       const msSuccess = res.message.text;
+      console.log("msSuccess", msSuccess);
       onCloseModalDelete();
       toast.success(msSuccess);
       await getDataUsers();

@@ -1,18 +1,34 @@
 .menu-bar {
-  height: 95vh;
+  height: 100vh;
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   position: relative;
+  color: grey;
 }
 
 :where(.css-dev-only-do-not-override-1qfezbu).ant-menu-inline.ant-menu-root .ant-menu-item,
 :where(.css-dev-only-do-not-override-1qfezbu).ant-menu-inline.ant-menu-root
   .ant-menu-submenu-title {
-  height: 60px;
+  height: 45px;
 }
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light .ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light > .ant-menu .ant-menu-item-selected {
+  background-color: #248ad8;
+}
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light .ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light > .ant-menu .ant-menu-item-selected {
+  color: #ffffff;
+}
+/* :where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light .ant-menu-item,
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light > .ant-menu .ant-menu-item,
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light .ant-menu-submenu-title,
+:where(.css-dev-only-do-not-override-1qfezbu).ant-menu-light > .ant-menu .ant-menu-submenu-title {
+  color: rgb(50 40 40 / 88%);
+  font-weight: 500;
+} */
 /* .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.side-bar {
   flex: 0 0 200px;
   max-width: 240px;

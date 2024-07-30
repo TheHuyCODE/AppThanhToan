@@ -67,7 +67,6 @@ function App() {
   };
 
   const location = useLocation();
-  const isLoginRoute = location.pathname === "/login";
   const { isAuthenticated, accessToken, logoutAllTabs } = useAuth();
 
   useEffect(() => {

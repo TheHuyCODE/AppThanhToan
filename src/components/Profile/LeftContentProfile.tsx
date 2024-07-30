@@ -1,17 +1,20 @@
 import { Input, Select } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataProfile } from "../TableConfig/TableConfig";
 import Profiles from "../../configs/profiles";
 import { toast, ToastContainer } from "react-toastify";
+import { IoPerson } from "react-icons/io5";
 
 interface LeftContentProfileProps {
   dataProfile: DataProfile;
+  getDataUser: () => void;
 }
 const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, getDataUser }) => {
   const [profile, setProfile] = useState<DataProfile>(dataProfile);
   const [initialProfile, setInitialProfile] = useState<DataProfile>(dataProfile);
+  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(null);
   const [errors, setErrors] = useState<{ full_name?: string }>({});
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onChangeProfile = (field: keyof DataProfile, value: string | null) => {
     if (field === "full_name" && (value!.length < 3 || value!.length > 30)) {
       setErrors((prevErrors) => ({
@@ -30,7 +33,11 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
     }));
     console.log("profile", profile);
   };
-
+  const handleIconClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   const handleCancel = () => {
     setProfile(initialProfile);
     setErrors({});
@@ -69,12 +76,47 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
     console.log("profile updated", profile);
   }, [profile]);
   const { email, phone, full_name, age, gender, address } = profile;
-
+  const onChangeFilePicture = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    console.log("file", file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageSrc(reader.result); // Cập nhật URL ảnh vào trạng thái
+      };
+      reader.readAsDataURL(file); // Đọc ảnh dưới dạng URL
+    }
+  };
+  useEffect(() => {
+    if (imageSrc) {
+      // const
+    }
+  }, [imageSrc]);
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="profile-input">
         <span style={{ fontSize: "18px", fontWeight: "600" }}>Thông tin người dùng</span>
+      </div>
+      <div className="profile-input-image">
+        <div className="image-profile" onClick={handleIconClick}>
+          {imageSrc ? (
+            <img
+              src={imageSrc as string}
+              alt="Profile"
+              style={{ width: "100%", height: "100%", borderRadius: "50%" }}
+            />
+          ) : (
+            <IoPerson />
+          )}
+        </div>
+        <input
+          type="file"
+          style={{ display: "none" }}
+          ref={fileInputRef}
+          onChange={onChangeFilePicture}
+          accept="image/png, image/jpeg"
+        />
       </div>
       <div className="profile-input">
         <label htmlFor="email">

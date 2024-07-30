@@ -2,6 +2,7 @@ import React from "react";
 import { Layout } from "antd";
 import AppSider from "./AppSider";
 import AppHeader from "./AppHeader";
+import { Footer } from "antd/es/layout/layout";
 const { Content } = Layout;
 interface AppWrapperProps {
   children: any;
@@ -46,6 +47,9 @@ const AppWrapper: React.FC<AppWrapperProps> = ({
             {/* place content */}
             {children}
           </Content>
+          <Footer style={{ textAlign: "center" }}>
+            Ant Design ©{new Date().getFullYear()} Created by Ant UED
+          </Footer>
         </Layout>
       </Layout>
     </>

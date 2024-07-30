@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import "./profile.css";
+import { DataProfile } from "../TableConfig/TableConfig";
 // import "../styles/variables.css";
 
-interface User {
+interface User extends DataProfile {
+  // Các thuộc tính khác của User, nếu cần
   full_name: string;
-  // Add other properties if necessary
+  dataProfile: any;
+  // Thêm các thuộc tính khác nếu cần
 }
 
-const HeaderProfile: React.FC = ({ dataProfile }) => {
+const HeaderProfile: React.FC<DataProfile> = ({ dataProfile }) => {
   const [fullName, setFullName] = useState<User | null>(null);
   const [detailName, setDetailName] = useState("");
   useEffect(() => {

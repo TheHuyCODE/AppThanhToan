@@ -126,7 +126,7 @@ const MenuList = () => {
   return (
     <div className="sidebar-left">
       <Menu
-        theme={darkTheme ? "dark" : "light"}
+        theme={"light"}
         mode="inline"
         className="menu-bar"
 

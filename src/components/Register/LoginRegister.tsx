@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import loginApi from "../../configs/loginApi";
 import "./LoginRegister.css";
+import "./../styles/valiables.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";

@@ -5,7 +5,7 @@ const uploadApiImage = {
     const url = "/api/v1/upload_file";
     return axiosClient.get(url);
   },
-  postImage: (data, prefix) => {
+  postImage: (data: any, prefix: any) => {
     const url = `/api/v1/upload_file?prefix=${prefix}`;
     return axiosClient.post(url, data, {
       headers: {
@@ -17,7 +17,7 @@ const uploadApiImage = {
     const url = "api/v1/manage/category";
     return axiosClient.post(url, data, {});
   },
-  postImageCategoryChild: (data) => {
+  postImageCategoryChild: (data: any) => {
     const formData = new FormData();
     formData.append("file", data);
     const prefixImage = "category";
@@ -29,7 +29,7 @@ const uploadApiImage = {
     });
   },
   //add image items child 1
-  postAddItemCategoryChild: (data) => {
+  postAddItemCategoryChild: (data: any) => {
     const url = "api/v1/manage/category";
     return axiosClient.post(url, data, {});
   },
