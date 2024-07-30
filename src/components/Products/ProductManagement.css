@@ -248,7 +248,12 @@ label.label-upload {
   border-bottom: 1px solid lightgray;
 }
 .detail-product-row label {
-  width: 10rem;
+  width: 12rem;
+  font-weight: 600;
+  color: var(--kv-secondary-900);
+}
+.detail-product-row p {
+  color: var(--kv-secondary-700);
 }
 .picture-item label {
   font-size: 15px;

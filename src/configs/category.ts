@@ -16,7 +16,7 @@ const category = {
       params,
     });
   },
-   getDataCategoryPagination: (current: number, size: number) => {
+  getDataCategoryPagination: (current: number, size: number) => {
     const url = "api/v1/manage/category";
     const params = {
       page: current,
@@ -47,7 +47,7 @@ const category = {
       params,
     });
   },
-  getAllChild: (parent_id: string) => {
+  getAllChild: (parent_id: string | undefined) => {
     const url = "api/v1/manage/category";
     const params = {
       parent_id: parent_id,
@@ -62,7 +62,7 @@ const category = {
     });
   },
 
-  getAllChildThirds: (parent_id: string) => {
+  getAllChildThirds: (parent_id: string | undefined) => {
     const url = "api/v1/manage/category";
     const params = {
       parent_id: parent_id,
@@ -147,7 +147,7 @@ const category = {
       params,
     });
   },
-  getDataSearchNameThreeCategory: (parent_id:string, value: string) => {
+  getDataSearchNameThreeCategory: (parent_id: string, value: string) => {
     const url = `api/v1/manage/category`;
     const params = {
       parent_id: parent_id,

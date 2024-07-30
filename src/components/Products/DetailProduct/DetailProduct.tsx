@@ -113,8 +113,8 @@ const DetailProduct: React.FC = () => {
               gap: "30px",
             }}
           >
-            <label htmlFor="labelUpload" className="title-picture">
-              Ảnh danh mục
+            <label htmlFor="labelUpload" className="title-picture" style={{ fontSize: "18px" }}>
+              Ảnh sản phẩm
             </label>
             <div
               className="preview-image"

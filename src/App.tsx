@@ -31,7 +31,6 @@ import SubCategories from "./components/Category/SubCategories";
 import ShirtSubCategories from "./components/Category/ShirtSubCategories";
 import Return from "./components/Returns/Return";
 // import SalePage from "./components/SalesPage/SalePage";
-
 const NotFound = () => {
   const navigate = useNavigate();
 

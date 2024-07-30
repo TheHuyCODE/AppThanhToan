@@ -1,5 +1,5 @@
 .menu-bar {
-  height: 88vh;
+  height: 95vh;
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
@@ -11,9 +11,9 @@
 :where(.css-dev-only-do-not-override-1qfezbu).ant-menu-inline.ant-menu-root .ant-menu-item,
 :where(.css-dev-only-do-not-override-1qfezbu).ant-menu-inline.ant-menu-root
   .ant-menu-submenu-title {
-  height: 50px;
+  height: 60px;
 }
-.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.side-bar {
+/* .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.side-bar {
   flex: 0 0 200px;
   max-width: 240px;
   min-width: 240px !important;
@@ -21,4 +21,4 @@
 }
 .ant-layout-sider-trigger {
   width: 240px !important;
-}
+} */

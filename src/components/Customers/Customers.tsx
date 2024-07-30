@@ -28,7 +28,7 @@ const Customers = () => {
   const [pageSize, setPageSize] = useState(10);
   const [isOpenPopupAddCustomers, setIsOpenPopupAddCustomers] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
-
+  const isDeleteDisabled = (full_name: string) => full_name === "Khách lẻ";
   const columns: TableColumnsType<RecordType> = [
     {
       title: "STT",
@@ -68,9 +68,14 @@ const Customers = () => {
       width: 150,
       render: (record: any) => (
         <Space size="middle">
-          <a>
-            <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteCustomer(record)} />
-          </a>
+          <button
+            hidden={isDeleteDisabled(record.full_name)}
+            title="Xóa"
+            onClick={() => handleClickDeleteCustomer(record)}
+            style={{ backgroundColor: "transparent", cursor: "pointer" }}
+          >
+            <FaTrash style={{ color: "red" }} />
+          </button>
         </Space>
       ),
     },
@@ -85,6 +90,7 @@ const Customers = () => {
   }));
   const handleClickDeleteCustomer = (record: any) => {
     const id = record.key;
+    console.log("record", record);
     setOpenModalDelete(!openModalDelete);
     setIsIdDelete(id);
   };

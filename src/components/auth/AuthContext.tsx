@@ -17,6 +17,7 @@ interface AuthContextType {
   isResDataChild: string;
   isResDataChildSeconds: string;
   isCategoryProduct: object;
+  user: object | null;
   setIsResDataChild: (value: string) => void;
   setIsResDataChildSeconds: (value: string) => void;
   login: (access_token: string, refresh_token: string) => void;
@@ -27,9 +28,14 @@ interface AuthContextType {
   fetchDataCategorySecondChild: (isKeyChild: string | undefined) => void;
   fetchDataCategory: () => void;
 }
-
+interface UserInfo {
+  // Define the structure of user info based on your requirements
+  email?: string;
+  role?: { id: string; key: string; name: string };
+  role_id?: number;
+  // Add other fields if necessary
+}
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(() => {
     return localStorage.getItem("access_token");
@@ -41,10 +47,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isResDataChild, setIsResDataChild] = useState("");
   const [isResDataChildSeconds, setIsResDataChildSeconds] = useState("");
   const [isCategoryProduct, setIsCategoryProduct] = useState([]);
-
+  const [user, setUser] = useState<UserInfo | null>(null);
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
-    console.log("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
     setAccessToken(access_token);
   };
@@ -59,6 +64,12 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    const storedInfo = localStorage.getItem("INFO_USER");
+    if (storedInfo) {
+      const info: UserInfo = JSON.parse(storedInfo);
+      setUser(info);
+      console.log("info", info.role?.id);
+    }
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "logout") {
         console.log("Detected logout in another tab");
@@ -83,11 +94,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const fetchDataCategoryChild = async (isKeyChild: string | undefined) => {
     try {
       const res = await category.getAllChild(isKeyChild);
-      if (res.code === 200) {
-        setIsResDataChild(res.data);
-      } else {
-        console.log("Error", res);
-      }
+
+      setIsResDataChild(res.data);
     } catch (error) {
       console.log("Not get data category", error);
     }
@@ -96,11 +104,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const fetchDataCategorySecondChild = async (isKeyChild: string | undefined) => {
     try {
       const res = await category.getAllChildThirds(isKeyChild);
-      if (res.code === 200) {
-        setIsResDataChildSeconds(res.data);
-      } else {
-        console.log("Error", res);
-      }
+
+      setIsResDataChildSeconds(res.data);
     } catch (error) {
       console.log("Not get data category", error);
     }
@@ -109,11 +114,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const fetchDataCategory = async () => {
     try {
       const res = await products.getFiltersCategoryProduct();
-      if (res.code === 200) {
-        setIsCategoryProduct(res.data.category);
-      } else {
-        console.log("Error", res);
-      }
+
+      setIsCategoryProduct(res.data.category);
     } catch (error) {
       console.log("Not get data category", error);
     }
@@ -134,6 +136,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setIsResDataChild,
         setIsResDataChildSeconds,
         isResDataChildSeconds,
+        user,
         fetchDataCategoryChild,
         fetchDataCategorySecondChild,
         isCategoryProduct,
