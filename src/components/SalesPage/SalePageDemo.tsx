@@ -269,7 +269,7 @@ const SalePageDemo: React.FC = () => {
         invoice.id_payment === invoiceId
           ? {
               ...invoice,
-              items: invoice.items.map((product) =>
+              items: invoice.items.map((product: any) =>
                 product.id === productId && product.quantity > 1
                   ? { ...product, quantity: product.quantity - 1 }
                   : product
@@ -280,24 +280,26 @@ const SalePageDemo: React.FC = () => {
     );
   };
   const decrementReturn = (invoiceID: string, productID: string) => {
-    setInvoiceList((prevInvoices) =>
-      prevInvoices.map((invoice) =>
+    setInvoiceList((prevInvoices) => {
+      const updatedInvoices = prevInvoices.map((invoice) =>
         invoice.id_payment === invoiceID
           ? {
               ...invoice,
-              items: invoice.items.map((product) =>
-                product.id === productID && product.quantity > 1
+              items: invoice.items.map((product: any) =>
+                product.id === productID
                   ? {
                       ...product,
-                      quantity: product.quantity - 1,
-                      total_price: (product.quantity - 1) * product.price,
+                      quantity: Math.max(product.quantity - 1, 0),
+                      total_price: Math.max((product.quantity - 1) * product.price, 0),
                     }
                   : product
               ),
             }
           : invoice
-      )
-    );
+      );
+
+      return updatedInvoices;
+    });
   };
   const increment = (invoiceId: string, productId: string) => {
     setInvoiceList((prevInvoices) =>
@@ -305,7 +307,7 @@ const SalePageDemo: React.FC = () => {
         invoice.id_payment === invoiceId
           ? {
               ...invoice,
-              items: invoice.items.map((product) =>
+              items: invoice.items.map((product: any) =>
                 product.id === productId ? { ...product, quantity: product.quantity + 1 } : product
               ),
             }
@@ -319,7 +321,7 @@ const SalePageDemo: React.FC = () => {
         invoice.id_payment === invoiceID
           ? {
               ...invoice,
-              items: invoice.items.map((product) =>
+              items: invoice.items.map((product: any) =>
                 product.id === productID && product.quantity < product.remaining_quantity
                   ? {
                       ...product,

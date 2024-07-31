@@ -57,6 +57,9 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
       const customerId = dataReturnPayment[0]?.customer_id || "";
       const invoiceId = dataReturnPayment[0]?.id_invoice || "";
       const dataProduct = dataReturnPayment[0]?.items || [];
+      if (dataProduct.length === 0) {
+        setHiddenReturn(true);
+      }
       const data = converDataProduct(dataProduct);
       setInvoiceId(invoiceId);
       setInfoUser(userFullName);
