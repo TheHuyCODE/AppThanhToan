@@ -1,15 +1,29 @@
-import { DatePicker, Select } from "antd";
+import { DatePicker, Input, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/valiables.css";
 import "./User.css";
 import users from "../../configs/users";
+import { boolean } from "yup";
+interface ModifyUsers {
+  full_name: string;
+  email: string;
+  phone: string;
+  role: any;
+  is_active: boolean;
+}
 const ModifyUsers = () => {
   const navigate = useNavigate();
   const params = useParams<{ userId: string }>();
   const [dataModifyUsery, setDataModifyUser] = useState(null);
-
+  const [dataStore, setDataStore] = useState<ModifyUsers>({
+    full_name: "",
+    email: "",
+    phone: "",
+    role: {},
+    is_active: true,
+  });
   const idProduct = params.userId;
   const onChange = (date, dateString) => {
     console.log(date, dateString);
@@ -18,11 +32,18 @@ const ModifyUsers = () => {
     //call api User before navigate to detail
     navigate("/admin/users/");
   };
+  const handleChangeInputUsers = (value: string | null, filed: string) => {
+    setDataStore((prev) => ({
+      ...prev,
+      [filed]: value,
+    }));
+  };
   const getDataModifyUser = async () => {
     try {
       const res = await users.getDetailUsers(idProduct);
       const data = res.data;
-      setDataModifyUser(data);
+      console.log("data", data);
+      setDataStore(data);
     } catch (error) {
       alert(error);
     }
@@ -65,20 +86,35 @@ const ModifyUsers = () => {
           }}
         >
           <div className="input-info">
-            <label htmlFor="">
+            <label htmlFor="name">
               Họ và Tên(<span>*</span>)
             </label>
-            <input type="text" className="input-form" />
+            <Input
+              type="text"
+              className="input-form"
+              onChange={(e) => handleChangeInputUsers(e.target.value, "name")}
+              value={dataStore.full_name || ""}
+            />
           </div>
           <div className="input-info">
-            <label htmlFor="">
+            <label htmlFor="email">
               Email(<span>*</span>)
             </label>
-            <input type="text" className="input-form" />
+            <Input
+              type="text"
+              className="input-form"
+              value={dataStore.email || ""}
+              onChange={(e) => handleChangeInputUsers(e.target.value, "email")}
+            />
           </div>
           <div className="input-info">
-            <label htmlFor="">Số điện thoại</label>
-            <input type="text" className="input-form" />
+            <label htmlFor="phone">Số điện thoại</label>
+            <Input
+              type="text"
+              className="input-form"
+              value={dataStore.phone || ""}
+              onChange={(e) => handleChangeInputUsers(e.target.value, "phone")}
+            />
           </div>
 
           <div className="input-info">
@@ -101,7 +137,11 @@ const ModifyUsers = () => {
             <label htmlFor="">
               Trạng thái(<span>*</span>)
             </label>
-            <input type="text" className="input-form" />
+            <Input
+              type="text"
+              className="input-form"
+              value={dataStore.is_active ? "Kích hoạt" : "Chưa kích hoạt"}
+            />
           </div>
           <div className="btn-info">
             <button className="btn-save" onClick={onClickBackPageUser}>

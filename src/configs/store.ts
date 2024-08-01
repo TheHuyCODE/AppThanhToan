@@ -1,8 +1,7 @@
 import axiosClient from "./axiosClient";
-const category = {
+const store = {
     getAll: () => {
-        const url = "api/v1/manage/store";
-
+        const url = "/api/v1/store";
         return axiosClient.get(url, {
             headers: {
                 // Authorization: `Bearer ${accessToken}`,
@@ -12,5 +11,16 @@ const category = {
 
         });
     },
+    putDataStore: (data: object) => {
+        const url = "/api/v1/store";
+        return axiosClient.put(url, data, {
+            headers: {
+                // Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+
+        });
+    },
 }
-export default category
+export default store
