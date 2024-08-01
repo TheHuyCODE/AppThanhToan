@@ -89,6 +89,15 @@ const users = {
         "ngrok-skip-browser-warning": "true",
       },
     });
+  },
+  modifyUser: (data: object) => {
+    const url = "api/v1/manage/user";
+    return axiosClient.put(url, data, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+
+      },
+    });
   }
 
 };

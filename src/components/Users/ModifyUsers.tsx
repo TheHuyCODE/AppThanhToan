@@ -1,4 +1,4 @@
-import { DatePicker, Input, Select } from "antd";
+import { Alert, DatePicker, Input, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,6 +6,8 @@ import "../styles/valiables.css";
 import "./User.css";
 import users from "../../configs/users";
 import { boolean } from "yup";
+import { toast, ToastContainer } from "react-toastify";
+import { handleError } from "../../utils/errorHandler";
 interface ModifyUsers {
   full_name: string;
   email: string;
@@ -15,6 +17,8 @@ interface ModifyUsers {
 }
 const ModifyUsers = () => {
   const navigate = useNavigate();
+  const [dataRole, setDataRole] = useState(null);
+  const [hiddenSave, setHiddenSave] = useState(false);
   const params = useParams<{ userId: string }>();
   const [dataModifyUsery, setDataModifyUser] = useState(null);
   const [dataStore, setDataStore] = useState<ModifyUsers>({
@@ -24,10 +28,15 @@ const ModifyUsers = () => {
     role: {},
     is_active: true,
   });
+  const selectAuth = dataRole?.map((items: any) => ({
+    id: items.id,
+    key: items.key,
+    name: items.name,
+    value: items.name,
+    label: items.name,
+  }));
+  // console.log("selectAuth", selectAuth);
   const idProduct = params.userId;
-  const onChange = (date, dateString) => {
-    console.log(date, dateString);
-  };
   const onClickBackPageUser = () => {
     //call api User before navigate to detail
     navigate("/admin/users/");
@@ -37,6 +46,16 @@ const ModifyUsers = () => {
       ...prev,
       [filed]: value,
     }));
+    console.log("dataStoredata", dataStore);
+  };
+  const getRoleUsers = async () => {
+    try {
+      const res = await users.getDataRole();
+      const data = res.data;
+      setDataRole(data);
+    } catch (error) {
+      <Alert message="Error" type="error" showIcon />;
+    }
   };
   const getDataModifyUser = async () => {
     try {
@@ -48,11 +67,54 @@ const ModifyUsers = () => {
       alert(error);
     }
   };
+  const handleModifyUser = async () => {
+    const dataModifyUser = {
+      full_name: dataStore.full_name,
+      phone: dataStore.phone,
+      email: dataStore.email,
+      role_id: dataStore.role.id,
+      is_active: 1,
+    };
+    setHiddenSave(true);
+    try {
+      const res = await users.modifyUser(dataModifyUser);
+      console.log("res", res);
+      setHiddenSave(false);
+      const msSuccess = "Sửa thông tin thành công";
+      toast.success(msSuccess);
+      await getDataModifyUser();
+    } catch (error) {
+      setHiddenSave(false);
+
+      handleError(error);
+    }
+  };
+  const getSelectedValue = (id: string) => {
+    // Kiểm tra nếu selectAuth là mảng và không rỗng
+    if (Array.isArray(selectAuth)) {
+      const selectedAuth = selectAuth.find((auth) => auth.id === id);
+      return selectedAuth ? selectedAuth.value : "";
+    }
+    return "";
+  };
+  const handleChange = (value: string) => {
+    // Tìm id tương ứng với giá trị được chọn
+    const selectedAuth = selectAuth.find((auth: any) => auth.value === value);
+    if (selectedAuth) {
+      setDataStore((prevDataStore) => ({
+        ...prevDataStore,
+        role: { id: selectedAuth.id },
+      }));
+    }
+  };
+
   useEffect(() => {
     getDataModifyUser();
+    getRoleUsers();
   }, []);
   return (
     <>
+      <ToastContainer closeOnClick autoClose={5000} />
       <div className="modify-users">
         <div
           className="title-info-users"
@@ -86,13 +148,13 @@ const ModifyUsers = () => {
           }}
         >
           <div className="input-info">
-            <label htmlFor="name">
+            <label htmlFor="full_name">
               Họ và Tên(<span>*</span>)
             </label>
             <Input
               type="text"
               className="input-form"
-              onChange={(e) => handleChangeInputUsers(e.target.value, "name")}
+              onChange={(e) => handleChangeInputUsers(e.target.value, "full_name")}
               value={dataStore.full_name || ""}
             />
           </div>
@@ -125,11 +187,11 @@ const ModifyUsers = () => {
               notFoundContent="Không tìm quyền"
               placeholder="Chọn nhóm quyền"
               allowClear
-              // onSearch={}
+              value={getSelectedValue(dataStore.role.id)}
               optionFilterProp="children"
-              // onChange={findIdByName}
+              onChange={handleChange}
               style={{ width: 300, height: 40 }}
-              // options={selectAuth}
+              options={selectAuth}
             />
           </div>
 
@@ -141,13 +203,21 @@ const ModifyUsers = () => {
               type="text"
               className="input-form"
               value={dataStore.is_active ? "Kích hoạt" : "Chưa kích hoạt"}
+              disabled
             />
           </div>
           <div className="btn-info">
             <button className="btn-save" onClick={onClickBackPageUser}>
               Hủy bỏ
             </button>
-            <button className="btn-cancel">Lưu</button>
+            <button
+              className="btn-cancel"
+              style={{ background: "var(--kv-success)" }}
+              onClick={handleModifyUser}
+              disabled={hiddenSave}
+            >
+              Lưu
+            </button>
           </div>
         </div>
       </div>
