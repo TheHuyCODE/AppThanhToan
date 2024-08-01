@@ -271,7 +271,7 @@ const products = {
       },
     });
   },
-  postImageProduct: (data: string) => {
+  postImageProduct: (data: any) => {
     const prefixImage = "products";
     const url = `/api/v1/upload_file?prefix=${prefixImage}`;
     return axiosClient.post(url, data, {

@@ -24,8 +24,8 @@
 }
 
 .image-profile {
-  width: 70px;
-  height: 70px;
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,14 +152,14 @@
 }
 .profile-input .input-field {
   width: 90%;
-  max-width: 500px;
+  max-width: 550px;
   height: 45px;
   font-size: 15px;
 }
 
 .profile-input .input-field-password {
   width: 90%;
-  max-width: 450px;
+  max-width: 490px;
   height: 45px;
   font-size: 15px;
 }

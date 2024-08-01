@@ -3,7 +3,7 @@ import { Menu, Modal } from "antd";
 import { FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
 import { IoPerson } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
-import { FaFileInvoiceDollar, FaPercent, FaRegUserCircle } from "react-icons/fa";
+import { FaFileInvoiceDollar, FaPercent, FaRegUserCircle, FaStore } from "react-icons/fa";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
@@ -139,6 +139,9 @@ const MenuList = () => {
         </Menu.Item>
         <Menu.Item key="profile" icon={<FaRegUserCircle />}>
           <Link to="/admin/profile">Thông tin cá nhân </Link>
+        </Menu.Item>
+        <Menu.Item key="store" icon={<FaStore />}>
+          <Link to="/admin/store">Thông tin của hàng </Link>
         </Menu.Item>
         <Menu.SubMenu key="Dashboard" icon={<RiListSettingsFill />} title="Báo cáo">
           <Menu.Item key="Revenuereport">

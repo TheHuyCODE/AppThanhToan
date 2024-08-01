@@ -98,7 +98,7 @@ const HeaderInvoices: React.FC<HeaderInvoicesProps> = ({
           marginRight: "10px",
         }}
       >
-        <button className="btn-header-right">Hướng dẫn sử dụng</button>
+        {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
         <button className="btn-header-right" style={{ width: "100px" }}>
           <FaArrowAltCircleUp /> &nbsp; Export
         </button>

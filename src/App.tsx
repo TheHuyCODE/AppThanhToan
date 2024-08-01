@@ -30,10 +30,10 @@ import Categories from "./components/Category/Categories";
 import SubCategories from "./components/Category/SubCategories";
 import ShirtSubCategories from "./components/Category/ShirtSubCategories";
 import Return from "./components/Returns/Return";
+import Store from "./components/Store/Store";
 // import SalePage from "./components/SalesPage/SalePage";
 const NotFound = () => {
   const navigate = useNavigate();
-
   const handleBackHome = () => {
     navigate("/admin/products");
   };
@@ -148,6 +148,23 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <Profile />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/store"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Store />
               </AppWrapper>
             </ProtectedRouter>
           }

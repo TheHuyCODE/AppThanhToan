@@ -373,9 +373,9 @@ const Categories: React.FC<CategoriesProp> = ({
         </div>
         <div className="header-right">
           <>
-            <Button type="primary" style={{ backgroundColor: "var( --kv-success)", height: 35 }}>
+            {/* <Button type="primary" style={{ backgroundColor: "var( --kv-success)", height: 35 }}>
               Hướng dẫn sử dụng
-            </Button>
+            </Button> */}
             <Button
               type="primary"
               onClick={() => setIsOpenPopups(!isOpenPopups)}

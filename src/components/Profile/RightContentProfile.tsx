@@ -70,7 +70,6 @@ const RightContentProfile: React.FC = () => {
   };
   return (
     <>
-      <ToastContainer closeOnClick autoClose={5000} />
       <div className="profile-input">
         <span style={{ fontSize: "18px", fontWeight: "600" }}>Đổi mật khẩu</span>
       </div>

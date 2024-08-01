@@ -72,7 +72,7 @@ const HeaderCustomer: React.FC<HeaderCustomerProps> = ({
           marginRight: "10px",
         }}
       >
-        <button className="btn-header-right">Hướng dẫn sử dụng</button>
+        {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
 
         <button
           className="btn-header-right"

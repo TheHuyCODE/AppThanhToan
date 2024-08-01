@@ -4,6 +4,8 @@ import { DataProfile } from "../TableConfig/TableConfig";
 import Profiles from "../../configs/profiles";
 import { toast, ToastContainer } from "react-toastify";
 import { IoPerson } from "react-icons/io5";
+import { handleError } from "../../utils/errorHandler";
+import { CiCamera } from "react-icons/ci";
 
 interface LeftContentProfileProps {
   dataProfile: DataProfile;
@@ -15,6 +17,7 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(null);
   const [errors, setErrors] = useState<{ full_name?: string }>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const domain = "https://cdtn.boot.ai";
   const onChangeProfile = (field: keyof DataProfile, value: string | null) => {
     if (field === "full_name" && (value!.length < 3 || value!.length > 30)) {
       setErrors((prevErrors) => ({
@@ -31,7 +34,6 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
       ...prevProfile,
       [field]: value,
     }));
-    console.log("profile", profile);
   };
   const handleIconClick = () => {
     if (fileInputRef.current) {
@@ -49,22 +51,17 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
       age: profile.age,
       gender: profile.gender,
       address: profile.address,
+      avatar_url: profile.avatar_url,
     };
-    console.log("dataModi", dataModify);
     try {
       const res = await Profiles.postProfile(dataModify);
-      if (res.code === 200) {
-        const succesMs = res.message.text;
-        toast.success(succesMs);
-        localStorage.removeItem("INFO_USER");
-        await getDataUser();
-        localStorage.setItem("INFO_USER", JSON.stringify(profile));
-      } else {
-        const errMs = res.data.message.text;
-        toast.error(errMs);
-      }
+      const succesMs = res.message.text;
+      toast.success(succesMs);
+      localStorage.removeItem("INFO_USER");
+      await getDataUser();
+      localStorage.setItem("INFO_USER", JSON.stringify(profile));
     } catch (err) {
-      console.log("err", err);
+      handleError(err);
     }
   };
 
@@ -75,48 +72,72 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
   useEffect(() => {
     console.log("profile updated", profile);
   }, [profile]);
-  const { email, phone, full_name, age, gender, address } = profile;
+  const { email, phone, full_name, age, gender, address, avatar_url } = profile;
   const onChangeFilePicture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    console.log("file", file);
     if (file) {
+      uploadFormDataImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageSrc(reader.result); // Cập nhật URL ảnh vào trạng thái
+        setImageSrc(reader.result);
       };
-      reader.readAsDataURL(file); // Đọc ảnh dưới dạng URL
+      reader.readAsDataURL(file);
     }
   };
-  useEffect(() => {
-    if (imageSrc) {
-      // const
+  const uploadFormDataImage = async (fileImage: any) => {
+    const formData = new FormData();
+    formData.append("file", fileImage);
+    try {
+      const res = await Profiles.postImageProfile(formData);
+      // console.log("res", res.data);
+      const fileImg = res.data.file_url;
+      console.log("fileImage", fileImg);
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        avatar_url: fileImg,
+      }));
+    } catch (err) {
+      handleError(err);
     }
-  }, [imageSrc]);
+  };
+  const imgUrl = `${domain}${avatar_url}`;
+  console.log("fileUrl", imgUrl);
   return (
     <>
-      <ToastContainer closeOnClick autoClose={5000} />
       <div className="profile-input">
         <span style={{ fontSize: "18px", fontWeight: "600" }}>Thông tin người dùng</span>
       </div>
       <div className="profile-input-image">
         <div className="image-profile" onClick={handleIconClick}>
-          {imageSrc ? (
-            <img
-              src={imageSrc as string}
-              alt="Profile"
-              style={{ width: "100%", height: "100%", borderRadius: "50%" }}
-            />
+          {imgUrl ? (
+            <div style={{ position: "relative" }}>
+              <img
+                src={imgUrl}
+                alt="Profile"
+                style={{ width: "100%", height: "100%", borderRadius: "50%" }}
+              />
+              <CiCamera
+                style={{
+                  position: "absolute",
+                  right: "5",
+                  bottom: "6",
+                  zIndex: "1",
+                  color: "black",
+                }}
+              />
+            </div>
           ) : (
+            // <CiCamera />
             <IoPerson />
           )}
+          <input
+            type="file"
+            style={{ display: "none" }}
+            ref={fileInputRef}
+            onChange={onChangeFilePicture}
+            accept="image/png, image/jpeg"
+          />
         </div>
-        <input
-          type="file"
-          style={{ display: "none" }}
-          ref={fileInputRef}
-          onChange={onChangeFilePicture}
-          accept="image/png, image/jpeg"
-        />
       </div>
       <div className="profile-input">
         <label htmlFor="email">

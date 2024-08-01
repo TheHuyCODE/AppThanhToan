@@ -68,15 +68,9 @@ const Admins = () => {
       //   filteredValue: [isValueSearch],
       onFilter: (value, record) => {
         return (
-          String(record.name)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.created_date)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          String(record.number_children)
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase())
+          String(record.name).toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
+          String(record.created_date).toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
+          String(record.number_children).toLocaleLowerCase().includes(value.toLocaleLowerCase())
         );
       },
     },
@@ -197,7 +191,7 @@ const Admins = () => {
             />
           </div>
           <div className="header-top-right">
-            <button className="btn-add">Hướng dẫn sử dụng</button>
+            {/* <button className="btn-add">Hướng dẫn sử dụng</button> */}
             <button className="btn-add" onClick={clickAddAdmins}>
               Thêm quản trị viên
             </button>
@@ -286,10 +280,7 @@ const Admins = () => {
                 /
               </Select>
             </div>
-            <div
-              className="input-info"
-              style={{ display: "flex", justifyContent: "start" }}
-            >
+            <div className="input-info" style={{ display: "flex", justifyContent: "start" }}>
               <label htmlFor="">Trạng thái</label>
               <label htmlFor="" style={{ marginLeft: "119px" }}>
                 Kích hoạt

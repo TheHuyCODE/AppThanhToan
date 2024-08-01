@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Layout } from "antd";
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
 
+import NavbarUser from "./NavbarUser";
+
 interface AppHeaderProps {
   collapsedTheme: boolean;
   setCollapsedTheme: (collapsed: boolean) => void;
@@ -14,7 +16,15 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   colorBgContainer,
 }) => {
   return (
-    <Layout.Header style={{ padding: 0, background: colorBgContainer }}>
+    <Layout.Header
+      style={{
+        padding: 0,
+        background: colorBgContainer,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
       <Button
         type="text"
         className="toggle"
@@ -26,6 +36,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         }}
         icon={collapsedTheme ? <AiOutlineMenuUnfold /> : <AiOutlineMenuFold />}
       />
+      <NavbarUser />
     </Layout.Header>
   );
 };

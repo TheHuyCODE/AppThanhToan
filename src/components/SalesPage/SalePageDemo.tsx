@@ -297,7 +297,6 @@ const SalePageDemo: React.FC = () => {
             }
           : invoice
       );
-
       return updatedInvoices;
     });
   };
@@ -353,7 +352,7 @@ const SalePageDemo: React.FC = () => {
 
   const updateTotal = (products: Product[]) => {
     const newTotal = products.reduce(
-      (acc, product) => ({
+      (acc, product: any) => ({
         quantity: acc.quantity + product.quantity,
         price: acc.price + product.quantity * product.capital_price,
       }),

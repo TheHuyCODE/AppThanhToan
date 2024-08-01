@@ -553,14 +553,14 @@ const Products = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "end",
             flexWrap: "wrap",
             gap: "10px",
             padding: "10px",
             marginLeft: "80px",
           }}
         >
-          <button className="btn-header-right">Hướng dẫn sử dụng</button>
+          {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
           <button className="btn-header-right" style={{ width: "100px" }}>
             <FaArrowAltCircleUp /> &nbsp; Export
           </button>

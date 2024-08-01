@@ -25,6 +25,7 @@ export const localCustomer = {
 export const localReturn = {
   emptyText: "Không có trả hàng",
 };
+
 export const paginationConfig = {
   position: ["bottomCenter"],
   defaultCurrent: 6,
@@ -45,6 +46,7 @@ export interface DataProfile {
   email: string;
   full_name: string;
   gender: string | null;
+  avatar_url: string;
   group: {
     key: string;
     valid: number;

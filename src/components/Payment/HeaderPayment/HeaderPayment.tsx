@@ -72,7 +72,7 @@ const HeaderPayment: React.FC<HeaderPaymentProps> = ({
           marginRight: "10px",
         }}
       >
-        <button className="btn-header-right">Hướng dẫn sử dụng</button>
+        {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
 
         <button className="btn-header-right" style={{ width: "150px" }} onClick={handleOpenModal}>
           <IoMdAdd className="icon" /> Thêm tài khoản
