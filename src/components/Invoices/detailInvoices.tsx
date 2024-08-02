@@ -12,16 +12,27 @@ interface InvoiceData {
   create_user: {
     full_name: string;
   };
+  payment_methods: {
+    type: boolean;
+  };
   product: {
     id: string;
     name: string;
     quantity: number;
     price: number;
   }[];
+
   total_amount: number;
   discount: number;
 }
-
+interface InvoiceStore {
+  store: {
+    address: string;
+    phone: string;
+  };
+  address: string;
+  phone: string;
+}
 interface DetailInvoicesProps {
   linkQR: string;
   finalPrice: number;
@@ -30,25 +41,57 @@ interface DetailInvoicesProps {
 const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
   ({ linkQR, finalPrice }, ref) => {
     const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+    const [invoiceDataStore, setInvoiceDataStore] =
+      useState<InvoiceStore | null>(null);
+
     useEffect(() => {
       const data = localStorage.getItem("dataDetailInvoice");
+      const dataStore = localStorage.getItem("INFO_USER");
+
       if (data) {
-        setInvoiceData(JSON.parse(data));
+        try {
+          setInvoiceData(JSON.parse(data));
+        } catch (error) {
+          console.error("Error parsing invoice data", error);
+        }
+      }
+
+      if (dataStore) {
+        try {
+          setInvoiceDataStore(JSON.parse(dataStore));
+        } catch (error) {
+          console.error("Error parsing store data", error);
+        }
       }
     }, []);
 
     if (!invoiceData) {
       return <div>Loading...</div>;
     }
+    const getDate = () => {
+      const today = new Date();
+      const month = today.getMonth() + 1;
+      const year = today.getFullYear();
+      const date = today.getDate();
+      const timeCurrent = today.toLocaleTimeString();
+      return `${timeCurrent}-${month}/${date}/${year}`;
+    };
 
-    const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
+    const customerName =
+      invoiceData.customer.full_name || "Khách hàng không xác định";
     const adminName = invoiceData.create_user.full_name || "Admin";
+    const phoneCreated = invoiceDataStore?.phone || "";
+    const addressCreated = invoiceDataStore?.address || "";
+    const phoneStore = invoiceDataStore?.store.phone || "";
+    const addressPhone = invoiceDataStore?.store.address || "";
+    const hiddenImgQrCode = invoiceData.payment_methods.type || false;
+    // const Name
 
     return (
       <div ref={ref} className="page_invoice">
         <div className="header_invoices">
           <div className="dateTime_invoices">
-            <span>{new Date(invoiceData.created_date).toLocaleDateString("vi-VN")}</span>
+            <span>{getDate() || ""}</span>
           </div>
           <div className="main_header_invoices">
             <div className="logo">
@@ -57,8 +100,8 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
             </div>
             <div className="info_admin">
               <span>Người tạo: {adminName}</span>
-              <span>Địa chỉ: --</span>
-              <span>Điện thoại</span>
+              <span>Địa chỉ: {addressCreated}</span>
+              <span>Điện thoại: {phoneCreated}</span>
               <div className="title_invoices">
                 <h3>HÓA ĐƠN HÀNG HÓA</h3>
                 <span>Số HD: {invoiceData.id}</span>
@@ -69,8 +112,8 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
         <div className="containner_invoices">
           <div className="info_customer_invoices">
             <span>Khách hàng: {customerName} </span>
-            <span>SĐT:</span>
-            <span>Địa chỉ:</span>
+            <span>SĐT: {phoneStore}</span>
+            <span>Địa chỉ: {addressPhone}</span>
           </div>
           <div className="table_product_invoice">
             <table>
@@ -88,7 +131,11 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
                     <td>{index + 1}</td>
                     <td>{product.name}</td>
                     <td>{product.quantity}</td>
-                    <td>{(product.quantity * product.price).toLocaleString("vi-VN")}</td>
+                    <td>
+                      {(product.quantity * product.price).toLocaleString(
+                        "vi-VN"
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -107,10 +154,12 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
             </div>
           </div>
         </div>
-        <div className="detail_qr_invoices">
-          <span>Quét mã thanh toán</span>
-          <img src={linkQR} alt="QR_Code" /> {/* Add QR code */}
-        </div>
+        {hiddenImgQrCode && (
+          <div className="detail_qr_invoices">
+            <span>Quét mã thanh toán</span>
+            <img src={linkQR} alt="QR_Code" />
+          </div>
+        )}
       </div>
     );
   }

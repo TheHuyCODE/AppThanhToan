@@ -1,6 +1,7 @@
 import { Modal, Table, TableColumnsType } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React from "react";
+import { localInvoice } from "../../TableConfig/TableConfig";
 interface DetailInvoice {
   stt: number;
   id: string;
@@ -119,7 +120,10 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
           <div className="left-content-detail">
             <div className="row-detail">
               <span className="title-row">Mã hóa đơn:</span>
-              <span className="value-row" style={{ color: "black", fontWeight: "600" }}>
+              <span
+                className="value-row"
+                style={{ color: "black", fontWeight: "600" }}
+              >
                 {dataDetail.id}
               </span>
             </div>
@@ -174,19 +178,27 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
           <div className="table-detail">
             <Table
               style={{ width: "100%" }}
+              scroll={{
+                y: 300,
+              }}
               columns={columns}
               dataSource={dataTableDetail}
+              locale={localInvoice}
               pagination={false}
             />
           </div>
           <div className="price-detail">
             <div className="price-detail-row">
               <span className="">Tổng số lượng:</span>
-              <span className="title-price-detail">{dataDetail.total_product || 0}</span>
+              <span className="title-price-detail">
+                {dataDetail.total_product || 0}
+              </span>
             </div>
             <div className="price-detail-row">
               <span className="">Tổng tiền hàng:</span>
-              <span className="title-price-detail">{dataDetail.total_amount || 0}</span>
+              <span className="title-price-detail">
+                {dataDetail.total_amount || 0}
+              </span>
             </div>
             <div className="price-detail-row">
               <span className="">Giảm giá hóa đơn:</span>
@@ -194,11 +206,15 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
             </div>
             <div className="price-detail-row">
               <span className="">Khách cần trả:</span>
-              <span className="title-price-detail">{dataDetail.customer_money}</span>
+              <span className="title-price-detail">
+                {dataDetail.customer_money}
+              </span>
             </div>
             <div className="price-detail-row">
               <span className="">Khách đã trả:</span>
-              <span className="title-price-detail">{dataDetail.customer_money}</span>
+              <span className="title-price-detail">
+                {dataDetail.customer_money}
+              </span>
             </div>
           </div>
         </div>

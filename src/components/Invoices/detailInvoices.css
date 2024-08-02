@@ -166,7 +166,7 @@
 .table_product_invoice td {
   padding: 8px 12px;
   text-align: left;
-  border: 2px solid #000; /* Add border to the cells */
+  border: 1px solid rgb(27, 21, 21); /* Add border to the cells */
 }
 
 .table_product_invoice th {
