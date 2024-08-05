@@ -6,15 +6,22 @@ import { FaUser } from "react-icons/fa";
 import returnProduct from "../../configs/return";
 import { toast, ToastContainer } from "react-toastify";
 import { handleError } from "../../utils/errorHandler";
+import { CgLayoutGrid } from "react-icons/cg";
+import { useReactToPrint } from "react-to-print";
+import PrintReturn from "../Returns/PrintReturn/PrintReturn";
 interface ReturnInvoiceProp {
   activeKey: string;
+  valueReason: string;
   dataReturnPayment: any;
   removeReturnInvoice: (key: string) => void;
+  setValueReason: React.Dispatch<React.SetStateAction<string>>;
 }
 const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
   activeKey,
+  valueReason,
   dataReturnPayment,
   removeReturnInvoice,
+  setValueReason,
 }) => {
   const [dataProduct, setDataProduct] = useState([]);
   const [hiddenReturn, setHiddenReturn] = useState(false);
@@ -26,9 +33,13 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
   const [inforUser, setInfoUser] = useState("");
   const [idCustomer, setIdCustomer] = useState("");
   const [invoiceId, setInvoiceId] = useState("");
+  const [stateReturn, setStateReturn] = useState(false);
   const [isPercentage, setIsPercentage] = useState(false);
   const menuRef = useRef(null);
-  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
+  const componentRef = useRef();
+  console.log("valueReason", valueReason);
+  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] =
+    useState(false);
   const [currDateTime, setCurrDateTime] = useState({
     date: "",
     time: "",
@@ -41,7 +52,10 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
       total_price: value.total_price,
     }));
     if (dataConvert.length > 0) {
-      const totalQuantity = dataConvert.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      const totalQuantity = dataConvert.reduce(
+        (sum: number, item: any) => sum + item.quantity,
+        0
+      );
       if (totalQuantity === 0) {
         setHiddenReturn(true);
       } else {
@@ -61,6 +75,7 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
         setHiddenReturn(true);
       }
       const data = converDataProduct(dataProduct);
+
       setInvoiceId(invoiceId);
       setInfoUser(userFullName);
       setDataProduct(data);
@@ -116,48 +131,68 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
       setIsPercentage(true);
     }
   };
+  const handlePrintReturnInvoice = useReactToPrint({
+    content: () => componentRef.current || null,
+    onAfterPrint: () => {
+      removeReturnInvoice(activeKey);
+      setStateReturn(false);
+    },
+  });
   const handleClickReturn = async () => {
     const dataReturn = {
       invoice_id: invoiceId,
       total_amount: returnPrice,
-      reason: "hết hạn",
+      reason: valueReason || "",
       return_fee: returnFee,
       type_fee: 0,
       total_product: quantityReturn,
       products: dataProduct,
       customer_id: idCustomer,
     };
+    console.log("data", dataReturn);
     try {
       const res = await returnProduct.postDataPayment(dataReturn);
-      if (res.code === 200) {
-        // const texSS = res.massage.text;
-        toast.success("Trả hàng thành công");
-        removeReturnInvoice(activeKey);
-      } else {
-        const textErr = res.data.massage.text;
-        toast.success(textErr);
-      }
+      // const texSS = res.massage.text;
+      toast.success("Trả hàng thành công");
+      setStateReturn(true);
+      setValueReason("");
+      handlePrintReturnInvoice();
     } catch (err) {
       handleError(err);
     }
   };
+  useEffect(() => {
+    if (stateReturn) {
+      setTimeout(() => {
+        handlePrintReturnInvoice();
+      }, 0);
+    }
+  }, [stateReturn]);
   // Load data from localStorage and calculate prices on initial render
   useEffect(() => {
     if (dataReturnPayment.length > 0) {
-      const totalPrice = dataReturnPayment[0]?.items.reduce((sum: number, item: any) => {
-        if (item.quantity === 0) {
-          return sum;
-        } else {
-          return sum + item.total_price;
-        }
-      }, 0);
+      const totalPrice = dataReturnPayment[0]?.items.reduce(
+        (sum: number, item: any) => {
+          if (item.quantity === 0) {
+            return sum;
+          } else {
+            return sum + item.total_price;
+          }
+        },
+        0
+      );
 
       setReturnPrice(totalPrice);
 
       const calculatedNeedReturnPrice =
-        totalPrice - (isPercentage ? (totalPrice * returnFee) / 100 : returnFee);
-      setNeedReturnPrice(calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0);
-      setRefundAmount(calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0);
+        totalPrice -
+        (isPercentage ? (totalPrice * returnFee) / 100 : returnFee);
+      setNeedReturnPrice(
+        calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0
+      );
+      setRefundAmount(
+        calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0
+      );
     }
   }, [dataReturnPayment, returnFee, isPercentage]);
 
@@ -193,7 +228,12 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
             <div className="icon">
               <FaUser />
             </div>
-            <input type="text" placeholder="Mã hóa đơn" value={inforUser} disabled={true} />
+            <input
+              type="text"
+              placeholder="Mã hóa đơn"
+              value={inforUser}
+              disabled={true}
+            />
           </div>
           <div className="title-return">
             <span>
@@ -249,7 +289,10 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
           )}
           <div className="return-item">
             <label style={{ fontWeight: "600" }}>Cần trả khách:</label>
-            <div className="payment-return_price-total" style={{ fontWeight: 600, color: "blue" }}>
+            <div
+              className="payment-return_price-total"
+              style={{ fontWeight: 600, color: "blue" }}
+            >
               <p>{needReturnPrice?.toLocaleString("vi-VN")}</p>
             </div>
           </div>
@@ -277,6 +320,21 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
           >
             TRẢ HÀNG
           </button>
+          {stateReturn && (
+            <div
+              style={{
+                position: "absolute",
+                left: "-9999px",
+                top: "-9999px",
+              }}
+            >
+              <PrintReturn
+                ref={componentRef}
+                // linkQR={linkQR}
+                // finalPrice={finalPrice}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -313,8 +313,11 @@
   display: flex;
   box-shadow: 0px 14px 35px 5px rgba(0, 0, 0, 0.2);
 }
-.selected-product-details:hover {
-  border-color: blue;
+.selected-product-details:hover,
+.selected-product-details:focus {
+  border: 1px groove var(--kv-link);
+  box-shadow: rgb(46, 46, 234) 0px 0.5px 3px;
+  cursor: pointer;
 }
 .carts-product-active-left {
   width: 40px;

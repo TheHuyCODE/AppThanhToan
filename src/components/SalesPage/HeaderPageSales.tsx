@@ -38,13 +38,12 @@ type ChildComponentProps = {
   totalInvoice: number;
   // dataTableInvoice: [];
   addInvoice: () => void;
-  onDetailInvoiceReturn: (id: string) => void;
+  onDetailInvoiceReturn: (id: string, activeKey: string) => void;
   setActiveKey: (value: string) => void;
   removeInvoice: (id: string) => void;
   handleAddReturnInvoice: () => void;
   addReturnInvoice: () => void;
   removeReturnInvoice: (key: string) => void;
-  closeModal: () => void;
   onSearchInvoices: (value: string) => void;
   handleEnterPress: () => void;
   setDataTableInvoice: () => void;
@@ -119,7 +118,9 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     if (action === "add") {
       addInvoice();
     } else {
-      const invoiceToRemove: any = items.find((invoice: any) => invoice.id_payment === targetKey);
+      const invoiceToRemove: any = items.find(
+        (invoice: any) => invoice.id_payment === targetKey
+      );
       if (invoiceToRemove && invoiceToRemove.type === "return") {
         removeReturnInvoice(targetKey);
       } else {
@@ -129,7 +130,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   };
 
   const detailInvoiceReturn = (record: any) => {
-    onDetailInvoiceReturn(record.id);
+    onDetailInvoiceReturn(record.id, activeKey);
     closeModal();
     handleAddReturnInvoice();
   };
@@ -154,15 +155,17 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     };
   }, [menuRef]);
 
-  const dataTable: RecordType[] = dataTableInvoice.map((items: any, index: number) => ({
-    stt: index + 1,
-    id: items.id,
-    created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
-    full_name: items.create_user.full_name,
-    customer: items.customer.full_name,
-    total_amount: items.total_amount.toLocaleString("vi-VN"),
-    key: items.id,
-  }));
+  const dataTable: RecordType[] = dataTableInvoice.map(
+    (items: any, index: number) => ({
+      stt: index + 1,
+      id: items.id,
+      created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
+      full_name: items.create_user.full_name,
+      customer: items.customer.full_name,
+      total_amount: items.total_amount.toLocaleString("vi-VN"),
+      key: items.id,
+    })
+  );
 
   const columns = [
     {
@@ -207,9 +210,12 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       key: "action",
       width: 100,
 
-      render: (text, record) => (
+      render: (text, record: any) => (
         <Space size="middle">
-          <button className="btn_return_invoice" onClick={() => detailInvoiceReturn(record)}>
+          <button
+            className="btn_return_invoice"
+            onClick={() => detailInvoiceReturn(record)}
+          >
             Chọn
           </button>
         </Space>
@@ -267,7 +273,11 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
               onKeyDown={handleEnterPress}
             />
 
-            <button className="btn-return-goods" onClick={addReturnInvoice} title="Trả hàng">
+            <button
+              className="btn-return-goods"
+              onClick={addReturnInvoice}
+              title="Trả hàng"
+            >
               Trả hàng
             </button>
           </div>
@@ -292,7 +302,11 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
         </div>
         <div className="header-right-page">
           <div>
-            {infouser ? <span>{infouser.full_name}</span> : <span>No user data available</span>}
+            {infouser ? (
+              <span>{infouser.full_name}</span>
+            ) : (
+              <span>No user data available</span>
+            )}
           </div>
           <button
             className="icon-button"
@@ -303,7 +317,10 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
           </button>
           {isMenuOpen && (
             <div ref={menuRef} className="menu-dropdown">
-              <Link to="/admin/products" style={{ textDecoration: "none", color: "black" }}>
+              <Link
+                to="/admin/products"
+                style={{ textDecoration: "none", color: "black" }}
+              >
                 <div>
                   <MdOutlinePoll style={{ fontSize: "20px" }} />
                   <span>Trang quản lý</span>
@@ -339,7 +356,11 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="search_invoices">
                 <span>Tìm kiếm</span>
-                <input type="text" placeholder="Theo mã hóa đơn" onChange={handleSearchInvoice} />
+                <input
+                  type="text"
+                  placeholder="Theo mã hóa đơn"
+                  onChange={handleSearchInvoice}
+                />
                 <input
                   type="text"
                   placeholder="Theo khách hàng hoặc ĐT"
