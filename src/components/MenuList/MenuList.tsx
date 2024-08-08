@@ -1,28 +1,43 @@
-import React, { Children, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, Modal } from "antd";
-import { FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
+import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
 import { IoPerson } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
-import { FaFileInvoiceDollar, FaPercent, FaRegUserCircle, FaStore } from "react-icons/fa";
-import { FaArrowRightFromBracket } from "react-icons/fa6";
-import "./MenuList.css";
-import logoutApi from "../../configs/logoutApi";
-// import category from "../../configs/category";
-import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
 import { CiBank } from "react-icons/ci";
 import { TiArrowBack } from "react-icons/ti";
-import type { GetProp, MenuProps } from "antd";
-type MenuItem = GetProp<MenuProps, "items">[number];
-const MenuList = () => {
+import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import "./MenuList.css";
+import logoutApi from "../../configs/logoutApi";
+
+// Define the User interface
+interface UserInfo {
+  // Define the structure of user info based on your requirements
+  email?: string;
+  role?: { id: string; key: string; name: string };
+  role_id?: number;
+  // Add other fields if necessary
+}
+const MenuList: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const { accessToken, darkTheme, logout, user } = useAuth();
+  const { accessToken, logout, user } = useAuth();
+  // const [user, setUser] = useState<UserInfo | null>(null);
+
+  // useEffect(() => {
+  //   const storedInfo = localStorage.getItem("INFO_USER");
+  //   if (storedInfo) {
+  //     const info: UserInfo = JSON.parse(storedInfo);
+  //     setUser(info);
+  //   }
+  // }, []);
+
   const handleOK = () => {
-    console.log("handle OK");
     const resAccessToken = accessToken;
     logout();
+    localStorage.removeItem("INFO_USER");
     if (resAccessToken) {
-      logoutApi.deleteTokenLogout(resAccessToken).then((response) => {
+      logoutApi.deleteTokenLogout(resAccessToken).then((response: any) => {
         if (response.code === 200) {
           console.log("/");
         } else {
@@ -31,37 +46,28 @@ const MenuList = () => {
       });
     }
   };
-  const adminMenuKeys = ["owner_management", "store_management"];
-  const items = [
+
+  // Define menu items
+  const menuItems = [
     { key: "1", icon: <FaBagShopping />, link: "/SalesPage", label: "Bán hàng" },
+    { key: "2", icon: <FaRegUserCircle />, link: "/admin/profile", label: "Thông tin cá nhân" },
     {
-      key: "2",
-      icon: <FaRegUserCircle />,
-      link: "/admin/profile",
-      label: "Thông tin cá nhân",
+      key: "manage_store",
+      icon: <CiBank />,
+      link: "/admin/manage_store",
+      label: "Thông tin cửa hàng",
     },
     {
       key: "sub1",
-      label: "Báo cáo",
       icon: <RiListSettingsFill />,
+      label: "Báo cáo",
       children: [
         {
           key: "3",
           icon: <RiListSettingsFill />,
-          label: (
-            <a href="/admin/revenuereport" target="_blank" rel="noopener noreferrer">
-              Báo cáo doanh thu
-            </a>
-          ),
-          // link: "/admin/revenuereport",
-          // label: "Báo cáo doanh thu",
+          label: <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>,
         },
-        {
-          key: "4",
-          icon: <RiListSettingsFill />,
-          // link: "/admin/inventoryreport",
-          label: "Báo cáo tồn kho",
-        },
+        { key: "4", icon: <RiListSettingsFill />, label: "Báo cáo tồn kho" },
       ],
     },
     {
@@ -78,21 +84,19 @@ const MenuList = () => {
       label: "Quản lý người dùng",
     },
     {
-      label: "Quản lý sản phẩm",
       key: "Product_management",
       icon: <RiListSettingsFill />,
-      Children: [
+      label: "Quản lý sản phẩm",
+      children: [
         {
           key: "Product_management_child",
           icon: <RiListSettingsFill />,
-          // link: "/admin/products",
-          label: "Quản lý sản phẩm",
+          label: <Link to="/admin/products">Quản lý sản phẩm</Link>,
         },
         {
           key: "categories",
           icon: <RiListSettingsFill />,
-          // link: "/admin/categories",
-          label: "Quản lý danh mục sản phẩm",
+          label: <Link to="/admin/categories">Quản lý danh mục sản phẩm</Link>,
         },
       ],
     },
@@ -102,7 +106,6 @@ const MenuList = () => {
       link: "/admin/customers",
       label: "Quản lý khách hàng",
     },
-    { key: "percent", icon: <FaPercent />, link: "/admin/percent", label: "Quản lý mã giảm giá" },
     {
       key: "paymentmethod",
       icon: <CiBank />,
@@ -112,81 +115,59 @@ const MenuList = () => {
     {
       key: "owner_management",
       icon: <CiBank />,
-      link: "/admin/owner",
+      link: "/admin/owners",
       label: "Quản lí chủ của hàng",
     },
-    { key: "store_management", icon: <CiBank />, link: "/admin/store", label: "Quản lí cửa hàng" },
+    {
+      key: "store_management",
+      icon: <CiBank />,
+      link: "/admin/storeAdmin",
+      label: "Quản lí cửa hàng",
+    },
   ];
-  // const filterMenuItems = () => {
-  //   if (user?.role.id === 1) {
-  //     return commonMenuItems.filter((item) => adminMenuKeys.includes(item.key));
-  //   }
-  //   return commonMenuItems;
-  // };
+
+  // Filter menu items based on user role
+  const filteredMenuItems = (() => {
+    console.log("User role ID:", user?.role_id); // Check user role ID
+    switch (user?.role_id) {
+      case 5:
+        // Only display the item with key "1"
+        return menuItems.filter((item) => item.key === "1");
+      case 3:
+        // Display all items except those with keys "owner_management" and "store_management"
+        return menuItems.filter(
+          (item) => item.key !== "owner_management" && item.key !== "store_management"
+        );
+      case 1:
+        // Only display items with keys "owner_management" and "store_management"
+        return menuItems.filter(
+          (item) => item.key === "owner_management" || item.key === "store_management"
+        );
+      default:
+        // Default to displaying all items
+        return menuItems;
+    }
+  })();
+
+  console.log("Filtered menu items:", filteredMenuItems);
   return (
     <div className="sidebar-left">
-      <Menu
-        theme={"light"}
-        mode="inline"
-        className="menu-bar"
-
-        // defaultSelectedKeys={["1"]}
-        // defaultOpenKeys={["sub1"]}
-        // items={items}
-      >
-        <Menu.Item key="SalesPage" icon={<FaBagShopping />}>
-          <Link to="/SalesPage">Bán hàng</Link>
-        </Menu.Item>
-        <Menu.Item key="profile" icon={<FaRegUserCircle />}>
-          <Link to="/admin/profile">Thông tin cá nhân </Link>
-        </Menu.Item>
-        <Menu.Item key="store" icon={<FaStore />}>
-          <Link to="/admin/store">Thông tin của hàng </Link>
-        </Menu.Item>
-        <Menu.SubMenu key="Dashboard" icon={<RiListSettingsFill />} title="Báo cáo">
-          <Menu.Item key="Revenuereport">
-            <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>
-          </Menu.Item>
-          <Menu.Item key="Inventoryreport">
-            <Link to="/admin/inventoryreport">Báo cáo tồn kho</Link>
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.Item key="invoices" icon={<FaFileInvoiceDollar />}>
-          <Link to="/admin/invoices">Quản lý hóa đơn</Link>
-        </Menu.Item>
-        <Menu.Item key="returns" icon={<TiArrowBack />}>
-          <Link to="/admin/returns">Quản lý trả hàng</Link>
-        </Menu.Item>
-        <Menu.Item key="User_management" icon={<IoPerson />}>
-          <Link to="/admin/users">Quản lý người dùng</Link>
-        </Menu.Item>
-        <Menu.SubMenu
-          key="Product_management"
-          icon={<RiListSettingsFill />}
-          title="Quản lý sản phẩm"
-        >
-          <Menu.Item key="Product_management_child">
-            <Link to="/admin/products">Quản lý sản phẩm</Link>
-          </Menu.Item>
-          <Menu.Item key="categories">
-            <Link to="/admin/categories">Quản lý danh mục sản phẩm</Link>
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.Item key="customer_management" icon={<FaPeopleGroup />}>
-          <Link to="/admin/customers">Quản lý khách hàng</Link>
-        </Menu.Item>
-        {/* <Menu.Item key="percent" icon={<FaPercent />}>
-          Quản lý mã giảm giá
-        </Menu.Item> */}
-        <Menu.Item key="paymentmethod" icon={<CiBank />}>
-          <Link to="/admin/paymentmethod">Phương thức thanh toán</Link>
-        </Menu.Item>
-        <Menu.Item key="owner_management" icon={<CiBank />}>
-          <Link to="/admin/owner">Quản lí chủ của hàng</Link>
-        </Menu.Item>
-        <Menu.Item key="store_management" icon={<CiBank />}>
-          <Link to="/admin/store">Quản lí cửa hàng</Link>
-        </Menu.Item>
+      <Menu theme={"light"} mode="inline" className="menu-bar">
+        {filteredMenuItems.map((item) =>
+          item.children ? (
+            <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
+              {item.children.map((child) => (
+                <Menu.Item key={child.key} icon={child.icon}>
+                  <Link to={child.link || "#"}>{child.label}</Link>
+                </Menu.Item>
+              ))}
+            </Menu.SubMenu>
+          ) : (
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.link || "#"}>{item.label}</Link>
+            </Menu.Item>
+          )
+        )}
         <Menu.Item
           key="Logout"
           icon={<FaArrowRightFromBracket />}
@@ -194,13 +175,12 @@ const MenuList = () => {
         >
           <Modal
             width={600}
-            // height={500}
             centered
             open={isOpenModal}
-            onOk={() => handleOK()}
+            onOk={handleOK}
             onCancel={() => setIsOpenModal(!isOpenModal)}
             okText="Đăng xuất"
-            cancelText="Hủy bỏ"
+            cancelText="Hủy"
           >
             <h1>Đăng xuất</h1>
             <span>Bạn có muốn đăng xuất khỏi hệ thống không?</span>

@@ -3,12 +3,16 @@ import axiosClient from "./axiosClient";
 const returnProduct = {
   getAll: () => {
     const url = "api/v1/manage/returns";
+    const params = {
+      page_size: 10,
+    };
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
+      params,
     });
   },
   getDataSearchReturn: (value: string) => {

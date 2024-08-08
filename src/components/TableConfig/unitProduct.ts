@@ -65,3 +65,4 @@ export const unitProductList = [
     value: 16,
   },
 ];
+export const roleIdSuperAdmin = 1

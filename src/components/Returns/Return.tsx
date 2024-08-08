@@ -213,7 +213,7 @@ const Return = () => {
           />
           <span className="total-items" style={{ color: "black" }}>{`${
             dataReturn.length || 0
-          } Hóa đơn trả hàng`}</span>
+          } hóa đơn trả hàng`}</span>
         </div>
       </div>
       <ModalDeleteReturn

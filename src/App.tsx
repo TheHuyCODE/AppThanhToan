@@ -8,8 +8,8 @@ import ProductMangement from "./components/Products/Products";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
 import PublicRouter from "./components/auth/PublicRouter";
 import Users from "./components/Users/Users";
-import Home from "./components/home/Home";
-import AppWrapper from "./components/contentAdmin/wrapper";
+import Home from "./components/Home/Home";
+import AppWrapper from "./components/ContentAdmin/wrapper";
 import DetailUsers from "./components/Users/DetailUsers";
 import ModifyUsers from "./components/Users/ModifyUsers";
 import Admins from "./components/Admin/Admins";
@@ -19,8 +19,8 @@ import AddProduct from "./components/Products/AddProducts/AddProduct";
 import DetailProduct from "./components/Products/DetailProduct/DetailProduct";
 import ModifyProduct from "./components/Products/ModifyProduct/ModifyProduct";
 // import SalePage from './components/SalesPage/SalePage';
-import RevenueReport from "./components/dashboard/RevenueReport";
-import InventoryReport from "./components/dashboard/InventoryReport";
+import RevenueReport from "./components/Dashboard/RevenueReport";
+import InventoryReport from "./components/Dashboard/InventoryReport";
 import Payment from "./components/Payment/Payment";
 import SalePageDemo from "./components/SalesPage/SalePageDemo";
 import Profile from "./components/Profile/Profile";
@@ -31,6 +31,8 @@ import SubCategories from "./components/Category/SubCategories";
 import ShirtSubCategories from "./components/Category/ShirtSubCategories";
 import Return from "./components/Returns/Return";
 import Store from "./components/Store/Store";
+import Owner from "./pages/OwnerManage/Owner";
+import StoreAdmin from "./pages/StorePageAdmin/StoreAdmin";
 // import SalePage from "./components/SalesPage/SalePage";
 const NotFound = () => {
   const navigate = useNavigate();
@@ -56,7 +58,6 @@ function App() {
   const [selectedChildCategory, setSelectedChildCategory] = useState("");
   const [darkTheme, setDarkTheme] = useState(true);
   const [collapsedTheme, setCollapsedTheme] = useState(false);
-  const [stateLogins, setStateLogins] = useState(false);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -67,11 +68,11 @@ function App() {
   };
 
   const location = useLocation();
-  const { isAuthenticated, accessToken, logoutAllTabs } = useAuth();
+  const { isAuthenticated, accessToken, logoutAllTabs, user } = useAuth();
 
   useEffect(() => {
     console.log("isAuthenticated", accessToken);
-    setStateLogins(true);
+    console.log("user", user);
   }, []);
   useEffect(() => {
     logoutAllTabs;
@@ -153,7 +154,7 @@ function App() {
           }
         />
         <Route
-          path="admin/store"
+          path="admin/manage_store"
           element={
             <ProtectedRouter>
               <AppWrapper
@@ -436,6 +437,40 @@ function App() {
                 borderRadiusLG={borderRadiusLG}
               >
                 <Admins />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/owners"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <Owner />
+              </AppWrapper>
+            </ProtectedRouter>
+          }
+        />
+        <Route
+          path="admin/storeAdmin"
+          element={
+            <ProtectedRouter>
+              <AppWrapper
+                darkTheme={darkTheme}
+                collapsedTheme={collapsedTheme}
+                toggleDarkTheme={toggleDarkTheme}
+                setCollapsedTheme={setCollapsedTheme}
+                colorBgContainer={colorBgContainer}
+                borderRadiusLG={borderRadiusLG}
+              >
+                <StoreAdmin />
               </AppWrapper>
             </ProtectedRouter>
           }

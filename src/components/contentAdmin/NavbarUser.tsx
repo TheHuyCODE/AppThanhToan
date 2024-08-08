@@ -16,10 +16,12 @@ const NavbarUser = () => {
   const handleLogoutUser = async () => {
     const resAccessToken = accessToken;
     logout();
+    localStorage.removeItem("INFO_USER");
     if (resAccessToken) {
       try {
         const res = await logoutApi.deleteTokenLogout(resAccessToken);
         console.log("resLogout", res.data);
+        localStorage.removeItem("INFO_USER");
       } catch (error) {
         handleError(error);
       }

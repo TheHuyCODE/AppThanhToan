@@ -29,11 +29,9 @@ interface AuthContextType {
   fetchDataCategory: () => void;
 }
 interface UserInfo {
-  // Define the structure of user info based on your requirements
   email?: string;
   role?: { id: string; key: string; name: string };
   role_id?: number;
-  // Add other fields if necessary
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -47,29 +45,46 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isResDataChild, setIsResDataChild] = useState("");
   const [isResDataChildSeconds, setIsResDataChildSeconds] = useState("");
   const [isCategoryProduct, setIsCategoryProduct] = useState([]);
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(() => {
+    const storedInfo = localStorage.getItem("INFO_USER");
+    return storedInfo ? JSON.parse(storedInfo) : null;
+  });
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
+    const storedInfo = localStorage.getItem("INFO_USER");
+    if (storedInfo) {
+      setUser(JSON.parse(storedInfo));
+      console.log("1111", storedInfo);
+    }
     setAccessToken(access_token);
   };
-
   const logout = useCallback(() => {
+    console.log("Before logout:", {
+      accessToken: localStorage.getItem("access_token"),
+      refreshToken: localStorage.getItem("refresh_token"),
+      infoUser: localStorage.getItem("INFO_USER"),
+    });
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("INFO_USER");
     localStorage.setItem("logout", Date.now().toString());
+
     setAccessToken(null);
-    window.location.href = window.location.origin + "/";
+
+    console.log("After logout:", {
+      accessToken: localStorage.getItem("access_token"),
+      refreshToken: localStorage.getItem("refresh_token"),
+      infoUser: localStorage.getItem("INFO_USER"),
+    });
+
+    // Navigate after a short delay to ensure localStorage is updated
+    setTimeout(() => {
+      window.location.href = window.location.origin + "/";
+    }, 100);
   }, []);
 
   useEffect(() => {
-    const storedInfo = localStorage.getItem("INFO_USER");
-    if (storedInfo) {
-      const info: UserInfo = JSON.parse(storedInfo);
-      setUser(info);
-      console.log("info", info.role?.id);
-    }
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "logout") {
         console.log("Detected logout in another tab");

@@ -78,8 +78,7 @@ const SalePageDemo: React.FC = () => {
   const [hiddenQRCode, setHiddenQRCode] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenPaymentReturn, setIsOpenPaymentReturn] = useState(false);
-  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] =
-    useState(false);
+  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number>(0);
@@ -91,9 +90,7 @@ const SalePageDemo: React.FC = () => {
     const savedProducts = localStorage.getItem("selectedProducts");
     return savedProducts ? JSON.parse(savedProducts) : {};
   });
-  const [editedPrices, setEditedPrices] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const [editedPrices, setEditedPrices] = useState<{ [key: string]: boolean }>({});
   const [total, setTotal] = useState<{ quantity: number; price: number }>({
     quantity: 0,
     price: 0,
@@ -109,9 +106,7 @@ const SalePageDemo: React.FC = () => {
     const parsedInvoices = savedInvoices ? JSON.parse(savedInvoices) : [];
 
     // Check if "Hóa đơn 1" already exists in parsedInvoices
-    const defaultInvoiceExists = parsedInvoices.some(
-      (invoice: Invoice) => invoice.id === 1
-    );
+    const defaultInvoiceExists = parsedInvoices.some((invoice: Invoice) => invoice.id === 1);
     if (!defaultInvoiceExists) {
       parsedInvoices.push({
         id: 1,
@@ -183,9 +178,7 @@ const SalePageDemo: React.FC = () => {
     setInvoiceList((prevInvoices) =>
       prevInvoices.map((invoice) => {
         if (invoice.id_payment === activeKey) {
-          const existingProduct = invoice.items.find(
-            (p) => p.id === product.id
-          );
+          const existingProduct = invoice.items.find((p) => p.id === product.id);
           const updatedItems = existingProduct
             ? invoice.items.map((p) =>
                 p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
@@ -215,14 +208,10 @@ const SalePageDemo: React.FC = () => {
         setInvoiceList((prevInvoices) =>
           prevInvoices.map((invoice) => {
             if (invoice.id_payment === activeKey) {
-              const existingProduct = invoice.items.find(
-                (p) => p.id === foundProduct.id
-              );
+              const existingProduct = invoice.items.find((p) => p.id === foundProduct.id);
               const updatedItems = existingProduct
                 ? invoice.items.map((p) =>
-                    p.id === foundProduct.id
-                      ? { ...p, quantity: p.quantity + 1 }
-                      : p
+                    p.id === foundProduct.id ? { ...p, quantity: p.quantity + 1 } : p
                   )
                 : [...invoice.items, { ...foundProduct, quantity: 1 }];
               return { ...invoice, items: updatedItems };
@@ -238,34 +227,24 @@ const SalePageDemo: React.FC = () => {
     }
   };
 
-  const handleChangeNumberCards = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    productId: string
-  ) => {
+  const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
     const newQuantity = parseInt(e.target.value, 10);
     setSelectedProducts((prevSelectedProducts) => {
       const currentProducts = prevSelectedProducts[activeKey] || [];
       const updatedProducts = currentProducts.map((product) =>
-        product.id === productId
-          ? { ...product, quantity: newQuantity }
-          : product
+        product.id === productId ? { ...product, quantity: newQuantity } : product
       );
       updateTotal(updatedProducts);
       // Update the invoiceList to include the updated products
       setInvoiceList((prevInvoices) =>
         prevInvoices.map((invoice) =>
-          invoice.id_payment === activeKey
-            ? { ...invoice, items: updatedProducts }
-            : invoice
+          invoice.id_payment === activeKey ? { ...invoice, items: updatedProducts } : invoice
         )
       );
       return { ...prevSelectedProducts, [activeKey]: updatedProducts };
     });
   };
-  const handleChangePriceProduct = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    productId: string
-  ) => {
+  const handleChangePriceProduct = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
     let value = parseInt(e.target.value.replace(/[^0-9]/g, ""), 10);
     console.log("value", value);
     console.log("productId", productId);
@@ -316,10 +295,7 @@ const SalePageDemo: React.FC = () => {
                   ? {
                       ...product,
                       quantity: Math.max(product.quantity - 1, 0),
-                      total_price: Math.max(
-                        (product.quantity - 1) * product.price,
-                        0
-                      ),
+                      total_price: Math.max((product.quantity - 1) * product.price, 0),
                     }
                   : product
               ),
@@ -336,9 +312,7 @@ const SalePageDemo: React.FC = () => {
           ? {
               ...invoice,
               items: invoice.items.map((product: any) =>
-                product.id === productId
-                  ? { ...product, quantity: product.quantity + 1 }
-                  : product
+                product.id === productId ? { ...product, quantity: product.quantity + 1 } : product
               ),
             }
           : invoice
@@ -352,8 +326,7 @@ const SalePageDemo: React.FC = () => {
           ? {
               ...invoice,
               items: invoice.items.map((product: any) =>
-                product.id === productID &&
-                product.quantity < product.remaining_quantity
+                product.id === productID && product.quantity < product.remaining_quantity
                   ? {
                       ...product,
                       quantity: product.quantity + 1,
@@ -401,9 +374,7 @@ const SalePageDemo: React.FC = () => {
   const addInvoice = () => {
     if (invoiceList.length < maxItems) {
       // Find the highest existing invoice number
-      const highestInvoiceNumber = Math.max(
-        ...invoiceList.map((invoice) => invoice.id)
-      );
+      const highestInvoiceNumber = Math.max(...invoiceList.map((invoice) => invoice.id));
       const newInvoiceNumber = highestInvoiceNumber + 1;
       const newKey = `${newInvoiceNumber}`;
       const newInvoice: Invoice = {
@@ -442,9 +413,7 @@ const SalePageDemo: React.FC = () => {
     return id;
   };
   useEffect(() => console.log("111", findCashBankIds), []);
-  const handlePaymentMethodChange = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handlePaymentMethodChange = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const newPaymentMethod = parseInt(event.target.value, 10);
     console.log("newPaymentMethod", newPaymentMethod);
     setSelectedPaymentMethod(newPaymentMethod);
@@ -462,9 +431,7 @@ const SalePageDemo: React.FC = () => {
     console.log("valueSearch", valueSearch);
   };
   const handleSelectCategory = (value: number) => {
-    const selectedCategory = dataCategorySearch.find(
-      (item) => item.value === value
-    );
+    const selectedCategory = dataCategorySearch.find((item) => item.value === value);
     if (selectedCategory) {
       console.log("select", selectedCategory.id);
       setIdSearchCategory({
@@ -490,9 +457,7 @@ const SalePageDemo: React.FC = () => {
   }, [debounceValueSearch]);
   const fetchSearchDataCategory = async () => {
     try {
-      const res = await products.getDataSearchProduct(
-        idSearchCategory.id_category
-      );
+      const res = await products.getDataSearchProduct(idSearchCategory.id_category);
       setDataProduct(res.data.items);
     } catch (err) {
       console.log("err", err);
@@ -542,6 +507,7 @@ const SalePageDemo: React.FC = () => {
   //   setIsActiveReturn(activeKey);
   // }, [activeKey]);
   const handleDetailInvoiceReturn = async (id: string, activeKey: string) => {
+    console.log("id", id);
     try {
       const res = await invoice.getDataDetailInvoiceReturn(id);
       const returnedInvoice = res.data;
@@ -555,7 +521,7 @@ const SalePageDemo: React.FC = () => {
         return prevInvoiceList.map((invoice: any) => {
           console.log("activeKey", isActiveReturn);
           console.log("activeKey", invoice.id_payment);
-          if (invoice.type === "return" && invoice.id_payment === activeKey) {
+          if (invoice.type === "return" && invoice.id_invoice === id) {
             return {
               ...invoice,
               items: updatedProducts,
@@ -590,12 +556,8 @@ const SalePageDemo: React.FC = () => {
     setInvoiceList([newInvoice]);
   };
   const removeInvoice = (targetKey: string) => {
-    const invoiceToRemove = invoiceList.find(
-      (invoice) => invoice.id_payment === targetKey
-    );
-    const remainingInvoices = invoiceList.filter(
-      (invoice) => invoice.id_payment !== targetKey
-    );
+    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
+    const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
     if (invoiceToRemove && invoiceToRemove.items.length > 0) {
       openModal();
       setKeyRemove(targetKey);
@@ -609,9 +571,7 @@ const SalePageDemo: React.FC = () => {
       // Invoice has no items, remove directly
       setInvoiceList(remainingInvoices);
       if (remainingInvoices.length) {
-        const targetIndex = invoiceList.findIndex(
-          (invoice) => invoice.id_payment === targetKey
-        );
+        const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === targetKey);
         const newActiveKey =
           targetIndex > 0
             ? remainingInvoices[targetIndex - 1].id_payment
@@ -628,9 +588,7 @@ const SalePageDemo: React.FC = () => {
       (invoice) => invoice.id_payment === key && invoice.type === "return"
     );
     if (returnInvoiceToRemove) {
-      const remainingInvoices = invoiceList.filter(
-        (invoice) => invoice.id_payment !== key
-      );
+      const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== key);
       if (remainingInvoices.length === 0) {
         createInvoiceOne();
         setActiveKey("1");
@@ -647,14 +605,10 @@ const SalePageDemo: React.FC = () => {
   const confirmRemoveInvoice = () => {
     if (keyRemove) {
       if (keyRemove === "1") {
-        const newInvoiceList = invoiceList.filter(
-          (invoice) => invoice.id_payment !== keyRemove
-        );
+        const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== keyRemove);
         setInvoiceList(newInvoiceList);
         if (newInvoiceList.length) {
-          const targetIndex = invoiceList.findIndex(
-            (invoice) => invoice.id_payment === keyRemove
-          );
+          const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === keyRemove);
           const newActiveKey =
             targetIndex > 0
               ? newInvoiceList[targetIndex - 1].id_payment
@@ -667,15 +621,11 @@ const SalePageDemo: React.FC = () => {
           localStorage.setItem("idActiveInvoice", "1");
         }
       } else {
-        const newInvoiceList = invoiceList.filter(
-          (invoice) => invoice.id_payment !== keyRemove
-        );
+        const newInvoiceList = invoiceList.filter((invoice) => invoice.id_payment !== keyRemove);
         setInvoiceList(newInvoiceList);
 
         if (newInvoiceList.length) {
-          const targetIndex = invoiceList.findIndex(
-            (invoice) => invoice.id_payment === keyRemove
-          );
+          const targetIndex = invoiceList.findIndex((invoice) => invoice.id_payment === keyRemove);
           const newActiveKey =
             targetIndex > 0
               ? newInvoiceList[targetIndex - 1].id_payment
@@ -692,12 +642,8 @@ const SalePageDemo: React.FC = () => {
     }
   };
   const removeNotConFirmInvoice = (targetKey: string) => {
-    const invoiceToRemove = invoiceList.find(
-      (invoice) => invoice.id_payment === targetKey
-    );
-    const remainingInvoices = invoiceList.filter(
-      (invoice) => invoice.id_payment !== targetKey
-    );
+    const invoiceToRemove = invoiceList.find((invoice) => invoice.id_payment === targetKey);
+    const remainingInvoices = invoiceList.filter((invoice) => invoice.id_payment !== targetKey);
     if (invoiceToRemove) {
       if (invoiceList.length === 1 && targetKey === "1") {
         // Only one invoice left and it's "Hóa đơn 1", do not allow removal
@@ -711,10 +657,7 @@ const SalePageDemo: React.FC = () => {
         // If "Hóa đơn 1" is removed, set the active key to the first remaining invoice
         if (remainingInvoices.length) {
           setActiveKey(remainingInvoices[0].id_payment);
-          localStorage.setItem(
-            "idActiveInvoice",
-            remainingInvoices[0].id_payment
-          );
+          localStorage.setItem("idActiveInvoice", remainingInvoices[0].id_payment);
         } else {
           // If no remaining invoices, reset to default "Hóa đơn 1"
           createInvoiceOne();
@@ -725,10 +668,7 @@ const SalePageDemo: React.FC = () => {
         // If other invoice is removed, ensure "Hóa đơn 1" is visible
         if (remainingInvoices.length) {
           setActiveKey(remainingInvoices[0].id_payment);
-          localStorage.setItem(
-            "idActiveInvoice",
-            remainingInvoices[0].id_payment
-          );
+          localStorage.setItem("idActiveInvoice", remainingInvoices[0].id_payment);
         } else {
           createInvoiceOne();
           setActiveKey("1");
@@ -823,14 +763,9 @@ const SalePageDemo: React.FC = () => {
     }
   }, [debouncedSearchTerm]);
   const detailTotalInvoice = (invoiceID: string) => {
-    const activeInvoice = invoiceList.find(
-      (invoice) => invoice.id_payment === invoiceID
-    );
+    const activeInvoice = invoiceList.find((invoice) => invoice.id_payment === invoiceID);
     if (activeInvoice) {
-      const totalQuantity = activeInvoice.items.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
+      const totalQuantity = activeInvoice.items.reduce((sum, item) => sum + item.quantity, 0);
       const totalPrice = activeInvoice.items.reduce(
         (sum, item) => sum + item.quantity * item.capital_price,
         0
@@ -839,11 +774,7 @@ const SalePageDemo: React.FC = () => {
     }
     return { totalQuantity: 0, totalPrice: 0 };
   };
-  const calculateFinalPrice = (
-    totalPrice: any,
-    discountPrice: any,
-    isPercentage: any
-  ) => {
+  const calculateFinalPrice = (totalPrice: any, discountPrice: any, isPercentage: any) => {
     let finalPrice = totalPrice;
     if (isPercentage) {
       finalPrice -= (totalPrice * discountPrice) / 100;
@@ -890,9 +821,7 @@ const SalePageDemo: React.FC = () => {
   const handlePercentageClick = () => {
     if (!isPercentage) {
       // Convert VND discount to percentage
-      const discountInPercentage = ((discountPrice / totalPrice) * 100).toFixed(
-        2
-      );
+      const discountInPercentage = ((discountPrice / totalPrice) * 100).toFixed(2);
       setDiscountPrice(parseFloat(discountInPercentage));
       setIsPercentage(true);
     }
@@ -900,8 +829,7 @@ const SalePageDemo: React.FC = () => {
   };
   const typeInvoiListDetail = () => {
     const typeInvoiceList = invoiceList.filter(
-      (invoice) =>
-        invoice.type === "invoice" && invoice.id_payment === activeKey
+      (invoice) => invoice.type === "invoice" && invoice.id_payment === activeKey
     );
     const items = typeInvoiceList.flatMap((invoice) =>
       invoice.items.map((product) => ({
@@ -930,7 +858,6 @@ const SalePageDemo: React.FC = () => {
     setDataReturnPayment(typeInvoiceList);
   }, [invoiceList, activeKey, discountPrice, isPercentage, totalPrice]);
   useEffect(() => {
-    console.log("111");
     if (activeKey.includes("return")) {
       setIsOpenPaymentReturn(true);
       console.log("isOpenPaymentReturn", isOpenPaymentReturn);
@@ -969,8 +896,8 @@ const SalePageDemo: React.FC = () => {
       >
         <h3 className="confirm_remove_invoices">Đóng hóa đơn {keyRemove}</h3>
         <p className="text_remove_invoices">
-          Thông tin của <span>Hóa đơn {keyRemove}</span> sẽ không được lưu lại.
-          Bạn có chắc chắn muốn đóng không?
+          Thông tin của <span>Hóa đơn {keyRemove}</span> sẽ không được lưu lại. Bạn có chắc chắn
+          muốn đóng không?
         </p>
       </Modal>
       <div className="containner-sales">
