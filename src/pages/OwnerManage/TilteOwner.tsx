@@ -1,13 +1,15 @@
 import React from "react";
-
-const TiltleCustomer = () => {
+interface PropTitleOwners {
+  titleName: string;
+}
+const TitleOwner: React.FC<PropTitleOwners> = ({ titleName }) => {
   return (
     <>
       <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-        Quản lý khách hàng
+        {titleName}
       </h1>
     </>
   );
 };
 
-export default TiltleCustomer;
+export default TitleOwner;
