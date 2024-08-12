@@ -44,7 +44,7 @@
 }
 .input-form:focus {
   border-color: var(--border-focus-color);
-  border-width: 2px;
+  border-width: 1px;
 }
 .btn-info {
   display: flex;

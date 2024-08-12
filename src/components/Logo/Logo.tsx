@@ -9,7 +9,7 @@ const Logo: React.FC<Logoprops> = ({ collapsedTheme }) => {
     const userData = localStorage.getItem("INFO_USER");
     if (userData) {
       const user = JSON.parse(userData);
-      return user.store?.name || "Admin";
+      return user.store?.name || "Super Admin";
     }
     return "Default Store Name"; // Tên cửa hàng mặc định nếu không có thông tin trong localStorage
   };

@@ -10,7 +10,7 @@ const Groups = () => {
           color: "var(--color-title)",
         }}
       >
-        Quản lí nhóm quyền
+        Quản lý nhóm quyền
       </h1>
       <div className="heder">
         <div className="header-top">

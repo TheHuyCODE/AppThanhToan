@@ -105,8 +105,9 @@ form .input-box {
 .input-box input::placeholder {
   color: grey;
 }
-.input-box input:focus {
-  border-color: black !important;
+.input-box input:focus,
+.input-box input:hover {
+  border-color: var(--border-focus-color) !important;
 }
 .form-email {
   position: absolute;

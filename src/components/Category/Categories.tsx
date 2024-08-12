@@ -482,7 +482,7 @@ const Categories: React.FC<CategoriesProp> = ({
             marginBottom: "6px",
           }}
         >
-          Xóa sản phẩm
+          Xóa danh mục cấp 1
         </h1>
         <p
           style={{

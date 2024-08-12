@@ -22,6 +22,11 @@ import { localeProduct } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
 import { handleError } from "../../utils/errorHandler";
+
+import DownloadButton from "../UI/ButtonExport";
+import ButtonExportToExcel from "../UI/ButtonExport";
+import { FILE_NAME_EXPORT } from "../../constants/constants";
+import { getDateTimeNow } from "../../constants/functionContants";
 interface TreeDataNode {
   id: string;
   pId: string | null;
@@ -39,6 +44,8 @@ const Products = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [dataProduct, setDataProduct] = useState([]);
   const navigate = useNavigate();
+  console.log("time", getDateTimeNow());
+  const fileName = `${FILE_NAME_EXPORT}_${getDateTimeNow()}`;
   const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
@@ -482,7 +489,7 @@ const Products = () => {
           color: "var(--color-title)",
         }}
       >
-        Quản lí sản phẩm
+        Quản lý sản phẩm
       </h1>
       <div
         className="header"
@@ -518,7 +525,7 @@ const Products = () => {
             <TreeSelect
               showSearch
               placeholder="Danh mục sản phẩm"
-              style={{ width: "210px", height: "35px" }}
+              style={{ width: "260px", height: "35px" }}
               value={selectedPath || undefined}
               notFoundContent="Không có danh mục sản phẩm"
               dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
@@ -560,10 +567,11 @@ const Products = () => {
             marginLeft: "80px",
           }}
         >
+          <ButtonExportToExcel fileName={fileName}></ButtonExportToExcel>
           {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
-          <button className="btn-header-right" style={{ width: "100px" }}>
+          {/* <button className="btn-header-right" style={{ width: "100px" }}>
             <FaArrowAltCircleUp /> &nbsp; Export
-          </button>
+          </button> */}
           <button className="btn-header-right" style={{ width: "100px" }}>
             <FaArrowAltCircleDown /> &nbsp; Import
           </button>
@@ -627,9 +635,9 @@ const Products = () => {
             defaultCurrent={1}
             total={totalItems}
           />
-          <span className="total-items" style={{ color: "var(--cl-dark)" }}>{`${
-            datatable?.length || 0
-          }/${dataProduct.total || 0}`}</span>
+          <span className="total-items" style={{ color: "var(--cl-dark)" }}>
+            {`${dataProduct.total || 0} `}sản phẩm
+          </span>
         </div>
       </div>
     </div>

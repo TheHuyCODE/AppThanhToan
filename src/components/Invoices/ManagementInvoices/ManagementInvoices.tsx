@@ -247,7 +247,7 @@ const ManagementInvoices: React.FC = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
         <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-          Quản lí hóa đơn
+          Quản lý hóa đơn
         </h1>
         <div className="header-customers">
           <HeaderInvoices

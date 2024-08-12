@@ -175,7 +175,7 @@ const ShirtSubCategories: React.FC<shirtSubCategoriesProp> = ({
       if (res.code === 200) {
         console.log("res:", res);
         setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
-        toast.success("Đã xóa sản phẩm cấp 3 thành công");
+        toast.success("Đã xóa danh mục cấp 3 thành công");
         // await fetchDataCategory();
         await fetchDataCategorySecondChild(idCategories);
       } else {
@@ -450,10 +450,10 @@ const ShirtSubCategories: React.FC<shirtSubCategoriesProp> = ({
             marginBottom: "6px",
           }}
         >
-          Xóa sản phẩm
+          Xóa danh mục
         </h1>
         <span style={{ fontSize: "15px", padding: "5px 10px" }}>
-          Bạn chắc chắn muốn xóa sản phẩm này không?
+          Bạn chắc chắn muốn xóa danh mục này không?
         </span>
       </Modal>
     </>

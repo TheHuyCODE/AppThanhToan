@@ -521,7 +521,7 @@ const SalePageDemo: React.FC = () => {
         return prevInvoiceList.map((invoice: any) => {
           console.log("activeKey", isActiveReturn);
           console.log("activeKey", invoice.id_payment);
-          if (invoice.type === "return" && invoice.id_invoice === id) {
+          if (invoice.type === "return") {
             return {
               ...invoice,
               items: updatedProducts,

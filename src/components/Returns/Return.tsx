@@ -175,7 +175,7 @@ const Return = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
         <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-          Quản lí hóa đơn trả hàng
+          Quản lý hóa đơn trả hàng
         </h1>
         <div className="header-customers">
           <HeaderReturn

@@ -19,6 +19,22 @@ const products = {
       params,
     });
   },
+  getDataExport: () => {
+    const url = "api/v1/manage/product";
+    const params = {
+      is_export: 1
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "ngrok-skip-browser-warning": "true",
+        "Content-Disposition": "attachment;filename=report.xls",
+        "Content-Type": "application/octet-stream" // or "application/vnd.ms-excel"
+      },
+      params,
+      responseType: "blob",
+    });
+  },
   getSellProduct: () => {
     const url = "api/v1/manage/product";
     const params = {

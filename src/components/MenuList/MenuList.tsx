@@ -81,7 +81,7 @@ const MenuList: React.FC = () => {
       key: "User_management",
       icon: <IoPerson />,
       link: "/admin/users",
-      label: "Quản lý người dùng",
+      label: "Quản lý nhân viên",
     },
     {
       key: "Product_management",
@@ -90,12 +90,12 @@ const MenuList: React.FC = () => {
       children: [
         {
           key: "Product_management_child",
-          icon: <RiListSettingsFill />,
+          // icon: <RiListSettingsFill />,
           label: <Link to="/admin/products">Quản lý sản phẩm</Link>,
         },
         {
           key: "categories",
-          icon: <RiListSettingsFill />,
+          // icon: <RiListSettingsFill />,
           label: <Link to="/admin/categories">Quản lý danh mục sản phẩm</Link>,
         },
       ],
@@ -116,13 +116,13 @@ const MenuList: React.FC = () => {
       key: "owner_management",
       icon: <CiBank />,
       link: "/admin/owners",
-      label: "Quản lí chủ của hàng",
+      label: "Quản lý chủ của hàng",
     },
     {
       key: "store_management",
       icon: <CiBank />,
       link: "/admin/storeAdmin",
-      label: "Quản lí cửa hàng",
+      label: "Quản lý cửa hàng",
     },
   ];
 

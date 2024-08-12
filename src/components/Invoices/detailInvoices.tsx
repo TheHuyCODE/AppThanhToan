@@ -1,8 +1,8 @@
 import React, { useEffect, useState, forwardRef } from "react";
 import "./detailInvoices.css";
 import "../styles/valiables.css";
-import logoTitle from "../../assets/img/logoTitle.png";
-
+// import logoTitle from "../../assets/img/logoTitle.png";
+import logo from "../../../public/Logo.png";
 interface InvoiceData {
   created_date: string;
   id: string;
@@ -41,8 +41,7 @@ interface DetailInvoicesProps {
 const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
   ({ linkQR, finalPrice }, ref) => {
     const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
-    const [invoiceDataStore, setInvoiceDataStore] =
-      useState<InvoiceStore | null>(null);
+    const [invoiceDataStore, setInvoiceDataStore] = useState<InvoiceStore | null>(null);
 
     useEffect(() => {
       const data = localStorage.getItem("dataDetailInvoice");
@@ -77,14 +76,13 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
       return `${timeCurrent}-${month}/${date}/${year}`;
     };
 
-    const customerName =
-      invoiceData.customer.full_name || "Khách hàng không xác định";
+    const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
     const adminName = invoiceData.create_user.full_name || "Admin";
     const phoneCreated = invoiceDataStore?.phone || "";
     const addressCreated = invoiceDataStore?.address || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
     const addressPhone = invoiceDataStore?.store.address || "";
-    const hiddenImgQrCode = invoiceData.payment_methods.type || false;
+    // const hiddenImgQrCode = invoiceData.payment_methods.type || false;
     // const Name
 
     return (
@@ -95,7 +93,7 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
           </div>
           <div className="main_header_invoices">
             <div className="logo">
-              <img src={logoTitle} alt="logo_Title" />
+              <img src={logo} alt="logo_Title" />
               <span className="name_store">App Bán Hàng</span>
             </div>
             <div className="info_admin">
@@ -131,11 +129,7 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
                     <td>{index + 1}</td>
                     <td>{product.name}</td>
                     <td>{product.quantity}</td>
-                    <td>
-                      {(product.quantity * product.price).toLocaleString(
-                        "vi-VN"
-                      )}
-                    </td>
+                    <td>{(product.quantity * product.price).toLocaleString("vi-VN")}</td>
                   </tr>
                 ))}
               </tbody>
@@ -154,12 +148,12 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
             </div>
           </div>
         </div>
-        {hiddenImgQrCode && (
-          <div className="detail_qr_invoices">
-            <span>Quét mã thanh toán</span>
-            <img src={linkQR} alt="QR_Code" />
-          </div>
-        )}
+        {/* {hiddenImgQrCode && ( */}
+        <div className="detail_qr_invoices">
+          <span>Quét mã thanh toán</span>
+          <img src={linkQR} alt="QR_Code" />
+        </div>
+        {/* )} */}
       </div>
     );
   }

@@ -23,7 +23,7 @@ interface AppSiderProps {
 const { Sider } = Layout;
 
 const AppSider: React.FC<AppSiderProps> = ({ collapsedTheme, setCollapsedTheme }) => {
-  const { darkTheme } = useAuth(); // Use darkTheme from useAuth
+  // const { darkTheme } = useAuth(); // Use darkTheme from useAuth
   return (
     <Sider
       theme={"light"}

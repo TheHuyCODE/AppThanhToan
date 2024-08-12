@@ -1,11 +1,10 @@
-import { Alert, DatePicker, Input, Select } from "antd";
+import { Alert, Input, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/valiables.css";
 import "./User.css";
 import users from "../../configs/users";
-import { boolean } from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import { handleError } from "../../utils/errorHandler";
 interface ModifyUsers {
@@ -20,7 +19,6 @@ const ModifyUsers = () => {
   const [dataRole, setDataRole] = useState(null);
   const [hiddenSave, setHiddenSave] = useState(false);
   const params = useParams<{ userId: string }>();
-  const [dataModifyUsery, setDataModifyUser] = useState(null);
   const [dataStore, setDataStore] = useState<ModifyUsers>({
     full_name: "",
     email: "",
@@ -130,21 +128,21 @@ const ModifyUsers = () => {
               color: "#03176E",
             }}
           >
-            Sửa thông tin người dùng
+            Sửa thông tin nhân viên
           </h1>
         </div>
         <div
           className="modify-users"
           style={{
-            width: "550px",
+            width: "650px",
             height: "auto",
-            border: "1px solid lightgrey",
-            borderRadius: "5px",
+            borderRadius: "8px",
             display: "flex",
             flexDirection: "column",
             gap: "10px",
             padding: "20px",
-            marginTop: "20px",
+            marginTop: "40px",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
           }}
         >
           <div className="input-info">
@@ -154,6 +152,7 @@ const ModifyUsers = () => {
             <Input
               type="text"
               className="input-form"
+              style={{ width: "400px" }}
               onChange={(e) => handleChangeInputUsers(e.target.value, "full_name")}
               value={dataStore.full_name || ""}
             />
@@ -165,6 +164,7 @@ const ModifyUsers = () => {
             <Input
               type="text"
               className="input-form"
+              style={{ width: "400px" }}
               value={dataStore.email || ""}
               onChange={(e) => handleChangeInputUsers(e.target.value, "email")}
             />
@@ -174,6 +174,7 @@ const ModifyUsers = () => {
             <Input
               type="text"
               className="input-form"
+              style={{ width: "400px" }}
               value={dataStore.phone || ""}
               onChange={(e) => handleChangeInputUsers(e.target.value, "phone")}
             />
@@ -190,7 +191,7 @@ const ModifyUsers = () => {
               value={getSelectedValue(dataStore.role.id)}
               optionFilterProp="children"
               onChange={handleChange}
-              style={{ width: 300, height: 40 }}
+              style={{ width: 400, height: 40 }}
               options={selectAuth}
             />
           </div>
@@ -203,6 +204,7 @@ const ModifyUsers = () => {
               type="text"
               className="input-form"
               value={dataStore.is_active ? "Kích hoạt" : "Chưa kích hoạt"}
+              style={{ width: "400px" }}
               disabled
             />
           </div>

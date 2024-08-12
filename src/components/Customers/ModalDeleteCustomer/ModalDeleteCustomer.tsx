@@ -56,7 +56,7 @@ const ModalDeleteCustomer: React.FC<ModalDeleteProps> = ({
             marginBottom: "6px",
           }}
         >
-          Xóa tài khoản thanh toán
+          Xóa tài khách hàng
         </h1>
         <p
           style={{

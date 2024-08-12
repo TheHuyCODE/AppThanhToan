@@ -38,7 +38,7 @@ const titleCategories: React.FC<TitleCategoriesProp> = ({
           onClick={showTableCategory}
           style={{ color: "rgb(3,23,110)" }}
         >
-          Quản lí danh mục{" "}
+          Quản lý danh mục{" "}
         </a>
         <a
           className={`title-category  ${isChildCategorySelected ? "selected-child" : ""}`}

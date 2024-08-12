@@ -292,7 +292,7 @@ const Payment = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
         <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-          Quản lí phương thức thanh toán
+          Quản lý phương thức thanh toán
         </h1>
         <div
           className="header"

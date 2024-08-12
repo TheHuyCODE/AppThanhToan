@@ -10,10 +10,9 @@ import { format } from "date-fns";
 import { useAuth } from "../auth/AuthContext";
 import { localCategorySeconds } from "../TableConfig/TableConfig";
 import useDebounce from "../auth/useDebounce";
-import Spinners from "../SpinnerLoading/Spinners";
 import TextArea from "antd/es/input/TextArea";
 import { handleError } from "../../utils/errorHandler";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TitleCategories from "./TitleCategories";
 interface SubCategoriesProp {
   selectedCategory: string;
@@ -112,7 +111,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
       if (res.code === 200) {
         console.log("res:", res);
         setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
-        toast.success("Đã xóa sản phẩm cấp 2 thành công");
+        toast.success("Đã xóa danh mục cấp 2 thành công");
         // await fetchDataCategory();
         await fetchDataCategoryChild(idCategories);
         setLoading(false);
@@ -431,7 +430,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
             marginBottom: "6px",
           }}
         >
-          Xóa sản phẩm
+          Xóa danh mục
         </h1>
         <p
           style={{

@@ -168,7 +168,7 @@ const Admins = () => {
           color: "var(--color-title)",
         }}
       >
-        Quản lí quản trị viên
+        Quản lý quản trị viên
       </h1>
       <div className="header">
         <div className="header-top">

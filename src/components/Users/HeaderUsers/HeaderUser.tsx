@@ -55,7 +55,7 @@ const HeaderUser: React.FC<HeaderUserProps> = ({
               ref={inputSearchRef}
               type="text"
               className="search-users"
-              placeholder="Tìm nguời dùng"
+              placeholder="Tìm nhân viên"
               onChange={onChangeSearchUsers}
             />
             <CiSearch
@@ -84,14 +84,14 @@ const HeaderUser: React.FC<HeaderUserProps> = ({
         }}
       >
         {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
-        <button className="btn-header-right" style={{ width: "100px" }}>
+        {/* <button className="btn-header-right" style={{ width: "100px" }}>
           <FaArrowAltCircleUp /> &nbsp; Export
         </button>
         <button className="btn-header-right" style={{ width: "100px" }}>
           <FaArrowAltCircleDown /> &nbsp; Import
-        </button>
+        </button> */}
         <button className="btn-header-right" onClick={handleAddUsers}>
-          <IoMdAdd className="icon" /> Thêm người dùng
+          <IoMdAdd className="icon" /> Thêm nhân viên
         </button>
       </div>
     </>

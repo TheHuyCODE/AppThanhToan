@@ -1,25 +1,32 @@
-import { Alert, Table } from "antd";
-import React, { useEffect } from "react";
+import { Table } from "antd";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import owners from "../../configs/owner";
 import TitleOwner from "./TilteOwner";
 import HeaderContent from "../../components/HeaderComponent/HeaderContent";
 import { localOwners } from "../../components/TableConfig/TableConfig";
+import ErrorModal from "../../components/ErrorApi/ErrorApi";
 
 const Owner = () => {
   const titleSearch = "Tìm kiếm chủ cửa hàng";
   const nameButtonAdd = "Thêm chủ cửa hàng";
   const titleName = "Quản lý chủ cửa hàng";
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái để điều khiển việc hiển thị modal
+  const [errorMessage, setErrorMessage] = useState("");
   const getDataOwners = async () => {
     try {
       const res = await owners.getAll();
       console.log("data", res.data);
     } catch (error) {
-      <Alert message="Error" type="error" showIcon />;
+      setErrorMessage("An error occurred while fetching data."); // Đặt thông báo lỗi
+      setIsModalVisible(true); // Hiển thị modal
     }
   };
   const handleSearchOwners = () => {};
   const handleClickOpenModal = () => {};
+  const handleCloseModal = () => {
+    setIsModalVisible(false); // Đóng modal
+  };
   useEffect(() => {
     getDataOwners();
   }, []);
@@ -74,6 +81,11 @@ const Owner = () => {
             handleClickOpenModal={handleClickOpenModal}
           />
         </div>
+        <ErrorModal
+          visible={isModalVisible}
+          errorMessage={errorMessage}
+          onClose={handleCloseModal}
+        />
         <div className="table-container">
           <Table
             columns={columns}

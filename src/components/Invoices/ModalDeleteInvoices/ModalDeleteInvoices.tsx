@@ -52,7 +52,7 @@ const ModalDeleteInvoices: React.FC<ModalDeleteInvoicesProps> = ({
             marginBottom: "6px",
           }}
         >
-          Xóa tài hóa đơn
+          Xóa hóa đơn
         </h1>
         <p
           style={{

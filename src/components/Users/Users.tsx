@@ -1,19 +1,7 @@
-import {
-  Alert,
-  Button,
-  DatePicker,
-  Pagination,
-  Select,
-  Space,
-  Table,
-  TableColumnsType,
-  Tag,
-} from "antd";
-import React, { useEffect, useState } from "react";
-import { CiSearch } from "react-icons/ci";
+import { Alert, Pagination, Space, Table, TableColumnsType } from "antd";
+import { useEffect, useState } from "react";
 import "./User.css";
-import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
-import { BiBorderAll } from "react-icons/bi";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "../styles/valiables.css";
 import { ToastContainer } from "react-toastify";
@@ -30,7 +18,6 @@ const Users = () => {
   const [dataUsers, setDataUsers] = useState<any[]>([]);
   const [dataRole, setDataRole] = useState();
   const [totalInvoice, setTotalInvoice] = useState(0);
-
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -38,10 +25,6 @@ const Users = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
 
   //search for users
-  const detailUsers = (items: any) => {
-    console.log("itemsId", items.key);
-    navigate(`/admin/users/${items.key}`);
-  };
   const modifyUsers = (items: any) => {
     console.log("itemsId", items.key);
     navigate(`/admin/users/edit/${items.key}`);
@@ -58,11 +41,13 @@ const Users = () => {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
+      width: 90,
     },
     {
-      title: "Họ tên",
+      title: "Họ và tên",
       dataIndex: "full_name",
       key: "full_name",
+      width: 130,
     },
     {
       title: "Email",
@@ -180,7 +165,7 @@ const Users = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
         <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-          Quản lí người dùng
+          Quản lý nhân viên
         </h1>
         <div className="header-customers">
           <HeaderUser
@@ -221,7 +206,7 @@ const Users = () => {
             />
             <span className="total-items" style={{ color: "black" }}>{`${
               dataUsers.length | 0
-            } hóa đơn`}</span>
+            } nhân viên`}</span>
           </div>
           {/* <span className="total-items">{`${dataSource?.length} items`}</span> */}
         </div>

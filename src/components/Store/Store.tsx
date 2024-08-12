@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "./store.css";
 import logoStore from "../../../public/Logo.png";
@@ -64,7 +64,7 @@ const Store = () => {
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="header-customer">
         <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
-          Quản lí thông tin cửa hàng
+          Quản lý thông tin cửa hàng
         </h1>
       </div>
       <div className="content-store">

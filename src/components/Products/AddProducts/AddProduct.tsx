@@ -1,5 +1,5 @@
 import { Select, Input, TreeSelect } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosArrowBack, IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import "../ProductManagement.css";
