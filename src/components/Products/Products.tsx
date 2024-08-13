@@ -25,7 +25,7 @@ import { handleError } from "../../utils/errorHandler";
 
 import DownloadButton from "../UI/ButtonExport";
 import ButtonExportToExcel from "../UI/ButtonExport";
-import { FILE_NAME_EXPORT } from "../../constants/constants";
+import { FILE_NAME_EXPORT, LINK_EXPORT } from "../../constants/constants";
 import { getDateTimeNow } from "../../constants/functionContants";
 interface TreeDataNode {
   id: string;
@@ -567,7 +567,7 @@ const Products = () => {
             marginLeft: "80px",
           }}
         >
-          <ButtonExportToExcel fileName={fileName}></ButtonExportToExcel>
+          <ButtonExportToExcel linkExport={LINK_EXPORT} fileName={fileName}></ButtonExportToExcel>
           {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
           {/* <button className="btn-header-right" style={{ width: "100px" }}>
             <FaArrowAltCircleUp /> &nbsp; Export

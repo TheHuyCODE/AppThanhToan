@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import HeaderProfile from "./HeaderProfile";
 import "./profile.css";
 import "../styles/valiables.css";
 import LeftContentProfile from "./LeftContentProfile";

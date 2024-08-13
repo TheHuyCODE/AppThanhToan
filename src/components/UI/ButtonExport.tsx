@@ -3,13 +3,17 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { FaArrowAltCircleUp } from "react-icons/fa";
 interface ButtonExportToExcelProps {
-  fileName: string;
+  linkExport: string | undefined;
+  fileName: string | undefined;
 }
-const ButtonExportToExcel: React.FC<ButtonExportToExcelProps> = ({ fileName }) => {
+const ButtonExportToExcel: React.FC<ButtonExportToExcelProps> = ({ linkExport, fileName }) => {
   const access_token = localStorage.getItem("access_token");
+  const BASEURL = import.meta.env.VITE_APP_API_URL;
+  const url = `${BASEURL}/${linkExport}?is_export=1`;
+  console.log("url", url);
   const downloadExcel = () => {
     axios({
-      url: "https://aca1-118-70-136-195.ngrok-free.app/api/v1/manage/product?is_export=1", // Replace with your actual backend endpoint
+      url: `${url}`, // Replace with your actual backend endpoint
       method: "GET",
       responseType: "blob",
       headers: {

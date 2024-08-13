@@ -2,7 +2,7 @@ import { Input, Select } from "antd";
 import React, { useState, useEffect, useRef } from "react";
 import { DataProfile } from "../TableConfig/TableConfig";
 import Profiles from "../../configs/profiles";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { IoPerson } from "react-icons/io5";
 import { handleError } from "../../utils/errorHandler";
 import { CiCamera } from "react-icons/ci";

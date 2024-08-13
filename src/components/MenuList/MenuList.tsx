@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Menu, Modal } from "antd";
 import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
-import { IoPerson } from "react-icons/io5";
+import { IoBarChartOutline, IoPerson } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
 import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
 import { CiBank } from "react-icons/ci";
@@ -59,15 +59,15 @@ const MenuList: React.FC = () => {
     },
     {
       key: "sub1",
-      icon: <RiListSettingsFill />,
+      icon: <IoBarChartOutline />,
       label: "Báo cáo",
       children: [
         {
           key: "3",
-          icon: <RiListSettingsFill />,
+
           label: <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>,
         },
-        { key: "4", icon: <RiListSettingsFill />, label: "Báo cáo tồn kho" },
+        { key: "4", label: "Báo cáo tồn kho" },
       ],
     },
     {
@@ -156,7 +156,7 @@ const MenuList: React.FC = () => {
         {filteredMenuItems.map((item) =>
           item.children ? (
             <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
-              {item.children.map((child) => (
+              {item.children.map((child: any) => (
                 <Menu.Item key={child.key} icon={child.icon}>
                   <Link to={child.link || "#"}>{child.label}</Link>
                 </Menu.Item>
