@@ -6,15 +6,18 @@ import { handleError } from "../../utils/errorHandler";
 interface ModalAddOwnersProps {
   isModalAddOwners: boolean;
   handleClickOpenModal: () => void;
+  getDataOwners: () => void;
 }
 const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
   isModalAddOwners,
   handleClickOpenModal,
+  getDataOwners,
 }) => {
   const [inputStore, setInputStore] = useState({
     name: "",
     full_name: "",
     email: "",
+    phone: "",
   });
   const [emailError, setEmailError] = useState<string | null>(null);
   const [isEmailTouched, setIsEmailTouched] = useState<boolean>(false);
@@ -49,29 +52,31 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
         ...prevState,
         [name]: value,
       };
-      console.log("newState", newState);
       validateForm();
       return newState;
     });
   };
   useEffect(() => {
     validateForm();
-  }, [isModalAddOwners]);
+  }, [inputStore]);
   const clickAddUserBanking = async () => {
     const formDataOwners = {
       name: inputStore.name,
       full_name: inputStore.full_name,
       email: inputStore.email,
+      phone: inputStore.phone,
     };
     try {
-      const res = await owners.putOwmers(formDataOwners);
+      const res = await owners.postOwners(formDataOwners);
       console.log("data", res.data);
       toast.success("Thêm tài khoản thành công");
       setInputStore({
         name: "",
         full_name: "",
         email: "",
+        phone: "",
       });
+      await getDataOwners();
     } catch (error) {
       handleError(error);
     }
@@ -88,37 +93,7 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
         okText="Thêm"
         cancelText="Hủy bỏ"
       >
-        <h1 className="title-addItem">Thêm tài khoản</h1>
-        <div className="admin-bank bank-input-container">
-          <label htmlFor="admin_bank">
-            Tên cửa hàng<span>*</span>:
-          </label>
-          <Input
-            placeholder="Nhập tên cửa hàng"
-            className="input-name-category"
-            name="name"
-            onChange={setHandleInputOwners}
-            value={inputStore.name}
-            style={{ width: "320px", height: "40px" }}
-          />
-        </div>
-        <div className="number-bank bank-input-container">
-          <label htmlFor="number_bank">
-            Họ và tên<span>*</span>:
-          </label>
-          <div>
-            <Input
-              // ref={numberRef}
-              type="text"
-              name="full_name"
-              className="input-name-category"
-              onChange={setHandleInputOwners}
-              value={inputStore.full_name}
-              placeholder="Nhập họ tên"
-              style={{ width: "320px", height: "40px" }}
-            />
-          </div>
-        </div>
+        <h1 className="title-addItem">Thêm chủ sở hữu</h1>
         <div className="admin-bank bank-input-container">
           <label htmlFor="admin_bank">
             Email<span>*</span>:
@@ -127,6 +102,7 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
             placeholder="Nhập email đăng kí"
             className="input-name-category"
             onChange={setHandleInputOwners}
+            autoComplete="off"
             value={inputStore.email}
             name="email"
             style={{ width: "320px", height: "40px" }}
@@ -145,6 +121,55 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
             {emailError}
           </div>
         )}
+
+        <div className="number-bank bank-input-container">
+          <label htmlFor="number_bank">
+            Họ và tên<span>*</span>:
+          </label>
+          <div>
+            <Input
+              type="text"
+              name="full_name"
+              className="input-name-category"
+              onChange={setHandleInputOwners}
+              autoComplete="off"
+              value={inputStore.full_name}
+              placeholder="Nhập họ tên"
+              style={{ width: "320px", height: "40px" }}
+            />
+          </div>
+        </div>
+        <div className="number-bank bank-input-container">
+          <label htmlFor="number_bank">
+            Số điện thoại<span>*</span>:
+          </label>
+          <div>
+            <Input
+              type="text"
+              name="phone"
+              className="input-name-category"
+              autoComplete="off"
+              onChange={setHandleInputOwners}
+              value={inputStore.phone}
+              placeholder="Nhập số điện thoại"
+              style={{ width: "320px", height: "40px" }}
+            />
+          </div>
+        </div>
+        <div className="admin-bank bank-input-container">
+          <label htmlFor="admin_bank">
+            Tên cửa hàng<span>*</span>:
+          </label>
+          <Input
+            placeholder="Nhập tên cửa hàng"
+            className="input-name-category"
+            name="name"
+            autoComplete="off"
+            onChange={setHandleInputOwners}
+            value={inputStore.name}
+            style={{ width: "320px", height: "40px" }}
+          />
+        </div>
       </Modal>
     </>
   );

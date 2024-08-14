@@ -2,17 +2,12 @@ import React from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoMdAdd } from "react-icons/io";
 interface HeaderContentProps {
-  tilteSearch: string;
+  titleSearch: string;
   nameButtonAdd: string;
   handleSearch: () => void;
   handleClickOpenModal: () => void;
 }
-const HeaderContent: React.FC<HeaderContentProps> = ({
-  tilteSearch,
-  nameButtonAdd,
-  handleSearch,
-  handleClickOpenModal,
-}) => {
+const HeaderContent: React.FC<HeaderContentProps> = ({ titleSearch, handleSearch }) => {
   return (
     <>
       <div className="header-left">
@@ -30,7 +25,7 @@ const HeaderContent: React.FC<HeaderContentProps> = ({
             />
             <input
               type="text"
-              placeholder={tilteSearch}
+              placeholder={titleSearch}
               className="search-category"
               style={{ width: "230px" }}
               onChange={handleSearch}
@@ -50,9 +45,9 @@ const HeaderContent: React.FC<HeaderContentProps> = ({
           marginRight: "10px",
         }}
       >
-        <button className="btn-header-right" onClick={handleClickOpenModal}>
+        {/* <button className="btn-header-right" onClick={handleClickOpenModal}>
           <IoMdAdd className="icon" /> {nameButtonAdd}
-        </button>
+        </button> */}
       </div>
     </>
   );

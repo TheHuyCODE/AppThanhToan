@@ -11,6 +11,7 @@ const store = {
 
         });
     },
+
     putDataStore: (data: object) => {
         const url = "/api/v1/store";
         return axiosClient.put(url, data, {
@@ -32,6 +33,24 @@ const store = {
             },
 
         });
-    }
+    },
+    getDataModifyStoreAdmin: (id: string) => {
+        const url = `api/v1/manage/store/${id}`
+        return axiosClient.get(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                "ngrok-skip-browser-warning": "true",
+            }
+        })
+    },
+    modifyStoreAdmin: (data: object, idItems: string) => {
+        const url = `api/v1/manage/store/${idItems}`
+        return axiosClient.put(url, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                "ngrok-skip-browser-warning": "true",
+            }
+        })
+    },
 }
 export default store

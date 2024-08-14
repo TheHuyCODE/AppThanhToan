@@ -463,7 +463,7 @@ const Categories: React.FC<CategoriesProp> = ({
           />
         </div>
       </Modal>
-      {/* Modal Delete product */}
+      {/* Modal Delete categories */}
       <Modal
         okButtonProps={{ style: { backgroundColor: "red" } }}
         width={600}

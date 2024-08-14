@@ -31,12 +31,13 @@ interface RecordType {
 interface ModalDetailInvoiceProps {
   openModalModify: boolean;
   dataDetail: DetailInvoice;
+
   onCloseModalModify: () => void;
 }
 const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
   openModalModify,
-  onCloseModalModify,
   dataDetail,
+  onCloseModalModify,
 }) => {
   const columns: TableColumnsType<RecordType> = [
     {
@@ -120,10 +121,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
           <div className="left-content-detail">
             <div className="row-detail">
               <span className="title-row">Mã hóa đơn:</span>
-              <span
-                className="value-row"
-                style={{ color: "black", fontWeight: "600" }}
-              >
+              <span className="value-row" style={{ color: "black", fontWeight: "600" }}>
                 {dataDetail.id}
               </span>
             </div>
@@ -190,15 +188,11 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
           <div className="price-detail">
             <div className="price-detail-row">
               <span className="">Tổng số lượng:</span>
-              <span className="title-price-detail">
-                {dataDetail.total_product || 0}
-              </span>
+              <span className="title-price-detail">{dataDetail.total_product || 0}</span>
             </div>
             <div className="price-detail-row">
               <span className="">Tổng tiền hàng:</span>
-              <span className="title-price-detail">
-                {dataDetail.total_amount || 0}
-              </span>
+              <span className="title-price-detail">{dataDetail.total_amount || 0}</span>
             </div>
             <div className="price-detail-row">
               <span className="">Giảm giá hóa đơn:</span>
@@ -206,15 +200,11 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
             </div>
             <div className="price-detail-row">
               <span className="">Khách cần trả:</span>
-              <span className="title-price-detail">
-                {dataDetail.customer_money}
-              </span>
+              <span className="title-price-detail">{dataDetail.customer_money}</span>
             </div>
             <div className="price-detail-row">
               <span className="">Khách đã trả:</span>
-              <span className="title-price-detail">
-                {dataDetail.customer_money}
-              </span>
+              <span className="title-price-detail">{dataDetail.customer_money}</span>
             </div>
           </div>
         </div>

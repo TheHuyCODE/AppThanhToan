@@ -1,66 +1,108 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import TitleOwner from "../OwnerManage/TilteOwner";
 import HeaderContent from "../../components/HeaderComponent/HeaderContent";
-import { Alert, Table } from "antd";
+import { Alert, Space, Table, TableColumnsType } from "antd";
 import { localStore } from "../../components/TableConfig/TableConfig";
 import store from "../../configs/store";
+import { FaPencilAlt } from "react-icons/fa";
+import ModalModifyStore from "./ModalModifyStore";
 
+interface RecordType {
+  stt: number;
+  id: string;
+  name: string;
+  owner_name: string;
+  phone: string;
+  address: string;
+  key: string;
+}
 const StoreAdmin = () => {
   const titleSearch = "Tìm kiếm cửa hàng";
   const nameButtonAdd = "Thêm cửa hàng";
   const titleName = "Quản lý cửa hàng";
   const handleSearchStore = () => {};
+  const [isDataStore, setIsDataStore] = useState([]);
+  const [idDeleteStores, setIdDeleteStores] = useState("");
+  const [isOpenModalModifyStores, setIsOpenModalModifyStores] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleClickOpenModal = () => {};
   const getDataStores = async () => {
+    setLoading(true);
     try {
       const res = await store.getAllStoreAdmin();
-      console.log("data", res.data);
+      console.log("data", res.data.items);
+      const data = res.data.items;
+      setIsDataStore(data);
+      setLoading(false);
     } catch (error) {
-      <Alert message="Error" type="error" showIcon />;
+      setLoading(false);
     }
+  };
+  const handleClickModify = (id: string) => {
+    setIsOpenModalModifyStores(!isOpenModalModifyStores);
+    setIdDeleteStores(id);
+  };
+  const handleCloseModalModify = () => {
+    setIsOpenModalModifyStores(!isOpenModalModifyStores);
   };
   useEffect(() => {
     getDataStores();
-  });
-  const columns = [
+  }, []);
+  const columns: TableColumnsType<RecordType> = [
     {
       title: "STT",
       dataIndex: "stt",
       key: "stt",
     },
     {
-      title: "Tên chủ khoản",
-      dataIndex: "account_name",
-      key: "account_name",
+      title: "Tên cửa hàng",
+      dataIndex: "name",
+      key: "name",
       align: "start",
     },
     {
-      title: "Số tài khoản",
-      dataIndex: "account_no",
-      key: "account_no",
+      title: "Chủ cửa hàng",
+      dataIndex: "owner_name",
+      key: "owner_name",
       align: "start",
       // width: 300,
     },
     {
-      title: "Tên ngân hàng",
-      dataIndex: "bank_name",
-      key: "bank_name",
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      key: "phone",
+      align: "start",
+      // width: 300,
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
       // width: 300,
     },
     {
       title: "Thao tác",
       key: "action",
       align: "center",
-      // render: (record) => (
-      //   <Space size="middle">
-      //     <a>
-      //       <FaTrash style={{ color: "red" }} onClick={() => deleteDataPayment(record)} />
-      //     </a>
-      //   </Space>
-      // ),
+      render: (record: any) => (
+        <Space size="middle">
+          <a>
+            <FaPencilAlt title="Sửa" onClick={() => handleClickModify(record.id)} />
+          </a>
+        </Space>
+      ),
     },
   ];
+  const dataTableStore = isDataStore?.map((items: any, value: number) => ({
+    stt: value + 1,
+    name: items.name || "-",
+    owner_name: items.owner_name || "-",
+    phone: items.phone || "-",
+    address: items.address || "-",
+    id: items.id,
+    key: items.id,
+  }));
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
@@ -68,19 +110,26 @@ const StoreAdmin = () => {
         <TitleOwner titleName={titleName} />
         <div className="header-customers">
           <HeaderContent
-            tilteSearch={titleSearch}
+            titleSearch={titleSearch}
             nameButtonAdd={nameButtonAdd}
             handleSearch={handleSearchStore}
             handleClickOpenModal={handleClickOpenModal}
           />
         </div>
+        <ModalModifyStore
+          isOpenModalModifyStores={isOpenModalModifyStores}
+          idDeleteStores={idDeleteStores}
+          handleCloseModalModify={handleCloseModalModify}
+          setLoading={setLoading}
+          getDataStores={getDataStores}
+        />
         <div className="table-container">
           <Table
             columns={columns}
-            // dataSource={dataTable}
+            dataSource={dataTableStore}
             locale={localStore}
-            // pagination={false}
-            // loading={loading}
+            pagination={false}
+            loading={loading}
           />
           <div
             style={{
