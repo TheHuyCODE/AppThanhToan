@@ -3,8 +3,10 @@ import { AiFillProject } from "react-icons/ai";
 import { FaFileInvoice } from "react-icons/fa";
 
 import { MdCategory, MdInventory } from "react-icons/md";
-
-const QuantityDashboard = () => {
+interface QuantityDashboardProps {
+  totalDataDashboard: any;
+}
+const QuantityDashboard: React.FC<QuantityDashboardProps> = ({ totalDataDashboard }) => {
   return (
     <div className="quantity_dashboard">
       <div className="quantity_product">
@@ -13,16 +15,16 @@ const QuantityDashboard = () => {
           <FaFileInvoice className="icon" />
         </div>
         <div className="quantity_product_bottom">
-          <span>100</span>
+          <span>{totalDataDashboard.totalInvoice}</span>
         </div>
       </div>
       <div className="quantity_categories">
         <div className="quantity_product_top">
-          <span>DOANH THU</span>
+          <span>DOANH THU HÔM NAY </span>
           <AiFillProject className="icon" />
         </div>
         <div className="quantity_product_bottom">
-          <span>100</span>
+          <span>{totalDataDashboard.totalRevenue || 0} đ</span>
         </div>
       </div>
       <div className="quantity_customer">
@@ -32,7 +34,7 @@ const QuantityDashboard = () => {
           <MdCategory className="icon" />
         </div>
         <div className="quantity_product_bottom">
-          <span>100</span>
+          <span>{totalDataDashboard.totalProduct}</span>
         </div>
       </div>
       <div className="quantity_invoices">
@@ -41,7 +43,7 @@ const QuantityDashboard = () => {
           <MdInventory className="icon" />
         </div>
         <div className="quantity_product_bottom">
-          <span>100</span>
+          <span>{totalDataDashboard.totalReturn}</span>
         </div>
       </div>
     </div>

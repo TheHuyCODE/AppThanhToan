@@ -1,6 +1,19 @@
 import axiosClient from "./axiosClient";
 
 const invoice = {
+
+  getAll: () => {
+    const url = "api/v1/manage/invoice";
+
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+
+    });
+  },
   getAllInvoices: () => {
     const url = "api/v1/manage/invoice";
     const params = {

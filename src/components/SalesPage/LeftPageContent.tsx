@@ -9,6 +9,7 @@ interface Product {
   name: string;
   quantity: number;
   capital_price: number;
+  price: number;
   image_url: string;
 }
 interface Invoice {
@@ -110,16 +111,14 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
                 <div className="cell-change-price">
                   <input
                     type="text"
-                    value={
-                      product.capital_price ? product.capital_price.toLocaleString("vi-VN") : ""
-                    }
+                    value={product.price ? product.price.toLocaleString("vi-VN") : ""}
                     className="payment-invoice__input-change "
                     onChange={(e) => handleChangePriceProduct(e, product.id)}
                   />
                   {/* <span>{product.capital_price?.toLocaleString("vi-VN")}</span> */}
                 </div>
                 <div className="cell-total-price">
-                  {(product.capital_price * product.quantity)?.toLocaleString("vi-VN")}
+                  {(product.price * product.quantity)?.toLocaleString("vi-VN")}
                 </div>
               </div>
             </div>

@@ -15,6 +15,16 @@ const returnProduct = {
       params,
     });
   },
+  getAllTotal: () => {
+    const url = "api/v1/manage/returns";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+  },
   getDataSearchReturn: (value: string) => {
     const url = "api/v1/manage/returns";
     const params = {

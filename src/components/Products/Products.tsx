@@ -419,19 +419,20 @@ const Products = () => {
       width: 130,
     },
     {
-      title: getColumnTitle("Giá bán", "price"),
-      dataIndex: "price",
-      key: "price",
-      width: 140,
-      align: "center",
-    },
-    {
       title: getColumnTitle("Giá vốn", "capital_price"),
       dataIndex: "capital_price",
       key: "capital_price",
       width: 140,
       align: "center",
     },
+    {
+      title: getColumnTitle("Giá bán", "price"),
+      dataIndex: "price",
+      key: "price",
+      width: 140,
+      align: "center",
+    },
+
     {
       title: getColumnTitle("Số lượng tồn kho", "inventory_number"),
       dataIndex: "inventory_number",

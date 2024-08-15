@@ -20,6 +20,7 @@ interface InvoiceData {
     name: string;
     quantity: number;
     price: number;
+    total_price: number;
   }[];
 
   total_amount: number;
@@ -118,8 +119,9 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
               <thead>
                 <tr>
                   <th style={{ width: "10%" }}>STT</th>
-                  <th style={{ width: "50%" }}>Tên sản phẩm</th>
-                  <th style={{ width: "20%" }}>Số lượng</th>
+                  <th style={{ width: "40%" }}>Tên sản phẩm</th>
+                  <th style={{ width: "15%" }}>Số lượng</th>
+                  <th style={{ width: "15%" }}>đơn giá</th>
                   <th style={{ width: "20%" }}>Thành tiền</th>
                 </tr>
               </thead>
@@ -128,8 +130,9 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
                   <tr key={product.id}>
                     <td>{index + 1}</td>
                     <td>{product.name}</td>
-                    <td>{product.quantity}</td>
-                    <td>{(product.quantity * product.price).toLocaleString("vi-VN")}</td>
+                    <td>{product.quantity || 0}</td>
+                    <td>{product.price.toLocaleString("vi-VN") || 0}</td>
+                    <td>{product.total_price.toLocaleString("vi-VN") || 0}</td>
                   </tr>
                 ))}
               </tbody>

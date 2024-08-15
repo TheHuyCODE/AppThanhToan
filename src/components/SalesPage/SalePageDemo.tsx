@@ -180,7 +180,7 @@ const SalePageDemo: React.FC = () => {
         if (invoice.id_payment === activeKey) {
           const existingProduct = invoice.items.find((p) => p.id === product.id);
           const updatedItems = existingProduct
-            ? invoice.items.map((p) =>
+            ? invoice.items.map((p: any) =>
                 p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
               )
             : [...invoice.items, { ...product, quantity: 1 }];
@@ -765,9 +765,9 @@ const SalePageDemo: React.FC = () => {
   const detailTotalInvoice = (invoiceID: string) => {
     const activeInvoice = invoiceList.find((invoice) => invoice.id_payment === invoiceID);
     if (activeInvoice) {
-      const totalQuantity = activeInvoice.items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalQuantity = activeInvoice.items.reduce((sum, item: any) => sum + item.quantity, 0);
       const totalPrice = activeInvoice.items.reduce(
-        (sum, item) => sum + item.quantity * item.capital_price,
+        (sum, item: any) => sum + item.quantity * item.price,
         0
       );
       return { totalQuantity, totalPrice };
@@ -832,11 +832,12 @@ const SalePageDemo: React.FC = () => {
       (invoice) => invoice.type === "invoice" && invoice.id_payment === activeKey
     );
     const items = typeInvoiceList.flatMap((invoice) =>
-      invoice.items.map((product) => ({
+      invoice.items.map((product: any) => ({
         product_id: product.id,
         quantity: product.quantity,
-        price: product.capital_price,
-        total_price: product.quantity * product.capital_price,
+        price: product.price,
+        capital_price: product.capital_price,
+        total_price: product.quantity * product.price,
       }))
     );
     return items;

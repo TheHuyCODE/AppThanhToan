@@ -205,7 +205,7 @@ const AddProduct = () => {
       e.target.value = "";
       setInputProduct({
         ...inputProduct,
-        price: 0,
+        capital_price: 0,
       });
       return;
     }
@@ -214,7 +214,7 @@ const AddProduct = () => {
     e.target.value = numericValue.toLocaleString("vi-VN");
     setInputProduct({
       ...inputProduct,
-      price: numericValue,
+      capital_price: numericValue,
     });
     console.log("value", value);
   };
@@ -225,7 +225,7 @@ const AddProduct = () => {
       e.target.value = "";
       setInputProduct({
         ...inputProduct,
-        capital_price: 0,
+        price: 0,
       });
       return;
     }
@@ -233,7 +233,7 @@ const AddProduct = () => {
     e.target.value = numericValue.toLocaleString("vi-VN");
     setInputProduct({
       ...inputProduct,
-      capital_price: numericValue,
+      price: numericValue,
     });
     console.log("value", value);
   };

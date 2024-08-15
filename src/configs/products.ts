@@ -19,6 +19,17 @@ const products = {
       params,
     });
   },
+  getAllTotal: () => {
+    const url = "api/v1/manage/product";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+
+    });
+  },
   getDataExport: () => {
     const url = "api/v1/manage/product";
     const params = {

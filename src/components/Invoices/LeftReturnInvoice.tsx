@@ -44,9 +44,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   incrementReturn,
   setValueReason,
 }) => {
-  const [quantityState, setQuantityState] = useState<{ [key: string]: number }>(
-    {}
-  );
+  const [quantityState, setQuantityState] = useState<{ [key: string]: number }>({});
 
   const deleteProductCartsReturn = (invoiceID: string, productID: string) => {
     removeProductCarts(invoiceID, productID);
@@ -63,14 +61,9 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   const typeInvoiceList = invoiceList.filter(
     (invoice) => invoice.type === "return" && invoice.id_payment === activeKey
   );
-  const handleChangeNumberCards = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    productId: string
-  ) => {
+  const handleChangeNumberCards = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
     let value = e.target.value.replace(/\D/g, "");
-    const product = typeInvoiceList[0].items.find(
-      (item) => item.id === productId
-    );
+    const product = typeInvoiceList[0].items.find((item) => item.id === productId);
     if (!product) return;
     if (parseInt(value, 10) > product.remaining_quantity) {
       value = product.remaining_quantity.toString();
@@ -99,10 +92,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
   useEffect(() => {
     typeInvoiceList.flatMap((invoice) =>
       invoice.items.forEach((product) => {
-        const totalPrice = calculateTotal(
-          quantityState[product.id] || 0,
-          product.price
-        );
+        const totalPrice = calculateTotal(quantityState[product.id] || 0, product.price);
         // updateProductTotal(product.id, totalPrice);
       })
     );
@@ -121,10 +111,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                   className="btn-remove-carts"
                   title="Xóa hàng hóa"
                   onClick={() =>
-                    deleteProductCartsReturn(
-                      typeInvoiceList[0].id_payment,
-                      product.id
-                    )
+                    deleteProductCartsReturn(typeInvoiceList[0].id_payment, product.id)
                   }
                 >
                   <FaRegTrashAlt className="trash-product" />
@@ -140,9 +127,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                 <div className="quantity-product">
                   <button
                     className="icon-button"
-                    onClick={() =>
-                      decrementReturn(typeInvoiceList[0].id_payment, product.id)
-                    }
+                    onClick={() => decrementReturn(typeInvoiceList[0].id_payment, product.id)}
                   >
                     <AiOutlineMinus />
                   </button>
@@ -156,9 +141,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                   />
                   <button
                     className="icon-button"
-                    onClick={() =>
-                      incrementReturn(typeInvoiceList[0].id_payment, product.id)
-                    }
+                    onClick={() => incrementReturn(typeInvoiceList[0].id_payment, product.id)}
                   >
                     <AiOutlinePlus />
                   </button>
@@ -169,9 +152,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
                 <span>{product.price.toLocaleString("vi-VN")}</span>
               </div>
               <div className="cell-total-price-return">
-                <span>
-                  {(product.quantity * product.price).toLocaleString("vi-VN")}
-                </span>
+                <span>{(product.quantity * product.price).toLocaleString("vi-VN")}</span>
               </div>
             </div>
           ))
@@ -181,11 +162,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
             <div className="icon-pen">
               <FaPen />
             </div>
-            <input
-              type="text"
-              placeholder="Chú thích đơn hàng"
-              onChange={onChangeValueCommend}
-            />
+            <input type="text" placeholder="Chú thích đơn hàng" onChange={onChangeValueCommend} />
           </div>
         )}
       </div>
