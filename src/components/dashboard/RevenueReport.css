@@ -1,0 +1,126 @@
+.dashboard_revenue {
+  width: 100%;
+  /* height: 600px; */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: 1rem;
+}
+.dashboard_top_product_sales {
+    width: 100%;
+    /* height: 600px; */
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin-top: 1rem;
+  }
+.header_revenue {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 20px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.ant-radio-button-wrapper {
+  color: black !important;
+}
+.ant-radio-button-wrapper css-dev-only-do-not-override-1qfezbu span {
+  color: grey !important;
+}
+.quantity_dashboard {
+  width: 100%;
+  /* height: 600px; */
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: 1rem;
+}
+.quantity_product {
+  width: 25%;
+  height: 150px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: var(--kv-primary-600);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  border-radius: 8px;
+}
+.quantity_categories {
+  width: 25%;
+  height: 150px;
+
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: orange;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  border-radius: 8px;
+}
+.quantity_customer {
+  width: 25%;
+  height: 150px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: var(--cl-btn);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  border-radius: 8px;
+}
+.quantity_invoices {
+  width: 25%;
+  height: 150px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background-color: #c91717;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  border-radius: 8px;
+}
+.quantity_product_top {
+  width: 100%;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+}
+.quantity_product_top .icon {
+  font-size: 2rem;
+}
+.quantity_product_bottom {
+  width: 100%;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  padding: 8px;
+}

@@ -22,17 +22,18 @@ const BarChart = () => {
         backgroundColor: "#0090da",
         hoverBackgroundColor: "#1fa2e4",
         borderRadius: 8,
-        data: [40, 50, 60, 70, 80, 0, 0], // Dữ liệu cho doanh thu
+        data: [40, 50, 60, 70, 80], // Sử dụng null khi doanh thu bằng 0
       },
       {
         label: "Doanh thu",
         backgroundColor: "#4bac4d",
         hoverBackgroundColor: "lightgreen",
         borderRadius: 8,
-        data: [20, 30, 40, 50, 60, 70, 80], // Dữ liệu cho lợi nhuận
+        data: [20, 30, 40, 50, 60, 70, 80], // Giá trị dữ liệu cho doanh thu
       },
     ],
   };
+
   const options = {
     plugins: {
       legend: {
@@ -48,10 +49,7 @@ const BarChart = () => {
     },
   };
 
-  return (
-    <div>
-      <Bar data={data} options={options} />
-    </div>
-  );
+  return <Bar data={data} options={options} />;
 };
+
 export default BarChart;
