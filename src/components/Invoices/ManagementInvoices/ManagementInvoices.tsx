@@ -19,6 +19,7 @@ interface RecordType {
   created_user: string;
   customer: string;
   total_amount: number;
+  total_after_discount: number;
   customer_money: string;
   payment_methods: string;
   total_product: number;
@@ -179,7 +180,13 @@ const ManagementInvoices: React.FC = () => {
       dataIndex: "total_amount",
       key: "total_amount",
       align: "center",
-
+      // width: 300,
+    },
+    {
+      title: getColumnTitle(`Tổng tiền sau chiết khấu`, "total_amount"),
+      dataIndex: "total_after_discount",
+      key: "total_after_discount",
+      align: "center",
       // width: 300,
     },
     {
@@ -193,7 +200,10 @@ const ManagementInvoices: React.FC = () => {
             <FaEye onClick={() => handleClickDetailInvoices(record)} />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteInvoices(record)} />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => handleClickDeleteInvoices(record)}
+            />
           </a>
         </Space>
       ),
@@ -234,6 +244,7 @@ const ManagementInvoices: React.FC = () => {
     customer: items.customer.full_name,
     customer_money: items.customer_money.toLocaleString("vi-VN"),
     total_amount: items.total_amount.toLocaleString("vi-VN"),
+    total_after_discount: items.total_after_discount.toLocaleString("vi-VN"),
     payment_methods: items.payment_methods[0].payment_method_name,
     product: items.product,
     discount: items.discount.toLocaleString("vi-VN") || 0,
@@ -246,7 +257,12 @@ const ManagementInvoices: React.FC = () => {
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
-        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+        <h1
+          style={{
+            fontFamily: "var(--kv-font-sans-serif)",
+            color: "var(--color-title)",
+          }}
+        >
           Quản lý hóa đơn
         </h1>
         <div className="header-customers">

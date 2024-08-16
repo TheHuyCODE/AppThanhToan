@@ -6,7 +6,9 @@ import { MdCategory, MdInventory } from "react-icons/md";
 interface QuantityDashboardProps {
   totalDataDashboard: any;
 }
-const QuantityDashboard: React.FC<QuantityDashboardProps> = ({ totalDataDashboard }) => {
+const QuantityDashboard: React.FC<QuantityDashboardProps> = ({
+  totalDataDashboard,
+}) => {
   return (
     <div className="quantity_dashboard">
       <div className="quantity_product">
@@ -24,7 +26,9 @@ const QuantityDashboard: React.FC<QuantityDashboardProps> = ({ totalDataDashboar
           <AiFillProject className="icon" />
         </div>
         <div className="quantity_product_bottom">
-          <span>{totalDataDashboard.totalRevenue || 0} đ</span>
+          <span>
+            {totalDataDashboard.totalRevenue.toLocaleString("vi-VN") || 0} đ
+          </span>
         </div>
       </div>
       <div className="quantity_customer">

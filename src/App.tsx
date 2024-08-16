@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { Button, Result, theme } from "antd";
 import "./App.css";
 import { useAuth } from "./components/auth/AuthContext";
@@ -8,8 +14,8 @@ import ProductMangement from "./components/Products/Products";
 import ProtectedRouter from "./components/auth/ProtectedRouter";
 import PublicRouter from "./components/auth/PublicRouter";
 import Users from "./components/Users/Users";
-import Home from "./components/Home/Home";
-import AppWrapper from "./components/ContentAdmin/wrapper";
+import Home from "./components/home/Home";
+import AppWrapper from "./components/contentAdmin/wrapper";
 import DetailUsers from "./components/Users/DetailUsers";
 import ModifyUsers from "./components/Users/ModifyUsers";
 import Admins from "./components/Admin/Admins";
@@ -19,8 +25,8 @@ import AddProduct from "./components/Products/AddProducts/AddProduct";
 import DetailProduct from "./components/Products/DetailProduct/DetailProduct";
 import ModifyProduct from "./components/Products/ModifyProduct/ModifyProduct";
 // import SalePage from './components/SalesPage/SalePage';
-import RevenueReport from "./components/Dashboard/RevenueReport";
-import InventoryReport from "./components/Dashboard/InventoryReport";
+import RevenueReport from "./components/dashboard/RevenueReport";
+import InventoryReport from "./components/dashboard/InventoryReport";
 import Payment from "./components/Payment/Payment";
 import SalePageDemo from "./components/SalesPage/SalePageDemo";
 import Profile from "./components/Profile/Profile";
