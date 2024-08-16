@@ -11,25 +11,38 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels"; // Import plugin
 ChartJS.register(CategoryScale, LinearScale, Title, BarElement, Tooltip, Legend, ChartDataLabels);
-
-const BarChart = () => {
+interface BarChartProps {
+  dataRevenue: {
+    date: string;
+    profit: number;
+    revenue: number;
+  }[];
+}
+const BarChart: React.FC<BarChartProps> = ({ dataRevenue }) => {
+  const labels = dataRevenue?.map((item) => item.date); // Sử dụng ngày làm nhãn
+  const profitData = dataRevenue?.map((item) => item.profit); // Lợi nhuận
+  const revenueData = dataRevenue?.map((item) => item.revenue);
   // Dữ liệu của biểu đồ
+  console.log("labels", labels);
+  console.log("profitData", profitData);
+  console.log("revenueData", revenueData);
+
   const data = {
-    labels: ["JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"],
+    labels, // Sử dụng labels được map từ dataRevenue
     datasets: [
       {
         label: "Lợi nhuận",
         backgroundColor: "#0090da",
         hoverBackgroundColor: "#1fa2e4",
         borderRadius: 8,
-        data: [40, 50, 60, 70, 80], // Sử dụng null khi doanh thu bằng 0
+        data: profitData, // Dữ liệu lợi nhuận từ props
       },
       {
         label: "Doanh thu",
         backgroundColor: "#4bac4d",
         hoverBackgroundColor: "lightgreen",
         borderRadius: 8,
-        data: [20, 30, 40, 50, 60, 70, 80], // Giá trị dữ liệu cho doanh thu
+        data: revenueData, // Dữ liệu doanh thu từ props
       },
     ],
   };

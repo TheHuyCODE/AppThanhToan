@@ -154,7 +154,7 @@ const RevenueReport: React.FC = () => {
             <Radio.Button value="year">Năm</Radio.Button>
           </Radio.Group>
         </div>
-        <BarChart />
+        <BarChart dataRevenue={dataRevenue} />
       </div>
       <div className="dashboard_top_product_sales">
         <h2>Top sản phẩm bán chạy</h2>
