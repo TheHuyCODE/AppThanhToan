@@ -581,7 +581,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                     Chuyển khoản
                   </label>
                 </div>
-                <div className="payment-invoice__method">
+                {/* <div className="payment-invoice__method">
                   <input
                     className="payment-invoice__checkbox"
                     type="radio"
@@ -593,7 +593,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   <label className="payment-invoice__label" htmlFor="cashmoneyandinternetmoney">
                     Thanh toán kết hợp
                   </label>
-                </div>
+                </div> */}
               </div>
 
               {selectedPaymentMethod === 1 && (

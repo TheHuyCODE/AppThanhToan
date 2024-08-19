@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 const getRandomColor = () => {
   const letters = "0123456789ABCDEF";
   let color = "#";
@@ -20,19 +21,28 @@ const getRandomColor = () => {
   return color;
 };
 
-const TopSalesProduct: React.FC = () => {
-  // Dữ liệu của biểu đồ
-  //   const backgroundColors = products.map(() => getRandomColor());
-  //   const hoverBackgroundColors = backgroundColors.map((color: any) => color + "CC");
+interface TopSalesProps {
+  dataTopSells?: {
+    id: string;
+    name: string;
+    total_sold: number;
+  }[];
+}
+
+const TopSalesProduct: React.FC<TopSalesProps> = ({ dataTopSells = [] }) => {
+  // Handle case where dataTopSells might be undefined or empty
+  const labels = dataTopSells.map((item) => item.name);
+  const dataValues = dataTopSells.map((item) => item.total_sold);
+
   const data = {
-    labels: ["Bim bim", "Mực", "Mì tôm"], // Tên các sản phẩm
+    labels, // Tên các sản phẩm
     datasets: [
       {
         label: "Số lượng bán ra",
-        backgroundColor: `lightgreen `,
-        hoverBackgroundColor: "lightgreen",
+        backgroundColor: "#f25c05",
+        hoverBackgroundColor: "#f28e54",
         borderRadius: 8,
-        data: [100, 80, 20], // Giá trị bán ra tương ứng
+        data: dataValues, // Total sold values// Giá trị bán ra tương ứng
       },
     ],
   };

@@ -10,16 +10,27 @@
   margin-top: 1rem;
 }
 .dashboard_top_product_sales {
-    width: 100%;
-    /* height: 600px; */
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    margin-top: 1rem;
-  }
+  width: 100%;
+  /* height: 600px; */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: 1rem;
+}
+.dashboard_top_customer {
+  width: 100%;
+  /* height: 600px; */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin-top: 1rem;
+}
 .header_revenue {
   width: 100%;
   height: 120px;
@@ -123,4 +134,19 @@
   align-items: center;
   justify-content: start;
   padding: 8px;
+}
+.header_top_sells {
+  width: 100%;
+  padding: 5px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+.header_top_sells_date {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 10px;
 }

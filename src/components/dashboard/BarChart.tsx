@@ -23,9 +23,6 @@ const BarChart: React.FC<BarChartProps> = ({ dataRevenue }) => {
   const profitData = dataRevenue?.map((item) => item.profit); // Lợi nhuận
   const revenueData = dataRevenue?.map((item) => item.revenue);
   // Dữ liệu của biểu đồ
-  console.log("labels", labels);
-  console.log("profitData", profitData);
-  console.log("revenueData", revenueData);
 
   const data = {
     labels, // Sử dụng labels được map từ dataRevenue
