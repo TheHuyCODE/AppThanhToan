@@ -30,6 +30,60 @@ const products = {
 
     });
   },
+  getTotalInventory: () => {
+    const url = "api/v1/manage/product/inventory_report";
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+
+    });
+  },
+  sortDataInventory: (colName: string, typeSort: string) => {
+    const url = "api/v1/manage/product/inventory_report";
+    const params = {
+      sort: `${colName}`,
+      order_by: `${typeSort}`,
+      is_active: 1,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataPaginationInventory: (current: number, size: number) => {
+    const url = "api/v1/manage/product/inventory_report";
+    const params = {
+      page: current,
+      page_size: size
+    }
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchInventory: (value: string) => {
+    const params = {
+      search: value,
+    };
+    const url = "api/v1/manage/product/inventory_report";
+    return axiosClient.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params
+    });
+  },
   getDataExport: () => {
     const url = "api/v1/manage/product";
     const params = {

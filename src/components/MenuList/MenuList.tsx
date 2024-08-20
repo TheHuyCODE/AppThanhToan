@@ -67,7 +67,10 @@ const MenuList: React.FC = () => {
 
           label: <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>,
         },
-        { key: "4", label: "Báo cáo tồn kho" },
+        {
+          key: "4",
+          label: <Link to="/admin/inventory">Báo cáo tồn kho</Link>,
+        },
       ],
     },
     {

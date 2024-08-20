@@ -171,7 +171,7 @@ function App() {
           }
         />
         <Route
-          path="admin/inventoryreport"
+          path="admin/inventory"
           element={
             <ProtectedRouter>
               <AppWrapper
