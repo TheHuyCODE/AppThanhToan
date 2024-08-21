@@ -4,6 +4,9 @@ import { IoMdAdd } from "react-icons/io";
 import useDebounce from "../../auth/useDebounce";
 import returnProduct from "../../../configs/return";
 import { useNavigate } from "react-router-dom";
+import ButtonExportToExcel from "../../UI/ButtonExport";
+import { FILE_NAME_EXPORT_RETURN, LINK_EXPORT_RETURN } from "../../../constants/constants";
+import { getDateTimeNow } from "../../../constants/functionContants";
 interface HeaderPropsReturn {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataReturn: React.Dispatch<React.SetStateAction<any>>;
@@ -14,6 +17,8 @@ const HeaderReturn: React.FC<HeaderPropsReturn> = ({
   setDataReturn,
   getDataReturn,
 }) => {
+  const fileName = `${FILE_NAME_EXPORT_RETURN}_${getDateTimeNow()}`;
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [valueOnSearch, setValueOnSearch] = useState("");
   const debounceValue = useDebounce(valueOnSearch, 700);
@@ -87,7 +92,10 @@ const HeaderReturn: React.FC<HeaderPropsReturn> = ({
         }}
       >
         {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
-
+        <ButtonExportToExcel
+          linkExport={LINK_EXPORT_RETURN}
+          fileName={fileName}
+        ></ButtonExportToExcel>
         <button
           className="btn-header-right"
           style={{ width: "150px" }}

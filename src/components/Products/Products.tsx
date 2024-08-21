@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import "./ProductManagement.css";
 import "../styles/valiables.css";
@@ -6,7 +6,6 @@ import "../styles/valiables.css";
 import { Select, Table, Space, Modal, Pagination, TreeSelect } from "antd";
 import {
   FaArrowAltCircleDown,
-  FaArrowAltCircleUp,
   FaArrowDown,
   FaArrowUp,
   FaEye,
@@ -23,7 +22,6 @@ import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
 import { handleError } from "../../utils/errorHandler";
 
-import DownloadButton from "../UI/ButtonExport";
 import ButtonExportToExcel from "../UI/ButtonExport";
 import { FILE_NAME_EXPORT, LINK_EXPORT } from "../../constants/constants";
 import { getDateTimeNow } from "../../constants/functionContants";
@@ -41,8 +39,10 @@ type SortState = {
 };
 
 const Products = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [dataProduct, setDataProduct] = useState([]);
+  const [isFileExcelImport, setIsFileExcelImport] = useState("");
   const navigate = useNavigate();
   console.log("time", getDateTimeNow());
   const fileName = `${FILE_NAME_EXPORT}_${getDateTimeNow()}`;
@@ -117,7 +117,54 @@ const Products = () => {
     { value: 1, name: "Kích hoạt", id: "00001" },
     { value: 2, name: "Chưa kích hoạt", id: "00002" },
   ];
-
+  const handleClickImportFileExcel = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Trigger the hidden file input
+    }
+  };
+  const handleFileChange = async (event: any) => {
+    const file = event.target.files[0];
+    console.log("file", file);
+    setIsFileExcelImport(file);
+    // if (file) {
+    //   const formData = new FormData();
+    //   formData.append("file", file);
+    //   // Send the file to the backend
+    //   try {
+    //     const res = await products.getImportFile(formData);
+    //     console.log("res", res.data);
+    //   } catch (error) {
+    //     handleError(error);
+    //   }
+    // }
+  };
+  useEffect(() => {
+    if (isFileExcelImport) {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("file", isFileExcelImport);
+      console.log("formData:", [...formData]);
+      products
+        .getImportFile(formData)
+        .then((res) => {
+          if (res.code === 200) {
+            // const data = res.data.file_url;
+            console.log("data", res);
+            setLoading(false);
+            fetchDataProduct();
+            toast.success("Import file thành công!");
+            setIsFileExcelImport("");
+          } else {
+            console.log("Error:");
+          }
+        })
+        .catch((error) => {
+          handleError(error);
+          setLoading(false);
+          setIsFileExcelImport("");
+        });
+    }
+  }, [isFileExcelImport]);
   const addProduct = () => {
     navigate("/admin/products/add");
   };
@@ -304,8 +351,7 @@ const Products = () => {
     }
   };
   const onShowSizeChange = (current: number, size: number) => {
-    console.log("Current page:", current);
-    console.log("Page size:", size);
+   
     getDataPagination(current, size);
     setPage(current);
     setPageSize(size);
@@ -397,6 +443,7 @@ const Products = () => {
       dataIndex: "stt",
       key: "stt",
       width: 60,
+      fixed: "left",
     },
     {
       title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
@@ -404,6 +451,7 @@ const Products = () => {
       key: "barcode",
       align: "start",
       width: 130,
+      fixed: "left",
     },
     {
       title: getColumnTitle("Tên sản phẩm", "name"),
@@ -411,6 +459,7 @@ const Products = () => {
       key: "name",
       align: "center",
       width: 160,
+      fixed: "left",
     },
     {
       title: getColumnTitle("Danh mục \n sản phẩm", "category"),
@@ -464,7 +513,7 @@ const Products = () => {
       title: "Thao tác",
       key: "action",
       width: 100,
-
+      fixed: "right",
       render: (record: any) => (
         <Space size="middle">
           <a>
@@ -569,12 +618,20 @@ const Products = () => {
           }}
         >
           <ButtonExportToExcel linkExport={LINK_EXPORT} fileName={fileName}></ButtonExportToExcel>
-          {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
-          {/* <button className="btn-header-right" style={{ width: "100px" }}>
-            <FaArrowAltCircleUp /> &nbsp; Export
-          </button> */}
-          <button className="btn-header-right" style={{ width: "100px" }}>
+          <button
+            className="btn-header-right"
+            style={{ width: "100px" }}
+            onClick={handleClickImportFileExcel}
+            disabled={loading}
+          >
             <FaArrowAltCircleDown /> &nbsp; Import
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept=".xlsx, .xls" // Accept only Excel files
+              onChange={handleFileChange}
+            />
           </button>
           <button onClick={addProduct} className="btn-header-right">
             <IoMdAdd className="icon" /> Thêm sản phẩm

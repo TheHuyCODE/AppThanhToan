@@ -253,12 +253,9 @@ const AddProduct = () => {
     const fileImage = e.target.files[0];
     setIsImageProduct(fileImage);
     setPreviewImageProduct(URL.createObjectURL(fileImage));
-    console.log("Linked image", fileImage);
-    console.log("isImageProduct", isImageProduct);
   };
   useEffect(() => {
     if (isImageProduct) {
-      console.log("image:", isImageProduct);
       const formData = new FormData();
       formData.append("file", isImageProduct);
       console.log("formData:", [...formData]);

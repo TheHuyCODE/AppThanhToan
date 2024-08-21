@@ -11,9 +11,13 @@ import invoice from "../../configs/invoice";
 import products from "../../configs/products";
 import returnProduct from "../../configs/return";
 import CustomerDashboard from "./CustomerDashboard";
+import ButtonExportToExcel from "../UI/ButtonExport";
+import { FILE_NAME_EXPORT_REVENNUE, LINK_EXPORT_REVENUE } from "../../constants/constants";
+import { getDateTimeNow } from "../../constants/functionContants";
 
 const RevenueReport: React.FC = () => {
   const { RangePicker } = DatePicker;
+  const fileName = `${FILE_NAME_EXPORT_REVENNUE}_${getDateTimeNow()}`;
   const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
   const [dateType, setDateType] = useState<string>("date");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
@@ -246,28 +250,33 @@ const RevenueReport: React.FC = () => {
       <div className="dashboard_revenue">
         <h2>Đồ thị doanh thu</h2>
         <div className="header_revenue">
-          <Space direction="vertical" size={12} />
-          {dateType === "date" && <RangePicker onChange={handleDateChange} size={"large"} />}
-          {dateType === "week" && (
-            <RangePicker picker="week" onChange={handleDateChange} size={"large"} />
-          )}
-          {dateType === "month" && (
-            <RangePicker picker="month" onChange={handleDateChange} size={"large"} />
-          )}
-          {dateType === "year" && (
-            <RangePicker picker="year" onChange={handleDateChange} size={"large"} />
-          )}
-          <Radio.Group
-            value={dateType}
-            onChange={placementChange}
-            style={{ color: "black" }}
-            size={"large"}
-          >
-            <Radio.Button value="date">Ngày</Radio.Button>
-            <Radio.Button value="week">Tuần</Radio.Button>
-            <Radio.Button value="month">Tháng</Radio.Button>
-            <Radio.Button value="year">Năm</Radio.Button>
-          </Radio.Group>
+          <div className="header_revenue_date">
+            <Space direction="vertical" size={12} />
+            {dateType === "date" && <RangePicker onChange={handleDateChange} size={"large"} />}
+            {dateType === "week" && (
+              <RangePicker picker="week" onChange={handleDateChange} size={"large"} />
+            )}
+            {dateType === "month" && (
+              <RangePicker picker="month" onChange={handleDateChange} size={"large"} />
+            )}
+            {dateType === "year" && (
+              <RangePicker picker="year" onChange={handleDateChange} size={"large"} />
+            )}
+            <Radio.Group
+              value={dateType}
+              onChange={placementChange}
+              style={{ color: "black" }}
+              size={"large"}
+            >
+              <Radio.Button value="date">Ngày</Radio.Button>
+              <Radio.Button value="week">Tuần</Radio.Button>
+              <Radio.Button value="month">Tháng</Radio.Button>
+              <Radio.Button value="year">Năm</Radio.Button>
+            </Radio.Group>
+          </div>
+          <div className="style_export_btn_revenue">
+            <ButtonExportToExcel linkExport={LINK_EXPORT_REVENUE} fileName={fileName} />
+          </div>
         </div>
         <BarChart dataRevenue={dataRevenue} />
       </div>

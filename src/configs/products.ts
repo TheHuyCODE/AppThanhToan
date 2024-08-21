@@ -310,6 +310,14 @@ const products = {
       params,
     });
   },
+  getImportFile: (formData: FormData) => {
+    const url = "api/v1/manage/product/import-products";
+    return axiosClient.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
   // getModifyProduct: (parent_id) => {
   //   const url = "api/v1/manage/category";
   //   const params = {

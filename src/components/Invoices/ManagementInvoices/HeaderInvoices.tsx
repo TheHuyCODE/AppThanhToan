@@ -6,6 +6,9 @@ import useDebounce from "../../auth/useDebounce";
 import invoice from "../../../configs/invoice";
 import { IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import ButtonExportToExcel from "../../UI/ButtonExport";
+import { FILE_NAME_EXPORT_INVOICE, LINK_EXPORT_INVOICE } from "../../../constants/constants";
+import { getDateTimeNow } from "../../../constants/functionContants";
 interface HeaderInvoicesProps {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataTableInvoice: React.Dispatch<React.SetStateAction<any>>;
@@ -16,6 +19,7 @@ const HeaderInvoices: React.FC<HeaderInvoicesProps> = ({
   setDataTableInvoice,
   getDataInvoices,
 }) => {
+  const fileName = `${FILE_NAME_EXPORT_INVOICE}_${getDateTimeNow()}`;
   const inputSearchRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
   const [valueOnSearch, setValueOnSearch] = useState("");
@@ -99,9 +103,10 @@ const HeaderInvoices: React.FC<HeaderInvoicesProps> = ({
         }}
       >
         {/* <button className="btn-header-right">Hướng dẫn sử dụng</button> */}
-        <button className="btn-header-right" style={{ width: "100px" }}>
-          <FaArrowAltCircleUp /> &nbsp; Export
-        </button>
+        <ButtonExportToExcel
+          linkExport={LINK_EXPORT_INVOICE}
+          fileName={fileName}
+        ></ButtonExportToExcel>
         <button className="btn-header-right" style={{ width: "100px" }}>
           <FaArrowAltCircleDown /> &nbsp; Import
         </button>

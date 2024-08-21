@@ -34,7 +34,7 @@ const ButtonExportToExcel: React.FC<ButtonExportToExcelProps> = ({ linkExport, f
             filename = filenameMatch[1];
           }
         }
-        toast.success("Export sản phẩm thành công!");
+        toast.success("Export file Excel thành công!");
         link.href = url;
         link.setAttribute("download", filename);
         document.body.appendChild(link);

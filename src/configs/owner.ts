@@ -36,6 +36,15 @@ const owners = {
             }
         })
     },
+    putChangeStatusOwners: (data: object, idItems: string) => {
+        const url = `api/v1/manage/owner/${idItems}/approve_account`
+        return axiosClient.put(url, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                "ngrok-skip-browser-warning": "true",
+            }
+        })
+    },
     modifyOwners: (data: object, idItems: string) => {
         const url = `api/v1/manage/owner/${idItems}`
         return axiosClient.put(url, data, {

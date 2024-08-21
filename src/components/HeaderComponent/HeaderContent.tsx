@@ -1,11 +1,9 @@
 import React from "react";
 import { CiSearch } from "react-icons/ci";
-import { IoMdAdd } from "react-icons/io";
+
 interface HeaderContentProps {
   titleSearch: string;
-  nameButtonAdd: string;
   handleSearch: () => void;
-  handleClickOpenModal: () => void;
 }
 const HeaderContent: React.FC<HeaderContentProps> = ({ titleSearch, handleSearch }) => {
   return (

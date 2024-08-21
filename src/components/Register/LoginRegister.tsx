@@ -74,10 +74,10 @@ const LoginRegister = () => {
     });
   };
 
-  const success = () => {
+  const success = (message: string) => {
     Modal.success({
-      title: "Đã đăng kí tài khoản thành công ",
-      content: "Bạn có muốn quay về trang login không?",
+      title: "Thông báo",
+      content: `${message}`,
       onOk() {
         setAction("");
       },
@@ -205,7 +205,7 @@ const LoginRegister = () => {
     }
     setButtonDisabled(false);
   };
-  const handleSubmitRegister = (event) => {
+  const handleSubmitRegister = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const userData = {
       email: dataRegister.email,
@@ -220,9 +220,10 @@ const LoginRegister = () => {
     loginApi.postMessageRegister(userData).then((response) => {
       if (response.code === 200) {
         const successMs = response.message.text;
-        toast.success(successMs);
+        // toast.success(successMs);
         clearInputRegister();
-        success();
+        setIsLoading(false);
+        success(successMs);
       } else {
         console.log(response);
         const errMs = response.data.message.text;
@@ -248,6 +249,7 @@ const LoginRegister = () => {
         setTimeout(() => {
           login(res.data.access_token, res.data.refresh_token);
         }, 1000);
+        setIsLoading(false);
       } else {
         console.log("res", res);
       }

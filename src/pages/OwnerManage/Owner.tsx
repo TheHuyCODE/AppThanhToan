@@ -14,6 +14,9 @@ import ModalDeleteOwners from "./ModalDeleteOwners";
 import { format } from "date-fns";
 import ModalModifyOwners from "./ModalModifyOwners";
 
+import { IoMdCheckmark, IoMdClose } from "react-icons/io";
+import ModalRejectOwners from "./ModalRejectOwners";
+
 interface RecordType {
   stt: number;
   id: string;
@@ -23,6 +26,7 @@ interface RecordType {
   address: string;
   is_active: boolean;
   created_date: string;
+  status: number;
   key: string;
 }
 const Owner = () => {
@@ -30,17 +34,22 @@ const Owner = () => {
   const nameButtonAdd = "Thêm chủ cửa hàng";
   const titleName = "Quản lý chủ cửa hàng";
   const titleDelete = "Xóa chủ sở hữu";
+  const titleReject = "Từ chối cấp tài khoản chủ sở hữu";
   const textComfirm =
     "Bạn có chắc chắn xóa chủ sở hữu này không? Nếu chủ sở hữu này bị xóa, tất cả thông tin và cửa hàng liên quan cũng sẽ bị xóa.";
-
+  const textReject =
+    "Bạn có chắc chắn từ chối phê duyêt tài khoản này không? Nếu tài khoản này bị từ chối, thì người dùng không thể đăng nhập.";
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalAddOwners, setIsModalAddOwners] = useState(false);
   const [isOpenModalDeleteOwners, setIsOpenModalDeleteOwners] = useState(false);
+  const [isOpenModalRejectOwners, setIsOpenModalRejectOwners] = useState(false);
+
   const [isOpenModalModifyOwners, setIsOpenModalModifyOwners] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDataOwner, setIsDataOwner] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [idDeleteOwners, setIdDeleteOwners] = useState("");
+  const [idRejectOwners, setIdRejectOwners] = useState("");
   const [idModifyOwners, setIdModifyOwners] = useState("");
   const [nameOwners, setNameOwners] = useState("");
   const getDataOwners = async () => {
@@ -85,12 +94,53 @@ const Owner = () => {
     setIsOpenModalDeleteOwners(!isOpenModalDeleteOwners);
     setIdDeleteOwners(id);
   };
+
+  const handleChangeStatusUserSuccess = async (record: any) => {
+    setLoading(true);
+    const data = {
+      status: 1,
+    };
+    try {
+      const res = await owners.putChangeStatusOwners(data, record.id);
+      console.log("res", res.data);
+      toast.success("Đã phê duyệt thành công!");
+      await getDataOwners();
+      setLoading(false);
+      // handleCloseModalDelete();
+    } catch (error) {
+      handleError(error);
+      setLoading(false);
+    }
+  };
+  const handClickOpenModalRejectOwner = (id: string) => {
+    setIsOpenModalRejectOwners(!isOpenModalRejectOwners);
+    setIdRejectOwners(id);
+  };
+  const handleChangeStatusUserReject = async () => {
+    setIsOpenModalRejectOwners(!isOpenModalRejectOwners);
+    setLoading(true);
+    const data = {
+      status: 2,
+    };
+    try {
+      const res = await owners.putChangeStatusOwners(data, idRejectOwners);
+      console.log("res", res.data);
+      toast.success("Từ chối tài khoản thành công!");
+      await getDataOwners();
+      setLoading(false);
+      // handleCloseModalDelete();
+    } catch (error) {
+      handleError(error);
+      setLoading(false);
+    }
+  };
   const handClickOpenModalModifyOwners = (record: RecordType) => {
     setIsOpenModalModifyOwners(!isOpenModalModifyOwners);
     setIdModifyOwners(record.id);
     setNameOwners(record.full_name);
-    console.log("111", record.full_name);
-    console.log("111", record.id);
+  };
+  const handleCloseModalReject = () => {
+    setIsOpenModalRejectOwners(!isOpenModalRejectOwners);
   };
   const handleCloseModalDelete = () => {
     setIsOpenModalDeleteOwners(!isOpenModalDeleteOwners);
@@ -153,7 +203,44 @@ const Owner = () => {
       // width: 300,
     },
     {
-      title: "Trạng thái",
+      title: "Trạng thái đăng kí TK",
+      dataIndex: "status",
+      key: "status",
+      render: (status: number) => {
+        let color = "";
+        let backgroundColor = "";
+        switch (status) {
+          case 0:
+            color = "orange";
+            backgroundColor = "#FFF3E0"; // Light orange background
+            break;
+          case 1:
+            color = "green";
+            backgroundColor = "var(--kv-success-200)"; // Light green background
+            break;
+          default:
+            color = "red";
+            backgroundColor = "#FFEBEE"; // Light red background
+            break;
+        }
+
+        return (
+          <span
+            style={{
+              color: color,
+              backgroundColor: backgroundColor,
+              borderRadius: "8px",
+              padding: "5px",
+            }}
+          >
+            {status === 0 ? "Đang chờ phê duyệt" : status === 1 ? "Đã phê duyệt" : "Bị hủy"}
+          </span>
+        );
+      },
+    },
+
+    {
+      title: "Trạng thái người dùng",
       dataIndex: "is_active",
       key: "is_active",
       render: (is_active: boolean) => (
@@ -174,32 +261,53 @@ const Owner = () => {
       key: "action",
       render: (record: any) => (
         <Space size="middle">
-          <a>
-            <FaTrash
-              style={{ color: "red" }}
-              title="Xóa"
-              onClick={() => handClickOpenModalDeleteOwners(record.id)}
-            />
-          </a>
-          <a>
-            <FaPencilAlt title="Sửa" onClick={() => handClickOpenModalModifyOwners(record)} />
-          </a>
-          {record.is_active ? (
-            <a>
-              <FaLock
-                style={{ color: "black" }}
-                title="Khóa"
-                onClick={() => handleClickLockOwners(false, record.id)}
-              />
-            </a>
+          {record.status === 0 ? (
+            <>
+              <a>
+                <IoMdCheckmark
+                  style={{ color: "green" }}
+                  title="Đồng ý"
+                  onClick={() => handleChangeStatusUserSuccess(record)}
+                />
+              </a>
+              <a>
+                <IoMdClose
+                  style={{ color: "red" }}
+                  title="Từ chối"
+                  onClick={() => handClickOpenModalRejectOwner(record.id)}
+                />
+              </a>
+            </>
           ) : (
-            <a>
-              <FaLockOpen
-                style={{ color: "black" }}
-                title="Mở khóa"
-                onClick={() => handleClickLockOwners(true, record.id)}
-              />
-            </a>
+            <>
+              <a>
+                <FaTrash
+                  style={{ color: "red" }}
+                  title="Xóa"
+                  onClick={() => handClickOpenModalDeleteOwners(record.id)}
+                />
+              </a>
+              <a>
+                <FaPencilAlt title="Sửa" onClick={() => handClickOpenModalModifyOwners(record)} />
+              </a>
+              {record.is_active ? (
+                <a>
+                  <FaLock
+                    style={{ color: "black" }}
+                    title="Khóa"
+                    onClick={() => handleClickLockOwners(false, record.id)}
+                  />
+                </a>
+              ) : (
+                <a>
+                  <FaLockOpen
+                    style={{ color: "black" }}
+                    title="Mở khóa"
+                    onClick={() => handleClickLockOwners(true, record.id)}
+                  />
+                </a>
+              )}
+            </>
           )}
         </Space>
       ),
@@ -214,6 +322,7 @@ const Owner = () => {
     id: items.id,
     key: items.id,
     is_active: items.is_active,
+    status: items.status,
     created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy") || "-",
   }));
   return (
@@ -222,12 +331,7 @@ const Owner = () => {
       <div className="content">
         <TitleOwner titleName={titleName} />
         <div className="header-customers">
-          <HeaderContent
-            tilteSearch={titleSearch}
-            nameButtonAdd={nameButtonAdd}
-            handleSearch={handleSearchOwners}
-            handleClickOpenModal={handleClickOpenModal}
-          />
+          <HeaderContent titleSearch={titleSearch} handleSearch={handleSearchOwners} />
         </div>
         <ErrorModal
           visible={isModalVisible}
@@ -245,6 +349,13 @@ const Owner = () => {
           handeClickDelete={handleClickDeleteOwners}
           titleDelete={titleDelete}
           textComfirm={textComfirm}
+        />
+        <ModalRejectOwners
+          isOpenModalRejectOwners={isOpenModalRejectOwners}
+          titleReject={titleReject}
+          textReject={textReject}
+          handleCloseModalReject={handleCloseModalReject}
+          handleChangeStatusReject={handleChangeStatusUserReject}
         />
         <ModalModifyOwners
           isOpenModalModifyOwners={isOpenModalModifyOwners}
