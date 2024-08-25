@@ -205,7 +205,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       dataIndex: "action",
       key: "action",
       width: 100,
-
+      fixed: "right",
       render: (text, record: any) => (
         <Space size="middle">
           <button className="btn_return_invoice" onClick={() => detailInvoiceReturn(record)}>

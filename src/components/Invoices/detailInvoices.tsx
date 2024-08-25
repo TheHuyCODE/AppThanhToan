@@ -3,6 +3,7 @@ import "./detailInvoices.css";
 import "../styles/valiables.css";
 // import logoTitle from "../../assets/img/logoTitle.png";
 import logo from "../../../public/Logo.png";
+import { getDate } from "../../constants/functionContants";
 interface InvoiceData {
   created_date: string;
   id: string;
@@ -43,11 +44,9 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
   ({ linkQR, finalPrice }, ref) => {
     const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
     const [invoiceDataStore, setInvoiceDataStore] = useState<InvoiceStore | null>(null);
-
     useEffect(() => {
       const data = localStorage.getItem("dataDetailInvoice");
       const dataStore = localStorage.getItem("INFO_USER");
-
       if (data) {
         try {
           setInvoiceData(JSON.parse(data));
@@ -55,7 +54,6 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
           console.error("Error parsing invoice data", error);
         }
       }
-
       if (dataStore) {
         try {
           setInvoiceDataStore(JSON.parse(dataStore));
@@ -68,14 +66,6 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
     if (!invoiceData) {
       return <div>Loading...</div>;
     }
-    const getDate = () => {
-      const today = new Date();
-      const month = today.getMonth() + 1;
-      const year = today.getFullYear();
-      const date = today.getDate();
-      const timeCurrent = today.toLocaleTimeString();
-      return `${timeCurrent}-${month}/${date}/${year}`;
-    };
 
     const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
     const adminName = invoiceData.create_user.full_name || "Admin";
@@ -83,9 +73,6 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
     const addressCreated = invoiceDataStore?.address || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
     const addressPhone = invoiceDataStore?.store.address || "";
-    // const hiddenImgQrCode = invoiceData.payment_methods.type || false;
-    // const Name
-
     return (
       <div ref={ref} className="page_invoice">
         <div className="header_invoices">
@@ -121,7 +108,7 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
                   <th style={{ width: "10%" }}>STT</th>
                   <th style={{ width: "40%" }}>Tên sản phẩm</th>
                   <th style={{ width: "15%" }}>Số lượng</th>
-                  <th style={{ width: "15%" }}>đơn giá</th>
+                  <th style={{ width: "15%" }}>Đơn giá</th>
                   <th style={{ width: "20%" }}>Thành tiền</th>
                 </tr>
               </thead>

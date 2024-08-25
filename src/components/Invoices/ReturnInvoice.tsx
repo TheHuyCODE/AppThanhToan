@@ -38,8 +38,7 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
   const menuRef = useRef(null);
   const componentRef = useRef();
   console.log("valueReason", valueReason);
-  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] =
-    useState(false);
+  const [hiddenPopUpDiscountPrice, setHiddenPopUpDiscountPrice] = useState(false);
   const [currDateTime, setCurrDateTime] = useState({
     date: "",
     time: "",
@@ -52,10 +51,7 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
       total_price: value.total_price,
     }));
     if (dataConvert.length > 0) {
-      const totalQuantity = dataConvert.reduce(
-        (sum: number, item: any) => sum + item.quantity,
-        0
-      );
+      const totalQuantity = dataConvert.reduce((sum: number, item: any) => sum + item.quantity, 0);
       if (totalQuantity === 0) {
         setHiddenReturn(true);
       } else {
@@ -138,6 +134,19 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
       setStateReturn(false);
     },
   });
+  const getDataDetailReturn = async (IdReturn: string) => {
+    try {
+      const res = await returnProduct.getDetailReturn(IdReturn);
+      if (res.data) {
+        console.log("data", res.data);
+        localStorage.setItem("dataDetailReturn", JSON.stringify(res.data));
+      } else {
+        console.error("API response is not an array:", res.data);
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
   const handleClickReturn = async () => {
     const dataReturn = {
       invoice_id: invoiceId,
@@ -152,8 +161,9 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
     console.log("data", dataReturn);
     try {
       const res = await returnProduct.postDataPayment(dataReturn);
-      // const texSS = res.massage.text;
+      const resIdReturns = res.data.return_id;
       toast.success("Trả hàng thành công");
+      await getDataDetailReturn(resIdReturns);
       setStateReturn(true);
       setValueReason("");
       handlePrintReturnInvoice();
@@ -171,28 +181,20 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
   // Load data from localStorage and calculate prices on initial render
   useEffect(() => {
     if (dataReturnPayment.length > 0) {
-      const totalPrice = dataReturnPayment[0]?.items.reduce(
-        (sum: number, item: any) => {
-          if (item.quantity === 0) {
-            return sum;
-          } else {
-            return sum + item.total_price;
-          }
-        },
-        0
-      );
+      const totalPrice = dataReturnPayment[0]?.items.reduce((sum: number, item: any) => {
+        if (item.quantity === 0) {
+          return sum;
+        } else {
+          return sum + item.total_price;
+        }
+      }, 0);
 
       setReturnPrice(totalPrice);
 
       const calculatedNeedReturnPrice =
-        totalPrice -
-        (isPercentage ? (totalPrice * returnFee) / 100 : returnFee);
-      setNeedReturnPrice(
-        calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0
-      );
-      setRefundAmount(
-        calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0
-      );
+        totalPrice - (isPercentage ? (totalPrice * returnFee) / 100 : returnFee);
+      setNeedReturnPrice(calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0);
+      setRefundAmount(calculatedNeedReturnPrice > 0 ? calculatedNeedReturnPrice : 0);
     }
   }, [dataReturnPayment, returnFee, isPercentage]);
 
@@ -228,12 +230,7 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
             <div className="icon">
               <FaUser />
             </div>
-            <input
-              type="text"
-              placeholder="Mã hóa đơn"
-              value={inforUser}
-              disabled={true}
-            />
+            <input type="text" placeholder="Mã hóa đơn" value={inforUser} disabled={true} />
           </div>
           <div className="title-return">
             <span>
@@ -289,10 +286,7 @@ const ReturnInvoice: React.FC<ReturnInvoiceProp> = ({
           )}
           <div className="return-item">
             <label style={{ fontWeight: "600" }}>Cần trả khách:</label>
-            <div
-              className="payment-return_price-total"
-              style={{ fontWeight: 600, color: "blue" }}
-            >
+            <div className="payment-return_price-total" style={{ fontWeight: 600, color: "blue" }}>
               <p>{needReturnPrice?.toLocaleString("vi-VN")}</p>
             </div>
           </div>
