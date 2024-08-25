@@ -16,6 +16,7 @@ import ModalModifyOwners from "./ModalModifyOwners";
 
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import ModalRejectOwners from "./ModalRejectOwners";
+import ComponentSort from "../../components/UI/ComponentSort";
 
 interface RecordType {
   stt: number;
@@ -64,6 +65,19 @@ const Owner = () => {
       setErrorMessage("An error occurred while fetching data."); // Đặt thông báo lỗi
       setIsModalVisible(true); // Hiển thị modal
       setLoading(false);
+    }
+  };
+  const sortDataCustomer = async (colName: string, typeSort: string) => {
+    setLoading(true);
+    try {
+      const res = await owners.sortDataOwners(colName, typeSort);
+      const totalItems = res.data.items;
+      setIsDataOwner(totalItems);
+      setLoading(false);
+    } catch (error) {
+      console.log("error:", error);
+      setLoading(false);
+      handleError(error);
     }
   };
   const handleSearchOwners = () => {};
@@ -172,13 +186,17 @@ const Owner = () => {
       key: "stt",
     },
     {
-      title: "Họ và tên",
+      // title: "Họ và tên",
+      title: (
+        <ComponentSort title="Họ và tên" sortKey="full_name" sortDataCustomer={sortDataCustomer} />
+      ),
       dataIndex: "full_name",
       key: "full_name",
       align: "start",
+      // width: 150,
     },
     {
-      title: "Email",
+      title: <ComponentSort title="Email" sortKey="email" sortDataCustomer={sortDataCustomer} />,
       dataIndex: "email",
       key: "email",
       align: "start",
@@ -209,18 +227,20 @@ const Owner = () => {
       render: (status: number) => {
         let color = "";
         let backgroundColor = "";
+
         switch (status) {
           case 0:
-            color = "orange";
-            backgroundColor = "#FFF3E0"; // Light orange background
+            color = "white";
+            backgroundColor = "#FF7F24";
             break;
           case 1:
-            color = "green";
-            backgroundColor = "var(--kv-success-200)"; // Light green background
+            color = "white";
+            backgroundColor = "#00EE00"; // Light green background
             break;
           default:
-            color = "red";
-            backgroundColor = "#FFEBEE"; // Light red background
+            color = "white";
+            backgroundColor = "#FF0000";
+            // Light red background
             break;
         }
 
@@ -229,11 +249,13 @@ const Owner = () => {
             style={{
               color: color,
               backgroundColor: backgroundColor,
-              borderRadius: "8px",
-              padding: "5px",
+              borderRadius: "10px",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "600",
             }}
           >
-            {status === 0 ? "Đang chờ phê duyệt" : status === 1 ? "Đã phê duyệt" : "Bị hủy"}
+            {status === 0 ? "Chờ phê duyệt" : status === 1 ? "Đã phê duyệt" : "Bị hủy"}
           </span>
         );
       },
@@ -246,10 +268,12 @@ const Owner = () => {
       render: (is_active: boolean) => (
         <span
           style={{
-            color: is_active ? "green" : "red",
-            backgroundColor: is_active ? "var(--kv-success-200)" : "#d0b9b9",
-            borderRadius: "8px",
-            padding: "5px",
+            color: "white",
+            backgroundColor: is_active ? "#00EE00" : "grey",
+            borderRadius: "10px",
+            padding: "6px",
+            fontSize: "12px",
+            fontWeight: "600",
           }}
         >
           {is_active ? "Kích hoạt" : "Chưa kích hoạt"}
@@ -265,14 +289,17 @@ const Owner = () => {
             <>
               <a>
                 <IoMdCheckmark
-                  style={{ color: "green" }}
+                  style={{
+                    color: "green",
+                    fontSize: "20px",
+                  }}
                   title="Đồng ý"
                   onClick={() => handleChangeStatusUserSuccess(record)}
                 />
               </a>
               <a>
                 <IoMdClose
-                  style={{ color: "red" }}
+                  style={{ color: "red", fontSize: "20px" }}
                   title="Từ chối"
                   onClick={() => handClickOpenModalRejectOwner(record.id)}
                 />

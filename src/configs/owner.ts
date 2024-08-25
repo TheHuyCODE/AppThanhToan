@@ -18,6 +18,20 @@ const owners = {
             }
         })
     },
+    sortDataOwners: (colName: string, typeSort: string) => {
+        const url = "api/v1/manage/owner";
+        const params = {
+            sort: `${colName}`,
+            order_by: `${typeSort}`,
+        };
+        return axiosClient.get(url, {
+            headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+            params,
+        });
+    },
     postOwners: (data: object) => {
         const url = 'api/v1/manage/owner'
         return axiosClient.post(url, data, {

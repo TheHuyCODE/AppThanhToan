@@ -24,6 +24,7 @@ interface RightPageContentProps {
   removeNotConFirm: (id: string) => void;
   handleVNDClick: () => void;
   handlePercentageClick: () => void;
+  fetchDataProduct: () => void;
 }
 const RightPageContent: React.FC<RightPageContentProps> = ({
   dataProduct,
@@ -244,6 +245,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       setStatePayment(true);
       setSidebarVisible(false);
       handlePrint();
+      fetchDataProduct();
     } catch (error) {
       handleError(error);
     }
@@ -414,13 +416,15 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                     alt={product.name}
                     className="image-review-product"
                   />
-                  <span style={{ marginTop: "1.5rem" }}>{product.inventory_number || 0}</span>
                 </div>
                 <div className="product-info-bottom">
                   <h4>{product.name}</h4>
                   <div>
                     <span>{product.price.toLocaleString("vi-VN")}</span>
                   </div>
+                </div>
+                <div className="product-inventory">
+                  <span style={{ marginTop: "1.5rem" }}>SL:{product.inventory_number || 0}</span>
                 </div>
               </li>
             ))}
@@ -605,7 +609,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   }}
                   style={{ width: "100%", height: 40 }}
                 >
-                  {infoBanking.map((option) => (
+                  {infoBanking.map((option: any) => (
                     <option value={option.value} key={option.id}>
                       {option.name}
                     </option>
