@@ -11,17 +11,18 @@ interface ReturnData {
   id: string;
   customer: {
     full_name: string;
+    phone: string;
   };
   create_user: {
     full_name: string;
   };
-  // product: {
-  //   id: string;
-  //   name: string;
-  //   quantity: number;
-  //   price: number;
-  //   total_price: number;
-  // }[];
+  product: {
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    total_price: number;
+  }[];
   total_amount: number;
   total_product: number;
 }
@@ -34,15 +35,14 @@ interface InvoiceStore {
   phone: string;
 }
 const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) => {
-  const [invoiceData, setInvoiceData] = useState<ReturnData | null>(null);
+  const [returnData, setReturnData] = useState<ReturnData | null>(null);
   const [invoiceDataStore, setInvoiceDataStore] = useState<InvoiceStore | null>(null);
-
   useEffect(() => {
     const data = localStorage.getItem("dataDetailReturn");
     const dataStore = localStorage.getItem("INFO_USER");
     if (data) {
       try {
-        setInvoiceData(JSON.parse(data));
+        setReturnData(JSON.parse(data));
       } catch (error) {
         console.error("Error parsing invoice data", error);
       }
@@ -55,11 +55,15 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) =>
       }
     }
   }, []);
-  if (!invoiceData) {
+  if (!returnData) {
     return <div>Loading...</div>;
   }
-  const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
-  const adminName = invoiceData.create_user.full_name || "Admin";
+  const customerName = returnData.customer.full_name || "Khách hàng không xác định";
+  const adminName = returnData.create_user.full_name || "Admin";
+  const addressCreated = invoiceDataStore?.address || "";
+  const customerPhone = returnData?.customer.phone || "";
+  const phoneStore = invoiceDataStore?.store.phone || "";
+
   return (
     <div ref={ref} className="page_invoice">
       <div className="header_invoices">
@@ -73,10 +77,12 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) =>
           </div>
           <div className="info_admin">
             <span>Người tạo: {adminName}</span>
+            <span>Địa chỉ: {addressCreated}</span>
+            <span>Điện thoại: {phoneStore}</span>
 
             <div className="title_invoices">
               <h3>HÓA ĐƠN TRẢ HÀNG</h3>
-              <span>Số HD: {invoiceData.id}</span>
+              <span>Số HD: {returnData.id}</span>
             </div>
           </div>
         </div>
@@ -84,6 +90,7 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) =>
       <div className="containner_invoices">
         <div className="info_customer_invoices">
           <span>Khách hàng: {customerName} </span>
+          <span>SĐT: {customerPhone}</span>
         </div>
         <div className="table_product_invoice">
           <table>
@@ -97,7 +104,7 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) =>
               </tr>
             </thead>
             <tbody>
-              {/* {invoiceData.product.map((product, index) => (
+              {returnData.product.map((product, index) => (
                 <tr key={product.id}>
                   <td>{index + 1}</td>
                   <td>{product.name}</td>
@@ -105,7 +112,7 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) =>
                   <td>{product.price.toLocaleString("vi-VN") || 0}</td>
                   <td>{product.total_price.toLocaleString("vi-VN") || 0}</td>
                 </tr>
-              ))} */}
+              ))}
             </tbody>
           </table>
         </div>
@@ -115,8 +122,8 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>((props, ref) =>
             <span>Tiền trả khách:</span>
           </div>
           <div className="detail_prices">
-            <span>{invoiceData.total_amount.toLocaleString("vi-VN")}</span>
-            <span>{invoiceData.total_amount.toLocaleString("vi-VN")}</span>
+            <span>{returnData.total_amount.toLocaleString("vi-VN")}</span>
+            <span>{returnData.total_amount.toLocaleString("vi-VN")}</span>
           </div>
         </div>
       </div>

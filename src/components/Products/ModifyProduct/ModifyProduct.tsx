@@ -37,7 +37,7 @@ const ModifyProduct = () => {
   const params = useParams<{ idProduct: string }>();
   const idProduct: string | undefined = params.idProduct;
   const [dataProductModify, setDataProductModify] = useState<Product | null>(null);
-  const [isEditable, setIsEditable] = useState(false);
+
   const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [resImageProduct, setResImageProduct] = useState("");
@@ -212,7 +212,7 @@ const ModifyProduct = () => {
   };
   const onClickModifyProduct = async () => {
     const dataModify = {
-      // barcode: inputProduct.barcode,
+      barcode: inputProduct.barcode,
       name: inputProduct.name,
       description: inputProduct.description,
       price: inputProduct.price,
@@ -252,25 +252,6 @@ const ModifyProduct = () => {
       e.target.value = "";
       setInputProduct({
         ...inputProduct,
-        price: 0,
-      });
-      return;
-    }
-    const numericValue = parseInt(value, 10);
-    e.target.value = numericValue.toLocaleString("vi-VN");
-    setInputProduct({
-      ...inputProduct,
-      price: numericValue,
-    });
-    console.log("value", value);
-  };
-  const onChangeValueCapitalPrice = (e: any) => {
-    let value = e.target.value;
-    value = value.replace(/[^0-9]/g, "");
-    if (value == "") {
-      e.target.value = "";
-      setInputProduct({
-        ...inputProduct,
         capital_price: 0,
       });
       return;
@@ -283,17 +264,31 @@ const ModifyProduct = () => {
     });
     console.log("value", value);
   };
+  const onChangeValueCapitalPrice = (e: any) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9]/g, "");
+    if (value == "") {
+      e.target.value = "";
+      setInputProduct({
+        ...inputProduct,
+        price: 0,
+      });
+      return;
+    }
+    const numericValue = parseInt(value, 10);
+    e.target.value = numericValue.toLocaleString("vi-VN");
+    setInputProduct({
+      ...inputProduct,
+      price: numericValue,
+    });
+    console.log("value", value);
+  };
   const unitProduct = unitProductList;
   useEffect(() => {
     getDataModifyProduct();
     fetchDataCategory();
   }, [idProduct]);
   useEffect(() => {
-    if (dataProductModify?.barcode) {
-      setIsEditable(false);
-    } else {
-      setIsEditable(true);
-    }
     if (dataProductModify) {
       setInputProduct({
         barcode: dataProductModify.barcode || "",
@@ -373,14 +368,13 @@ const ModifyProduct = () => {
           >
             <div className="input-info">
               <label htmlFor="">
-                Mã sản phẩm gốc(<span>*</span>)
+                Mã vạch(<span>*</span>)
               </label>
               <input
                 type="text"
                 className="input-form"
                 value={inputProduct.barcode}
                 onChange={onChangeInput("barcode")}
-                disabled={!isEditable}
               />
             </div>
             <div className="input-info">
@@ -438,7 +432,7 @@ const ModifyProduct = () => {
               <input
                 type="text"
                 className="input-form"
-                value={inputProduct.price}
+                value={inputProduct.capital_price}
                 onChange={onChangeValuePrice}
                 style={{
                   position: "relative",
@@ -458,7 +452,7 @@ const ModifyProduct = () => {
               <input
                 type="text"
                 className="input-form"
-                value={inputProduct.capital_price}
+                value={inputProduct.price}
                 onChange={onChangeValueCapitalPrice}
                 style={{
                   position: "relative",

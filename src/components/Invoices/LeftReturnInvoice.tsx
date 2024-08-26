@@ -162,7 +162,7 @@ const LeftReturnInvoice: React.FC<LeftContentReturn> = ({
             <div className="icon-pen">
               <FaPen />
             </div>
-            <input type="text" placeholder="Chú thích đơn hàng" onChange={onChangeValueCommend} />
+            <input type="text" placeholder="Lí do trả hàng" onChange={onChangeValueCommend} />
           </div>
         )}
       </div>

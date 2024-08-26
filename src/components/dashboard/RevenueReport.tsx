@@ -134,6 +134,7 @@ const RevenueReport: React.FC = () => {
         valueInputTime.group_by
       );
       const data = res.data;
+      console.log("data111", data);
       setDataRevenue(data);
     } catch (error) {
       handleError(error);
@@ -253,9 +254,6 @@ const RevenueReport: React.FC = () => {
           <div className="header_revenue_date">
             <Space direction="vertical" size={12} />
             {dateType === "date" && <RangePicker onChange={handleDateChange} size={"large"} />}
-            {dateType === "week" && (
-              <RangePicker picker="week" onChange={handleDateChange} size={"large"} />
-            )}
             {dateType === "month" && (
               <RangePicker picker="month" onChange={handleDateChange} size={"large"} />
             )}
@@ -269,7 +267,6 @@ const RevenueReport: React.FC = () => {
               size={"large"}
             >
               <Radio.Button value="date">Ngày</Radio.Button>
-              <Radio.Button value="week">Tuần</Radio.Button>
               <Radio.Button value="month">Tháng</Radio.Button>
               <Radio.Button value="year">Năm</Radio.Button>
             </Radio.Group>

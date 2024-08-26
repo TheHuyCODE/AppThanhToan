@@ -104,7 +104,7 @@ const InventoryReport = () => {
       width: 80,
     },
     {
-      title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
+      title: getColumnTitle(`Mã vạch`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
       // width: 160,

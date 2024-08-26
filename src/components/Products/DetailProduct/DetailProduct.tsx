@@ -17,7 +17,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ label, value, unit }) => 
     </label>
     <div>
       <p>
-        {value}
+        {value || ""}
         {unit && <span>{unit}</span>}
       </p>
     </div>
@@ -136,17 +136,17 @@ const DetailProduct: React.FC = () => {
         </div>
         <div className="content-modify-product-left">
           <div className="content-add-product-left-container-main">
-            <ProductDetail label="Mã sản phẩm gốc:" value={dataProductDetail?.barcode} />
+            <ProductDetail label="Mã vạch gốc:" value={dataProductDetail?.barcode} />
             <ProductDetail label="Tên sản phẩm chính:" value={dataProductDetail?.name} />
             <ProductDetail label="Danh mục sản phẩm:" value={dataProductDetail?.category.name} />
             <ProductDetail
               label="Giá nhập:"
-              value={dataProductDetail?.price?.toLocaleString("vi-VN")}
+              value={dataProductDetail?.capital_price?.toLocaleString("vi-VN")}
               unit="đ"
             />
             <ProductDetail
               label="Giá bán:"
-              value={dataProductDetail?.capital_price?.toLocaleString("vi-VN")}
+              value={dataProductDetail?.price?.toLocaleString("vi-VN")}
               unit="đ"
             />
             <ProductDetail label="Đơn vị tính:" value={dataProductDetail?.unit} />
@@ -167,10 +167,10 @@ const DetailProduct: React.FC = () => {
               label="Ngày sửa:"
               value={convertDateProductDetail(dataProductDetail?.modified_date)}
             />
-            <ProductDetail label="Người tạo:" value={dataProductDetail?.user.full_name} />
+            <ProductDetail label="Người tạo:" value={dataProductDetail?.user?.full_name} />
             <ProductDetail
               label="Người sửa gần nhất:"
-              value={dataProductDetail?.last_modified_user.full_name}
+              value={dataProductDetail?.last_modified_user?.full_name}
             />
             <ProductDetail label="Mô tả:" value={dataProductDetail?.description} />
           </div>

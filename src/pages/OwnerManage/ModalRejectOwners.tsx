@@ -23,8 +23,8 @@ const ModalRejectOwners: React.FC<ModalDeleteOwnersProp> = ({
         open={isOpenModalRejectOwners}
         onOk={handleChangeStatusReject}
         onCancel={handleCloseModalReject}
-        okText="Xóa"
-        cancelText="Hủy bỏ"
+        okText="Từ chối"
+        cancelText="Hủy"
       >
         <h1
           style={{

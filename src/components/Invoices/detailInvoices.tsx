@@ -9,6 +9,7 @@ interface InvoiceData {
   id: string;
   customer: {
     full_name: string;
+    phone: string;
   };
   create_user: {
     full_name: string;
@@ -16,6 +17,7 @@ interface InvoiceData {
   payment_methods: {
     type: boolean;
   };
+
   product: {
     id: string;
     name: string;
@@ -69,10 +71,9 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
 
     const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
     const adminName = invoiceData.create_user.full_name || "Admin";
-    const phoneCreated = invoiceDataStore?.phone || "";
+    const customerPhone = invoiceData?.customer.phone || "";
     const addressCreated = invoiceDataStore?.address || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
-    const addressPhone = invoiceDataStore?.store.address || "";
     return (
       <div ref={ref} className="page_invoice">
         <div className="header_invoices">
@@ -87,7 +88,7 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
             <div className="info_admin">
               <span>Người tạo: {adminName}</span>
               <span>Địa chỉ: {addressCreated}</span>
-              <span>Điện thoại: {phoneCreated}</span>
+              <span>Điện thoại: {phoneStore}</span>
               <div className="title_invoices">
                 <h3>HÓA ĐƠN HÀNG HÓA</h3>
                 <span>Số HD: {invoiceData.id}</span>
@@ -98,8 +99,7 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
         <div className="containner_invoices">
           <div className="info_customer_invoices">
             <span>Khách hàng: {customerName} </span>
-            <span>SĐT: {phoneStore}</span>
-            <span>Địa chỉ: {addressPhone}</span>
+            <span>SĐT: {customerPhone}</span>
           </div>
           <div className="table_product_invoice">
             <table>

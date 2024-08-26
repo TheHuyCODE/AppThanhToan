@@ -351,7 +351,6 @@ const Products = () => {
     }
   };
   const onShowSizeChange = (current: number, size: number) => {
-   
     getDataPagination(current, size);
     setPage(current);
     setPageSize(size);
@@ -446,7 +445,7 @@ const Products = () => {
       fixed: "left",
     },
     {
-      title: getColumnTitle(`Mã sản phẩm chính`, "barcode"),
+      title: getColumnTitle(`Mã vạch`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
       align: "start",

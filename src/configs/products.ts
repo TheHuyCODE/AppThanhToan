@@ -370,7 +370,7 @@ const products = {
     });
   },
 
-  putModifyProduct: (idItems: string, data: any) => {
+  putModifyProduct: (idItems: string | undefined, data: any) => {
     const url = `api/v1/manage/product/${idItems}`;
     return axiosClient.put(url, data, {
       headers: {

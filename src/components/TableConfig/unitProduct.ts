@@ -5,19 +5,19 @@ export const unitProductList = [
     value: 1,
   },
   {
-    name: "Bộ",
+    name: "Gói",
     value: 2,
   },
   {
-    name: "Cặp",
+    name: "Chai",
     value: 3,
   },
   {
-    name: "Miếng",
+    name: "Hộp",
     value: 4,
   },
   {
-    name: "Đôi",
+    name: "Lon",
     value: 5,
   },
   {
@@ -25,44 +25,21 @@ export const unitProductList = [
     value: 6,
   },
   {
-    name: "Chiếc",
+    name: "Kilogam",
     value: 7,
   },
   {
-    name: "Gam",
+    name: "Bộ",
     value: 8,
   },
   {
-    name: "Tấn",
+    name: "Thùng",
     value: 9,
   },
   {
-    name: "Yến",
+    name: "Miếng",
     value: 10,
   },
-  {
-    name: "Chai",
-    value: 11,
-  },
-  {
-    name: "Bịch",
-    value: 12,
-  },
-  {
-    name: "Gói",
-    value: 13,
-  },
-  {
-    name: "Thùng",
-    value: 14,
-  },
-  {
-    name: "Hộp",
-    value: 15,
-  },
-  {
-    name: "Lon",
-    value: 16,
-  },
+
 ];
 export const roleIdSuperAdmin = 1
