@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, Select } from "antd";
+import { Modal, Select, TreeSelect } from "antd";
 import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
 import { FaArrowRightFromBracket } from "react-icons/fa6";
@@ -14,6 +14,7 @@ import { FiPlusCircle } from "react-icons/fi";
 import { BiSolidError } from "react-icons/bi";
 import { handleError } from "../../utils/errorHandler";
 import customer from "../../configs/customer";
+import { useAuth } from "../auth/AuthContext";
 interface RightPageContentProps {
   dataProduct: any;
   dataCategory: any;
@@ -25,11 +26,22 @@ interface RightPageContentProps {
   handleVNDClick: () => void;
   handlePercentageClick: () => void;
   fetchDataProduct: () => void;
+  setDataProduct: () => void;
+}
+
+interface TreeDataNode {
+  id: string;
+  pId: string | null;
+  value: string;
+  title: string;
+  children?: TreeDataNode[];
+  isLeaf?: boolean;
 }
 const RightPageContent: React.FC<RightPageContentProps> = ({
   dataProduct,
   dataCategory,
   handleProductClick,
+  setDataProduct,
   handleInputDiscountPrice,
   toggleSidebar,
   setSidebarVisible,
@@ -65,17 +77,27 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   totalItems,
 }) => {
   const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
-  const [selectedCustomer, setSelectedCustomer] = useState<string>(IDCustomerRetail);
-  const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<string>(IDCustomerRetail);
+  const [idActiveInvoice, setIdActiveInvoice] = useState(
+    localStorage.getItem("idActiveInvoice")
+  );
+  const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [disabledPayment, setDisabledPayment] = useState(false);
   const [linkQR, setLinkQR] = useState<string>("");
+  const [selectedPath, setSelectedPath] = useState<string>("");
   const [statePayment, setStatePayment] = useState(false);
   const [isPrintReady, setIsPrintReady] = useState(false);
   const [hiddenPayment, setHiddenPayment] = useState(false);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [hiddenErr, setHiddenErr] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
-
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
+    undefined
+  );
+  const [idSearchCategory, setIdSearchCategory] = useState({
+    id_category: "",
+  });
   const [errorAddCustomer, setErrorAddCustomer] = useState({
     message: "",
   });
@@ -105,7 +127,103 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
     label: item.full_name,
     id: item.id,
   }));
-  const defaultCustomer = infoCustomer.find((customer: any) => customer.label === "Khách lẻ");
+  const transformToSimpleMode = (
+    data: TreeDataNode[],
+    parentId: string | null = null
+  ): TreeDataNode[] => {
+    let result: TreeDataNode[] = [];
+    data.forEach((item) => {
+      result.push({
+        id: item.id,
+        pId: parentId,
+        value: item.id,
+        title: item.title,
+        isLeaf: item.isLeaf,
+      });
+      if (item.children && item.children.length > 0) {
+        result = result.concat(transformToSimpleMode(item.children, item.id));
+      }
+    });
+    return result;
+  };
+  const treeData = isCategoryProduct.map((item: any) => ({
+    id: item.id,
+    pId: null,
+    value: item.id,
+    title: item.name,
+    isLeaf: !(item.children && item.children.length > 0),
+    children: item.children?.map((child: any) => ({
+      id: child.id,
+      pId: item.id,
+      value: child.id,
+      title: child.name,
+      isLeaf: !(child.children && child.children.length > 0),
+      children: child.children?.map((subchild: any) => ({
+        id: subchild.id,
+        pId: child.id,
+        value: subchild.id,
+        title: subchild.name,
+        isLeaf: true,
+      })),
+    })),
+  }));
+  const fetchSearchDataCategory = async () => {
+    try {
+      const res = await products.getDataSearchProductIsActive(
+        idSearchCategory.id_category
+      );
+      setDataProduct(res.data.items);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+  useEffect(() => {
+    if (idSearchCategory.id_category) {
+      fetchSearchDataCategory();
+    }
+  }, [idSearchCategory.id_category]);
+  const simpleTreeData = transformToSimpleMode(treeData);
+  const findPath = (id: string, data: TreeDataNode[]): string => {
+    const item = data.find((d) => d.value === id);
+    if (!item) return "";
+    const parentPath = item.pId ? findPath(item.pId, data) : "";
+    return parentPath ? `${parentPath} -> ${item.title}` : item.title;
+  };
+  const onSelect = (value: string) => {
+    setSelectedKeys(value);
+    const path = findPath(value, simpleTreeData);
+    setSelectedPath(path);
+    console.log("Selected ID:", value, "Path:", path);
+    setIdSearchCategory({
+      ...idSearchCategory,
+      id_category: value,
+    });
+    if (value === undefined || path === "") {
+      fetchDataProduct();
+    }
+  };
+  const filterTreeNode = (inputValue: string, treeNode: any) => {
+    if (!treeNode.children) {
+      return (
+        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+      );
+    }
+    return false;
+  };
+  const onLoadData = (node: any) => {
+    return new Promise<void>((resolve) => {
+      if (node.children && node.children.length > 0) {
+        resolve();
+        return;
+      }
+      const newData = simpleTreeData.filter((item) => item.pId === node.value);
+      node.children = newData;
+      resolve();
+    });
+  };
+  const defaultCustomer = infoCustomer.find(
+    (customer: any) => customer.label === "Khách lẻ"
+  );
   useEffect(() => {
     console.log("defaultCustomer", defaultCustomer);
   }, [defaultCustomer]);
@@ -122,7 +240,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
         name: `${item.bank_name} - ${item.account_no} - ${item.account_name}`,
       })) || [];
   const getCustomerPayment = (value: number) => {
-    const isActiveCustomer = infoCustomer.find((item: any) => item.value === value);
+    const isActiveCustomer = infoCustomer.find(
+      (item: any) => item.value === value
+    );
     if (isActiveCustomer) {
       const IDCustomer = isActiveCustomer.id;
       setSelectedCustomer(IDCustomer);
@@ -169,7 +289,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   };
 
   const handleSelectInfoBank = (value: number) => {
-    const isActiveBank = infoBanking.find((item) => item.value === value);
+    const isActiveBank = infoBanking.find((item: any) => item.value === value);
     if (isActiveBank) {
       console.log("Name tương ứng với value:", isActiveBank);
       console.log("Name tương ứng với id:", isActiveBank.id);
@@ -306,7 +426,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       });
     }
   };
-  const clickAddItemCategory = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const clickAddItemCategory = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     e.preventDefault();
     const dataCustomer = {
       full_name: inputCustomer.full_name,
@@ -332,6 +454,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       // console.log("err", err);
     }
   };
+  useEffect(() => {
+    fetchDataCategory();
+  }, []);
   useEffect(() => {
     if (inputQRCode.idBank && finalPrice > 0) {
       const linkQr = getLinkPictureQRCode(
@@ -389,7 +514,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
               onChange={handleSearchProduct}
             />
           </div>
-          <Select
+          {/* <Select
             showSearch
             placeholder="Lọc theo danh mục sản phẩm"
             notFoundContent="Không tìm thấy danh mục sản phẩm"
@@ -397,18 +522,40 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
             allowClear
             style={{ width: 260, height: 40 }}
             onChange={(value) => {
-              handleSelectCategory(value);
+              handleSelectCategory(value);d
             }}
             filterOption={(input, option) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
             }
             options={formatDataCategory}
+          /> */}
+
+          <TreeSelect
+            showSearch
+            placeholder="Danh mục sản phẩm"
+            style={{ width: "260px", height: "35px" }}
+            value={selectedPath || undefined}
+            notFoundContent="Không có danh mục sản phẩm"
+            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+            allowClear
+            multiple={false}
+            treeDefaultExpandAll={false}
+            onChange={onSelect}
+            treeDataSimpleMode
+            treeData={simpleTreeData}
+            treeNodeLabelProp="title"
+            filterTreeNode={filterTreeNode}
+            loadData={onLoadData}
           />
         </div>
         <div className="right-page-content-container">
           <ul className="list-product">
             {dataProduct?.map((product: any, index: any) => (
-              <li key={index} className="box-product" onClick={() => handleProductClick(product)}>
+              <li
+                key={index}
+                className="box-product"
+                onClick={() => handleProductClick(product)}
+              >
                 <div className="product-info-img">
                   <img
                     src={`${domainLink}${product.image_url}`}
@@ -424,7 +571,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   </div>
                 </div>
                 <div className="product-inventory">
-                  <span style={{ marginTop: "1.5rem" }}>SL:{product.inventory_number || 0}</span>
+                  <span style={{ marginTop: "1.5rem" }}>
+                    SL:{product.inventory_number || 0}
+                  </span>
                 </div>
               </li>
             ))}
@@ -451,11 +600,18 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
               <MdKeyboardArrowRight className="icon" />
             </button>
           </div>
-          <button className="btn-pay" onClick={toggleSidebar} disabled={disabledPayment}>
+          <button
+            className="btn-pay"
+            onClick={toggleSidebar}
+            disabled={disabledPayment}
+          >
             THANH TOÁN
           </button>
         </div>
-        <div className={`overlay ${isSidebarVisible ? "show" : ""}`} onClick={toggleSidebar}></div>
+        <div
+          className={`overlay ${isSidebarVisible ? "show" : ""}`}
+          onClick={toggleSidebar}
+        ></div>
         <div className={`sidebar ${isSidebarVisible ? "show" : ""}`}>
           <div className="header-sidebar-bank">
             <span>Thanh toán hóa đơn {activeKey}</span>
@@ -475,7 +631,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 onChange={(value) => getCustomerPayment(value)}
                 style={{ width: 400, height: 40, paddingRight: "0px" }}
                 filterOption={(input, option) =>
-                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
                 options={infoCustomer}
               />
@@ -516,13 +674,17 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                     onChange={handleDiscountChange}
                   />
                   <button
-                    className={`discount-button ${!isPercentage ? "active" : ""}`}
+                    className={`discount-button ${
+                      !isPercentage ? "active" : ""
+                    }`}
                     onClick={handleVNDClick}
                   >
                     VND
                   </button>
                   <button
-                    className={`discount-button ${isPercentage ? "active" : ""}`}
+                    className={`discount-button ${
+                      isPercentage ? "active" : ""
+                    }`}
                     onClick={handlePercentageClick}
                   >
                     %
@@ -530,7 +692,10 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 </div>
               )}
               <div className="payment-invoice__total-after-discount">
-                <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
+                <label
+                  className="payment-invoice__label"
+                  style={{ fontWeight: "600" }}
+                >
                   Khách cần trả
                 </label>
                 <div className="payment-invoice__price">
@@ -540,7 +705,10 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 </div>
               </div>
               <div className="payment-invoice__guest-pays">
-                <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
+                <label
+                  className="payment-invoice__label"
+                  style={{ fontWeight: "600" }}
+                >
                   Khách thanh toán
                 </label>
                 <input
@@ -581,7 +749,10 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                     checked={selectedPaymentMethod === 1}
                     onChange={handlePaymentMethodChange}
                   />
-                  <label className="payment-invoice__label" htmlFor="internetmoney">
+                  <label
+                    className="payment-invoice__label"
+                    htmlFor="internetmoney"
+                  >
                     Chuyển khoản
                   </label>
                 </div>
@@ -640,9 +811,13 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 </div>
               )}
               <div className="payment-invoice__money-return">
-                <label className="payment-invoice__label">Tiền thừa trả khách</label>
+                <label className="payment-invoice__label">
+                  Tiền thừa trả khách
+                </label>
                 <div className="payment-invoice__return-amount">
-                  <p className="payment-invoice__price-amount">{calculateChange()}</p>
+                  <p className="payment-invoice__price-amount">
+                    {calculateChange()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -669,7 +844,11 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   top: "-9999px",
                 }}
               >
-                <DetailInvoices ref={componentRef} linkQR={linkQR} finalPrice={finalPrice} />
+                <DetailInvoices
+                  ref={componentRef}
+                  linkQR={linkQR}
+                  finalPrice={finalPrice}
+                />
               </div>
             )}
           </div>
@@ -716,7 +895,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
               />
               <br />
               {errorAddCustomer && (
-                <span style={{ color: "red", fontSize: "12px" }}>{errorAddCustomer.message}</span>
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  {errorAddCustomer.message}
+                </span>
               )}
             </div>
           </div>

@@ -49,14 +49,19 @@ const Products = () => {
   const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
+    undefined
+  );
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [valueSearch, setValueSearch] = useState("");
   const debounceValue = useDebounce(valueSearch, 700);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const [sortedColumn, setSortedColumn] = useState<SortState>({ key: null, direction: null });
+  const [sortedColumn, setSortedColumn] = useState<SortState>({
+    key: null,
+    direction: null,
+  });
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const [idSearchCategory, setIdSearchCategory] = useState({
     id_category: "",
@@ -223,7 +228,9 @@ const Products = () => {
   };
   const filterTreeNode = (inputValue: string, treeNode: any) => {
     if (!treeNode.children) {
-      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+      return (
+        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+      );
     }
     return false;
   };
@@ -320,7 +327,9 @@ const Products = () => {
   };
   const fetchDataSearchProduct = async () => {
     setLoading(true);
-    const res = await products.getDataSearchNameProduct(debounceValue);
+    const res = await products.getDataSearchNameProductNotIsActive(
+      debounceValue
+    );
     if (res.code === 200) {
       setDataProduct(res.data);
       setLoading(false);
@@ -341,7 +350,9 @@ const Products = () => {
   const fetchSearchDataCategory = async () => {
     if (idSearchCategory.id_category) {
       // Check if idSearchCategory is not empty
-      const res = await products.getDataSearchProduct(idSearchCategory.id_category);
+      const res = await products.getDataSearchProduct(
+        idSearchCategory.id_category
+      );
       if (res.code === 200) {
         console.log(res.data);
         setDataProduct(res.data);
@@ -377,7 +388,9 @@ const Products = () => {
 
   const fetchSearchDataActive = async () => {
     if (stateActiveProduct.is_active) {
-      const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
+      const res = await products.getDataSearchProductActive(
+        stateActiveProduct.is_active
+      );
       if (res.code === 200) {
         console.log(res.data);
         setDataProduct(res.data);
@@ -402,7 +415,10 @@ const Products = () => {
     const fetchSortDataProduct = async () => {
       if (sortedColumn.key) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSortProduct(sortedColumn.key, sortedColumn.direction);
+        const res = await products.getDataSortProduct(
+          sortedColumn.key,
+          sortedColumn.direction
+        );
         if (res.code === 200) {
           console.log(res.data);
           setDataProduct(res.data);
@@ -522,7 +538,11 @@ const Products = () => {
             <FaPencilAlt onClick={() => modifyProduct(record)} title="Sửa" />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} onClick={() => deleteProduct(record)} title="Xóa" />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => deleteProduct(record)}
+              title="Xóa"
+            />
           </a>
         </Space>
       ),
@@ -552,7 +572,10 @@ const Products = () => {
       >
         <div className="header-left">
           <div className="header-left-top">
-            <div className="search-product" style={{ display: "flex", position: "relative" }}>
+            <div
+              className="search-product"
+              style={{ display: "flex", position: "relative" }}
+            >
               <CiSearch
                 style={{
                   position: "absolute",
@@ -616,7 +639,10 @@ const Products = () => {
             marginLeft: "80px",
           }}
         >
-          <ButtonExportToExcel linkExport={LINK_EXPORT} fileName={fileName}></ButtonExportToExcel>
+          <ButtonExportToExcel
+            linkExport={LINK_EXPORT}
+            fileName={fileName}
+          ></ButtonExportToExcel>
           <button
             className="btn-header-right"
             style={{ width: "100px" }}

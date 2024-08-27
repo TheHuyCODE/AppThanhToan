@@ -160,7 +160,7 @@ const products = {
       page_size: size,
       // sort: "name",
       order_by: "asc",
-      // is_active: 1,
+      is_active: 1,
     };
     return axiosClient.get(url, {
       headers: {
@@ -203,16 +203,16 @@ const products = {
   },
   getCategoryProduct: () => {
     const url = "api/v1/manage/category/category-dropdown";
-    const params = {
-      is_haveproduct: 1,
-    }
+    // const params = {
+    //   is_haveproduct: 1,
+    // }
     return axiosClient.get(url, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "true",
       },
-      params,
+  
     });
   },
   getFiltersCategoryProduct: () => {
@@ -239,7 +239,21 @@ const products = {
     const url = `api/v1/manage/product`;
     const params = {
       category_id: parent_id,
-
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  getDataSearchProductIsActive: (parent_id: string) => {
+    const url = `api/v1/manage/product`;
+    const params = {
+      category_id: parent_id,
+      is_active: 1,
     };
     return axiosClient.get(url, {
       headers: {
@@ -280,12 +294,12 @@ const products = {
       params,
     });
   },
-
   getDataSearchNameProduct: (value: string) => {
     const url = `api/v1/manage/product`;
     const params = {
       search: value,
-      page_size: 10
+      page_size: 10,
+      is_active: 1
     };
     return axiosClient.get(url, {
       headers: {
@@ -296,10 +310,27 @@ const products = {
       params,
     });
   },
+  getDataSearchNameProductNotIsActive: (value: string) => {
+    const url = `api/v1/manage/product`;
+    const params = {
+      search: value,
+      page_size: 10,
+    };
+    return axiosClient.get(url, {
+      headers: {
+        // Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+  },
+  
   getDataSearchBarcodeProduct: (value: string) => {
     const url = `api/v1/manage/product`;
     const params = {
       barcode: value,
+      is_active: 1,
     };
     return axiosClient.get(url, {
       headers: {
