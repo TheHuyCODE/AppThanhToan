@@ -19,13 +19,10 @@ interface BarChartProps {
   }[];
 }
 const BarChart: React.FC<BarChartProps> = ({ dataRevenue }) => {
-  const labels = dataRevenue.map((item) => item.date); // Sử dụng ngày làm nhãn
-  const profitData = dataRevenue.map((item) => item.profit); // Lợi nhuận
-  const revenueData = dataRevenue.map((item) => item.revenue);
+  const labels = dataRevenue?.map((item) => item.date); // Sử dụng ngày làm nhãn
+  const profitData = dataRevenue?.map((item) => item.profit); // Lợi nhuận
+  const revenueData = dataRevenue?.map((item) => item.revenue);
   // Dữ liệu của biểu đồ
-  console.log("labels", labels);
-  console.log("profitData", profitData);
-  console.log("revenueData", revenueData);
 
   const data = {
     labels, // Sử dụng labels được map từ dataRevenue
@@ -35,7 +32,7 @@ const BarChart: React.FC<BarChartProps> = ({ dataRevenue }) => {
         backgroundColor: "#0090da",
         hoverBackgroundColor: "#1fa2e4",
         borderRadius: 8,
-        data: profitData, // Dữ liệu lợi nhuận từ props
+        data: profitData,
       },
       {
         label: "Doanh thu",

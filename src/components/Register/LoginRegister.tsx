@@ -205,7 +205,7 @@ const LoginRegister = () => {
     }
     setButtonDisabled(false);
   };
-  const handleSubmitRegister = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSubmitRegister = async (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const userData = {
       email: dataRegister.email,
@@ -217,21 +217,35 @@ const LoginRegister = () => {
       phone: dataRegister.phone,
     };
     setIsLoading(true);
-    loginApi.postMessageRegister(userData).then((response) => {
-      if (response.code === 200) {
-        const successMs = response.message.text;
-        // toast.success(successMs);
-        clearInputRegister();
-        setIsLoading(false);
-        success(successMs);
-      } else {
-        console.log(response);
-        const errMs = response.data.message.text;
-        toast.error(errMs);
-        // error(res);
-        setIsLoading(false);
-      }
-    });
+    try {
+      const res = await loginApi.postMessageRegister(userData);
+
+      const successMs = res.message.text;
+      // toast.success(successMs);
+      clearInputRegister();
+      setIsLoading(false);
+      success(successMs);
+    } catch (error) {
+      handleError(error);
+      setIsLoading(false);
+    }
+
+    // loginApi.postMessageRegister(userData).then((response) => {
+    //   if (response.code === 200) {
+    //     const successMs = response.message.text;
+    //     // toast.success(successMs);
+    //     clearInputRegister();
+    //     setIsLoading(false);
+    //     success(successMs);
+    //   } else {
+    //     console.log(response);
+    //     const errMs = response.data.message.text;
+    //     console.log("err", errMs);
+    //     handleError(errMs);
+    //     // error(res);
+    //     setIsLoading(true);
+    //   }
+    // });
   };
   const handleSubmitLogin = async (event: any) => {
     event.preventDefault();

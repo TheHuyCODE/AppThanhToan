@@ -20,10 +20,14 @@ type SortState = {
   key: string | null;
   direction: "asc" | "desc" | null;
 };
-
+interface totalType {
+  total_inventory: number;
+  total_value: number;
+}
 const InventoryReport = () => {
   const [loading, setLoading] = useState(false);
   const [dataInventory, setDataInventory] = useState([]);
+  const [dataTotalInventory, setDataTotalInventory] = useState<totalType>({});
   const [totalProduct, setTotalProduct] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -35,8 +39,10 @@ const InventoryReport = () => {
       const res = await products.sortDataInventory(colName, typeSort);
       // const totalItems = res.data.total;
       const data = res.data.inventory_report;
+      const dataTotal = res.data.total_products;
       // setDataProduct(res.data);
       setDataInventory(data);
+      setDataTotalInventory(dataTotal);
       setLoading(false);
     } catch (error) {
       console.log("error:", error);
@@ -84,6 +90,8 @@ const InventoryReport = () => {
       const res = await products.getTotalInventory();
       const data = res.data.inventory_report;
       const total_data = res.data.total_products;
+      const totalInven = res.data;
+      setDataTotalInventory(totalInven);
       setLoading(false);
       setDataInventory(data);
       setTotalProduct(total_data);
@@ -107,7 +115,7 @@ const InventoryReport = () => {
       title: getColumnTitle(`Mã vạch`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
-      // width: 160,
+      width: 160,
       align: "center",
     },
     {
@@ -126,13 +134,6 @@ const InventoryReport = () => {
       // width: 130,
     },
     {
-      title: getColumnTitle(`Giá gốc`, "capital_price"),
-      dataIndex: "capital_price",
-      key: "capital_price",
-      align: "center",
-      // width: 200,
-    },
-    {
       title: getColumnTitle(`Giá bán`, "price"),
       dataIndex: "price",
       key: "price",
@@ -144,8 +145,15 @@ const InventoryReport = () => {
       dataIndex: "unit",
       key: "unit",
       align: "start",
-      // width: 150,
+      width: 140,
     },
+    {
+      title: getColumnTitle(`Giá gốc`, "capital_price"),
+      dataIndex: "capital_price",
+      key: "capital_price",
+      align: "center",
+    },
+
     {
       title: "Trạng thái tồn kho",
       dataIndex: "status",
@@ -204,6 +212,22 @@ const InventoryReport = () => {
     unit: item.unit,
     status: item.status,
   }));
+  const summary = () => {
+    return (
+      <Table.Summary.Row>
+        <Table.Summary.Cell index={0} colSpan={3}>
+          <strong>Tổng cộng</strong>
+        </Table.Summary.Cell>
+        <Table.Summary.Cell index={1} align="center" colSpan={1}>
+          <strong>{dataTotalInventory?.total_inventory || 0}</strong>
+        </Table.Summary.Cell>
+        <Table.Summary.Cell index={5} align="center" colSpan={10}>
+          <strong>{dataTotalInventory?.total_value?.toLocaleString("vi-VN") || 0}</strong>
+        </Table.Summary.Cell>
+      </Table.Summary.Row>
+    );
+  };
+
   return (
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
@@ -224,6 +248,8 @@ const InventoryReport = () => {
           locale={localeProduct}
           pagination={false}
           loading={loading}
+          // footer={() => "Tổng cộng"}
+          summary={summary}
         />
         <div
           style={{
