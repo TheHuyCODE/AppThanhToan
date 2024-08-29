@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import loginApi from "../../configs/loginApi";
 import { useAuth } from "../auth/AuthContext";
+import { handleError } from "../../utils/errorHandler";
 
 const RightContentProfile: React.FC = () => {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
@@ -66,6 +67,7 @@ const RightContentProfile: React.FC = () => {
       }
     } catch (err) {
       console.log("err", err);
+      handleError(err);
     }
   };
   return (
