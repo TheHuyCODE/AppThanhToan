@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Menu, Modal } from "antd";
 import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
-import { IoBarChartOutline, IoPerson } from "react-icons/io5";
+import { IoBarChartOutline, IoPerson, IoStorefront } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
 import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
 import { CiBank } from "react-icons/ci";
@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import "./MenuList.css";
 import logoutApi from "../../configs/logoutApi";
+import { GrUserAdmin } from "react-icons/gr";
 
 // Define the User interface
 interface UserInfo {
@@ -23,7 +24,12 @@ const MenuList: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { accessToken, logout, user } = useAuth();
   // const [user, setUser] = useState<UserInfo | null>(null);
-
+  let defaultSelectedKey = "1"; // Default key
+  if (user?.role_id === 1) {
+    defaultSelectedKey = "owner_management"; // Sáng "Quản lý chủ cửa hàng" cho role_id === 1
+  } else if (user?.role_id === 3) {
+    defaultSelectedKey = "Product_management_child"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+  }
   // useEffect(() => {
   //   const storedInfo = localStorage.getItem("INFO_USER");
   //   if (storedInfo) {
@@ -117,13 +123,13 @@ const MenuList: React.FC = () => {
     },
     {
       key: "owner_management",
-      icon: <CiBank />,
+      icon: <GrUserAdmin />,
       link: "/admin/owners",
       label: "Quản lý chủ của hàng",
     },
     {
       key: "store_management",
-      icon: <CiBank />,
+      icon: <IoStorefront />,
       link: "/admin/storeAdmin",
       label: "Quản lý cửa hàng",
     },
@@ -155,7 +161,12 @@ const MenuList: React.FC = () => {
   console.log("Filtered menu items:", filteredMenuItems);
   return (
     <div className="sidebar-left">
-      <Menu theme={"light"} mode="inline" className="menu-bar">
+      <Menu
+        theme={"light"}
+        mode="inline"
+        className="menu-bar"
+        defaultSelectedKeys={[defaultSelectedKey]}
+      >
         {filteredMenuItems.map((item) =>
           item.children ? (
             <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>

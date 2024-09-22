@@ -19,7 +19,6 @@ interface RecordType {
 }
 const StoreAdmin = () => {
   const titleSearch = "Tìm kiếm cửa hàng";
-  const nameButtonAdd = "Thêm cửa hàng";
   const titleName = "Quản lý cửa hàng";
   const handleSearchStore = () => {};
   const [isDataStore, setIsDataStore] = useState([]);
@@ -111,7 +110,6 @@ const StoreAdmin = () => {
         <div className="header-customers">
           <HeaderContent
             titleSearch={titleSearch}
-            nameButtonAdd={nameButtonAdd}
             handleSearch={handleSearchStore}
             handleClickOpenModal={handleClickOpenModal}
           />

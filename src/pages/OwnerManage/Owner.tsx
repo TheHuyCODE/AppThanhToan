@@ -80,7 +80,7 @@ const Owner = () => {
       handleError(error);
     }
   };
-  const handleSearchOwners = () => {};
+
   const handleClickOpenModal = () => {
     setIsModalAddOwners(!isModalAddOwners);
   };
@@ -358,7 +358,11 @@ const Owner = () => {
       <div className="content">
         <TitleOwner titleName={titleName} />
         <div className="header-customers">
-          <HeaderContent titleSearch={titleSearch} handleSearch={handleSearchOwners} />
+          <HeaderContent
+            titleSearch={titleSearch}
+            setLoadingSearch={setLoading}
+            setIsDataOwner={setIsDataOwner}
+          />
         </div>
         <ErrorModal
           visible={isModalVisible}

@@ -77,5 +77,19 @@ const owners = {
             }
         })
     },
+    getDataSearchOwners: (data: string) => {
+        const url = "api/v1/manage/owner";
+        const params = {
+            search: data
+        }
+        return axiosClient.get(url, {
+            headers: {
+                // Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+            },
+            params
+        });
+    },
 }
 export default owners

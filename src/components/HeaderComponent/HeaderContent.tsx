@@ -1,11 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
+import useDebounce from "../auth/useDebounce";
+import owners from "../../configs/owner";
 
 interface HeaderContentProps {
   titleSearch: string;
-  handleSearch: () => void;
+  setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsDataOwner: React.Dispatch<React.SetStateAction<any>>;
 }
-const HeaderContent: React.FC<HeaderContentProps> = ({ titleSearch, handleSearch }) => {
+const HeaderContent: React.FC<HeaderContentProps> = ({
+  titleSearch,
+  setLoadingSearch,
+  setIsDataOwner,
+}) => {
+  const [valueSearchOwners, setValueSearchOwners] = useState("");
+  const debounceValue = useDebounce(valueSearchOwners, 700);
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log("11", value);
+    setValueSearchOwners(value);
+  };
+  const getDataSearchStoreAdmin = async () => {
+    setLoadingSearch(true);
+    try {
+      const res = await owners.getDataSearchOwners(debounceValue);
+      const data = res.data.items;
+      setIsDataOwner(data);
+      setLoadingSearch(false);
+    } catch (error) {
+      console.log("errror", error);
+    }
+  };
+  useEffect(() => {
+    getDataSearchStoreAdmin();
+  }, [debounceValue]);
   return (
     <>
       <div className="header-left">
