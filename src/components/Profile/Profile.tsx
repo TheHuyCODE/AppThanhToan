@@ -47,7 +47,7 @@ const Profile = () => {
             <LeftContentProfile dataProfile={dataProfile} getDataUser={getDataUser} />
           </div>
           <div className="right-content-profile">
-            <RightContentProfile />
+            <RightContentProfile getDataUser={getDataUser} />
           </div>
         </div>
       </div>

@@ -60,14 +60,15 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setAccessToken(access_token);
   };
   const logout = useCallback(() => {
-    console.log("Before logout:", {
-      accessToken: localStorage.getItem("access_token"),
-      refreshToken: localStorage.getItem("refresh_token"),
-      infoUser: localStorage.getItem("INFO_USER"),
-    });
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("INFO_USER");
+    // console.log("Before logout:", {
+    //   accessToken: localStorage.getItem("access_token"),
+    //   refreshToken: localStorage.getItem("refresh_token"),
+    //   infoUser: localStorage.getItem("INFO_USER"),
+    // });
+    localStorage.clear();
+    // localStorage.removeItem("access_token");
+    // localStorage.removeItem("refresh_token");
+    // localStorage.removeItem("INFO_USER");
     localStorage.setItem("logout", Date.now().toString());
 
     setAccessToken(null);

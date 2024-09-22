@@ -23,6 +23,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
       }}
     >
       <Button

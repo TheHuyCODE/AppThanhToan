@@ -1,11 +1,13 @@
-import { Input, Popover } from "antd";
+import { Input } from "antd";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import loginApi from "../../configs/loginApi";
 import { useAuth } from "../auth/AuthContext";
 import { handleError } from "../../utils/errorHandler";
-
-const RightContentProfile: React.FC = () => {
+interface RightContentProfileProps {
+  getDataUser: () => void;
+}
+const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }) => {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [passwordVisibleTwo, setPasswordVisibleTwo] = React.useState(false);
   const [passwordVisibleThree, setPasswordVisibleThree] = React.useState(false);
@@ -55,7 +57,7 @@ const RightContentProfile: React.FC = () => {
       if (res.code === 200) {
         const msSucess = res.message.text;
         toast.success(msSucess);
-        // logout();
+        getDataUser();
         setPasswords({
           currentPassword: "",
           newPassword: "",
@@ -115,8 +117,8 @@ const RightContentProfile: React.FC = () => {
               maxWidth: "600px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-around",
-              marginLeft: "60px",
+              justifyContent: "end",
+              marginRight: "25px",
             }}
           >
             <span className="error">
@@ -146,11 +148,11 @@ const RightContentProfile: React.FC = () => {
           <div
             style={{
               width: "90%",
-              maxWidth: "470px",
+              maxWidth: "600px",
               display: "flex",
               alignItems: "center",
-              //   justifyContent: "spa",
-              marginLeft: "60px",
+              justifyContent: "end",
+              marginRight: "25px",
             }}
           >
             <span className="error">Mật khẩu xác thực khác với mật khẩu mới</span>
