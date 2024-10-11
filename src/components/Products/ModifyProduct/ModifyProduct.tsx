@@ -37,7 +37,7 @@ const ModifyProduct = () => {
   const params = useParams<{ idProduct: string }>();
   const idProduct: string | undefined = params.idProduct;
   const [dataProductModify, setDataProductModify] = useState<Product | null>(null);
-
+  const [selectedFile, setSelectedFile] = useState<any>(null);
   const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [resImageProduct, setResImageProduct] = useState("");
@@ -83,10 +83,7 @@ const ModifyProduct = () => {
     // setIsImageProduct(fileImage);
     if (fileImage) {
       const url = URL.createObjectURL(fileImage);
-      setInputProduct({
-        ...inputProduct,
-        image_url: fileImage,
-      });
+      setSelectedFile(fileImage);
       setImageUrl(url);
     }
     // setPreviewImageProduct(URL.createObjectURL(fileImage));
@@ -95,19 +92,22 @@ const ModifyProduct = () => {
     setImageUrl("");
   };
   useEffect(() => {
-    const fileImageModify = inputProduct.image_url;
-    console.log("inputProduct.image_url", fileImageModify);
-    if (fileImageModify) {
+    if (selectedFile) {
+      // console.log("inputProduct.image_url", fileImageModify);
       const formData = new FormData();
-      formData.append("file", fileImageModify);
+      formData.append("file", selectedFile);
       console.log("formData:", [...formData]);
       products
-        .postImageModifyProduct(formData)
+        .postImageProduct(formData)
         .then((res) => {
           if (res.code === 200) {
             console.log("Success:", res);
             const fileUrl = res.data.file_url;
             setResImageProduct(fileUrl);
+            setInputProduct({
+              ...inputProduct,
+              image_url: fileUrl, // Lưu URL ảnh trả về từ backend vào inputProduct
+            });
           } else {
             console.log("Error:");
           }
@@ -116,7 +116,7 @@ const ModifyProduct = () => {
           console.error("Error occurred while uploading:", error);
         });
     }
-  }, [inputProduct.image_url]);
+  }, [selectedFile]);
 
   const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
     id: item.id,
@@ -223,7 +223,7 @@ const ModifyProduct = () => {
       is_active: inputProduct.is_active,
       image_url: resImageProduct,
     };
-    console.log("dataModify:", dataModify);
+
     try {
       const response = await products.putModifyProduct(idProduct, dataModify);
       if (response.code === 200) {
@@ -303,7 +303,8 @@ const ModifyProduct = () => {
         image_url: dataProductModify.image_url || "",
       });
       if (dataProductModify.image_url) {
-        setImageUrl(`${domain}/${dataProductModify.image_url}`);
+        const domainUrl = `${domain}/${dataProductModify.image_url}`;
+        setImageUrl(domainUrl);
       }
       if (dataProductModify.category_id) {
         const path = findPathById(dataProductModify.category_id, treeData);
