@@ -11,11 +11,12 @@ import { FaUser, FaEnvelope, FaPhone, FaRegAddressCard, FaEye, FaEyeSlash } from
 import { LuStore } from "react-icons/lu";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
+
 import { useAuth } from "../auth/AuthContext";
-import { AxiosError } from "axios";
+
 import { handleError } from "../../utils/errorHandler";
-import { width } from "@fortawesome/free-solid-svg-icons/fa0";
+import classNames from "classnames"; // Nếu bạn chưa có, hãy cài đặt: npm install classnames
+
 const LoginRegister = () => {
   const storeNameRef = useRef(null);
   const fullNameRef = useRef(null);
@@ -43,13 +44,18 @@ const LoginRegister = () => {
   const { logout } = useAuth();
   const [inputPassword, setInputPassword] = useState("");
   const [inputClicked, setInputClicked] = useState(false);
-  const [infoUser, setInfoUser] = useState("");
+
+  const [inputFocused, setInputFocused] = useState({
+    email: false,
+    password: false,
+  });
   const validateEmail = (email) => {
     // Regular expression for email validation
     const regex =
       /^(([^<>()[\]\.,;:\s@"]+(\.[^<>()[\]\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.)+[^<>()[\]\.,;:\s@"]{2,})$/;
     return regex.test(email);
   };
+
   const content = (
     <div>
       <p>Mật khẩu dài từ 8 đến 16 kí tự</p>
@@ -100,9 +106,6 @@ const LoginRegister = () => {
   };
   const loginLink = () => {
     setAction("");
-  };
-  const handleBlur = () => {
-    setInputClicked(false);
   };
 
   useEffect(() => {
@@ -273,6 +276,46 @@ const LoginRegister = () => {
     }
   };
 
+  const handleFocus = (field: "email" | "password") => {
+    setInputFocused((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const handleBlur = (field: "email" | "password") => {
+    setInputFocused((prev) => ({ ...prev, [field]: false }));
+
+    if (field === "email") {
+      if (data.email === "") {
+        setIsEmptyMessageEmail(true);
+        setIsShortCodeMessageEmail(false);
+      } else if (!validateEmail(data.email)) {
+        setIsEmptyMessageEmail(false);
+        setIsShortCodeMessageEmail(true);
+      } else {
+        setIsEmptyMessageEmail(false);
+        setIsShortCodeMessageEmail(false);
+      }
+    } else if (field === "password") {
+      if (data.password === "") {
+        setIsEmptyMessagePassword(true);
+        setIsShortCodeMessagePassword(false);
+      } else if (data.password.length < 8) {
+        setIsEmptyMessagePassword(false);
+        setIsShortCodeMessagePassword(true);
+      } else {
+        setIsEmptyMessagePassword(false);
+        setIsShortCodeMessagePassword(false);
+      }
+    }
+  };
+
+  const getInputClassName = (field: "email" | "password") => {
+    return classNames({
+      "error-input":
+        (field === "email" && (isEmptyMessageEmail || isShortCodeMessageEmail)) ||
+        (field === "password" && (isEmptyMessagePassword || isShortCodeMessagePassword)),
+    });
+  };
+
   return (
     <div className="image-background">
       <div className="logo-image">
@@ -291,16 +334,21 @@ const LoginRegister = () => {
                 placeholder=" "
                 onChange={handleChange("email")}
                 required
-                onFocus={() => setInputClicked(!inputClicked)}
-                onBlur={handleBlur}
+                onFocus={() => handleFocus("email")}
+                onBlur={() => handleBlur("email")}
+                className={getInputClassName("email")}
               />
               <label htmlFor="Email" className="form-email">
                 Email<span className="required-star">*</span>
               </label>
 
               <FaUser className="icon" />
-              {isEmptyMessageEmail && <p className="message-error">Email không được để trống!</p>}
-              {isShortCodeMessageEmail && <p className="message-error">Email không hợp lệ!</p>}
+              {!inputFocused.email && isEmptyMessageEmail && (
+                <p className="message-error">Email không được để trống!</p>
+              )}
+              {!inputFocused.email && isShortCodeMessageEmail && (
+                <p className="message-error">Email không hợp lệ!</p>
+              )}
             </div>
             <div className="input-box">
               <input
@@ -309,8 +357,9 @@ const LoginRegister = () => {
                 placeholder=" "
                 onChange={handleChange("password")}
                 required
-                onFocus={() => setInputClicked(!inputClicked)}
-                onBlur={handleBlur}
+                onFocus={() => handleFocus("password")}
+                onBlur={() => handleBlur("password")}
+                className={getInputClassName("password")}
               />
               <label htmlFor="Password" className="form-email">
                 Password<span className="required-star">*</span>
@@ -323,10 +372,10 @@ const LoginRegister = () => {
                   onClick={() => setShowPassword(!showPassword)}
                 />
               )}
-              {isEmptyMessagePassword && (
+              {!inputFocused.password && isEmptyMessagePassword && (
                 <p className="message-error">Password không được để trống!</p>
               )}
-              {isShortCodeMessagePassword && (
+              {!inputFocused.password && isShortCodeMessagePassword && (
                 <p className="message-error">Password không hợp lệ!</p>
               )}
             </div>

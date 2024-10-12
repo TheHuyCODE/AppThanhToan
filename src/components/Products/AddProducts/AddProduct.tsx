@@ -43,6 +43,12 @@ const AddProduct = () => {
     unit: "",
     category_id: "",
   });
+  const [priceError, setPriceError] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [touchedFields, setTouchedFields] = useState({
+    price: false,
+    capital_price: false,
+  });
 
   const onChangeInput = (fieldName: string) => (e) => {
     let value = e.target.value.trim();
@@ -59,6 +65,7 @@ const AddProduct = () => {
   // add product
   const onClickAddProduct = async (e: any) => {
     e.preventDefault();
+    console.log("Add button clicked. Form state:", inputProduct, "Image:", resImageProduct);
     const dataAddProduct = {
       barcode: inputProduct.barcode,
       name: inputProduct.name,
@@ -198,45 +205,96 @@ const AddProduct = () => {
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
+  const validatePrice = () => {
+    if (touchedFields.price && inputProduct.price < inputProduct.capital_price) {
+      setPriceError("Giá bán không được nhỏ hơn giá vốn!");
+    } else {
+      setPriceError("");
+    }
+  };
+
   const onChangeValuePrice = (e) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
     if (value === "") {
       e.target.value = "";
-      setInputProduct({
-        ...inputProduct,
+      setInputProduct((prevState) => ({
+        ...prevState,
         capital_price: 0,
-      });
-      return;
+      }));
+    } else {
+      const numericValue = parseInt(value, 10);
+      e.target.value = numericValue.toLocaleString("vi-VN");
+      setInputProduct((prevState) => ({
+        ...prevState,
+        capital_price: numericValue,
+      }));
     }
-    const numericValue = parseInt(value, 10);
-    // Format the value as a locale string
-    e.target.value = numericValue.toLocaleString("vi-VN");
-    setInputProduct({
-      ...inputProduct,
-      capital_price: numericValue,
-    });
-    console.log("value", value);
   };
+
   const onChangeValueCapitalPrice = (e) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
-    if (value == "") {
+    if (value === "") {
       e.target.value = "";
-      setInputProduct({
-        ...inputProduct,
+      setInputProduct((prevState) => ({
+        ...prevState,
         price: 0,
-      });
-      return;
+      }));
+    } else {
+      const numericValue = parseInt(value, 10);
+      e.target.value = numericValue.toLocaleString("vi-VN");
+      setInputProduct((prevState) => ({
+        ...prevState,
+        price: numericValue,
+      }));
     }
-    const numericValue = parseInt(value, 10);
-    e.target.value = numericValue.toLocaleString("vi-VN");
-    setInputProduct({
-      ...inputProduct,
-      price: numericValue,
-    });
-    console.log("value", value);
   };
+
+  const handlePriceBlur = () => {
+    setTouchedFields((prev) => ({ ...prev, price: true }));
+    validatePrice();
+  };
+
+  useEffect(() => {
+    if (touchedFields.price) {
+      validatePrice();
+    }
+  }, [inputProduct.price, inputProduct.capital_price, touchedFields.price]);
+
+  useEffect(() => {
+    const { barcode, name, price, capital_price, inventory_number, unit, category_id } =
+      inputProduct;
+
+    const isValid =
+      barcode.trim() !== "" &&
+      name.trim() !== "" &&
+      price > 0 &&
+      capital_price > 0 &&
+      inventory_number > 0 &&
+      unit.trim() !== "" &&
+      category_id.trim() !== "" &&
+      resImageProduct !== "" &&
+      price >= capital_price &&
+      !priceError;
+
+    console.log("Form validation:", {
+      barcode: barcode.trim() !== "",
+      name: name.trim() !== "",
+      price: price > 0,
+      capital_price: capital_price > 0,
+      inventory_number: inventory_number > 0,
+      unit: unit.trim() !== "",
+      category_id: category_id.trim() !== "",
+      resImageProduct: resImageProduct !== "",
+      priceComparison: price >= capital_price,
+      noPriceError: !priceError,
+      isValid: isValid,
+    });
+
+    setIsFormValid(isValid);
+  }, [inputProduct, resImageProduct, priceError]);
+
   const closePreviewImage = () => {
     setPreviewImageProduct("");
   };
@@ -279,6 +337,26 @@ const AddProduct = () => {
   useEffect(() => {
     fetchDataCategory();
   }, []);
+
+  const onChangeInventoryNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9]/g, ""); // Chỉ cho phép số
+    if (value === "") {
+      e.target.value = "";
+      setInputProduct((prevState) => ({
+        ...prevState,
+        inventory_number: 0,
+      }));
+    } else {
+      const numericValue = parseInt(value, 10);
+      e.target.value = numericValue.toString(); // Không cần format như giá
+      setInputProduct((prevState) => ({
+        ...prevState,
+        inventory_number: numericValue,
+      }));
+    }
+  };
+
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
@@ -379,6 +457,7 @@ const AddProduct = () => {
                 type="text"
                 className="input-form"
                 onChange={onChangeValuePrice}
+                onBlur={() => setTouchedFields((prev) => ({ ...prev, capital_price: true }))}
                 style={{
                   position: "relative",
                 }}
@@ -399,6 +478,7 @@ const AddProduct = () => {
                 type="text"
                 className="input-form"
                 onChange={onChangeValueCapitalPrice}
+                onBlur={handlePriceBlur}
                 style={{
                   position: "relative",
                 }}
@@ -406,6 +486,22 @@ const AddProduct = () => {
               />
               <p className="overlay-text">đ</p>
             </div>
+
+            {priceError && (
+              <div
+                style={{
+                  width: "600px",
+                  color: "red",
+                  fontSize: "12px",
+                  marginTop: "5px",
+                  display: "flex",
+                  alignItems: "end",
+                  justifyContent: "end",
+                }}
+              >
+                <p>{priceError}</p>
+              </div>
+            )}
             <div className="input-info">
               <label htmlFor="">
                 Số lượng tồn kho(<span>*</span>)
@@ -413,8 +509,9 @@ const AddProduct = () => {
               <input
                 type="text"
                 className="input-form"
-                onChange={onChangeInput("inventory_number")}
                 placeholder="Số lượng"
+                value={inputProduct.inventory_number || ""}
+                onChange={onChangeInventoryNumber}
               />
             </div>
             <div className="input-info">
@@ -538,7 +635,12 @@ const AddProduct = () => {
                 <FaBan className="icon" />
                 Hủy
               </button>
-              <button className="btn-add-product" onClick={onClickAddProduct}>
+              <button
+                className="btn-add-product"
+                onClick={onClickAddProduct}
+                disabled={!isFormValid}
+                style={{ opacity: isFormValid ? 1 : 0.5 }}
+              >
                 <IoMdAdd className="icon" />
                 Thêm
               </button>

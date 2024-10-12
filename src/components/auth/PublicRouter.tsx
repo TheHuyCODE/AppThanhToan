@@ -13,7 +13,7 @@ const PublicRouter = ({ children }: { children: React.ReactNode }) => {
         // Redirect to "/SalesPage" if role_id is 5
         window.location.replace("/SalesPage");
       } else {
-        window.location.replace("/admin/products");
+        window.location.replace("/admin/revenuereport");
       }
     }
   }, [isAuthenticated, user]);

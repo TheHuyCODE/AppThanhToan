@@ -2,7 +2,7 @@ import { Input, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import store from "../../configs/store";
 import { handleError } from "../../utils/errorHandler";
-import Store from "../../components/Store/Store";
+// import Store from "../../components/Store/Store";
 import { toast } from "react-toastify";
 interface ModalModifyStoreProp {
   isOpenModalModifyStores: boolean;

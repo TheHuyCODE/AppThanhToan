@@ -28,7 +28,7 @@ const MenuList: React.FC = () => {
   if (user?.role_id === 1) {
     defaultSelectedKey = "owner_management"; // Sáng "Quản lý chủ cửa hàng" cho role_id === 1
   } else if (user?.role_id === 3) {
-    defaultSelectedKey = "Product_management_child"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+    defaultSelectedKey = "revenuereport"; // Sáng "Quản lý sản phẩm" cho role_id === 3
   }
   // useEffect(() => {
   //   const storedInfo = localStorage.getItem("INFO_USER");
@@ -70,7 +70,6 @@ const MenuList: React.FC = () => {
       children: [
         {
           key: "3",
-
           label: <Link to="/admin/revenuereport">Báo cáo doanh thu</Link>,
         },
         {

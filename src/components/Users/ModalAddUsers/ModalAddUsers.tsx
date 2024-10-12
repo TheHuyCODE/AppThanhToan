@@ -1,16 +1,19 @@
-import { Input, Modal, Select } from "antd";
+import { Input, Modal, Select, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { REGEX_EMAIL } from "../../TableConfig/TableConfig";
 import users from "../../../configs/users";
 import { handleError } from "../../../utils/errorHandler";
 import { toast } from "react-toastify";
+import { REGEX_EMAIL } from "../../TableConfig/TableConfig";
+import { LoadingOutlined } from "@ant-design/icons";
+import "../User.css";
 
 interface ModalAddUsersProps {
   openModalAdd: boolean;
   dataRole: any;
   handleCloseModalAdd: () => void;
-  getDataUsers: () => void;
+  getDataUsers: () => Promise<void>;
 }
+
 const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
   openModalAdd,
   dataRole,
@@ -18,20 +21,65 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
   getDataUsers,
 }) => {
   const statusUser = "Kích hoạt";
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [valueInputUser, setValueInputUser] = useState({
     name: "",
     email: "",
     phone: "",
     idAuth: 0,
   });
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [touchedFields, setTouchedFields] = useState({
+    name: false,
+    email: false,
+  });
+  const [inputFocused, setInputFocused] = useState({
+    name: false,
+    email: false,
+  });
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setValueInputUser((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-    // console.log("valueInputUser", valueInputUser);
   };
+
+  const handleInputFocus = (field: string) => {
+    setInputFocused((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const handleInputBlur = (field: string) => {
+    setInputFocused((prev) => ({ ...prev, [field]: false }));
+    setTouchedFields((prev) => ({ ...prev, [field]: true }));
+    validateField(field);
+  };
+
+  const validateField = (field: string) => {
+    switch (field) {
+      case "name":
+        if (!valueInputUser.name.trim()) {
+          setNameError("Trường này là bắt buộc!");
+        } else {
+          setNameError("");
+        }
+        break;
+      case "email":
+        if (!valueInputUser.email.trim()) {
+          setEmailError("Trường này là bắt buộc!");
+        } else if (!validateEmail(valueInputUser.email)) {
+          setEmailError("Email không hợp lệ!");
+        } else {
+          setEmailError("");
+        }
+        break;
+    }
+  };
+
   const selectAuth = dataRole?.map((items: any) => ({
     id: items.id,
     key: items.key,
@@ -39,19 +87,36 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
     value: items.name,
     label: items.name,
   }));
+
   const findIdByName = (name: string) => {
     const selectedItem = dataRole.find((item: any) => item.name === name);
-    console.log("id", selectedItem.id);
     const idSelected = parseInt(selectedItem.id, 10);
     setValueInputUser((prevState) => ({
       ...prevState,
       idAuth: idSelected,
     }));
+    setSelectedRole(name);
   };
-  const isValidEmail = (email: any) => {
-    const REGEX_EMAIL_TEST = REGEX_EMAIL;
-    return REGEX_EMAIL_TEST.test(email);
+
+  const validateEmail = (email: string) => {
+    const regex = REGEX_EMAIL;
+    return regex.test(email);
   };
+
+  useEffect(() => {
+    const { name, email, idAuth } = valueInputUser;
+    const isEmailValid = validateEmail(email);
+
+    const isValid =
+      name.trim() !== "" &&
+      email.trim() !== "" &&
+      idAuth !== 0 &&
+      isEmailValid &&
+      !nameError &&
+      !emailError;
+    setIsFormValid(isValid);
+  }, [valueInputUser, nameError, emailError]);
+
   const clearInputAddUser = () => {
     setValueInputUser({
       name: "",
@@ -59,8 +124,19 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
       phone: "",
       idAuth: 0,
     });
+    setSelectedRole(null);
+    setEmailError("");
+    setNameError("");
+    setTouchedFields({
+      name: false,
+      email: false,
+    });
   };
+
   const handleAddUser = async () => {
+    if (!isFormValid) return;
+
+    setIsLoading(true);
     const dataUser = {
       full_name: valueInputUser.name,
       phone: valueInputUser.phone,
@@ -68,9 +144,9 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
       role_id: valueInputUser.idAuth,
       is_active: 1,
     };
+
     try {
       const res = await users.addUser(dataUser);
-      console.log("res", res);
       const msSuccess = res.message.text;
       toast.success(msSuccess);
       clearInputAddUser();
@@ -78,66 +154,103 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
       handleCloseModalAdd();
     } catch (error) {
       handleError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  //   useEffect(()=> {
-  //     if(isValidEmail(valueInputUser.email)) {
-  //             }
-  //   }, [valueInputUser])
+
+  const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
+  const getButtonStyle = () => {
+    return {
+      backgroundColor: isFormValid && !isLoading ? "var(--kv-success)" : "rgba(0, 128, 0, 0.5)",
+      color: "white",
+      opacity: isFormValid && !isLoading ? 1 : 0.7,
+    };
+  };
+
+  const getCancelButtonStyle = () => {
+    return {
+      color: "red",
+      borderColor: "red",
+    };
+  };
 
   return (
     <>
       <Modal
         className="modalDialog-addItems"
-        okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
+        okButtonProps={{
+          style: getButtonStyle(),
+          disabled: !isFormValid || isLoading,
+          icon: isLoading ? <Spin indicator={antIcon} /> : null,
+        }}
+        cancelButtonProps={{
+          style: getCancelButtonStyle(),
+          className: "custom-cancel-button",
+        }}
         width={600}
         centered
         open={openModalAdd}
         onOk={handleAddUser}
         onCancel={handleCloseModalAdd}
-        okText="Thêm"
+        okText={isLoading ? "Đang thêm..." : "Thêm"}
         cancelText="Hủy bỏ"
+        confirmLoading={isLoading}
       >
         <h2 className="title-addItem">Thêm người dùng</h2>
         <div className="content-add-user">
           <div className="content-add-user-row">
-            <label htmlFor="number_bank">
+            <label htmlFor="name">
               Họ tên(<span>*</span>)
             </label>
             <div>
               <Input
                 type="text"
-                // className="input-name-category"
                 onChange={handleInputChange}
+                onFocus={() => handleInputFocus("name")}
+                onBlur={() => handleInputBlur("name")}
                 value={valueInputUser.name}
                 name="name"
                 placeholder="Họ tên"
                 style={{ width: "400px", height: "40px" }}
+                className={
+                  touchedFields.name && nameError && !inputFocused.name ? "error-input" : ""
+                }
               />
+              {touchedFields.name && nameError && !inputFocused.name && (
+                <p style={{ color: "red", fontSize: "12px" }}>{nameError}</p>
+              )}
             </div>
           </div>
           <div className="content-add-user-row">
-            <label htmlFor="number_bank">
+            <label htmlFor="email">
               Email(<span>*</span>)
             </label>
             <div>
               <Input
                 type="text"
-                // className="input-name-category"
                 onChange={handleInputChange}
+                onFocus={() => handleInputFocus("email")}
+                onBlur={() => handleInputBlur("email")}
                 value={valueInputUser.email}
                 name="email"
                 placeholder="Email"
                 style={{ width: "400px", height: "40px" }}
+                className={
+                  touchedFields.email && emailError && !inputFocused.email ? "error-input" : ""
+                }
               />
+              {touchedFields.email && emailError && !inputFocused.email && (
+                <p style={{ color: "red", fontSize: "12px" }}>{emailError}</p>
+              )}
             </div>
           </div>
           <div className="content-add-user-row">
-            <label htmlFor="number_bank">Số điện thoại</label>
+            <label htmlFor="phone">Số điện thoại</label>
             <div>
               <Input
                 type="text"
-                // className="input-name-category"
                 onChange={handleInputChange}
                 value={valueInputUser.phone}
                 name="phone"
@@ -147,15 +260,15 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
             </div>
           </div>
           <div className="content-add-user-row">
-            <label htmlFor="number_bank">
+            <label htmlFor="role">
               Nhóm quyền(<span>*</span>)
             </label>
             <div>
               <Select
+                value={selectedRole}
                 notFoundContent="Không tìm quyền"
                 placeholder="Chọn nhóm quyền"
                 allowClear
-                // onSearch={}
                 optionFilterProp="children"
                 onChange={findIdByName}
                 style={{ width: 400, height: 40 }}
@@ -164,12 +277,10 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
             </div>
           </div>
           <div className="content-add-user-row">
-            <label htmlFor="number_bank">Trạng thái</label>
+            <label htmlFor="status">Trạng thái</label>
             <div>
               <Input
                 type="text"
-                // className="input-name-category"
-                // onChange={handleInputAddUser}v
                 value={statusUser}
                 disabled
                 style={{ width: "400px", height: "40px" }}
