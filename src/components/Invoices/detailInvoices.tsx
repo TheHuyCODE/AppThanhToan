@@ -75,7 +75,6 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
     const customerPhone = invoiceData?.customer.phone || "";
     const addressCreated = invoiceDataStore?.address || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
-
     const showQRCode = invoiceData.payment_methods.type; // true for bank transfer, false for cash
 
     return (

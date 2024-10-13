@@ -16,6 +16,7 @@ const HeaderContent: React.FC<HeaderContentProps> = ({
   setIsDataOwner,
   handleClickOpenModal,
 }) => {
+  console.log("HeaderContent rendered");
   const [valueSearchOwners, setValueSearchOwners] = useState("");
   const debounceValue = useDebounce(valueSearchOwners, 700);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
