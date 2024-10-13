@@ -50,6 +50,7 @@ const Categories: React.FC<CategoriesProp> = ({
   const [editItem, setEditItem] = useState<any>();
   const [editDescription, setEditDescription] = useState<any>();
   const [deleteItem, setDeleteItem] = useState<any>();
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const showTableCategory = async () => {
     setSelectedChildCategory("");
     localStorage.setItem("selectedCategory", "");
@@ -64,6 +65,7 @@ const Categories: React.FC<CategoriesProp> = ({
       nameRef.current.value = "";
     }
     setIsDescribe("");
+    setDataCategory("");
   };
   const showTableChildCategory = () => {
     setSelectedChildCategory("");
@@ -82,9 +84,7 @@ const Categories: React.FC<CategoriesProp> = ({
       setEditItem({ ...editItem, name: value });
     }
   };
-  const onChangeInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
     setIsDescribe(value);
     if (editDescription) {
@@ -142,10 +142,7 @@ const Categories: React.FC<CategoriesProp> = ({
     const idModifyItems = editItem.key;
     setLoading(true);
     try {
-      const res = await category.putModifyCategory(
-        idModifyItems,
-        dataPutCategory
-      ); //@ts-ignore
+      const res = await category.putModifyCategory(idModifyItems, dataPutCategory); //@ts-ignore
       if (res.code === 200) {
         //@ts-ignore
         const msSuccess = res.message.text;
@@ -346,6 +343,21 @@ const Categories: React.FC<CategoriesProp> = ({
     created_date: format(new Date(item.created_date * 1000), "dd/MM/yyyy"),
     image_url: item.image_url,
   }));
+  const isInputDirty = () => {
+    return dataCategory !== "" || isDescribe !== "";
+  };
+  const handleCloseAddModal = () => {
+    if (isInputDirty()) {
+      setIsConfirmModalVisible(true);
+    } else {
+      setIsOpenPopups(false);
+    }
+  };
+  const handleConfirmExit = () => {
+    clearInputs();
+    setIsOpenPopups(false);
+    setIsConfirmModalVisible(false);
+  };
   return (
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
@@ -358,10 +370,7 @@ const Categories: React.FC<CategoriesProp> = ({
       <div className="header-customers">
         <div className="header-left">
           <div className="header-left-top">
-            <div
-              className="search-product"
-              style={{ display: "flex", position: "relative" }}
-            >
+            <div className="search-product" style={{ display: "flex", position: "relative" }}>
               <CiSearch
                 style={{
                   position: "absolute",
@@ -400,12 +409,11 @@ const Categories: React.FC<CategoriesProp> = ({
       <Modal
         className="modalDialog-addITems"
         width={500}
-        // height={500}
         okButtonProps={{ style: { backgroundColor: "var(--kv-success)" } }}
         centered
         open={isOpenPopups}
         onOk={clickAddItemCategory}
-        onCancel={() => setIsOpenPopups(false)}
+        onCancel={handleCloseAddModal}
         okText="Thêm"
         cancelText="Hủy bỏ"
       >
@@ -502,9 +510,19 @@ const Categories: React.FC<CategoriesProp> = ({
             fontFamily: "Montserrat ,sans-serif",
           }}
         >
-          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh
-          mục cấp con và sản phẩm đã link với danh mục sẽ bị xóa.
+          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và sản
+          phẩm đã link với danh mục sẽ bị xóa.
         </p>
+      </Modal>
+      <Modal
+        title="Xác nhận thoát"
+        visible={isConfirmModalVisible}
+        onOk={handleConfirmExit}
+        onCancel={() => setIsConfirmModalVisible(false)}
+        okText="Đồng ý"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn thoát? Dữ liệu đã nhập sẽ bị mất.</p>
       </Modal>
       {/* {viewTable ? ( */}
       <div className="table-container">
