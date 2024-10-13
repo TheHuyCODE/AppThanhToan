@@ -164,6 +164,15 @@ const MenuList: React.FC = () => {
         return menuItems.filter(
           (item) => item.key === "owner_management" || item.key === "store_management"
         );
+      case 4:
+        // Only display items with keys "owner_management" and "store_management"
+        return menuItems.filter(
+          (item) =>
+            item.key !== "owner_management" &&
+            item.key !== "store_management" &&
+            item.key !== "users" &&
+            item.key !== "paymentmethod"
+        );
       default:
         // Default to displaying all items
         return menuItems;
