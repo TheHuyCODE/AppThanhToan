@@ -15,7 +15,7 @@ interface ModifyUsers {
   is_active: boolean;
 }
 const ModifyUsers = () => {
-  const unitProduct = ["Kích họat"];
+  // const unitProduct = ["Kích họat"];
   const navigate = useNavigate();
   const [dataRole, setDataRole] = useState<any>(null);
   const [hiddenSave, setHiddenSave] = useState(false);

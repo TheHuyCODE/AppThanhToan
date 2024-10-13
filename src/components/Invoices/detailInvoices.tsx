@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"; //ts-ignore
 import { forwardRef, useEffect, useState } from "react";
 import "../styles/valiables.css";
 import "./detailInvoices.css";

@@ -472,6 +472,7 @@ const AddProduct = () => {
               </label>
 
               <TreeSelect
+                //@ts-ignore
                 ref={categoryRef}
                 showSearch
                 placeholder="Danh mục sản phẩm"

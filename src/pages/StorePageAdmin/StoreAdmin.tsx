@@ -7,6 +7,7 @@ import { localStore } from "../../components/TableConfig/TableConfig";
 import store from "../../configs/store";
 import TitleOwner from "../OwnerManage/TilteOwner";
 import ModalModifyStore from "./ModalModifyStore";
+import HeaderContentStore from "../../components/HeaderComponent/HeaderContentStore";
 
 interface RecordType {
   stt: number;
@@ -87,10 +88,7 @@ const StoreAdmin = () => {
       render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaPencilAlt
-              title="Sửa"
-              onClick={() => handleClickModify(record.id)}
-            />
+            <FaPencilAlt title="Sửa" onClick={() => handleClickModify(record.id)} />
           </a>
         </Space>
       ),
@@ -111,7 +109,7 @@ const StoreAdmin = () => {
       <div className="content">
         <TitleOwner titleName={titleName} />
         <div className="header-customers">
-          <HeaderContent
+          <HeaderContentStore
             titleSearch={titleSearch}
             //wtf ??
             // handleSearch={handleSearchStore}
