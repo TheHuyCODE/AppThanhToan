@@ -1,7 +1,7 @@
 import { Pagination, Space, Table, TableColumnsType } from "antd";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaEye, FaTrash } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import returnProduct from "../../configs/return";
 import { handleError } from "../../utils/errorHandler";
@@ -33,9 +33,67 @@ const Return = () => {
   const [detailReturn, setDetailReturn] = useState("");
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+
+  const [sortedColumn, setSortedColumn] = useState<{
+    key: string | null;
+    direction: string | null;
+  }>({
+    key: null,
+    direction: null,
+  });
   //@ts-ignore
   const [page, setPage] = useState(1); //@ts-ignore
   const [pageSize, setPageSize] = useState(10);
+
+  const sortDataInvoice = async (colName: string, typeSort: string) => {
+    setLoading(true);
+    try {
+      const res = await returnProduct.sortDataReturn(colName, typeSort);
+      const data = res.data.items;
+      // const totalData = res.data.total;
+      setDataReturn(data);
+      // setTotalInvoice(totalData);
+      setLoading(false);
+    } catch (error) {
+      console.log("error:", error);
+      setLoading(false);
+      handleError(error);
+    }
+  };
+  const handleHeaderClick = (key: string) => {
+    setSortedColumn((prevState) => {
+      if (prevState.key === key) {
+        const newDirection = prevState.direction === "asc" ? "desc" : "asc";
+        console.log(`New direction for column ${key}: ${newDirection}`);
+        sortDataInvoice(key, newDirection);
+        return { key, direction: newDirection };
+      }
+      console.log(`Sorting direction for column ${key}: up`);
+      return { key, direction: "up" };
+    });
+  };
+  const getColumnTitle = (title: string, key: string) => (
+    <div
+      className="table-header"
+      onClick={() => handleHeaderClick(key)}
+      onMouseEnter={() => setHoveredColumn(key)}
+      onMouseLeave={() => setHoveredColumn(null)}
+    >
+      <span style={{ display: "block" }}>{title}</span>
+      <div className="arrow-icon-container">
+        {sortedColumn.key === key && sortedColumn.direction === "asc" && (
+          <FaArrowUp className="arrow-icon arrow-icon-visible" />
+        )}
+        {sortedColumn.key === key && sortedColumn.direction === "desc" && (
+          <FaArrowDown className="arrow-icon arrow-icon-visible" />
+        )}
+        {sortedColumn.key !== key && hoveredColumn === key && (
+          <FaArrowUp className="arrow-icon arrow-icon-hover arrow-icon-visible" />
+        )}
+      </div>
+    </div>
+  );
   const columns: TableColumnsType<RecordType> = [
     {
       title: "STT",
@@ -44,22 +102,34 @@ const Return = () => {
       width: 100,
     },
     {
-      title: "Mã trả hàng",
+      // title: "Mã trả hàng",
+      title: getColumnTitle(`Mã trả hàng`, "id"),
       dataIndex: "id",
       key: "id",
       width: 200,
+      align: "center",
+    },
+    {
+      // title: "Mã trả hàng",
+      title: getColumnTitle(`Mã hóa đơn`, "invoice_id"),
+      dataIndex: "invoice_id",
+      key: "invoice_id",
+      width: 200,
+      align: "center",
     },
     {
       title: "Người bán",
       dataIndex: "create_user",
       key: "create_user",
+      align: "center",
       width: 200,
     },
     {
-      title: "Thời gian",
+      title: getColumnTitle(`Ngày tạo`, "created_date"),
       dataIndex: "created_date",
       key: "created_date",
-      width: 200,
+      align: "center",
+      width: 300,
     },
     {
       title: "Khách hàng",
@@ -69,7 +139,7 @@ const Return = () => {
     },
 
     {
-      title: "Tiền trả khách",
+      title: getColumnTitle(`Tiền trả khách`, "total_amount"),
       dataIndex: "total_amount",
       key: "total_amount",
       width: 150,
@@ -96,7 +166,6 @@ const Return = () => {
       ),
     },
   ];
-
   const dataTableReturn: RecordType[] = dataReturn.map((items, index) => ({
     stt: index + 1,
     id: items.id,
@@ -104,6 +173,7 @@ const Return = () => {
     create_user: items.create_user.full_name,
     full_name: items.customer.full_name,
     total_amount: items.total_amount.toLocaleString("vi-VN"),
+
     total_product: items.total_product || 0,
     reason: items.reason,
     product: items.product,

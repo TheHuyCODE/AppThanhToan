@@ -25,6 +25,21 @@ const returnProduct = {
       },
     });
   },
+  sortDataReturn: (colName: string, typeSort: string) => {
+    const url = "api/v1/manage/returns";
+    const params = {
+      sort: `${colName}`,
+      order_by: `${typeSort}`,
+    }
+    return axiosClient.get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      params,
+    });
+
+  },
   getDetailReturn: (id: string) => {
     const url = `api/v1/manage/returns/${id}`;
     return axiosClient.get(url, {
