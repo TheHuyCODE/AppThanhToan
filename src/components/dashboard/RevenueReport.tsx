@@ -277,6 +277,7 @@ const RevenueReport: React.FC = () => {
             <Space direction="vertical" size={12}>
               <RangePicker
                 picker={dateType}
+                //@ts-ignore
                 onChange={handleDateRangeChange}
                 size="large"
                 value={dateRange}

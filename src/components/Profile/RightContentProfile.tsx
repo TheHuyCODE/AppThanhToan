@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import loginApi from "../../configs/loginApi";
 import { handleError } from "../../utils/errorHandler";
-import { useAuth } from "../auth/AuthContext";
 
 interface RightContentProfileProps {
   getDataUser: () => void;
@@ -13,12 +12,11 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisibleTwo, setPasswordVisibleTwo] = useState(false);
   const [passwordVisibleThree, setPasswordVisibleThree] = useState(false);
-  const [newPasswordTouched, setNewPasswordTouched] = useState(false);
-  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
+  // const [newPasswordTouched, setNewPasswordTouched] = useState(false);
+  // const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [showNewPasswordError, setShowNewPasswordError] = useState(false);
   const [showConfirmPasswordError, setShowConfirmPasswordError] = useState(false);
-  const { logout } = useAuth();
-  const [errValidate, setErrValidate] = React.useState(false);
+
   const REGEX_VALID_PASSWORD = /^(?=.*[0-9])(?=.*[a-zA-Z])(?!.* ).{8,16}$/;
   const [passwords, setPasswords] = useState({
     currentPassword: "",
@@ -35,12 +33,12 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
   };
 
   const handleNewPasswordBlur = () => {
-    setNewPasswordTouched(true);
+    // setNewPasswordTouched(true);
     setShowNewPasswordError(!REGEX_VALID_PASSWORD.test(passwords.newPassword));
   };
 
   const handleConfirmPasswordBlur = () => {
-    setConfirmPasswordTouched(true);
+    // setConfirmPasswordTouched(true);
     setShowConfirmPasswordError(passwords.newPassword !== passwords.confirmNewPassword);
   };
 
@@ -54,8 +52,9 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
 
   const isNewPasswordValid = REGEX_VALID_PASSWORD.test(passwords.newPassword);
   const doPasswordsMatch = passwords.newPassword === passwords.confirmNewPassword;
-  const areAllFieldsFilled =
-    passwords.currentPassword && passwords.newPassword && passwords.confirmNewPassword;
+
+  // const areAllFieldsFilled =
+  //   passwords.currentPassword && passwords.newPassword && passwords.confirmNewPassword;
 
   const onSaveChangePassword = async () => {
     if (!isNewPasswordValid || !doPasswordsMatch) {
@@ -82,8 +81,8 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
           newPassword: "",
           confirmNewPassword: "",
         });
-        setNewPasswordTouched(false);
-        setConfirmPasswordTouched(false);
+        // setNewPasswordTouched(false);
+        // setConfirmPasswordTouched(false);
         setShowNewPasswordError(false);
         setShowConfirmPasswordError(false);
       } else {
@@ -97,9 +96,7 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
   return (
     <>
       <div className="profile-input">
-        <span style={{ fontSize: "18px", fontWeight: "600" }}>
-          Đổi mật khẩu
-        </span>
+        <span style={{ fontSize: "18px", fontWeight: "600" }}>Đổi mật khẩu</span>
       </div>
       <div className="profile-input">
         <label htmlFor="currentPassword">

@@ -2,12 +2,12 @@ import { Modal, Select, TreeSelect } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { BiSolidError } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
-import { domain } from "../TableConfig/TableConfig";
+
 import { IoMdClose } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useReactToPrint } from "react-to-print";
 import { toast, ToastContainer } from "react-toastify";
-import customer from "../../configs/customer";
+
 import products from "../../configs/products";
 import sellProduct from "../../configs/sellProduct";
 import { handleError } from "../../utils/errorHandler";
@@ -15,6 +15,7 @@ import customer from "../../configs/customer";
 import { useAuth } from "../auth/AuthContext";
 import DetailInvoices from "../Invoices/detailInvoices";
 import { domain } from "../TableConfig/TableConfig";
+import { FiPlusCircle } from "react-icons/fi";
 interface RightPageContentProps {
   dataProduct: any;
   dataCategory: any;
@@ -78,6 +79,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
 }: any) => {
   const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
   const [selectedCustomer, setSelectedCustomer] = useState<string>(IDCustomerRetail);
+  //@ts-ignore
   const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [disabledPayment, setDisabledPayment] = useState(false);
@@ -91,7 +93,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [hiddenErr, setHiddenErr] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  // const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [idSearchCategory, setIdSearchCategory] = useState({
     id_category: "",
   });
@@ -186,7 +188,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
     return parentPath ? `${parentPath} -> ${item.title}` : item.title;
   };
   const onSelect = (value: string) => {
-    setSelectedKeys(value);
+    // setSelectedKeys(value);
     const path = findPath(value, simpleTreeData);
     setSelectedPath(path);
     console.log("Selected ID:", value, "Path:", path);

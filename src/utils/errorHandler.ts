@@ -9,7 +9,8 @@ const handleError = (error: unknown) => {
     console.log('1111')
     const axiosError = error as AxiosError;
     // ignore vi khong ro type?
-    //@ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
     errorMessage = axiosError.message ? axiosError.message.text : "An error occurred";
   } else if (error instanceof Error) {
     errorMessage = error.message;

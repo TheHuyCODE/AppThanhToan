@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import "../ProductManagement.css";
 import { domain } from "../../TableConfig/TableConfig";
+import products from "../../../configs/products";
 
 interface ProductDetailProps {
   label: string;
@@ -27,6 +28,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ label, value, unit }) => 
 
 const DetailProduct: React.FC = () => {
   const navigate = useNavigate();
+  //@ts-ignore
   const [dataProductDetail, setDataProductDetail] = useState<ProductDetailData | null>(null);
   const [isReviewImage, setIsReviewImage] = useState<string>("");
   // const domain = "https://postviet.boot.ai";

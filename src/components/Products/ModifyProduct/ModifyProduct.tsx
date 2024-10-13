@@ -8,7 +8,6 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import products from "../../../configs/products";
-import { handleError } from "../../../utils/errorHandler";
 import { useAuth } from "../../auth/AuthContext";
 import { unitProductList } from "../../TableConfig/unitProduct";
 import { handleError } from "../../../utils/errorHandler";
@@ -38,13 +37,9 @@ const ModifyProduct = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const params = useParams<{ idProduct: string }>();
   const idProduct: string | undefined = params.idProduct;
-  const [dataProductModify, setDataProductModify] = useState<Product | null>(
-    null
-  );
+  const [dataProductModify, setDataProductModify] = useState<Product | null>(null);
   const [selectedFile, setSelectedFile] = useState<any>(null); //@ts-ignore
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [resImageProduct, setResImageProduct] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -128,30 +123,21 @@ const ModifyProduct = () => {
     }
   }, [selectedFile]);
   //@ts-ignore
-  const treeData = isCategoryProduct.map(
-    (item: { name: string; children: []; id: string }) => ({
-      id: item.id,
-      name: item.name,
-      children: (item.children || []).map(
-        (child: { name: string; id: string; children: [] }) => ({
-          id: child.id,
-          name: child.name,
-          // id: child.id,
-          children: (child.children || []).map(
-            (subchief: { name: string; id: string }) => ({
-              id: subchief.id,
-              name: subchief.name,
-              // id: subchief.id,
-            })
-          ),
-        })
-      ),
-    })
-  );
-  const transformToSimpleMode = (
-    data: any[],
-    parentId: string | null = null
-  ): TreeDataNode[] => {
+  const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
+    id: item.id,
+    name: item.name,
+    children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
+      id: child.id,
+      name: child.name,
+      // id: child.id,
+      children: (child.children || []).map((subchief: { name: string; id: string }) => ({
+        id: subchief.id,
+        name: subchief.name,
+        // id: subchief.id,
+      })),
+    })),
+  }));
+  const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
     let result: TreeDataNode[] = [];
     data.forEach((item) => {
       result.push({
@@ -170,9 +156,7 @@ const ModifyProduct = () => {
   const filterTreeNode = (inputValue: string, treeNode: any) => {
     // Chỉ tìm kiếm trong các nút cuối cùng
     if (!treeNode.children) {
-      return (
-        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-      );
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
     }
     return false;
   };
@@ -566,11 +550,7 @@ const ModifyProduct = () => {
               </label>
               {!imageUrl ? (
                 <>
-                  <label
-                    htmlFor="labelUpload"
-                    className="label-upload"
-                    style={{ marginRight: 0 }}
-                  >
+                  <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
                     <AiOutlinePicture style={{ fontSize: "50px" }} />
                   </label>
                   <input
@@ -593,10 +573,7 @@ const ModifyProduct = () => {
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <button
-                    className="btn-close-image"
-                    onClick={closePreviewImage}
-                  >
+                  <button className="btn-close-image" onClick={closePreviewImage}>
                     <CiCircleRemove />
                   </button>
                   <img
@@ -608,10 +585,7 @@ const ModifyProduct = () => {
               )}
             </div>
             <div className="footer-modify-product">
-              <button
-                className="btn-cancel-product"
-                onClick={onClickBackPageProduct}
-              >
+              <button className="btn-cancel-product" onClick={onClickBackPageProduct}>
                 <FaBan className="icon" />
                 Hủy
               </button>

@@ -49,11 +49,12 @@ const Products = () => {
   const [openModalDeleteProduct, setOpenModalDeleteProduct] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deleteItemProduct, setDeleteItemProduct] = useState<any>();
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+
+  // const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined); //@ts-ignore
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [valueSearch, setValueSearch] = useState("");
   const debounceValue = useDebounce(valueSearch, 700); //@ts-ignore
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);//@ts-ignore
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [sortedColumn, setSortedColumn] = useState<SortState>({
@@ -240,7 +241,7 @@ const Products = () => {
   };
 
   const onSelect = (value: string) => {
-    setSelectedKeys(value);
+    // setSelectedKeys(value);
     const path = findPath(value, simpleTreeData);
     setSelectedPath(path);
     console.log("Selected ID:", value, "Path:", path);
@@ -324,9 +325,7 @@ const Products = () => {
   };
   const fetchDataSearchProduct = async () => {
     setLoading(true);
-    const res = await products.getDataSearchNameProductNotIsActive(
-      debounceValue
-    ); //@ts-ignore
+    const res = await products.getDataSearchNameProductNotIsActive(debounceValue); //@ts-ignore
     if (res.code === 200) {
       setDataProduct(res.data);
       setLoading(false);
@@ -347,9 +346,7 @@ const Products = () => {
   const fetchSearchDataCategory = async () => {
     if (idSearchCategory.id_category) {
       // Check if idSearchCategory is not empty
-      const res = await products.getDataSearchProduct(
-        idSearchCategory.id_category
-      ); //@ts-ignore
+      const res = await products.getDataSearchProduct(idSearchCategory.id_category); //@ts-ignore
       if (res.code === 200) {
         console.log(res.data);
         setDataProduct(res.data);
@@ -360,13 +357,13 @@ const Products = () => {
   };
   const onShowSizeChange = (current: number, size: number) => {
     getDataPagination(current, size);
-    setPage(current);
+    // setPage(current);
     setPageSize(size);
   };
   const onChangeNumberPagination = (current: number) => {
     console.log("Current page:", current);
     getDataPagination(current, pageSize);
-    setPage(current);
+    // setPage(current);
   };
   const getDataPagination = async (current: number, size: number) => {
     // setLoading(true);
@@ -385,9 +382,7 @@ const Products = () => {
 
   const fetchSearchDataActive = async () => {
     if (stateActiveProduct.is_active) {
-      const res = await products.getDataSearchProductActive(
-        stateActiveProduct.is_active
-      ); //@ts-ignore
+      const res = await products.getDataSearchProductActive(stateActiveProduct.is_active); //@ts-ignore
       if (res.code === 200) {
         console.log(res.data);
         setDataProduct(res.data);
@@ -412,10 +407,7 @@ const Products = () => {
     const fetchSortDataProduct = async () => {
       if (sortedColumn.key) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSortProduct(
-          sortedColumn.key,
-          sortedColumn.direction
-        ); //@ts-ignore
+        const res = await products.getDataSortProduct(sortedColumn.key, sortedColumn.direction); //@ts-ignore
         if (res.code === 200) {
           console.log(res.data);
           setDataProduct(res.data);
