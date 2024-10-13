@@ -7,12 +7,12 @@ import store from "../../configs/store";
 interface HeaderContentPropsStore {
   titleSearch: string;
   setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsDataOwner?: React.Dispatch<React.SetStateAction<any>>;
+  setIsDataStore?: React.Dispatch<React.SetStateAction<any>>;
 }
 const HeaderContentStore: React.FC<HeaderContentPropsStore> = ({
   titleSearch,
   setLoadingSearch,
-  setIsDataOwner,
+  setIsDataStore,
 }) => {
   const [valueSearchOwners, setValueSearchOwners] = useState("");
   const debounceValue = useDebounce(valueSearchOwners, 700);
@@ -26,7 +26,7 @@ const HeaderContentStore: React.FC<HeaderContentPropsStore> = ({
     try {
       const res = await store.getDataSearchStore(debounceValue);
       const data = res.data.items;
-      setIsDataOwner?.(data);
+      setIsDataStore?.(data);
       setLoadingSearch(false);
     } catch (error) {
       console.log("errror", error);

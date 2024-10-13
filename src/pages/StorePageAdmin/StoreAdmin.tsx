@@ -112,6 +112,7 @@ const StoreAdmin = () => {
           <HeaderContentStore
             titleSearch={titleSearch}
             //wtf ??
+            setIsDataStore={setIsDataStore}
             // handleSearch={handleSearchStore}
             // handleClickOpenModal={handleClickOpenModal}
             setLoadingSearch={setLoading}
