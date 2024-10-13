@@ -23,13 +23,14 @@ interface RecordType {
   invoice_id: string;
   reason: string;
   key: string;
+  product: [];
 }
 const Return = () => {
   const [loading, setLoading] = useState(false);
   const [dataReturn, setDataReturn] = useState<any[]>([]);
   const [totalPageReturn, setTotalPageReturn] = useState(0);
   const [idDeleteReturn, setIdDeleteReturn] = useState("");
-  const [detailReturn, setDetailReturn] = useState({});
+  const [detailReturn, setDetailReturn] = useState("");
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
   //@ts-ignore
@@ -68,7 +69,7 @@ const Return = () => {
     },
 
     {
-      title: "Tiền tiền trả khách",
+      title: "Tiền trả khách",
       dataIndex: "total_amount",
       key: "total_amount",
       width: 150,
@@ -105,6 +106,7 @@ const Return = () => {
     total_amount: items.total_amount.toLocaleString("vi-VN"),
     total_product: items.total_product || 0,
     reason: items.reason,
+    product: items.product,
     invoice_id: items.invoice_id,
     key: items.id,
   }));

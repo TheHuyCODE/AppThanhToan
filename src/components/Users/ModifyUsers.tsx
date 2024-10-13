@@ -15,6 +15,7 @@ interface ModifyUsers {
   is_active: boolean;
 }
 const ModifyUsers = () => {
+  const unitProduct = ["Kích họat"];
   const navigate = useNavigate();
   const [dataRole, setDataRole] = useState<any>(null);
   const [hiddenSave, setHiddenSave] = useState(false);
@@ -206,7 +207,6 @@ const ModifyUsers = () => {
               className="input-form"
               value={dataStore.is_active ? "Kích hoạt" : "Chưa kích hoạt"}
               style={{ width: "400px" }}
-              disabled
             />
           </div>
           <div className="btn-info">

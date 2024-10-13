@@ -26,7 +26,8 @@ const Store = () => {
       const dataStore = res.data;
       setDataStore(dataStore);
     } catch (err) {
-      prompt("Not get data store");
+      // prompt("Not get data store");
+      console.log("err", err);
     }
   };
   const handleChangeValue = (value: string | null, field: string) => {

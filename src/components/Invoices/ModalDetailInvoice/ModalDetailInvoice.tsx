@@ -89,7 +89,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
     },
   ];
   const dataTableDetail = dataDetail?.product?.map((items: any) => ({
-    barcode: items.id,
+    barcode: items.barcode,
     name: items.name,
     quantity: items.quantity,
     price: items.price.toLocaleString("vi-VN") || 0,
@@ -99,6 +99,9 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
     total_price: items.total_price.toLocaleString("vi-VN") || 0,
     key: items.id,
   }));
+  console.log("dataTableDetail", dataTableDetail);
+  console.log("dataDetail", dataDetail);
+
   return (
     <>
       <Modal
@@ -142,9 +145,9 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
               <span className="title-row">Trạng thái:</span>
               <span className="value-row">Hoàn thành</span>
             </div>
-            <div className="row-detail">
+            {/* <div className="row-detail">
               <span className="title-row">Mã đặt hàng:</span>
-            </div>
+            </div> */}
           </div>
           <div className="right-content-detail">
             <div className="row-detail">
@@ -155,12 +158,12 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
               <span className="title-row">Người bán:</span>
               <span className="value-row">{dataDetail.created_user}</span>
             </div>
-            <div className="row-detail">
+            {/* <div className="row-detail">
               <span className="title-row">Kênh bán:</span>
               <span className="value-row">Bán trực tiếp</span>
-            </div>
+            </div> */}
 
-            <div className="row-detail" style={{ borderBottom: "none" }}>
+            {/* <div className="row-detail" style={{ borderBottom: "none" }}>
               <span className="title-row">Ghi chú:</span>
               <TextArea
                 showCount
@@ -170,7 +173,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
                 placeholder="Ghi chú..."
                 style={{ height: 100, resize: "none" }}
               />
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="detail-invoice">
@@ -179,7 +182,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
               style={{ width: "100%" }}
               scroll={{
                 y: 300,
-              }}//@ts-ignore
+              }} //@ts-ignore
               columns={columns}
               dataSource={dataTableDetail}
               locale={localInvoice}

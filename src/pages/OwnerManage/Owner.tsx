@@ -154,6 +154,9 @@ const Owner = () => {
     setIdModifyOwners(record.id);
     setNameOwners(record.full_name);
   };
+  const handleToggleAddOwnersModal = () => {
+    setIsModalAddOwners(!isModalAddOwners);
+  };
   const handleCloseModalReject = () => {
     setIsOpenModalRejectOwners(!isOpenModalRejectOwners);
   };
@@ -189,11 +192,7 @@ const Owner = () => {
     {
       // title: "Họ và tên",
       title: (
-        <ComponentSort
-          title="Họ và tên"
-          sortKey="full_name"
-          sortDataCustomer={sortDataCustomer}
-        />
+        <ComponentSort title="Họ và tên" sortKey="full_name" sortDataCustomer={sortDataCustomer} />
       ),
       dataIndex: "full_name",
       key: "full_name",
@@ -201,13 +200,7 @@ const Owner = () => {
       // width: 150,
     },
     {
-      title: (
-        <ComponentSort
-          title="Email"
-          sortKey="email"
-          sortDataCustomer={sortDataCustomer}
-        />
-      ),
+      title: <ComponentSort title="Email" sortKey="email" sortDataCustomer={sortDataCustomer} />,
       dataIndex: "email",
       key: "email",
       align: "start",
@@ -266,11 +259,7 @@ const Owner = () => {
               fontWeight: "600",
             }}
           >
-            {status === 0
-              ? "Chờ phê duyệt"
-              : status === 1
-              ? "Đã phê duyệt"
-              : "Bị hủy"}
+            {status === 0 ? "Chờ phê duyệt" : status === 1 ? "Đã phê duyệt" : "Bị hủy"}
           </span>
         );
       },
@@ -330,10 +319,7 @@ const Owner = () => {
                 />
               </a>
               <a>
-                <FaPencilAlt
-                  title="Sửa"
-                  onClick={() => handClickOpenModalModifyOwners(record)}
-                />
+                <FaPencilAlt title="Sửa" onClick={() => handClickOpenModalModifyOwners(record)} />
               </a>
               {record.is_active ? (
                 <a>
@@ -368,8 +354,7 @@ const Owner = () => {
     key: items.id,
     is_active: items.is_active,
     status: items.status,
-    created_date:
-      format(new Date(items.created_date * 1000), "dd/MM/yyyy") || "-",
+    created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy") || "-",
   }));
   return (
     <>
@@ -381,6 +366,7 @@ const Owner = () => {
             titleSearch={titleSearch}
             setLoadingSearch={setLoading}
             setIsDataOwner={setIsDataOwner}
+            handleClickOpenModal={handleToggleAddOwnersModal}
           />
         </div>
         <ErrorModal
@@ -390,7 +376,7 @@ const Owner = () => {
         />
         <ModalAddOwners
           isModalAddOwners={isModalAddOwners}
-          handleClickOpenModal={handleClickOpenModal}
+          handleClickOpenModal={handleToggleAddOwnersModal}
           getDataOwners={getDataOwners}
         />
         <ModalDeleteOwners

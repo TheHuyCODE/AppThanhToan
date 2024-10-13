@@ -8,6 +8,7 @@ interface PrintReturnProps {
 }
 interface ReturnData {
   created_date: string;
+  invoice_id: string;
   id: string;
   customer: {
     full_name: string;
@@ -38,8 +39,7 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>(
   //@ts-ignore
   (props, ref) => {
     const [returnData, setReturnData] = useState<ReturnData | null>(null);
-    const [invoiceDataStore, setInvoiceDataStore] =
-      useState<InvoiceStore | null>(null);
+    const [invoiceDataStore, setInvoiceDataStore] = useState<InvoiceStore | null>(null);
     useEffect(() => {
       const data = localStorage.getItem("dataDetailReturn");
       const dataStore = localStorage.getItem("INFO_USER");
@@ -61,13 +61,12 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>(
     if (!returnData) {
       return <div>Loading...</div>;
     }
-    const customerName =
-      returnData.customer.full_name || "Khách hàng không xác định";
+    const customerName = returnData.customer.full_name || "Khách hàng không xác định";
     const adminName = returnData.create_user.full_name || "Admin";
     const addressCreated = invoiceDataStore?.address || "";
     const customerPhone = returnData?.customer.phone || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
-
+    const invoice_id = returnData?.invoice_id || "";
     return (
       <div ref={ref} className="page_invoice">
         <div className="header_invoices">
@@ -86,7 +85,9 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>(
 
               <div className="title_invoices">
                 <h3>HÓA ĐƠN TRẢ HÀNG</h3>
-                <span>Số HD: {returnData.id}</span>
+                <span>Mã hóa đơn trả hàng: {returnData.id}</span>
+                <br />
+                <span>Mã hóa đơn: {invoice_id}</span>
               </div>
             </div>
           </div>
@@ -108,15 +109,17 @@ const PrintReturn = forwardRef<HTMLDivElement, PrintReturnProps>(
                 </tr>
               </thead>
               <tbody>
-                {returnData.product.map((product, index) => (
-                  <tr key={product.id}>
-                    <td>{index + 1}</td>
-                    <td>{product.name}</td>
-                    <td>{product.quantity || 0}</td>
-                    <td>{product.price.toLocaleString("vi-VN") || 0}</td>
-                    <td>{product.total_price.toLocaleString("vi-VN") || 0}</td>
-                  </tr>
-                ))}
+                {returnData.product
+                  .filter((product) => product.quantity > 0) // Lọc ra các sản phẩm có số lượng > 0
+                  .map((product, index) => (
+                    <tr key={product.id}>
+                      <td>{index + 1}</td>
+                      <td>{product.name}</td>
+                      <td>{product.quantity}</td>
+                      <td>{product.price.toLocaleString("vi-VN")}</td>
+                      <td>{product.total_price.toLocaleString("vi-VN")}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

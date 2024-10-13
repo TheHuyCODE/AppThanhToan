@@ -1,11 +1,13 @@
 import { Menu, Modal } from "antd";
 import React, { useState } from "react";
-import { CiBank } from "react-icons/ci";
+
 import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
 import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
 import { GrUserAdmin } from "react-icons/gr";
 import { IoBarChartOutline, IoPerson, IoStorefront } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
+
+import { CiBank } from "react-icons/ci";
 import { TiArrowBack } from "react-icons/ti";
 import { Link } from "react-router-dom";
 import logoutApi from "../../configs/logoutApi";
@@ -22,11 +24,11 @@ const MenuList: React.FC = () => {
   if (user?.role_id === 1) {
     defaultSelectedKey = "owner_management"; // Sáng "Quản lý chủ cửa hàng" cho role_id === 1
   } else if (user?.role_id === 3) {
-    defaultSelectedKey = "revenuereport"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+    defaultSelectedKey = "3"; // Sáng "Quản lý sản phẩm" cho role_id === 3
   } else if (user?.role_id === 5) {
-    defaultSelectedKey = "profile"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+    defaultSelectedKey = "2"; // Sáng "Quản lý sản phẩm" cho role_id === 3
   } else if (user?.role_id === 4) {
-    defaultSelectedKey = "products"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+    defaultSelectedKey = "sub1"; // Sáng "Quản lý sản phẩm" cho role_id === 3
   }
   // useEffect(() => {
   //   const storedInfo = localStorage.getItem("INFO_USER");
@@ -170,8 +172,9 @@ const MenuList: React.FC = () => {
           (item) =>
             item.key !== "owner_management" &&
             item.key !== "store_management" &&
-            item.key !== "users" &&
+            item.key !== "User_management" &&
             item.key !== "paymentmethod"
+          // item.key !== "returns"
         );
       default:
         // Default to displaying all items

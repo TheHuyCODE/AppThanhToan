@@ -1,3 +1,4 @@
+import React from "react";
 import { forwardRef, useEffect, useState } from "react";
 import "../styles/valiables.css";
 import "./detailInvoices.css";
@@ -16,6 +17,7 @@ interface InvoiceData {
   };
   payment_methods: {
     type: boolean;
+    image?: string;
   };
 
   product: {
@@ -45,8 +47,7 @@ interface DetailInvoicesProps {
 const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
   ({ linkQR, finalPrice }, ref) => {
     const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
-    const [invoiceDataStore, setInvoiceDataStore] =
-      useState<InvoiceStore | null>(null);
+    const [invoiceDataStore, setInvoiceDataStore] = useState<InvoiceStore | null>(null);
     useEffect(() => {
       const data = localStorage.getItem("dataDetailInvoice");
       const dataStore = localStorage.getItem("INFO_USER");
@@ -70,12 +71,14 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
       return <div>Loading...</div>;
     }
 
-    const customerName =
-      invoiceData.customer.full_name || "Khách hàng không xác định";
+    const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
     const adminName = invoiceData.create_user.full_name || "Admin";
     const customerPhone = invoiceData?.customer.phone || "";
     const addressCreated = invoiceDataStore?.address || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
+    const typePayment = invoiceData.payment_methods.type ? "Tiền mặt" : "Chuyển khoản";
+    const showQRCode = invoiceData.payment_methods.type; // true for bank transfer, false for cash
+
     return (
       <div ref={ref} className="page_invoice">
         <div className="header_invoices">
@@ -139,13 +142,14 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
               <span>{finalPrice.toLocaleString("vi-VN")}</span>
             </div>
           </div>
+
+          {showQRCode && (
+            <div className="detail_qr_invoices">
+              <span>Quét mã thanh toán</span>
+              <img src={linkQR} alt="QR_Code" />
+            </div>
+          )}
         </div>
-        {/* {hiddenImgQrCode && ( */}
-        <div className="detail_qr_invoices">
-          <span>Quét mã thanh toán</span>
-          <img src={linkQR} alt="QR_Code" />
-        </div>
-        {/* )} */}
       </div>
     );
   }

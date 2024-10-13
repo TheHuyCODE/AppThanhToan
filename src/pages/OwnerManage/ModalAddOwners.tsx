@@ -3,19 +3,21 @@ import React, { useEffect, useState } from "react";
 import owners from "../../configs/owner";
 import { toast } from "react-toastify";
 import { handleError } from "../../utils/errorHandler";
+
 interface ModalAddOwnersProps {
   isModalAddOwners: boolean;
   handleClickOpenModal: () => void;
   getDataOwners: () => void;
 }
+
 const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
   isModalAddOwners,
   handleClickOpenModal,
   getDataOwners,
 }) => {
   const [inputStore, setInputStore] = useState({
-    name: "",
     full_name: "",
+    store_name: "",
     email: "",
     phone: "",
   });
@@ -30,11 +32,12 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
   };
 
   const validateForm = () => {
-    const { name, full_name, email } = inputStore;
+    const { full_name, store_name, email } = inputStore;
     const isEmailValid = validateEmail(email);
-    const isFormValid = name.trim() !== "" && full_name.trim() !== "" && isEmailValid;
+    const isFormValid = full_name.trim() !== "" && store_name.trim() !== "" && isEmailValid;
     setStateBtnAdd(!isFormValid);
   };
+
   const setHandleInputOwners = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "email") {
@@ -52,35 +55,38 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
         ...prevState,
         [name]: value,
       };
-      validateForm();
       return newState;
     });
   };
+
   useEffect(() => {
     validateForm();
   }, [inputStore]);
+
   const clickAddUserBanking = async () => {
     const formDataOwners = {
-      name: inputStore.name,
       full_name: inputStore.full_name,
+      store_name: inputStore.store_name,
       email: inputStore.email,
       phone: inputStore.phone,
     };
     try {
       const res = await owners.postOwners(formDataOwners);
       console.log("data", res.data);
-      toast.success("Thêm tài khoản thành công");
+      toast.success("Thêm chủ sở hữu thành công");
       setInputStore({
-        name: "",
         full_name: "",
+        store_name: "",
         email: "",
         phone: "",
       });
       await getDataOwners();
+      handleClickOpenModal();
     } catch (error) {
       handleError(error);
     }
   };
+
   return (
     <>
       <Modal
@@ -95,7 +101,7 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
       >
         <h1 className="title-addItem">Thêm chủ sở hữu</h1>
         <div className="admin-bank bank-input-container">
-          <label htmlFor="admin_bank">
+          <label htmlFor="email">
             Email<span>*</span>:
           </label>
           <Input
@@ -123,7 +129,7 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
         )}
 
         <div className="number-bank bank-input-container">
-          <label htmlFor="number_bank">
+          <label htmlFor="full_name">
             Họ và tên<span>*</span>:
           </label>
           <div>
@@ -140,7 +146,7 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
           </div>
         </div>
         <div className="number-bank bank-input-container">
-          <label htmlFor="number_bank">
+          <label htmlFor="phone">
             Số điện thoại<span>*</span>:
           </label>
           <div>
@@ -157,16 +163,16 @@ const ModalAddOwners: React.FC<ModalAddOwnersProps> = ({
           </div>
         </div>
         <div className="admin-bank bank-input-container">
-          <label htmlFor="admin_bank">
+          <label htmlFor="store_name">
             Tên cửa hàng<span>*</span>:
           </label>
           <Input
             placeholder="Nhập tên cửa hàng"
             className="input-name-category"
-            name="name"
+            name="store_name"
             autoComplete="off"
             onChange={setHandleInputOwners}
-            value={inputStore.name}
+            value={inputStore.store_name}
             style={{ width: "320px", height: "40px" }}
           />
         </div>

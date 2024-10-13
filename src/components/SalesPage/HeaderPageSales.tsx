@@ -312,7 +312,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
           {isMenuOpen && (
             <div ref={menuRef} className="menu-dropdown">
               <Link
-                to="/admin/products"
+                to="/admin/revenuereport"
                 style={{ textDecoration: "none", color: "black" }}
                 onClick={handleAdminLink}
               >
