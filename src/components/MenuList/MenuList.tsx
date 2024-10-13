@@ -2,11 +2,7 @@ import { Menu, Modal } from "antd";
 import React, { useState } from "react";
 import { CiBank } from "react-icons/ci";
 import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
-import {
-  FaArrowRightFromBracket,
-  FaBagShopping,
-  FaPeopleGroup,
-} from "react-icons/fa6";
+import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
 import { GrUserAdmin } from "react-icons/gr";
 import { IoBarChartOutline, IoPerson, IoStorefront } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
@@ -27,6 +23,10 @@ const MenuList: React.FC = () => {
     defaultSelectedKey = "owner_management"; // Sáng "Quản lý chủ cửa hàng" cho role_id === 1
   } else if (user?.role_id === 3) {
     defaultSelectedKey = "revenuereport"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+  } else if (user?.role_id === 5) {
+    defaultSelectedKey = "profile"; // Sáng "Quản lý sản phẩm" cho role_id === 3
+  } else if (user?.role_id === 4) {
+    defaultSelectedKey = "products"; // Sáng "Quản lý sản phẩm" cho role_id === 3
   }
   // useEffect(() => {
   //   const storedInfo = localStorage.getItem("INFO_USER");
@@ -157,14 +157,12 @@ const MenuList: React.FC = () => {
       case 3:
         // Display all items except those with keys "owner_management" and "store_management"
         return menuItems.filter(
-          (item) =>
-            item.key !== "owner_management" && item.key !== "store_management"
+          (item) => item.key !== "owner_management" && item.key !== "store_management"
         );
       case 1:
         // Only display items with keys "owner_management" and "store_management"
         return menuItems.filter(
-          (item) =>
-            item.key === "owner_management" || item.key === "store_management"
+          (item) => item.key === "owner_management" || item.key === "store_management"
         );
       default:
         // Default to displaying all items

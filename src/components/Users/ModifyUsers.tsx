@@ -153,9 +153,7 @@ const ModifyUsers = () => {
               type="text"
               className="input-form"
               style={{ width: "400px" }}
-              onChange={(e) =>
-                handleChangeInputUsers(e.target.value, "full_name")
-              }
+              onChange={(e) => handleChangeInputUsers(e.target.value, "full_name")}
               value={dataStore.full_name || ""}
             />
           </div>
@@ -168,6 +166,7 @@ const ModifyUsers = () => {
               className="input-form"
               style={{ width: "400px" }}
               value={dataStore.email || ""}
+              disabled
               onChange={(e) => handleChangeInputUsers(e.target.value, "email")}
             />
           </div>

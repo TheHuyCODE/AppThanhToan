@@ -1,5 +1,5 @@
 import { Input, Select, TreeSelect } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AiOutlinePicture } from "react-icons/ai";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBan } from "react-icons/fa";
@@ -29,9 +29,7 @@ const AddProduct = () => {
   const [resImageProduct, setResImageProduct] = useState("");
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   //@ts-ignore
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
   const unitProduct = unitProductList;
   const [inputProduct, setInputProduct] = useState({
@@ -67,12 +65,7 @@ const AddProduct = () => {
   // add product
   const onClickAddProduct = async (e: any) => {
     e.preventDefault();
-    console.log(
-      "Add button clicked. Form state:",
-      inputProduct,
-      "Image:",
-      resImageProduct
-    );
+    console.log("Add button clicked. Form state:", inputProduct, "Image:", resImageProduct);
     const dataAddProduct = {
       barcode: inputProduct.barcode,
       name: inputProduct.name,
@@ -149,9 +142,7 @@ const AddProduct = () => {
   };
   const filterTreeNode = (inputValue: string, treeNode: any) => {
     if (!treeNode.children) {
-      return (
-        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-      );
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
     }
     return false;
   };
@@ -217,10 +208,7 @@ const AddProduct = () => {
     navigate("/admin/products/");
   };
   const validatePrice = () => {
-    if (
-      touchedFields.price &&
-      inputProduct.price < inputProduct.capital_price
-    ) {
+    if (touchedFields.price && inputProduct.price < inputProduct.capital_price) {
       setPriceError("Giá bán không được nhỏ hơn giá vốn!");
     } else {
       setPriceError("");
@@ -280,15 +268,8 @@ const AddProduct = () => {
   }, [inputProduct.price, inputProduct.capital_price, touchedFields.price]);
 
   useEffect(() => {
-    const {
-      barcode,
-      name,
-      price,
-      capital_price,
-      inventory_number,
-      unit,
-      category_id,
-    } = inputProduct;
+    const { barcode, name, price, capital_price, inventory_number, unit, category_id } =
+      inputProduct;
 
     const isValid =
       barcode.trim() !== "" &&
@@ -367,6 +348,52 @@ const AddProduct = () => {
     }
   };
 
+  // Tạo refs cho mỗi input
+  const barcodeRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const categoryRef = useRef<HTMLInputElement>(null);
+  const capitalPriceRef = useRef<HTMLInputElement>(null);
+  const priceRef = useRef<HTMLInputElement>(null);
+  const inventoryNumberRef = useRef<HTMLInputElement>(null);
+  const unitRef = useRef<HTMLSelectElement>(null);
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>;
+    let lastValue = "";
+
+    const checkBarcodeInput = () => {
+      const currentValue = barcodeRef.current?.value || "";
+      if (currentValue !== lastValue) {
+        lastValue = currentValue;
+        // Cập nhật state với giá trị mới
+        setInputProduct((prev) => ({
+          ...prev,
+          barcode: currentValue,
+        }));
+      }
+    };
+
+    // Bắt đầu polling
+    // eslint-disable-next-line prefer-const
+    intervalId = setInterval(checkBarcodeInput, 100); // Kiểm tra mỗi 100ms
+
+    // Dọn dẹp khi component unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  // Hàm xử lý phím Enter
+  const handleEnterKey = (
+    e: React.KeyboardEvent<HTMLElement>,
+    nextRef: React.RefObject<HTMLElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      nextRef.current?.focus();
+    }
+  };
+
   return (
     <>
       <ToastContainer closeOnClick autoClose={5000} />
@@ -404,10 +431,13 @@ const AddProduct = () => {
                 Mã sản phẩm gốc(<span>*</span>)
               </label>
               <input
+                ref={barcodeRef}
                 type="text"
                 className="input-form"
                 onChange={onChangeInput("barcode")}
+                value={inputProduct.barcode}
                 placeholder="Mã sản phẩm gốc "
+                onKeyDown={(e) => handleEnterKey(e, nameRef)}
               />
             </div>
             <div className="input-info">
@@ -415,28 +445,34 @@ const AddProduct = () => {
                 Tên sản phẩm chính(<span>*</span>)
               </label>
               <input
+                ref={nameRef}
                 type="text"
                 className="input-form"
                 onChange={onChangeInput("name")}
                 placeholder="Tên sản phẩm"
+                onKeyDown={(e) => handleEnterKey(e, descriptionRef)}
               />
             </div>
             <div className="input-info">
               <label htmlFor="">Mô tả</label>
               <TextArea
+                ref={descriptionRef}
                 rows={4}
                 style={{ width: "300px" }}
                 onChange={onChangeInput("description")}
                 placeholder="Mô tả"
                 showCount
                 maxLength={100}
+                onKeyDown={(e) => handleEnterKey(e, categoryRef)}
               />
             </div>
             <div className="input-info">
               <label htmlFor="">
                 Danh mục sản phẩm(<span>*</span>)
               </label>
+
               <TreeSelect
+                ref={categoryRef}
                 showSearch
                 placeholder="Danh mục sản phẩm"
                 style={{ width: 300, height: 40 }}
@@ -452,6 +488,7 @@ const AddProduct = () => {
                 treeNodeLabelProp="title"
                 filterTreeNode={filterTreeNode}
                 loadData={onLoadData}
+                onKeyDown={(e) => handleEnterKey(e, capitalPriceRef)}
               />
             </div>
             <div
@@ -464,6 +501,7 @@ const AddProduct = () => {
                 Giá vốn(<span>*</span>)
               </label>
               <input
+                ref={capitalPriceRef}
                 type="text"
                 className="input-form"
                 onChange={onChangeValuePrice}
@@ -473,6 +511,7 @@ const AddProduct = () => {
                   position: "relative",
                 }}
                 placeholder="Giá vốn"
+                onKeyDown={(e) => handleEnterKey(e, priceRef)}
               />
               <p className="overlay-text">đ</p>
             </div>
@@ -486,6 +525,7 @@ const AddProduct = () => {
                 Giá bán(<span>*</span>)
               </label>
               <input
+                ref={priceRef}
                 type="text"
                 className="input-form"
                 onChange={onChangeValueCapitalPrice}
@@ -495,6 +535,7 @@ const AddProduct = () => {
                   position: "relative",
                 }}
                 placeholder="Giá bán"
+                onKeyDown={(e) => handleEnterKey(e, inventoryNumberRef)}
               />
               <p className="overlay-text">đ</p>
             </div>
@@ -519,11 +560,13 @@ const AddProduct = () => {
                 Số lượng tồn kho(<span>*</span>)
               </label>
               <input
+                ref={inventoryNumberRef}
                 type="text"
                 className="input-form"
                 placeholder="Số lượng"
                 value={inputProduct.inventory_number || ""}
                 onChange={onChangeInventoryNumber}
+                onKeyDown={(e) => handleEnterKey(e, unitRef)}
               />
             </div>
             <div className="input-info">
@@ -531,6 +574,7 @@ const AddProduct = () => {
                 Đơn vị tính(<span>*</span>)
               </label>
               <Select
+                ref={unitRef}
                 placeholder="Đơn vị tính"
                 allowClear
                 // defaultValue="Giới tính"
@@ -608,11 +652,7 @@ const AddProduct = () => {
               </label>
               {!previewImageProduct ? (
                 <>
-                  <label
-                    htmlFor="labelUpload"
-                    className="label-upload"
-                    style={{ marginRight: 0 }}
-                  >
+                  <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
                     <AiOutlinePicture style={{ fontSize: "50px" }} />
                   </label>
                   <input
@@ -635,10 +675,7 @@ const AddProduct = () => {
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <button
-                    className="btn-close-image"
-                    onClick={closePreviewImage}
-                  >
+                  <button className="btn-close-image" onClick={closePreviewImage}>
                     <CiCircleRemove />
                   </button>
                   <img
@@ -650,10 +687,7 @@ const AddProduct = () => {
               )}
             </div>
             <div className="footer-add-product">
-              <button
-                className="btn-cancel-product"
-                onClick={onClickBackPageProduct}
-              >
+              <button className="btn-cancel-product" onClick={onClickBackPageProduct}>
                 <FaBan className="icon" />
                 Hủy
               </button>

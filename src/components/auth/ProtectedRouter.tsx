@@ -8,9 +8,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   // Define route access based on role_id
   const allowedRoutesForRole1 = ["/admin/owners", "/admin/storeAdmin"];
-  const allowedRoutesForRole3 = ["/SalesPage"];
+  const allowedRoutesForRole5 = ["/SalesPage", "/admin/profile"];
   const ignoredRoutesForRole3 = ["/admin/owners", "/admin/storeAdmin"];
-  const allowedRoutesForRole5 = ["/admin/owners", "/admin/storeAdmin"];
+  const allowedRoutesForRole4 = [
+    "/admin/returns",
+    "/admin/products",
+    "/admin/categories",
+    "/admin/customers",
+    "/admin/invoices",
+    "/admin/inventory",
+  ];
 
   // Check if the user is authenticated
   if (!isAuthenticated) {
@@ -36,13 +43,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       // Role 5 can only access allowedRoutesForRole5
       return allowedRoutesForRole5.includes(pathname);
     }
-
+    if (role_id === 4) {
+      // Role 5 can only access allowedRoutesForRole5
+      return allowedRoutesForRole4.includes(pathname);
+    }
     if (role_id === 3) {
       // Role 3 can access all routes except ignoredRoutesForRole3
-      return (
-        !ignoredRoutesForRole3.includes(pathname) ||
-        allowedRoutesForRole3.includes(pathname)
-      );
+      return !ignoredRoutesForRole3.includes(pathname);
     }
 
     // Default to no access if role_id is not recognized

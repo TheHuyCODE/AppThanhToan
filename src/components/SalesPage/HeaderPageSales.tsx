@@ -79,7 +79,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   // const [valueSearchInvoice, setValueSearchInvoice] = useState("");
-  const { accessToken, logout } = useAuth();
+  const { accessToken, logout, user } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef(null);
   const toggleMenu = () => {
@@ -119,9 +119,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     if (action === "add") {
       addInvoice();
     } else {
-      const invoiceToRemove: any = items.find(
-        (invoice: any) => invoice.id_payment === targetKey
-      );
+      const invoiceToRemove: any = items.find((invoice: any) => invoice.id_payment === targetKey);
       if (invoiceToRemove && invoiceToRemove.type === "return") {
         removeReturnInvoice(targetKey);
       } else {
@@ -157,17 +155,22 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
     };
   }, [menuRef]);
 
-  const dataTable: RecordType[] = dataTableInvoice.map(
-    (items: any, index: number) => ({
-      stt: index + 1,
-      id: items.id,
-      created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
-      full_name: items.create_user.full_name,
-      customer: items.customer.full_name,
-      total_amount: items.total_amount.toLocaleString("vi-VN"),
-      key: items.id,
-    })
-  );
+  const handleAdminLink = (e: React.MouseEvent) => {
+    if (user?.role_id === 5 || user?.role_id === 4) {
+      e.preventDefault();
+      navigate("/admin/profile");
+    }
+  };
+
+  const dataTable: RecordType[] = dataTableInvoice.map((items: any, index: number) => ({
+    stt: index + 1,
+    id: items.id,
+    created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy"),
+    full_name: items.create_user.full_name,
+    customer: items.customer.full_name,
+    total_amount: items.total_amount.toLocaleString("vi-VN"),
+    key: items.id,
+  }));
 
   const columns = [
     {
@@ -214,10 +217,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
       fixed: "right", //@ts-ignore
       render: (text, record: any) => (
         <Space size="middle">
-          <button
-            className="btn_return_invoice"
-            onClick={() => detailInvoiceReturn(record)}
-          >
+          <button className="btn_return_invoice" onClick={() => detailInvoiceReturn(record)}>
             Chọn
           </button>
         </Space>
@@ -275,11 +275,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
               onKeyDown={handleEnterPress}
             />
 
-            <button
-              className="btn-return-goods"
-              onClick={addReturnInvoice}
-              title="Trả hàng"
-            >
+            <button className="btn-return-goods" onClick={addReturnInvoice} title="Trả hàng">
               Trả hàng
             </button>
           </div>
@@ -304,11 +300,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
         </div>
         <div className="header-right-page">
           <div>
-            {infouser ? (
-              <span>{infouser.full_name}</span>
-            ) : (
-              <span>No user data available</span>
-            )}
+            {infouser ? <span>{infouser.full_name}</span> : <span>No user data available</span>}
           </div>
           <button
             className="icon-button"
@@ -322,6 +314,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
               <Link
                 to="/admin/products"
                 style={{ textDecoration: "none", color: "black" }}
+                onClick={handleAdminLink}
               >
                 <div>
                   <MdOutlinePoll style={{ fontSize: "20px" }} />
@@ -358,11 +351,7 @@ const HeaderPageSales: React.FC<ChildComponentProps> = ({
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="search_invoices">
                 <span>Tìm kiếm</span>
-                <input
-                  type="text"
-                  placeholder="Theo mã hóa đơn"
-                  onChange={handleSearchInvoice}
-                />
+                <input type="text" placeholder="Theo mã hóa đơn" onChange={handleSearchInvoice} />
                 {/* <input
                   type="text"
                   placeholder="Theo khách hàng hoặc ĐT"
