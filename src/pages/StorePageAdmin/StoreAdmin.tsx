@@ -2,7 +2,7 @@ import { Space, Table, TableColumnsType } from "antd";
 import { useEffect, useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
-import HeaderContent from "../../components/HeaderComponent/HeaderContent";
+// import HeaderContent from "../../components/HeaderComponent/HeaderContent";
 import { localStore } from "../../components/TableConfig/TableConfig";
 import store from "../../configs/store";
 import TitleOwner from "../OwnerManage/TilteOwner";

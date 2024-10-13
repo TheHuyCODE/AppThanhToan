@@ -81,9 +81,6 @@ const Owner = () => {
     }
   };
 
-  const handleClickOpenModal = () => {
-    setIsModalAddOwners(!isModalAddOwners);
-  };
   const handleCloseModal = () => {
     setIsModalVisible(false); // Đóng modal
   };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import useDebounce from "../auth/useDebounce";
-import owners from "../../configs/owner";
+
 import store from "../../configs/store";
 
 interface HeaderContentPropsStore {

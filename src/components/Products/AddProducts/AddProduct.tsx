@@ -574,7 +574,9 @@ const AddProduct = () => {
               <label htmlFor="">
                 Đơn vị tính(<span>*</span>)
               </label>
+
               <Select
+                //@ts-ignore
                 ref={unitRef}
                 placeholder="Đơn vị tính"
                 allowClear

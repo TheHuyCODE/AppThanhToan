@@ -1,4 +1,3 @@
-import React from "react"; //ts-ignore
 import { forwardRef, useEffect, useState } from "react";
 import "../styles/valiables.css";
 import "./detailInvoices.css";
@@ -76,7 +75,7 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
     const customerPhone = invoiceData?.customer.phone || "";
     const addressCreated = invoiceDataStore?.address || "";
     const phoneStore = invoiceDataStore?.store.phone || "";
-    const typePayment = invoiceData.payment_methods.type ? "Tiền mặt" : "Chuyển khoản";
+
     const showQRCode = invoiceData.payment_methods.type; // true for bank transfer, false for cash
 
     return (
