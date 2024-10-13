@@ -2,16 +2,19 @@ import { Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import loginApi from "../../configs/loginApi";
-import { useAuth } from "../auth/AuthContext";
 import { handleError } from "../../utils/errorHandler";
+import { useAuth } from "../auth/AuthContext";
 interface RightContentProfileProps {
   getDataUser: () => void;
 }
-const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }) => {
+const RightContentProfile: React.FC<RightContentProfileProps> = ({
+  getDataUser,
+}) => {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const [passwordVisibleTwo, setPasswordVisibleTwo] = React.useState(false);
   const [passwordVisibleThree, setPasswordVisibleThree] = React.useState(false);
   const [regexPass, setRegexPass] = React.useState(false);
+  //@ts-ignore
   const { logout } = useAuth();
   const [errValidate, setErrValidate] = React.useState(false);
   const REGEX_VALID_PASSWORD = /^(?=.*[0-9])(?=.*[a-zA-Z])(?!.* ).{8,16}$/;
@@ -20,7 +23,10 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
     newPassword: "",
     confirmNewPassword: "",
   });
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+  const handlePasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
     const value = e.target.value;
     setPasswords((prevState) => ({
       ...prevState,
@@ -54,7 +60,9 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
     };
     try {
       const res = await loginApi.changePassword(dataPassword);
+      //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const msSucess = res.message.text;
         toast.success(msSucess);
         getDataUser();
@@ -75,7 +83,9 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
   return (
     <>
       <div className="profile-input">
-        <span style={{ fontSize: "18px", fontWeight: "600" }}>Đổi mật khẩu</span>
+        <span style={{ fontSize: "18px", fontWeight: "600" }}>
+          Đổi mật khẩu
+        </span>
       </div>
       <div className="profile-input">
         <label htmlFor="email">
@@ -84,7 +94,10 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
         </label>
         <Input.Password
           placeholder="Nhập mật khẩu "
-          visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
+          visibilityToggle={{
+            visible: passwordVisible,
+            onVisibleChange: setPasswordVisible,
+          }}
           className="input-field-password"
           value={passwords.currentPassword}
           onChange={(e) => handlePasswordChange(e, "currentPassword")}
@@ -122,7 +135,8 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
             }}
           >
             <span className="error">
-              Mật khẩu phải chứa từ 8-16 kí tự, ít nhất 1 kí tự chữ và 1 kí tự số
+              Mật khẩu phải chứa từ 8-16 kí tự, ít nhất 1 kí tự chữ và 1 kí tự
+              số
             </span>
           </div>
         </div>
@@ -155,7 +169,9 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
               marginRight: "25px",
             }}
           >
-            <span className="error">Mật khẩu xác thực khác với mật khẩu mới</span>
+            <span className="error">
+              Mật khẩu xác thực khác với mật khẩu mới
+            </span>
           </div>
         </div>
       )}

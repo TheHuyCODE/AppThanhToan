@@ -9,9 +9,16 @@ interface ComponentSortProps {
   sortKey: string;
   sortDataCustomer: (key: string, direction: "asc" | "desc") => void;
 }
-const ComponentSort: React.FC<ComponentSortProps> = ({ title, sortKey, sortDataCustomer }) => {
-  const [sortedColumn, setSortedColumn] = useState<SortState>({ key: null, direction: null });
-  const [hoveredColumn, setHoveredColumn] = useState(null);
+const ComponentSort: React.FC<ComponentSortProps> = ({
+  title,
+  sortKey,
+  sortDataCustomer,
+}) => {
+  const [sortedColumn, setSortedColumn] = useState<SortState>({
+    key: null,
+    direction: null,
+  });
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
 
   const handleHeaderClick = (key: string) => {
     setSortedColumn((prevState) => {

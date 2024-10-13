@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
-import products, { ProductDetailData } from "../../../configs/products";
+
 import { format } from "date-fns";
+import products from "../../../configs/products";
 import "../ProductManagement.css";
 
 interface ProductDetailProps {
@@ -10,7 +11,11 @@ interface ProductDetailProps {
   value?: string | number | boolean | null;
   unit?: string | undefined;
 }
-const ProductDetail: React.FC<ProductDetailProps> = ({ label, value, unit }) => (
+const ProductDetail: React.FC<ProductDetailProps> = ({
+  label,
+  value,
+  unit,
+}) => (
   <div className="detail-product-row">
     <label htmlFor="" className="product-detail">
       {label}
@@ -26,14 +31,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ label, value, unit }) => 
 
 const DetailProduct: React.FC = () => {
   const navigate = useNavigate();
-  const [dataProductDetail, setDataProductDetail] = useState<ProductDetailData | null>(null);
+  const [dataProductDetail, setDataProductDetail] = useState<any | null>(null);
   const [isReviewImage, setIsReviewImage] = useState<string>("");
 
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
 
-  const convertDateProductDetail = (date: number | undefined): string | undefined => {
+  const convertDateProductDetail = (
+    date: number | undefined
+  ): string | undefined => {
     if (date) {
       return format(new Date(date * 1000), "dd/MM/yyyy");
     }
@@ -113,7 +120,11 @@ const DetailProduct: React.FC = () => {
               gap: "30px",
             }}
           >
-            <label htmlFor="labelUpload" className="title-picture" style={{ fontSize: "18px" }}>
+            <label
+              htmlFor="labelUpload"
+              className="title-picture"
+              style={{ fontSize: "18px" }}
+            >
               Ảnh sản phẩm
             </label>
             <div
@@ -136,9 +147,18 @@ const DetailProduct: React.FC = () => {
         </div>
         <div className="content-modify-product-left">
           <div className="content-add-product-left-container-main">
-            <ProductDetail label="Mã vạch gốc:" value={dataProductDetail?.barcode} />
-            <ProductDetail label="Tên sản phẩm chính:" value={dataProductDetail?.name} />
-            <ProductDetail label="Danh mục sản phẩm:" value={dataProductDetail?.category.name} />
+            <ProductDetail
+              label="Mã vạch gốc:"
+              value={dataProductDetail?.barcode}
+            />
+            <ProductDetail
+              label="Tên sản phẩm chính:"
+              value={dataProductDetail?.name}
+            />
+            <ProductDetail
+              label="Danh mục sản phẩm:"
+              value={dataProductDetail?.category.name}
+            />
             <ProductDetail
               label="Giá nhập:"
               value={dataProductDetail?.capital_price?.toLocaleString("vi-VN")}
@@ -149,13 +169,23 @@ const DetailProduct: React.FC = () => {
               value={dataProductDetail?.price?.toLocaleString("vi-VN")}
               unit="đ"
             />
-            <ProductDetail label="Đơn vị tính:" value={dataProductDetail?.unit} />
-            <ProductDetail label="Số lượng tồn kho:" value={dataProductDetail?.inventory_number} />
+            <ProductDetail
+              label="Đơn vị tính:"
+              value={dataProductDetail?.unit}
+            />
+            <ProductDetail
+              label="Số lượng tồn kho:"
+              value={dataProductDetail?.inventory_number}
+            />
             <div className="detail-product-row">
               <label htmlFor="" className="product-detail">
                 Trạng thái sản phẩm
               </label>
-              {dataProductDetail?.is_active ? <p>Kích hoạt</p> : <p>Chưa kích hoạt</p>}
+              {dataProductDetail?.is_active ? (
+                <p>Kích hoạt</p>
+              ) : (
+                <p>Chưa kích hoạt</p>
+              )}
             </div>
           </div>
           <div className="content-add-product-left-container-more">
@@ -167,12 +197,18 @@ const DetailProduct: React.FC = () => {
               label="Ngày sửa:"
               value={convertDateProductDetail(dataProductDetail?.modified_date)}
             />
-            <ProductDetail label="Người tạo:" value={dataProductDetail?.user?.full_name} />
+            <ProductDetail
+              label="Người tạo:"
+              value={dataProductDetail?.user?.full_name}
+            />
             <ProductDetail
               label="Người sửa gần nhất:"
               value={dataProductDetail?.last_modified_user?.full_name}
             />
-            <ProductDetail label="Mô tả:" value={dataProductDetail?.description} />
+            <ProductDetail
+              label="Mô tả:"
+              value={dataProductDetail?.description}
+            />
           </div>
         </div>
       </div>

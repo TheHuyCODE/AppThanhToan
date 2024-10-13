@@ -6,7 +6,7 @@ import owners from "../../configs/owner";
 interface HeaderContentProps {
   titleSearch: string;
   setLoadingSearch: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsDataOwner: React.Dispatch<React.SetStateAction<any>>;
+  setIsDataOwner?: React.Dispatch<React.SetStateAction<any>>;
 }
 const HeaderContent: React.FC<HeaderContentProps> = ({
   titleSearch,
@@ -25,7 +25,7 @@ const HeaderContent: React.FC<HeaderContentProps> = ({
     try {
       const res = await owners.getDataSearchOwners(debounceValue);
       const data = res.data.items;
-      setIsDataOwner(data);
+      setIsDataOwner?.(data);
       setLoadingSearch(false);
     } catch (error) {
       console.log("errror", error);

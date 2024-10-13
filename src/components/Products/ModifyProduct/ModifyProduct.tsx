@@ -1,16 +1,16 @@
 import { Select, TreeSelect } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AiOutlinePicture } from "react-icons/ai";
+import { CiCircleRemove } from "react-icons/ci";
+import { FaBan, FaRegSave } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import products from "../../../configs/products";
-import { useAuth } from "../../auth/AuthContext";
-import { CiCircleRemove } from "react-icons/ci";
-import { FaBan, FaRegSave } from "react-icons/fa";
-import { AiOutlinePicture } from "react-icons/ai";
-import { unitProductList } from "../../TableConfig/unitProduct";
 import { handleError } from "../../../utils/errorHandler";
+import { useAuth } from "../../auth/AuthContext";
+import { unitProductList } from "../../TableConfig/unitProduct";
 interface Product {
   barcode: string;
   name: string;
@@ -36,9 +36,13 @@ const ModifyProduct = () => {
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const params = useParams<{ idProduct: string }>();
   const idProduct: string | undefined = params.idProduct;
-  const [dataProductModify, setDataProductModify] = useState<Product | null>(null);
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  const [dataProductModify, setDataProductModify] = useState<Product | null>(
+    null
+  );
+  const [selectedFile, setSelectedFile] = useState<any>(null); //@ts-ignore
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
+    undefined
+  );
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [resImageProduct, setResImageProduct] = useState("");
   const [imgUrl, setImageUrl] = useState("");
@@ -100,6 +104,7 @@ const ModifyProduct = () => {
       products
         .postImageProduct(formData)
         .then((res) => {
+          //@ts-ignore
           if (res.code === 200) {
             console.log("Success:", res);
             const fileUrl = res.data.file_url;
@@ -117,22 +122,31 @@ const ModifyProduct = () => {
         });
     }
   }, [selectedFile]);
-
-  const treeData = isCategoryProduct.map((item: { name: string; children: []; id: string }) => ({
-    id: item.id,
-    name: item.name,
-    children: (item.children || []).map((child: { name: string; id: string; children: [] }) => ({
-      id: child.id,
-      name: child.name,
-      // id: child.id,
-      children: (child.children || []).map((subchief: { name: string; id: string }) => ({
-        id: subchief.id,
-        name: subchief.name,
-        // id: subchief.id,
-      })),
-    })),
-  }));
-  const transformToSimpleMode = (data: any[], parentId: string | null = null): TreeDataNode[] => {
+  //@ts-ignore
+  const treeData = isCategoryProduct.map(
+    (item: { name: string; children: []; id: string }) => ({
+      id: item.id,
+      name: item.name,
+      children: (item.children || []).map(
+        (child: { name: string; id: string; children: [] }) => ({
+          id: child.id,
+          name: child.name,
+          // id: child.id,
+          children: (child.children || []).map(
+            (subchief: { name: string; id: string }) => ({
+              id: subchief.id,
+              name: subchief.name,
+              // id: subchief.id,
+            })
+          ),
+        })
+      ),
+    })
+  );
+  const transformToSimpleMode = (
+    data: any[],
+    parentId: string | null = null
+  ): TreeDataNode[] => {
     let result: TreeDataNode[] = [];
     data.forEach((item) => {
       result.push({
@@ -151,7 +165,9 @@ const ModifyProduct = () => {
   const filterTreeNode = (inputValue: string, treeNode: any) => {
     // Chỉ tìm kiếm trong các nút cuối cùng
     if (!treeNode.children) {
-      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+      return (
+        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+      );
     }
     return false;
   };
@@ -225,7 +241,7 @@ const ModifyProduct = () => {
     };
 
     try {
-      const response = await products.putModifyProduct(idProduct, dataModify);
+      const response = await products.putModifyProduct(idProduct, dataModify); //@ts-ignore
       if (response.code === 200) {
         console.log("res", response);
         toast.success("Đã sửa sản phẩm thành công!");
@@ -544,7 +560,11 @@ const ModifyProduct = () => {
               </label>
               {!imgUrl ? (
                 <>
-                  <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
+                  <label
+                    htmlFor="labelUpload"
+                    className="label-upload"
+                    style={{ marginRight: 0 }}
+                  >
                     <AiOutlinePicture style={{ fontSize: "50px" }} />
                   </label>
                   <input
@@ -567,15 +587,25 @@ const ModifyProduct = () => {
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <button className="btn-close-image" onClick={closePreviewImage}>
+                  <button
+                    className="btn-close-image"
+                    onClick={closePreviewImage}
+                  >
                     <CiCircleRemove />
                   </button>
-                  <img src={imgUrl} alt="Preview" style={{ maxHeight: "100%", maxWidth: "100%" }} />
+                  <img
+                    src={imgUrl}
+                    alt="Preview"
+                    style={{ maxHeight: "100%", maxWidth: "100%" }}
+                  />
                 </div>
               )}
             </div>
             <div className="footer-modify-product">
-              <button className="btn-cancel-product" onClick={onClickBackPageProduct}>
+              <button
+                className="btn-cancel-product"
+                onClick={onClickBackPageProduct}
+              >
                 <FaBan className="icon" />
                 Hủy
               </button>

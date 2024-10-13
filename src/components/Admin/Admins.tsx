@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { Modal, Select, Space, Table } from "antd";
+import { useState } from "react";
+import { CiSearch } from "react-icons/ci";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaArrowsRotate } from "react-icons/fa6";
 import "../styles/valiables.css";
 import "./admin.css";
-import { CiSearch } from "react-icons/ci";
-import { Modal, Select, Space, Table } from "antd";
-import { FaArrowsRotate } from "react-icons/fa6";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
 const dataAdmins = [
   {
     stt: 1,
@@ -35,6 +35,7 @@ const dataAdmins = [
   },
 ];
 const Admins = () => {
+  //@ts-ignore
   const [value, setValue] = useState("");
   const [dataSource, setDataSource] = useState(dataAdmins);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
@@ -66,11 +67,18 @@ const Admins = () => {
       dataIndex: "name",
       key: "name",
       //   filteredValue: [isValueSearch],
+      //@ts-ignore
       onFilter: (value, record) => {
         return (
-          String(record.name).toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
-          String(record.created_date).toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
-          String(record.number_children).toLocaleLowerCase().includes(value.toLocaleLowerCase())
+          String(record.name)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.created_date)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          String(record.number_children)
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase())
         );
       },
     },
@@ -78,7 +86,7 @@ const Admins = () => {
       title: "Email",
 
       dataIndex: "email",
-      key: "email",
+      key: "email", //@ts-ignore
       sorter: (record1, record2) => {
         return record1.Soluong > record2.Soluong;
       },
@@ -103,7 +111,7 @@ const Admins = () => {
       title: "Thao tác",
       key: "action",
       align: "center",
-      editTable: true,
+      editTable: true, //@ts-ignore
       render: (record: any) => (
         <Space size="middle">
           <a>
@@ -133,7 +141,7 @@ const Admins = () => {
     if (index < 6) {
       return {
         ...col,
-        key: col.key || `column-${index}`,
+        key: col.key || `column-${index}`, //@ts-ignore
         onCell: (record) => ({
           onClick: () => {
             // checkQuatifyItem(record);
@@ -150,7 +158,7 @@ const Admins = () => {
       };
     }
     return col;
-  });
+  }); //@ts-ignore
   const onChangeSearchAdmin = (e) => {
     const currValue = e.target.value;
     console.log("currValue", currValue);
@@ -198,7 +206,7 @@ const Admins = () => {
           </div>
         </div>
         <div className="table-container">
-          <Table
+          <Table //@ts-ignore
             columns={columnsWithClick}
             dataSource={dataSource}
             pagination={{
@@ -280,7 +288,10 @@ const Admins = () => {
                 /
               </Select>
             </div>
-            <div className="input-info" style={{ display: "flex", justifyContent: "start" }}>
+            <div
+              className="input-info"
+              style={{ display: "flex", justifyContent: "start" }}
+            >
               <label htmlFor="">Trạng thái</label>
               <label htmlFor="" style={{ marginLeft: "119px" }}>
                 Kích hoạt

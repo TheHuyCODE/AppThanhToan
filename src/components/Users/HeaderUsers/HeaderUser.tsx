@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
-import useDebounce from "../../auth/useDebounce";
 import users from "../../../configs/users";
+import useDebounce from "../../auth/useDebounce";
 interface HeaderUserProps {
   handleAddUsers: () => void;
   getDataUsers: () => void;

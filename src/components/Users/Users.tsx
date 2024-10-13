@@ -1,15 +1,15 @@
 import { Alert, Pagination, Space, Table, TableColumnsType } from "antd";
 import { useEffect, useState } from "react";
-import "./User.css";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import "../styles/valiables.css";
 import { ToastContainer } from "react-toastify";
-import HeaderUser from "./HeaderUsers/HeaderUser";
 import users from "../../configs/users";
+import "../styles/valiables.css";
 import { DataUser, localUsers } from "../TableConfig/TableConfig";
+import HeaderUser from "./HeaderUsers/HeaderUser";
 import ModalAddUsers from "./ModalAddUsers/ModalAddUsers";
 import ModalDeleteUsers from "./ModalDeleteUsers/ModalDeleteUsers";
+import "./User.css";
 type RecordType = DataUser;
 
 const Users = () => {
@@ -18,7 +18,9 @@ const Users = () => {
   const [dataUsers, setDataUsers] = useState<any[]>([]);
   const [dataRole, setDataRole] = useState();
   const [totalInvoice, setTotalInvoice] = useState(0);
-  const [page, setPage] = useState(1);
+  // sao k dung page
+  //@ts-ignore
+  const [_, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
   const [openModalAdd, setOpenModalAdd] = useState(false);
@@ -81,7 +83,11 @@ const Users = () => {
             <FaPencilAlt title="Sửa" onClick={() => modifyUsers(record)} />
           </a>
           <a>
-            <FaTrash title="Xóa" style={{ color: "red" }} onClick={() => deleteUsers(record)} />
+            <FaTrash
+              title="Xóa"
+              style={{ color: "red" }}
+              onClick={() => deleteUsers(record)}
+            />
           </a>
         </Space>
       ),
@@ -93,7 +99,7 @@ const Users = () => {
     full_name: items.full_name,
     email: items.email,
     phone: items.phone || "-",
-    gender: items.gender === 1 ? "Nam" : "Nữ" || "", // Corrected the gender assignment
+    gender: items.gender === 1 ? "Nam" : "Nữ", // Corrected the gender assignment
     role: items.role.name,
     key: items.id,
   }));
@@ -164,7 +170,12 @@ const Users = () => {
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
-        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+        <h1
+          style={{
+            fontFamily: "var(--kv-font-sans-serif)",
+            color: "var(--color-title)",
+          }}
+        >
           Quản lý nhân viên
         </h1>
         <div className="header-customers">

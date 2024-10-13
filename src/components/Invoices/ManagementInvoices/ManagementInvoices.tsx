@@ -37,7 +37,7 @@ const ManagementInvoices: React.FC = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalModify, setOpenModalModify] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); //@ts-ignore
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [dataTableInvoice, setDataTableInvoice] = useState<any[]>([]);
@@ -122,7 +122,7 @@ const ManagementInvoices: React.FC = () => {
   const getDataInvoices = async () => {
     setLoading(true);
     try {
-      const res = await invoice.getAllInvoices();
+      const res = await invoice.getAllInvoices(); //@ts-ignore
       if (res.code === 200) {
         const data = res.data.items;
         const totalData = res.data.total;
@@ -193,7 +193,10 @@ const ManagementInvoices: React.FC = () => {
             <FaEye onClick={() => handleClickDetailInvoices(record)} />
           </a>
           <a>
-            <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteInvoices(record)} />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => handleClickDeleteInvoices(record)}
+            />
           </a>
         </Space>
       ),
@@ -246,7 +249,12 @@ const ManagementInvoices: React.FC = () => {
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
-        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+        <h1
+          style={{
+            fontFamily: "var(--kv-font-sans-serif)",
+            color: "var(--color-title)",
+          }}
+        >
           Quản lý hóa đơn
         </h1>
         <div className="header-customers">
@@ -302,6 +310,7 @@ const ManagementInvoices: React.FC = () => {
       <ModalDetailInvoice
         openModalModify={openModalModify}
         onCloseModalModify={onCloseModalModify}
+        //@ts-ignore
         dataDetail={dataDetail}
       />
     </>

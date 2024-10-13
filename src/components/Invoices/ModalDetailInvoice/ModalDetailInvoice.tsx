@@ -179,7 +179,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
               style={{ width: "100%" }}
               scroll={{
                 y: 300,
-              }}
+              }}//@ts-ignore
               columns={columns}
               dataSource={dataTableDetail}
               locale={localInvoice}

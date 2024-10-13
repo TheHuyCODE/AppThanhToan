@@ -54,8 +54,9 @@ const ModalAddCustomers: React.FC<ModalsCustomerProps> = ({
     };
     setLoadingSearch(true);
     try {
-      const res = await customer.addDataCustomer(dataCustomer);
+      const res = await customer.addDataCustomer(dataCustomer); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const success = res.message.text;
         toast.success(success);
         clearInputCustomer();
@@ -106,7 +107,7 @@ const ModalAddCustomers: React.FC<ModalsCustomerProps> = ({
             Số điện thoại(<span>*</span>)
           </label>
           <div>
-            <Input
+            <Input //@ts-ignore
               ref={nameRef}
               type="text"
               onChange={setHandleInputCustomer}

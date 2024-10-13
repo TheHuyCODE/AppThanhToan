@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { Space, Table, TableColumnsType } from "antd";
+import { useEffect, useState } from "react";
+import { FaPencilAlt } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
-import TitleOwner from "../OwnerManage/TilteOwner";
 import HeaderContent from "../../components/HeaderComponent/HeaderContent";
-import { Alert, Space, Table, TableColumnsType } from "antd";
 import { localStore } from "../../components/TableConfig/TableConfig";
 import store from "../../configs/store";
-import { FaPencilAlt } from "react-icons/fa";
+import TitleOwner from "../OwnerManage/TilteOwner";
 import ModalModifyStore from "./ModalModifyStore";
 
 interface RecordType {
@@ -20,12 +20,12 @@ interface RecordType {
 const StoreAdmin = () => {
   const titleSearch = "Tìm kiếm cửa hàng";
   const titleName = "Quản lý cửa hàng";
-  const handleSearchStore = () => {};
+  // const handleSearchStore = () => {};
   const [isDataStore, setIsDataStore] = useState([]);
   const [idDeleteStores, setIdDeleteStores] = useState("");
   const [isOpenModalModifyStores, setIsOpenModalModifyStores] = useState(false);
   const [loading, setLoading] = useState(false);
-  const handleClickOpenModal = () => {};
+  // const handleClickOpenModal = () => {};
   const getDataStores = async () => {
     setLoading(true);
     try {
@@ -87,7 +87,10 @@ const StoreAdmin = () => {
       render: (record: any) => (
         <Space size="middle">
           <a>
-            <FaPencilAlt title="Sửa" onClick={() => handleClickModify(record.id)} />
+            <FaPencilAlt
+              title="Sửa"
+              onClick={() => handleClickModify(record.id)}
+            />
           </a>
         </Space>
       ),
@@ -110,8 +113,10 @@ const StoreAdmin = () => {
         <div className="header-customers">
           <HeaderContent
             titleSearch={titleSearch}
-            handleSearch={handleSearchStore}
-            handleClickOpenModal={handleClickOpenModal}
+            //wtf ??
+            // handleSearch={handleSearchStore}
+            // handleClickOpenModal={handleClickOpenModal}
+            setLoadingSearch={setLoading}
           />
         </div>
         <ModalModifyStore

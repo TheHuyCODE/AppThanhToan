@@ -1,20 +1,19 @@
-import { Select, Input, TreeSelect } from "antd";
+import { Input, Select, TreeSelect } from "antd";
 import { useEffect, useState } from "react";
-import { IoIosArrowBack, IoMdAdd } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
-import "../ProductManagement.css";
-import "../../styles/valiables.css";
+import { AiOutlinePicture } from "react-icons/ai";
 import { CiCircleRemove } from "react-icons/ci";
 import { FaBan } from "react-icons/fa";
-import products from "../../../configs/products";
-import { useAuth } from "../../auth/AuthContext";
-import { Tree } from "antd";
-const { TreeNode } = Tree;
+import { IoIosArrowBack, IoMdAdd } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { AiOutlinePicture } from "react-icons/ai";
-const { TextArea } = Input;
+import products from "../../../configs/products";
 import { handleError } from "../../../utils/errorHandler";
+import { useAuth } from "../../auth/AuthContext";
+import "../../styles/valiables.css";
 import { unitProductList } from "../../TableConfig/unitProduct";
+import "../ProductManagement.css";
+
+const { TextArea } = Input;
 interface TreeDataNode {
   id: string;
   pId: string | null;
@@ -29,7 +28,10 @@ const AddProduct = () => {
   const [previewImageProduct, setPreviewImageProduct] = useState("");
   const [resImageProduct, setResImageProduct] = useState("");
   const { fetchDataCategory, isCategoryProduct } = useAuth();
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
+  //@ts-ignore
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
+    undefined
+  );
   const [selectedPath, setSelectedPath] = useState<string>("");
   const unitProduct = unitProductList;
   const [inputProduct, setInputProduct] = useState({
@@ -49,7 +51,7 @@ const AddProduct = () => {
     price: false,
     capital_price: false,
   });
-
+  //@ts-ignore
   const onChangeInput = (fieldName: string) => (e) => {
     let value = e.target.value.trim();
     // If the field is 'inventory_number', convert the value to a number
@@ -65,7 +67,12 @@ const AddProduct = () => {
   // add product
   const onClickAddProduct = async (e: any) => {
     e.preventDefault();
-    console.log("Add button clicked. Form state:", inputProduct, "Image:", resImageProduct);
+    console.log(
+      "Add button clicked. Form state:",
+      inputProduct,
+      "Image:",
+      resImageProduct
+    );
     const dataAddProduct = {
       barcode: inputProduct.barcode,
       name: inputProduct.name,
@@ -81,6 +88,7 @@ const AddProduct = () => {
     // console.log("dataProduct:", data);
     try {
       const response = await products.postAddProduct(dataAddProduct);
+      //@ts-ignore
       if (response.code === 200) {
         toast.success("Thêm sản phẩm thành công");
         setTimeout(() => {
@@ -97,6 +105,7 @@ const AddProduct = () => {
   };
 
   //map data into treeData
+  //@ts-ignore
   const treeData = isCategoryProduct.map((item: any) => ({
     id: item.id,
     pId: null,
@@ -140,7 +149,9 @@ const AddProduct = () => {
   };
   const filterTreeNode = (inputValue: string, treeNode: any) => {
     if (!treeNode.children) {
-      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
+      return (
+        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+      );
     }
     return false;
   };
@@ -206,13 +217,16 @@ const AddProduct = () => {
     navigate("/admin/products/");
   };
   const validatePrice = () => {
-    if (touchedFields.price && inputProduct.price < inputProduct.capital_price) {
+    if (
+      touchedFields.price &&
+      inputProduct.price < inputProduct.capital_price
+    ) {
       setPriceError("Giá bán không được nhỏ hơn giá vốn!");
     } else {
       setPriceError("");
     }
   };
-
+  //@ts-ignore
   const onChangeValuePrice = (e) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
@@ -231,7 +245,7 @@ const AddProduct = () => {
       }));
     }
   };
-
+  //@ts-ignore
   const onChangeValueCapitalPrice = (e) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
@@ -263,8 +277,15 @@ const AddProduct = () => {
   }, [inputProduct.price, inputProduct.capital_price, touchedFields.price]);
 
   useEffect(() => {
-    const { barcode, name, price, capital_price, inventory_number, unit, category_id } =
-      inputProduct;
+    const {
+      barcode,
+      name,
+      price,
+      capital_price,
+      inventory_number,
+      unit,
+      category_id,
+    } = inputProduct;
 
     const isValid =
       barcode.trim() !== "" &&
@@ -320,6 +341,7 @@ const AddProduct = () => {
       products
         .postImageProduct(formData)
         .then((res) => {
+          //@ts-ignore
           if (res.code === 200) {
             console.log("Success:", res);
             const fileUrl = res.data.file_url;
@@ -457,7 +479,9 @@ const AddProduct = () => {
                 type="text"
                 className="input-form"
                 onChange={onChangeValuePrice}
-                onBlur={() => setTouchedFields((prev) => ({ ...prev, capital_price: true }))}
+                onBlur={() =>
+                  setTouchedFields((prev) => ({ ...prev, capital_price: true }))
+                }
                 style={{
                   position: "relative",
                 }}
@@ -596,7 +620,11 @@ const AddProduct = () => {
               </label>
               {!previewImageProduct ? (
                 <>
-                  <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
+                  <label
+                    htmlFor="labelUpload"
+                    className="label-upload"
+                    style={{ marginRight: 0 }}
+                  >
                     <AiOutlinePicture style={{ fontSize: "50px" }} />
                   </label>
                   <input
@@ -619,7 +647,10 @@ const AddProduct = () => {
                     boxShadow: "0 0 10px rgba(0,0,0,0.3)",
                   }}
                 >
-                  <button className="btn-close-image" onClick={closePreviewImage}>
+                  <button
+                    className="btn-close-image"
+                    onClick={closePreviewImage}
+                  >
                     <CiCircleRemove />
                   </button>
                   <img
@@ -631,7 +662,10 @@ const AddProduct = () => {
               )}
             </div>
             <div className="footer-add-product">
-              <button className="btn-cancel-product" onClick={onClickBackPageProduct}>
+              <button
+                className="btn-cancel-product"
+                onClick={onClickBackPageProduct}
+              >
                 <FaBan className="icon" />
                 Hủy
               </button>

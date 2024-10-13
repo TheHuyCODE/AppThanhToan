@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
@@ -26,8 +26,14 @@ interface Invoice {
 interface LeftPageContentProps {
   decrement: (invoiceId: string, productId: string) => void;
   increment: (invoiceId: string, productId: string) => void;
-  handleChangeNumberCards: (e: React.ChangeEvent<HTMLInputElement>, productId: string) => void;
-  handleChangePriceProduct: (e: React.ChangeEvent<HTMLInputElement>, productId: string) => void;
+  handleChangeNumberCards: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    productId: string
+  ) => void;
+  handleChangePriceProduct: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    productId: string
+  ) => void;
   removeProductCarts: (invoiceId: string, productId: string) => void;
   handleBlurPriceProduct: (invoiceId: string) => void;
   activeKey: string;
@@ -46,7 +52,6 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
   invoiceList,
   totalQuantity,
   totalPrice,
-  detailTotalInvoice,
 }) => {
   const domainLink = domain.domainLink;
   const deleteProductCarts = (invoiceID: string, productID: string) => {
@@ -68,7 +73,9 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
               <button
                 className="btn-remove-carts"
                 title="Xóa hàng hóa"
-                onClick={() => deleteProductCarts(typeInvoiceList[0].id_payment, product.id)}
+                onClick={() =>
+                  deleteProductCarts(typeInvoiceList[0].id_payment, product.id)
+                }
               >
                 <FaRegTrashAlt className="trash-product" />
               </button>
@@ -86,7 +93,9 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
                 <div className="quantity-product">
                   <button
                     className="icon-button"
-                    onClick={() => decrement(typeInvoiceList[0].id_payment, product.id)}
+                    onClick={() =>
+                      decrement(typeInvoiceList[0].id_payment, product.id)
+                    }
                   >
                     <AiOutlineMinus />
                   </button>
@@ -100,18 +109,25 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
                   />
                   <button
                     className="icon-button"
-                    onClick={() => increment(typeInvoiceList[0].id_payment, product.id)}
+                    onClick={() =>
+                      increment(typeInvoiceList[0].id_payment, product.id)
+                    }
                   >
                     <AiOutlinePlus />
                   </button>
                 </div>
                 <div className="show-picture-product">
-                  <img src={`${domainLink}${product.image_url}`} alt="Ảnh sản phẩm" />
+                  <img
+                    src={`${domainLink}${product.image_url}`}
+                    alt="Ảnh sản phẩm"
+                  />
                 </div>
                 <div className="cell-change-price">
                   <input
                     type="text"
-                    value={product.price ? product.price.toLocaleString("vi-VN") : ""}
+                    value={
+                      product.price ? product.price.toLocaleString("vi-VN") : ""
+                    }
                     className="payment-invoice__input-change "
                     onChange={(e) => handleChangePriceProduct(e, product.id)}
                   />
@@ -133,7 +149,9 @@ const LeftPageContent: React.FC<LeftPageContentProps> = ({
         <div className="cart-summary">
           <div className="cart-summary-item">
             <span>Tổng số lượng:</span>
-            <span style={{ fontWeight: "700", marginLeft: "10px" }}>{totalQuantity}</span>
+            <span style={{ fontWeight: "700", marginLeft: "10px" }}>
+              {totalQuantity}
+            </span>
           </div>
           <div className="cart-summary-item">
             <span>Tổng giá tiền: </span>

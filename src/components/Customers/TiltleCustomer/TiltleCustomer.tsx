@@ -1,9 +1,12 @@
-import React from "react";
-
 const TiltleCustomer = () => {
   return (
     <>
-      <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+      <h1
+        style={{
+          fontFamily: "var(--kv-font-sans-serif)",
+          color: "var(--color-title)",
+        }}
+      >
         Quản lý khách hàng
       </h1>
     </>

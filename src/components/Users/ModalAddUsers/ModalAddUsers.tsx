@@ -147,6 +147,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
 
     try {
       const res = await users.addUser(dataUser);
+      //@ts-ignore
       const msSuccess = res.message.text;
       toast.success(msSuccess);
       clearInputAddUser();
@@ -163,7 +164,10 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
 
   const getButtonStyle = () => {
     return {
-      backgroundColor: isFormValid && !isLoading ? "var(--kv-success)" : "rgba(0, 128, 0, 0.5)",
+      backgroundColor:
+        isFormValid && !isLoading
+          ? "var(--kv-success)"
+          : "rgba(0, 128, 0, 0.5)",
       color: "white",
       opacity: isFormValid && !isLoading ? 1 : 0.7,
     };
@@ -215,7 +219,9 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
                 placeholder="Họ tên"
                 style={{ width: "400px", height: "40px" }}
                 className={
-                  touchedFields.name && nameError && !inputFocused.name ? "error-input" : ""
+                  touchedFields.name && nameError && !inputFocused.name
+                    ? "error-input"
+                    : ""
                 }
               />
               {touchedFields.name && nameError && !inputFocused.name && (
@@ -238,7 +244,9 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
                 placeholder="Email"
                 style={{ width: "400px", height: "40px" }}
                 className={
-                  touchedFields.email && emailError && !inputFocused.email ? "error-input" : ""
+                  touchedFields.email && emailError && !inputFocused.email
+                    ? "error-input"
+                    : ""
                 }
               />
               {touchedFields.email && emailError && !inputFocused.email && (

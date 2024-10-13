@@ -1,25 +1,23 @@
-import React, { useState } from "react";
 import { Menu, Modal } from "antd";
+import React, { useState } from "react";
+import { CiBank } from "react-icons/ci";
 import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
+import {
+  FaArrowRightFromBracket,
+  FaBagShopping,
+  FaPeopleGroup,
+} from "react-icons/fa6";
+import { GrUserAdmin } from "react-icons/gr";
 import { IoBarChartOutline, IoPerson, IoStorefront } from "react-icons/io5";
 import { RiListSettingsFill } from "react-icons/ri";
-import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
-import { CiBank } from "react-icons/ci";
 import { TiArrowBack } from "react-icons/ti";
 import { Link } from "react-router-dom";
+import logoutApi from "../../configs/logoutApi";
 import { useAuth } from "../auth/AuthContext";
 import "./MenuList.css";
-import logoutApi from "../../configs/logoutApi";
-import { GrUserAdmin } from "react-icons/gr";
 
 // Define the User interface
-interface UserInfo {
-  // Define the structure of user info based on your requirements
-  email?: string;
-  role?: { id: string; key: string; name: string };
-  role_id?: number;
-  // Add other fields if necessary
-}
+
 const MenuList: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { accessToken, logout, user } = useAuth();
@@ -55,8 +53,18 @@ const MenuList: React.FC = () => {
 
   // Define menu items
   const menuItems = [
-    { key: "1", icon: <FaBagShopping />, link: "/SalesPage", label: "Bán hàng" },
-    { key: "2", icon: <FaRegUserCircle />, link: "/admin/profile", label: "Thông tin cá nhân" },
+    {
+      key: "1",
+      icon: <FaBagShopping />,
+      link: "/SalesPage",
+      label: "Bán hàng",
+    },
+    {
+      key: "2",
+      icon: <FaRegUserCircle />,
+      link: "/admin/profile",
+      label: "Thông tin cá nhân",
+    },
     {
       key: "manage_store",
       icon: <CiBank />,
@@ -84,7 +92,12 @@ const MenuList: React.FC = () => {
       link: "/admin/invoices",
       label: "Quản lý hóa đơn",
     },
-    { key: "returns", icon: <TiArrowBack />, link: "/admin/returns", label: "Quản lý trả hàng" },
+    {
+      key: "returns",
+      icon: <TiArrowBack />,
+      link: "/admin/returns",
+      label: "Quản lý trả hàng",
+    },
     {
       key: "User_management",
       icon: <IoPerson />,
@@ -144,12 +157,14 @@ const MenuList: React.FC = () => {
       case 3:
         // Display all items except those with keys "owner_management" and "store_management"
         return menuItems.filter(
-          (item) => item.key !== "owner_management" && item.key !== "store_management"
+          (item) =>
+            item.key !== "owner_management" && item.key !== "store_management"
         );
       case 1:
         // Only display items with keys "owner_management" and "store_management"
         return menuItems.filter(
-          (item) => item.key === "owner_management" || item.key === "store_management"
+          (item) =>
+            item.key === "owner_management" || item.key === "store_management"
         );
       default:
         // Default to displaying all items

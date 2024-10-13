@@ -1,54 +1,56 @@
-import React, { useEffect, useState, useRef } from "react";
-import loginApi from "../../configs/loginApi";
-import "./LoginRegister.css";
-import "./../styles/valiables.css";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
-import logo from "../../../public/Logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Modal, Popover } from "antd";
-import { FaUser, FaEnvelope, FaPhone, FaRegAddressCard, FaEye, FaEyeSlash } from "react-icons/fa";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FaEnvelope,
+  FaEye,
+  FaEyeSlash,
+  FaPhone,
+  FaRegAddressCard,
+  FaUser,
+} from "react-icons/fa";
 import { LuStore } from "react-icons/lu";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import logo from "../../../public/Logo.png";
+import loginApi from "../../configs/loginApi";
+import "./../styles/valiables.css";
+import "./LoginRegister.css";
 
 import { useAuth } from "../auth/AuthContext";
 
-import { handleError } from "../../utils/errorHandler";
 import classNames from "classnames"; // Nếu bạn chưa có, hãy cài đặt: npm install classnames
+import { handleError } from "../../utils/errorHandler";
 
 const LoginRegister = () => {
-  const storeNameRef = useRef(null);
-  const fullNameRef = useRef(null);
-  const emailRef = useRef(null);
-  const adressRef = useRef(null);
-  const passWordRef = useRef(null);
-  const phoneRef = useRef(null);
-  const confirmPasswordRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
+
   const [action, setAction] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordRegister, setShowPasswordRegister] = useState(false);
-  const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] = useState(false);
+  const [showConfirmPasswordRegister, setshowConfirmPasswordRegister] =
+    useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpenPopups, setIsOpenPopups] = useState(false);
-  const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false);
-  const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] = useState(false);
+  const [isOpenPopups, setIsOpenPopups] = useState(false); //@ts-ignore
+  const [isEmptyMessageVisible, setIsEmptyMessageVisible] = useState(false); //@ts-ignore
+  const [isShortCodeMessageVisible, setIsShortCodeMessageVisible] =
+    useState(false);
   const [isEmptyMessageEmail, setIsEmptyMessageEmail] = useState(false);
   const [isShortCodeMessageEmail, setIsShortCodeMessageEmail] = useState(false);
   const [isEmptyMessagePassword, setIsEmptyMessagePassword] = useState(false);
-  const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] = useState(false);
+  const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] =
+    useState(false); //@ts-ignore
   const { logout } = useAuth();
-  const [inputPassword, setInputPassword] = useState("");
+  const [inputPassword, setInputPassword] = useState(""); //@ts-ignore
   const [inputClicked, setInputClicked] = useState(false);
 
   const [inputFocused, setInputFocused] = useState({
     email: false,
     password: false,
-  });
+  }); //@ts-ignore
   const validateEmail = (email) => {
     // Regular expression for email validation
     const regex =
@@ -157,24 +159,27 @@ const LoginRegister = () => {
       [fieldName]: value,
     });
   };
-  const handleChangeRegister = (fieldName: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+  const handleChangeRegister =
+    (fieldName: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value;
 
-    if (fieldName === "phone") {
-      // Allow only numbers
-      const numericValue = value.replace(/\D/g, ""); // Remove all non-numeric characters
-      value = numericValue;
-    } else if (["email", "password", "confirm_password"].includes(fieldName)) {
-      value = value.trim();
-    }
+      if (fieldName === "phone") {
+        // Allow only numbers
+        const numericValue = value.replace(/\D/g, ""); // Remove all non-numeric characters
+        value = numericValue;
+      } else if (
+        ["email", "password", "confirm_password"].includes(fieldName)
+      ) {
+        value = value.trim();
+      }
 
-    console.log("value", value);
+      console.log("value", value);
 
-    setDataRegister({
-      ...dataRegister,
-      [fieldName]: value,
-    });
-  };
+      setDataRegister({
+        ...dataRegister,
+        [fieldName]: value,
+      });
+    };
 
   const setHandleInputPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
@@ -189,13 +194,15 @@ const LoginRegister = () => {
     };
     setButtonDisabled(true);
     try {
-      const res = await loginApi.forgotPassword(data);
+      const res = await loginApi.forgotPassword(data); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const msSuccess = res.message.text;
         setInputPassword("");
         setIsOpenPopups(false);
         toast.success(msSuccess);
       } else {
+        //@ts-ignore
         console.log("111", msErr);
       }
     } catch (err) {
@@ -208,7 +215,9 @@ const LoginRegister = () => {
     }
     setButtonDisabled(false);
   };
-  const handleSubmitRegister = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSubmitRegister = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     const userData = {
       email: dataRegister.email,
@@ -222,7 +231,7 @@ const LoginRegister = () => {
     setIsLoading(true);
     try {
       const res = await loginApi.postMessageRegister(userData);
-
+      //@ts-ignore
       const successMs = res.message.text;
       // toast.success(successMs);
       clearInputRegister();
@@ -258,8 +267,9 @@ const LoginRegister = () => {
     };
     setIsLoading(true);
     try {
-      const res = await loginApi.postMessage(userData);
+      const res = await loginApi.postMessage(userData); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const messageSuccess = res.message.text;
         toast.success(messageSuccess);
         localStorage.setItem("INFO_USER", JSON.stringify(res.data));
@@ -311,8 +321,10 @@ const LoginRegister = () => {
   const getInputClassName = (field: "email" | "password") => {
     return classNames({
       "error-input":
-        (field === "email" && (isEmptyMessageEmail || isShortCodeMessageEmail)) ||
-        (field === "password" && (isEmptyMessagePassword || isShortCodeMessagePassword)),
+        (field === "email" &&
+          (isEmptyMessageEmail || isShortCodeMessageEmail)) ||
+        (field === "password" &&
+          (isEmptyMessagePassword || isShortCodeMessagePassword)),
     });
   };
 
@@ -365,7 +377,10 @@ const LoginRegister = () => {
                 Password<span className="required-star">*</span>
               </label>
               {showPassword ? (
-                <FaEye className="icon password" onClick={() => setShowPassword(!showPassword)} />
+                <FaEye
+                  className="icon password"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
               ) : (
                 <FaEyeSlash
                   className="icon password"
@@ -403,7 +418,9 @@ const LoginRegister = () => {
               >
                 <h1 className="title-addItem">Quên mật khẩu?</h1>
                 <div className="containner-forgot-password">
-                  <label htmlFor="number_bank">Vui lòng nhập email để thiết lập lại mật khẩu</label>
+                  <label htmlFor="number_bank">
+                    Vui lòng nhập email để thiết lập lại mật khẩu
+                  </label>
                   <div>
                     <input
                       type="text"
@@ -421,7 +438,10 @@ const LoginRegister = () => {
                 </div>
               </Modal>
             </div>
-            <button type="submit" disabled={isLoading || !validateLoginInputs()}>
+            <button
+              type="submit"
+              disabled={isLoading || !validateLoginInputs()}
+            >
               {isLoading ? (
                 <span>
                   <FontAwesomeIcon icon={faCircleNotch} spin />
@@ -445,6 +465,7 @@ const LoginRegister = () => {
 
         {/* form register */}
         <div className="form-box register">
+          {/*  @ts-ignore */}
           <form action="" onSubmit={handleSubmitRegister} autoComplete="off">
             <h1 className="title-header">Đăng kí tài khoản</h1>
             <div className="input-box-form">
@@ -539,12 +560,16 @@ const LoginRegister = () => {
                 {showPasswordRegister ? (
                   <FaEye
                     className="icon password"
-                    onClick={() => setShowPasswordRegister(!showPasswordRegister)}
+                    onClick={() =>
+                      setShowPasswordRegister(!showPasswordRegister)
+                    }
                   />
                 ) : (
                   <FaEyeSlash
                     className="icon password"
-                    onClick={() => setShowPasswordRegister(!showPasswordRegister)}
+                    onClick={() =>
+                      setShowPasswordRegister(!showPasswordRegister)
+                    }
                   />
                 )}
               </div>
@@ -583,18 +608,30 @@ const LoginRegister = () => {
                 {showConfirmPasswordRegister ? (
                   <FaEye
                     className="icon password"
-                    onClick={() => setshowConfirmPasswordRegister(!showConfirmPasswordRegister)}
+                    onClick={() =>
+                      setshowConfirmPasswordRegister(
+                        !showConfirmPasswordRegister
+                      )
+                    }
                   />
                 ) : (
                   <FaEyeSlash
                     className="icon password"
-                    onClick={() => setshowConfirmPasswordRegister(!showConfirmPasswordRegister)}
+                    onClick={() =>
+                      setshowConfirmPasswordRegister(
+                        !showConfirmPasswordRegister
+                      )
+                    }
                   />
                 )}
               </div>
             </div>
 
-            <button type="submit" className="button-resgister" disabled={isLoading}>
+            <button
+              type="submit"
+              className="button-resgister"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <span>
                   <FontAwesomeIcon icon={faCircleNotch} spin />

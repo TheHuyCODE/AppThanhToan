@@ -1,19 +1,23 @@
 import { Input, Select } from "antd";
-import React, { useState, useEffect, useRef } from "react";
-import { DataProfile } from "../TableConfig/TableConfig";
-import Profiles from "../../configs/profiles";
-import { toast } from "react-toastify";
-import { IoPerson } from "react-icons/io5";
-import { handleError } from "../../utils/errorHandler";
+import React, { useEffect, useRef, useState } from "react";
 import { CiCamera } from "react-icons/ci";
+import { IoPerson } from "react-icons/io5";
+import { toast } from "react-toastify";
+import Profiles from "../../configs/profiles";
+import { handleError } from "../../utils/errorHandler";
+import { DataProfile } from "../TableConfig/TableConfig";
 
 interface LeftContentProfileProps {
   dataProfile: DataProfile;
   getDataUser: () => void;
 }
-const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, getDataUser }) => {
+const LeftContentProfile: React.FC<LeftContentProfileProps> = ({
+  dataProfile,
+  getDataUser,
+}) => {
   const [profile, setProfile] = useState<DataProfile>(dataProfile);
-  const [initialProfile, setInitialProfile] = useState<DataProfile>(dataProfile);
+  const [initialProfile, setInitialProfile] =
+    useState<DataProfile>(dataProfile); //@ts-ignore
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(null);
   const [errors, setErrors] = useState<{ full_name?: string }>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -54,7 +58,7 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
       avatar_url: profile.avatar_url,
     };
     try {
-      const res = await Profiles.postProfile(dataModify);
+      const res = await Profiles.postProfile(dataModify); //@ts-ignore
       const succesMs = res.message.text;
       toast.success(succesMs);
       localStorage.removeItem("INFO_USER");
@@ -105,7 +109,9 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
   return (
     <>
       <div className="profile-input">
-        <span style={{ fontSize: "18px", fontWeight: "600" }}>Thông tin người dùng</span>
+        <span style={{ fontSize: "18px", fontWeight: "600" }}>
+          Thông tin người dùng
+        </span>
       </div>
       <div className="profile-input-image">
         <div className="image-profile" onClick={handleIconClick}>
@@ -143,7 +149,12 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
         <label htmlFor="email">
           Email(<span>*</span>)
         </label>
-        <Input placeholder="Email" className="input-field" value={email || ""} disabled />
+        <Input
+          placeholder="Email"
+          className="input-field"
+          value={email || ""}
+          disabled
+        />
       </div>
       <div className="profile-input">
         <label htmlFor="full_name">
@@ -178,6 +189,7 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
           value={age ? age.toString() : ""}
           onChange={(e) => {
             const value = e.target.value.trim(); // Trim any extra whitespace
+            //@ts-ignore
             onChangeProfile("age", value ? parseInt(value) : null);
           }}
         />

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import "./profile.css";
-import "../styles/valiables.css";
-import LeftContentProfile from "./LeftContentProfile";
-import RightContentProfile from "./RightContentProfile";
-import { DataProfile } from "../TableConfig/TableConfig";
-import Profiles from "../../configs/profiles";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import Profiles from "../../configs/profiles";
+import "../styles/valiables.css";
+import { DataProfile } from "../TableConfig/TableConfig";
+import LeftContentProfile from "./LeftContentProfile";
+import "./profile.css";
+import RightContentProfile from "./RightContentProfile";
 const Profile = () => {
   const [dataProfile, setDataProfile] = useState<DataProfile>({
     address: null,
@@ -44,7 +44,10 @@ const Profile = () => {
       </div> */}
         <div className="content-profile">
           <div className="left-content-profile">
-            <LeftContentProfile dataProfile={dataProfile} getDataUser={getDataUser} />
+            <LeftContentProfile
+              dataProfile={dataProfile}
+              getDataUser={getDataUser}
+            />
           </div>
           <div className="right-content-profile">
             <RightContentProfile getDataUser={getDataUser} />

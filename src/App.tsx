@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Button, Result, theme } from "antd";
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
-import { useAuth } from "./components/auth/AuthContext";
-import LoginRegister from "./components/Register/LoginRegister";
-import ProductMangement from "./components/Products/Products";
-import ProtectedRouter from "./components/auth/ProtectedRouter";
-import PublicRouter from "./components/auth/PublicRouter";
-import Users from "./components/Users/Users";
-import Home from "./components/Home/Home";
-import AppWrapper from "./components/ContentAdmin/wrapper";
-import DetailUsers from "./components/Users/DetailUsers";
-import ModifyUsers from "./components/Users/ModifyUsers";
 import Admins from "./components/Admin/Admins";
 import Groups from "./components/Admin/Groups";
 import Permissions from "./components/Admin/Permissions";
+import { useAuth } from "./components/auth/AuthContext";
+import ProtectedRouter from "./components/auth/ProtectedRouter";
+import PublicRouter from "./components/auth/PublicRouter";
+import AppWrapper from "./components/ContentAdmin/wrapper";
+import Home from "./components/Home/Home";
 import AddProduct from "./components/Products/AddProducts/AddProduct";
 import DetailProduct from "./components/Products/DetailProduct/DetailProduct";
 import ModifyProduct from "./components/Products/ModifyProduct/ModifyProduct";
+import ProductMangement from "./components/Products/Products";
+import LoginRegister from "./components/Register/LoginRegister";
+import DetailUsers from "./components/Users/DetailUsers";
+import ModifyUsers from "./components/Users/ModifyUsers";
+import Users from "./components/Users/Users";
 // import SalePage from './components/SalesPage/SalePage';
-import RevenueReport from "./components/Dashboard/RevenueReport";
-import InventoryReport from "./components/Dashboard/InventoryReport";
-import Payment from "./components/Payment/Payment";
-import SalePageDemo from "./components/SalesPage/SalePageDemo";
-import Profile from "./components/Profile/Profile";
-import ManagementInvoices from "./components/Invoices/ManagementInvoices/ManagementInvoices";
-import Customers from "./components/Customers/Customers";
 import Categories from "./components/Category/Categories";
-import SubCategories from "./components/Category/SubCategories";
 import ShirtSubCategories from "./components/Category/ShirtSubCategories";
+import SubCategories from "./components/Category/SubCategories";
+import Customers from "./components/Customers/Customers";
+import InventoryReport from "./components/Dashboard/InventoryReport";
+import RevenueReport from "./components/Dashboard/RevenueReport";
+import ManagementInvoices from "./components/Invoices/ManagementInvoices/ManagementInvoices";
+import Payment from "./components/Payment/Payment";
+import Profile from "./components/Profile/Profile";
 import Return from "./components/Returns/Return";
+import SalePageDemo from "./components/SalesPage/SalePageDemo";
 import Store from "./components/Store/Store";
 import Owner from "./pages/OwnerManage/Owner";
 import StoreAdmin from "./pages/StorePageAdmin/StoreAdmin";
@@ -67,7 +67,7 @@ function App() {
     setDarkTheme(!darkTheme);
   };
 
-  const location = useLocation();
+  // const location = useLocation();
   const { isAuthenticated, accessToken, logoutAllTabs, user } = useAuth();
 
   useEffect(() => {
@@ -512,7 +512,10 @@ function App() {
         <Route
           path="/login"
           element={
-            <PublicRouter isAuthenticated={isAuthenticated}>
+            <PublicRouter
+            // is authen lay tu trong hook ma?
+            // isAuthenticated={isAuthenticated}
+            >
               <LoginRegister />
             </PublicRouter>
           }

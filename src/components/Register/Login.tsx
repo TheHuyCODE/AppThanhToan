@@ -1,17 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
-import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
+import { FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
-import loginApi from "../../configs/loginApi";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import loginApi from "../../configs/loginApi";
 import "./LoginRegister.css";
-import { useAuth } from "../auth/AuthContext";
-const { isAuthenticated, accessToken, login, logout } = useAuth();
 
-const Login = ({ registerLink }) => {
+const Login = ({ registerLink }: any) => {
   const navigate = useNavigate();
 
   const [data, setData] = useState({
@@ -30,10 +26,10 @@ const Login = ({ registerLink }) => {
   const [isShortCodeMessagePassword, setIsShortCodeMessagePassword] =
     useState(false);
 
-  const validateEmail = (email) => {
-    const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-    return regex.test(email);
-  };
+  // const validateEmail = (email) => {
+  //   const regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+  //   return regex.test(email);
+  // };
 
   const handleBlur = () => {
     setIsEmptyMessageVisible(false);
@@ -43,7 +39,7 @@ const Login = ({ registerLink }) => {
     setIsEmptyMessagePassword(false);
     setIsShortCodeMessagePassword(false);
   };
-
+  //@ts-ignore
   const handleChange = (fieldName) => (e) => {
     const value = e.target.value;
     setData({
@@ -51,14 +47,14 @@ const Login = ({ registerLink }) => {
       [fieldName]: value,
     });
   };
-
+  //@ts-ignore
   const handleSubmitLogin = (event) => {
     event.preventDefault();
 
     setIsLoading(true);
 
     loginApi.postMessage(data).then((res) => {
-      setIsLoading(false);
+      setIsLoading(false); //@ts-ignore
       if (res.code === 200) {
         toast.success("Đăng nhập thành công!");
         setTimeout(() => {
@@ -121,9 +117,10 @@ const Login = ({ registerLink }) => {
             onBlur={handleBlur}
           />
           <div
-            className="icon password"
+            className="icon password" //@ts-ignore
             onClick={() => setShowPassword(!showPassword)}
           >
+            {/* @ts-ignore */}
             {showPassword ? <FaEye /> : <FaEyeSlash />}
           </div>
           {isEmptyMessagePassword && (

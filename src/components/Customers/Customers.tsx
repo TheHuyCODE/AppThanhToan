@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "./Customers.css";
-import "../styles/valiables.css";
-import TiltleCustomer from "./TiltleCustomer/TiltleCustomer";
-import HeaderCustomer from "./HeaderCustomer/HeaderCustomer";
 import { Pagination, Space, Table, TableColumnsType } from "antd";
+import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import { localCustomer } from "../TableConfig/TableConfig";
-import ModalAddCustomers from "./ModalAddCustomer/ModalAddCustomers";
+import { ToastContainer } from "react-toastify";
 import customer from "../../configs/customer";
 import { handleError } from "../../utils/errorHandler";
+import "../styles/valiables.css";
+import { localCustomer } from "../TableConfig/TableConfig";
+import "./Customers.css";
+import HeaderCustomer from "./HeaderCustomer/HeaderCustomer";
+import ModalAddCustomers from "./ModalAddCustomer/ModalAddCustomers";
 import ModalDeleteCustomer from "./ModalDeleteCustomer/ModalDeleteCustomer";
+import TiltleCustomer from "./TiltleCustomer/TiltleCustomer";
 interface RecordType {
   stt: number;
   full_name: string;
@@ -23,7 +23,7 @@ const Customers = () => {
   const [loading, setLoading] = useState(false);
   const [dataCustomer, setDataCustomer] = useState<any[]>([]);
   const [totalPageCustomer, setTotalPageCustomer] = useState(0);
-  const [isIdDelete, setIsIdDelete] = useState("");
+  const [isIdDelete, setIsIdDelete] = useState("");//@ts-ignore
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isOpenPopupAddCustomers, setIsOpenPopupAddCustomers] = useState(false);
@@ -85,7 +85,8 @@ const Customers = () => {
     full_name: items.full_name,
     phone: items.phone || "-",
     net_amount: items.net_amount.toLocaleString("vi-VN") || 0,
-    total_invoice_amount: items.total_invoice_amount.toLocaleString("vi-VN") || 0,
+    total_invoice_amount:
+      items.total_invoice_amount.toLocaleString("vi-VN") || 0,
     key: items.id,
   }));
   const handleClickDeleteCustomer = (record: any) => {

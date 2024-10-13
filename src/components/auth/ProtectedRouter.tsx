@@ -1,12 +1,7 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { User } from "../TableConfig/type";
-interface UserInfo {
-  email?: string;
-  role?: { id: string; key: string; name: string };
-  role_id?: number;
-}
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, user } = useAuth();
   const location = useLocation();
@@ -44,7 +39,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     if (role_id === 3) {
       // Role 3 can access all routes except ignoredRoutesForRole3
-      return !ignoredRoutesForRole3.includes(pathname) || allowedRoutesForRole3.includes(pathname);
+      return (
+        !ignoredRoutesForRole3.includes(pathname) ||
+        allowedRoutesForRole3.includes(pathname)
+      );
     }
 
     // Default to no access if role_id is not recognized

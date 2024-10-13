@@ -9,6 +9,12 @@ import React, {
 import category from "../../configs/category";
 import products from "../../configs/products";
 
+interface UserInfo {
+  email?: string;
+  role?: { id: string; key: string; name: string };
+  role_id?: number;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   accessToken: string | null;
@@ -17,7 +23,7 @@ interface AuthContextType {
   isResDataChild: string;
   isResDataChildSeconds: string;
   isCategoryProduct: object;
-  user: object | null;
+  user: UserInfo | null;
   setIsResDataChild: (value: string) => void;
   setIsResDataChildSeconds: (value: string) => void;
   login: (access_token: string, refresh_token: string) => void;
@@ -28,16 +34,11 @@ interface AuthContextType {
   fetchDataCategorySecondChild: (isKeyChild: string | undefined) => void;
   fetchDataCategory: () => void;
 }
-interface UserInfo {
-  email?: string;
-  role?: { id: string; key: string; name: string };
-  role_id?: number;
-}
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(() => {
     return localStorage.getItem("access_token");
-  });
+  }); //@ts-ignore
   const [refresh_token, setRefresh_token] = useState<string | null>(() => {
     return localStorage.getItem("refresh_token");
   });
@@ -45,10 +46,12 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isResDataChild, setIsResDataChild] = useState("");
   const [isResDataChildSeconds, setIsResDataChildSeconds] = useState("");
   const [isCategoryProduct, setIsCategoryProduct] = useState([]);
-  const [user, setUser] = useState<UserInfo | null>(() => {
-    const storedInfo = localStorage.getItem("INFO_USER");
-    return storedInfo ? JSON.parse(storedInfo) : null;
-  });
+  const [user, setUser] = useState<UserInfo | null>(
+    (() => {
+      const storedInfo = localStorage.getItem("INFO_USER");
+      return storedInfo ? JSON.parse(storedInfo) : null;
+    })()
+  );
   const login = (access_token: string, refresh_token: string) => {
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
@@ -117,7 +120,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
-  const fetchDataCategorySecondChild = async (isKeyChild: string | undefined) => {
+  const fetchDataCategorySecondChild = async (
+    isKeyChild: string | undefined
+  ) => {
     try {
       const res = await category.getAllChildThirds(isKeyChild);
 

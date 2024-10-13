@@ -20,8 +20,9 @@ const DeletePayment: React.FC<ModalDeletePaymentProps> = ({
     const idDelete = idDeletePayment;
     setLoadingData(true);
     try {
-      const res = await payments.deletePayment(idDelete);
+      const res = await payments.deletePayment(idDelete); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const msSuccess = res.message.text;
         onCloseModal();
         toast.success(msSuccess);

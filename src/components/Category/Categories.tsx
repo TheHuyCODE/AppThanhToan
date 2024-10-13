@@ -1,25 +1,22 @@
 import { CiSearch } from "react-icons/ci";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import "./CatalogManagement.css";
 import "../styles/valiables.css";
+import "./CatalogManagement.css";
 
-import { Pagination } from "antd";
-import { Space, Table } from "antd";
-import uploadApiImage from "../../configs/uploadApiImage";
+import { Pagination, Space, Table } from "antd";
+import { format } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
 import category from "../../configs/category";
-import { format } from "date-fns";
-import { IoIosArrowForward } from "react-icons/io";
+import uploadApiImage from "../../configs/uploadApiImage";
 // import PopupAdditem from "../listitem/PopupAddItem";
-import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal } from "antd";
-import ChildrenCategory from "./Children_catagory";
-import { useAuth } from "../auth/AuthContext";
-import { localCategorySeconds } from "../TableConfig/TableConfig";
-import useDebounce from "../auth/useDebounce";
 import TextArea from "antd/es/input/TextArea";
-import { handleError } from "../../utils/errorHandler";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { handleError } from "../../utils/errorHandler";
+import { useAuth } from "../auth/AuthContext";
+import useDebounce from "../auth/useDebounce";
+import { localCategorySeconds } from "../TableConfig/TableConfig";
 import TitleCategories from "./TitleCategories";
 interface CategoriesProp {
   selectedCategory: string;
@@ -43,10 +40,10 @@ const Categories: React.FC<CategoriesProp> = ({
   const [dataCategory, setDataCategory] = useState("");
   const [isOpenModalDetele, setIsOpenModalDelete] = useState(false);
   const [isOpenModalModify, setIsOpenModalModify] = useState(false);
-  const [isDataCategory, setIsDataCategory] = useState([]);
+  const [isDataCategory, setIsDataCategory] = useState([]); //@ts-ignore
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [isDescribe, setIsDescribe] = useState("");
+  const [isDescribe, setIsDescribe] = useState(""); //@ts-ignore
   const [isKeyChild, setIsKeyChild] = useState("");
   const [totaCategory, setTotalCategory] = useState(0);
   //editing item
@@ -63,6 +60,7 @@ const Categories: React.FC<CategoriesProp> = ({
   //Clear value categories
   const clearInputs = () => {
     if (nameRef.current) {
+      //@ts-ignore
       nameRef.current.value = "";
     }
     setIsDescribe("");
@@ -84,7 +82,9 @@ const Categories: React.FC<CategoriesProp> = ({
       setEditItem({ ...editItem, name: value });
     }
   };
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onChangeInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const value = e.target.value;
     setIsDescribe(value);
     if (editDescription) {
@@ -107,8 +107,10 @@ const Categories: React.FC<CategoriesProp> = ({
     setLoading(true);
     try {
       const res = await category.deleteCategory(keyItem);
+      //@ts-ignore
       if (res.code === 200) {
         console.log("res:", res);
+        //@ts-ignore
         const successMs = res.message.text;
         toast.success(successMs); // Fetch the updated data after deletion
         setIsOpenModalDelete(!isOpenModalDetele);
@@ -140,8 +142,12 @@ const Categories: React.FC<CategoriesProp> = ({
     const idModifyItems = editItem.key;
     setLoading(true);
     try {
-      const res = await category.putModifyCategory(idModifyItems, dataPutCategory);
+      const res = await category.putModifyCategory(
+        idModifyItems,
+        dataPutCategory
+      ); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const msSuccess = res.message.text;
         toast.success(msSuccess); // Fetch the updated data after deletion
         setIsOpenModalModify(!isOpenModalModify);
@@ -253,8 +259,9 @@ const Categories: React.FC<CategoriesProp> = ({
     };
     setLoading(true);
     try {
-      const res = await uploadApiImage.postAddItemCategory(userDataCategory);
+      const res = await uploadApiImage.postAddItemCategory(userDataCategory); //@ts-ignore
       if (res.code == 200) {
+        //@ts-ignore
         const successMs = res.message.text;
         await fetchDataCategory();
         toast.success(successMs);
@@ -329,7 +336,7 @@ const Categories: React.FC<CategoriesProp> = ({
   }, [debounceValue]);
   useEffect(() => {
     fetchDataCategory();
-  }, []);
+  }, []); //@ts-ignore
   const dataTable = isDataCategory.items?.map((item, index) => ({
     stt: index + 1,
     key: item.id,
@@ -351,7 +358,10 @@ const Categories: React.FC<CategoriesProp> = ({
       <div className="header-customers">
         <div className="header-left">
           <div className="header-left-top">
-            <div className="search-product" style={{ display: "flex", position: "relative" }}>
+            <div
+              className="search-product"
+              style={{ display: "flex", position: "relative" }}
+            >
               <CiSearch
                 style={{
                   position: "absolute",
@@ -492,13 +502,13 @@ const Categories: React.FC<CategoriesProp> = ({
             fontFamily: "Montserrat ,sans-serif",
           }}
         >
-          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và sản
-          phẩm đã link với danh mục sẽ bị xóa.
+          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh
+          mục cấp con và sản phẩm đã link với danh mục sẽ bị xóa.
         </p>
       </Modal>
       {/* {viewTable ? ( */}
       <div className="table-container">
-        <Table
+        <Table //@ts-ignore
           columns={columnsWithClick}
           dataSource={dataTable}
           locale={localCategorySeconds}

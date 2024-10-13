@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoPerson } from "react-icons/io5";
-import "./profile.css";
 import { DataProfile } from "../TableConfig/TableConfig";
+import "./profile.css";
 // import "../styles/variables.css";
 
 interface User extends DataProfile {
@@ -11,7 +11,7 @@ interface User extends DataProfile {
   // Thêm các thuộc tính khác nếu cần
 }
 
-const HeaderProfile: React.FC<DataProfile> = ({ dataProfile }) => {
+const HeaderProfile: React.FC<any> = ({ dataProfile }) => {
   const [fullName, setFullName] = useState<User | null>(null);
   const [detailName, setDetailName] = useState("");
   useEffect(() => {

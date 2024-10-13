@@ -4,7 +4,7 @@ export const useAuth = () => {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const storedToken: string | null = localStorage.getItem("access_token");
+    const storedToken: string | null = localStorage.getItem("access_token"); //@ts-ignore
     setToken(storedToken);
   }, []);
 

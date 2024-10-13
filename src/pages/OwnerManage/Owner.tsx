@@ -1,22 +1,22 @@
 import { Space, Table, TableColumnsType } from "antd";
-import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import owners from "../../configs/owner";
-import TitleOwner from "./TilteOwner";
-import HeaderContent from "../../components/HeaderComponent/HeaderContent";
-import { localOwners } from "../../components/TableConfig/TableConfig";
-import ErrorModal from "../../components/ErrorApi/ErrorApi";
+import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { FaLock, FaLockOpen } from "react-icons/fa6";
-import ModalAddOwners from "./ModalAddOwners";
+import { toast, ToastContainer } from "react-toastify";
+import ErrorModal from "../../components/ErrorApi/ErrorApi";
+import HeaderContent from "../../components/HeaderComponent/HeaderContent";
+import { localOwners } from "../../components/TableConfig/TableConfig";
+import owners from "../../configs/owner";
 import { handleError } from "../../utils/errorHandler";
+import ModalAddOwners from "./ModalAddOwners";
 import ModalDeleteOwners from "./ModalDeleteOwners";
-import { format } from "date-fns";
 import ModalModifyOwners from "./ModalModifyOwners";
+import TitleOwner from "./TilteOwner";
 
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
-import ModalRejectOwners from "./ModalRejectOwners";
 import ComponentSort from "../../components/UI/ComponentSort";
+import ModalRejectOwners from "./ModalRejectOwners";
 
 interface RecordType {
   stt: number;
@@ -32,7 +32,7 @@ interface RecordType {
 }
 const Owner = () => {
   const titleSearch = "Tìm kiếm chủ cửa hàng";
-  const nameButtonAdd = "Thêm chủ cửa hàng";
+  // const nameButtonAdd = "Thêm chủ cửa hàng";
   const titleName = "Quản lý chủ cửa hàng";
   const titleDelete = "Xóa chủ sở hữu";
   const titleReject = "Từ chối cấp tài khoản chủ sở hữu";
@@ -95,6 +95,7 @@ const Owner = () => {
     try {
       const res = await owners.putLockOwners(data, id);
       console.log("res", res.data);
+      //@ts-ignore
       const textSuccess = res.message.text;
       toast.success(textSuccess);
       setLoading(false);
@@ -188,7 +189,11 @@ const Owner = () => {
     {
       // title: "Họ và tên",
       title: (
-        <ComponentSort title="Họ và tên" sortKey="full_name" sortDataCustomer={sortDataCustomer} />
+        <ComponentSort
+          title="Họ và tên"
+          sortKey="full_name"
+          sortDataCustomer={sortDataCustomer}
+        />
       ),
       dataIndex: "full_name",
       key: "full_name",
@@ -196,7 +201,13 @@ const Owner = () => {
       // width: 150,
     },
     {
-      title: <ComponentSort title="Email" sortKey="email" sortDataCustomer={sortDataCustomer} />,
+      title: (
+        <ComponentSort
+          title="Email"
+          sortKey="email"
+          sortDataCustomer={sortDataCustomer}
+        />
+      ),
       dataIndex: "email",
       key: "email",
       align: "start",
@@ -255,7 +266,11 @@ const Owner = () => {
               fontWeight: "600",
             }}
           >
-            {status === 0 ? "Chờ phê duyệt" : status === 1 ? "Đã phê duyệt" : "Bị hủy"}
+            {status === 0
+              ? "Chờ phê duyệt"
+              : status === 1
+              ? "Đã phê duyệt"
+              : "Bị hủy"}
           </span>
         );
       },
@@ -315,7 +330,10 @@ const Owner = () => {
                 />
               </a>
               <a>
-                <FaPencilAlt title="Sửa" onClick={() => handClickOpenModalModifyOwners(record)} />
+                <FaPencilAlt
+                  title="Sửa"
+                  onClick={() => handClickOpenModalModifyOwners(record)}
+                />
               </a>
               {record.is_active ? (
                 <a>
@@ -350,7 +368,8 @@ const Owner = () => {
     key: items.id,
     is_active: items.is_active,
     status: items.status,
-    created_date: format(new Date(items.created_date * 1000), "dd/MM/yyyy") || "-",
+    created_date:
+      format(new Date(items.created_date * 1000), "dd/MM/yyyy") || "-",
   }));
   return (
     <>
