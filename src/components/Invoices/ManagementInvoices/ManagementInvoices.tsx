@@ -193,10 +193,7 @@ const ManagementInvoices: React.FC = () => {
             <FaEye onClick={() => handleClickDetailInvoices(record)} />
           </a>
           <a>
-            <FaTrash
-              style={{ color: "red" }}
-              onClick={() => handleClickDeleteInvoices(record)}
-            />
+            <FaTrash style={{ color: "red" }} onClick={() => handleClickDeleteInvoices(record)} />
           </a>
         </Space>
       ),
@@ -241,6 +238,7 @@ const ManagementInvoices: React.FC = () => {
     product: items.product,
     discount: items.discount.toLocaleString("vi-VN") || 0,
     total_product: items.total_product,
+    total_after_discount: items.total_after_discount.toLocaleString("vi-VN") || 0,
     refund: items.refund,
     key: items.id,
   }));

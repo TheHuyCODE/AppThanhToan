@@ -129,14 +129,7 @@ const InventoryReport = () => {
       align: "center",
       // width: 180,
     },
-    {
-      title: getColumnTitle(`Số lượng tồn kho`, "inventory_number"),
-      dataIndex: "inventory_number",
-      key: "inventory_number",
-      align: "center",
 
-      // width: 130,
-    },
     {
       title: getColumnTitle(`Giá bán`, "price"),
       dataIndex: "price",
@@ -150,6 +143,14 @@ const InventoryReport = () => {
       key: "unit",
       align: "start",
       width: 140,
+    },
+    {
+      title: getColumnTitle(`Số lượng tồn kho`, "inventory_number"),
+      dataIndex: "inventory_number",
+      key: "inventory_number",
+      align: "center",
+
+      // width: 130,
     },
     {
       title: getColumnTitle(`Giá gốc`, "capital_price"),
@@ -171,11 +172,7 @@ const InventoryReport = () => {
         }
         return (
           <Tag color={color}>
-            {status === 0
-              ? "Hết hàng"
-              : status === 1
-              ? "Sắp hết hàng"
-              : "Bình thường"}
+            {status === 0 ? "Hết hàng" : status === 1 ? "Sắp hết hàng" : "Bình thường"}
           </Tag>
         );
       },
@@ -209,33 +206,30 @@ const InventoryReport = () => {
       setLoading(false);
     }
   };
-  const dataTableInventory: RecordType[] = dataInventory.map(
-    (item: any, index: number) => ({
-      stt: index + 1,
-      key: item.id,
-      barcode: item.barcode,
-      name: item.name,
-      inventory_number: item.inventory_number,
-      capital_price: item.capital_price.toLocaleString("vi-VN") || 0,
-      price: item.price.toLocaleString("vi-VN") || 0,
-      unit: item.unit,
-      status: item.status,
-    })
-  );
+  const dataTableInventory: RecordType[] = dataInventory.map((item: any, index: number) => ({
+    stt: index + 1,
+    key: item.id,
+    barcode: item.barcode,
+    name: item.name,
+    inventory_number: item.inventory_number,
+    capital_price: item.capital_price.toLocaleString("vi-VN") || 0,
+    price: item.price.toLocaleString("vi-VN") || 0,
+    unit: item.unit,
+    status: item.status,
+  }));
   const summary = () => {
     return (
       <Table.Summary.Row>
-        <Table.Summary.Cell index={0} colSpan={3}>
+        <Table.Summary.Cell index={0} colSpan={5}>
           <strong>Tổng cộng</strong>
         </Table.Summary.Cell>
-        <Table.Summary.Cell index={1} align="center" colSpan={1}>
+        <Table.Summary.Cell index={5} align="center">
           <strong>{dataTotalInventory?.total_inventory || 0}</strong>
         </Table.Summary.Cell>
-        <Table.Summary.Cell index={5} align="center" colSpan={10}>
-          <strong>
-            {dataTotalInventory?.total_value?.toLocaleString("vi-VN") || 0}
-          </strong>
+        <Table.Summary.Cell index={6} align="center">
+          <strong>{`${dataTotalInventory?.total_value?.toLocaleString("vi-VN") || 0} đ`}</strong>
         </Table.Summary.Cell>
+        <Table.Summary.Cell index={7} />
       </Table.Summary.Row>
     );
   };

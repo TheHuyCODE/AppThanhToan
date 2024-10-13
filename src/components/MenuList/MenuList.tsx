@@ -1,5 +1,6 @@
 import { Menu, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { FaFileInvoiceDollar, FaRegUserCircle } from "react-icons/fa";
 import { FaArrowRightFromBracket, FaBagShopping, FaPeopleGroup } from "react-icons/fa6";
@@ -9,7 +10,6 @@ import { RiListSettingsFill } from "react-icons/ri";
 
 import { CiBank } from "react-icons/ci";
 import { TiArrowBack } from "react-icons/ti";
-import { Link } from "react-router-dom";
 import logoutApi from "../../configs/logoutApi";
 import { useAuth } from "../auth/AuthContext";
 import "./MenuList.css";
@@ -19,24 +19,32 @@ import "./MenuList.css";
 const MenuList: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { accessToken, logout, user } = useAuth();
-  // const [user, setUser] = useState<UserInfo | null>(null);
-  let defaultSelectedKey = "1"; // Default key
-  if (user?.role_id === 1) {
-    defaultSelectedKey = "owner_management"; // Sáng "Quản lý chủ cửa hàng" cho role_id === 1
-  } else if (user?.role_id === 3) {
-    defaultSelectedKey = "3"; // Sáng "Quản lý sản phẩm" cho role_id === 3
-  } else if (user?.role_id === 5) {
-    defaultSelectedKey = "2"; // Sáng "Quản lý sản phẩm" cho role_id === 3
-  } else if (user?.role_id === 4) {
-    defaultSelectedKey = "sub1"; // Sáng "Quản lý sản phẩm" cho role_id === 3
-  }
-  // useEffect(() => {
-  //   const storedInfo = localStorage.getItem("INFO_USER");
-  //   if (storedInfo) {
-  //     const info: UserInfo = JSON.parse(storedInfo);
-  //     setUser(info);
-  //   }
-  // }, []);
+  const location = useLocation();
+
+  const getSelectedKey = (pathname: string) => {
+    if (pathname === "/admin/profile") return "2";
+    if (pathname === "/SalesPage") return "1";
+    if (pathname === "/admin/revenuereport") return "3";
+    if (pathname === "/admin/inventory") return "4";
+    if (pathname === "/admin/invoices") return "invoices";
+    if (pathname === "/admin/returns") return "returns";
+    if (pathname === "/admin/users") return "User_management";
+    if (pathname === "/admin/products") return "Product_management_child";
+    if (pathname === "/admin/categories") return "categories";
+    if (pathname === "/admin/customers") return "customer_management";
+    if (pathname === "/admin/paymentmethod") return "paymentmethod";
+    if (pathname === "/admin/owners") return "owner_management";
+    if (pathname === "/admin/storeAdmin") return "store_management";
+    if (pathname === "/admin/manage_store") return "manage_store";
+    // Add more conditions as needed
+    return "";
+  };
+
+  const [selectedKey, setSelectedKey] = useState(getSelectedKey(location.pathname));
+
+  useEffect(() => {
+    setSelectedKey(getSelectedKey(location.pathname));
+  }, [location.pathname]);
 
   const handleOK = () => {
     const resAccessToken = accessToken;
@@ -185,12 +193,7 @@ const MenuList: React.FC = () => {
   console.log("Filtered menu items:", filteredMenuItems);
   return (
     <div className="sidebar-left">
-      <Menu
-        theme={"light"}
-        mode="inline"
-        className="menu-bar"
-        defaultSelectedKeys={[defaultSelectedKey]}
-      >
+      <Menu theme={"light"} mode="inline" className="menu-bar" selectedKeys={[selectedKey]}>
         {filteredMenuItems.map((item) =>
           item.children ? (
             <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>

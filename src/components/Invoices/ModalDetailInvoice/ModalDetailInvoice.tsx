@@ -1,5 +1,5 @@
 import { Modal, Table, TableColumnsType } from "antd";
-import TextArea from "antd/es/input/TextArea";
+// import TextArea from "antd/es/input/TextArea";
 import React from "react";
 import { localInvoice } from "../../TableConfig/TableConfig";
 interface DetailInvoice {
@@ -14,6 +14,7 @@ interface DetailInvoice {
   refund: number;
   discount: number;
   total_product: number;
+  total_after_discount: number;
   key: string;
   product: [];
 }
@@ -92,6 +93,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
     barcode: items.barcode,
     name: items.name,
     quantity: items.quantity,
+    total_after_discount: items.total_after_discount,
     price: items.price.toLocaleString("vi-VN") || 0,
     capital_price: items.capital_price.toLocaleString("vi-VN") || 0,
     total_amount: 0,
@@ -204,7 +206,7 @@ const ModalDetailInvoice: React.FC<ModalDetailInvoiceProps> = ({
             </div>
             <div className="price-detail-row">
               <span className="">Khách cần trả:</span>
-              <span className="title-price-detail">{dataDetail.customer_money}</span>
+              <span className="title-price-detail">{dataDetail.total_after_discount}</span>
             </div>
             <div className="price-detail-row">
               <span className="">Khách đã trả:</span>
