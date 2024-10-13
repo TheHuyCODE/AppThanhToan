@@ -27,6 +27,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
     email: "",
     phone: "",
     idAuth: 0,
+    is_active: 1, // Mặc định là kích hoạt
   });
   const [isFormValid, setIsFormValid] = useState(false);
   const [emailError, setEmailError] = useState("");
@@ -123,6 +124,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
       email: "",
       phone: "",
       idAuth: 0,
+      is_active: 1,
     });
     setSelectedRole(null);
     setEmailError("");
@@ -142,7 +144,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
       phone: valueInputUser.phone,
       email: valueInputUser.email,
       role_id: valueInputUser.idAuth,
-      is_active: 1,
+      is_active: valueInputUser.is_active,
     };
 
     try {
@@ -164,10 +166,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
 
   const getButtonStyle = () => {
     return {
-      backgroundColor:
-        isFormValid && !isLoading
-          ? "var(--kv-success)"
-          : "rgba(0, 128, 0, 0.5)",
+      backgroundColor: isFormValid && !isLoading ? "var(--kv-success)" : "rgba(0, 128, 0, 0.5)",
       color: "white",
       opacity: isFormValid && !isLoading ? 1 : 0.7,
     };
@@ -219,9 +218,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
                 placeholder="Họ tên"
                 style={{ width: "400px", height: "40px" }}
                 className={
-                  touchedFields.name && nameError && !inputFocused.name
-                    ? "error-input"
-                    : ""
+                  touchedFields.name && nameError && !inputFocused.name ? "error-input" : ""
                 }
               />
               {touchedFields.name && nameError && !inputFocused.name && (
@@ -244,9 +241,7 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
                 placeholder="Email"
                 style={{ width: "400px", height: "40px" }}
                 className={
-                  touchedFields.email && emailError && !inputFocused.email
-                    ? "error-input"
-                    : ""
+                  touchedFields.email && emailError && !inputFocused.email ? "error-input" : ""
                 }
               />
               {touchedFields.email && emailError && !inputFocused.email && (
@@ -287,12 +282,19 @@ const ModalAddUsers: React.FC<ModalAddUsersProps> = ({
           <div className="content-add-user-row">
             <label htmlFor="status">Trạng thái</label>
             <div>
-              <Input
-                type="text"
-                value={statusUser}
-                disabled
+              <Select
+                defaultValue="1"
                 style={{ width: "400px", height: "40px" }}
-              />
+                onChange={(value) => {
+                  setValueInputUser((prevState) => ({
+                    ...prevState,
+                    is_active: value === "1" ? 1 : 0,
+                  }));
+                }}
+              >
+                <Select.Option value="1">Kích hoạt</Select.Option>
+                <Select.Option value="0">Không kích hoạt</Select.Option>
+              </Select>
             </div>
           </div>
         </div>

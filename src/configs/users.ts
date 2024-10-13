@@ -90,8 +90,8 @@ const users = {
       },
     });
   },
-  modifyUser: (data: object) => {
-    const url = "api/v1/manage/user";
+  modifyUser: (data: object, id: string | undefined) => {
+    const url = `api/v1/manage/user/${id}`;
     return axiosClient.put(url, data, {
       headers: {
         // Authorization: `Bearer ${accessToken}`,

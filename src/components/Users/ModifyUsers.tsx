@@ -40,6 +40,13 @@ const ModifyUsers = () => {
     //call api User before navigate to detail
     navigate("/admin/users/");
   };
+  const handleChangeStatus = (value: string) => {
+    setDataStore((prevState) => ({
+      ...prevState,
+      is_active: value === "1",
+    }));
+  };
+
   const handleChangeInputUsers = (value: string | null, filed: string) => {
     setDataStore((prev) => ({
       ...prev,
@@ -62,6 +69,10 @@ const ModifyUsers = () => {
       const data = res.data;
       console.log("data", data);
       setDataStore(data);
+      setDataStore({
+        ...data,
+        id: idProduct, // Thêm dòng này
+      });
     } catch (error) {
       alert(error);
     }
@@ -70,13 +81,13 @@ const ModifyUsers = () => {
     const dataModifyUser = {
       full_name: dataStore.full_name,
       phone: dataStore.phone,
-      email: dataStore.email,
+      // email: dataStore.email,
       role_id: dataStore.role.id,
-      is_active: 1,
+      is_active: dataStore.is_active ? 1 : 0,
     };
     setHiddenSave(true);
     try {
-      const res = await users.modifyUser(dataModifyUser);
+      const res = await users.modifyUser(dataModifyUser, idProduct);
       console.log("res", res);
       setHiddenSave(false);
       const msSuccess = "Sửa thông tin thành công";
@@ -202,12 +213,14 @@ const ModifyUsers = () => {
             <label htmlFor="">
               Trạng thái(<span>*</span>)
             </label>
-            <Input
-              type="text"
-              className="input-form"
-              value={dataStore.is_active ? "Kích hoạt" : "Chưa kích hoạt"}
-              style={{ width: "400px" }}
-            />
+            <Select
+              defaultValue={dataStore.is_active ? "1" : "0"}
+              style={{ width: "400px", height: "40px" }}
+              onChange={handleChangeStatus}
+            >
+              <Select.Option value="1">Kích hoạt</Select.Option>
+              <Select.Option value="0">Không kích hoạt</Select.Option>
+            </Select>
           </div>
           <div className="btn-info">
             <button className="btn-save" onClick={onClickBackPageUser}>
