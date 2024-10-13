@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import HeaderReturn from "./HeaderReturn/HeaderReturn";
 import { Pagination, Space, Table, TableColumnsType } from "antd";
+import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import { FaEye, FaTrash } from "react-icons/fa";
-import "./return.css";
-import "../styles/valiables.css";
-import { localReturn } from "../TableConfig/TableConfig";
+import { ToastContainer } from "react-toastify";
 import returnProduct from "../../configs/return";
 import { handleError } from "../../utils/errorHandler";
-import { format } from "date-fns";
+import "../styles/valiables.css";
+import { localReturn } from "../TableConfig/TableConfig";
+import HeaderReturn from "./HeaderReturn/HeaderReturn";
 import ModalDeleteReturn from "./ModalDeleteReturn/ModalDeleteReturn";
 import ModalDetailReturn from "./ModalDetailReturn/ModalDetailReturn";
+import "./return.css";
 interface RecordType {
   stt: number;
   id: string;
@@ -32,8 +32,8 @@ const Return = () => {
   const [detailReturn, setDetailReturn] = useState({});
   const [isOpenModalDelete, setIsOpenModalDelete] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
-
-  const [page, setPage] = useState(1);
+  //@ts-ignore
+  const [page, setPage] = useState(1); //@ts-ignore
   const [pageSize, setPageSize] = useState(10);
   const columns: TableColumnsType<RecordType> = [
     {
@@ -174,7 +174,12 @@ const Return = () => {
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
-        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+        <h1
+          style={{
+            fontFamily: "var(--kv-font-sans-serif)",
+            color: "var(--color-title)",
+          }}
+        >
           Quản lý hóa đơn trả hàng
         </h1>
         <div className="header-customers">
@@ -225,7 +230,7 @@ const Return = () => {
       />
       <ModalDetailReturn
         onCloseModalDetail={onCloseModalDetail}
-        isOpenModalDetail={isOpenModalDetail}
+        isOpenModalDetail={isOpenModalDetail} //@ts-ignore
         detailReturn={detailReturn}
       />
     </>

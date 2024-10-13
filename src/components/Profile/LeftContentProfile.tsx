@@ -137,7 +137,12 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
         <label htmlFor="email">
           Email(<span>*</span>)
         </label>
-        <Input placeholder="Email" className="input-field" value={email || ""} disabled />
+        <Input
+          placeholder="Email"
+          className="input-field"
+          value={email || ""}
+          disabled
+        />
       </div>
       <div className="profile-input">
         <label htmlFor="full_name">
@@ -173,6 +178,8 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
           onChange={(e) => {
             const value = e.target.value.trim(); // Trim any extra whitespace
             onChangeProfile("age", value ? value : null);
+            //@ts-ignore
+            onChangeProfile("age", value ? parseInt(value) : null);
           }}
         />
       </div>

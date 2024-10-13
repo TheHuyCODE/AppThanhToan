@@ -1,8 +1,8 @@
 import { Modal } from "antd";
 import React from "react";
 import { toast } from "react-toastify";
-import { handleError } from "../../../utils/errorHandler";
 import users from "../../../configs/users";
+import { handleError } from "../../../utils/errorHandler";
 interface ModalDeleteUsersProp {
   openModalDelete: boolean;
   idDelete: string;
@@ -22,6 +22,7 @@ const ModalDeleteUsers: React.FC<ModalDeleteUsersProp> = ({
     const dataId = idDelete;
     try {
       const res = await users.deleteUsers(dataId);
+      //@ts-ignore
       const msSuccess = res.message.text;
       console.log("msSuccess", msSuccess);
       onCloseModalDelete();

@@ -1,12 +1,12 @@
 import { Alert, Input, Select } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import users from "../../configs/users";
+import { handleError } from "../../utils/errorHandler";
 import "../styles/valiables.css";
 import "./User.css";
-import users from "../../configs/users";
-import { toast, ToastContainer } from "react-toastify";
-import { handleError } from "../../utils/errorHandler";
 interface ModifyUsers {
   full_name: string;
   email: string;
@@ -16,7 +16,7 @@ interface ModifyUsers {
 }
 const ModifyUsers = () => {
   const navigate = useNavigate();
-  const [dataRole, setDataRole] = useState(null);
+  const [dataRole, setDataRole] = useState<any>(null);
   const [hiddenSave, setHiddenSave] = useState(false);
   const params = useParams<{ userId: string }>();
   const [dataStore, setDataStore] = useState<ModifyUsers>({
@@ -153,7 +153,9 @@ const ModifyUsers = () => {
               type="text"
               className="input-form"
               style={{ width: "400px" }}
-              onChange={(e) => handleChangeInputUsers(e.target.value, "full_name")}
+              onChange={(e) =>
+                handleChangeInputUsers(e.target.value, "full_name")
+              }
               value={dataStore.full_name || ""}
             />
           </div>

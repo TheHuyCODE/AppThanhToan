@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import "./ProductManagement.css";
 import "../styles/valiables.css";
+import "./ProductManagement.css";
 // import uploadApiImage from "../../configs/uploadApiImage";
-import { Select, Table, Space, Modal, Pagination, TreeSelect } from "antd";
+import { Modal, Pagination, Select, Space, Table, TreeSelect } from "antd";
+import { format } from "date-fns";
 import {
   FaArrowAltCircleDown,
   FaArrowDown,
@@ -12,19 +13,18 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import products from "../../configs/products";
-import { useAuth } from "../auth/AuthContext";
-import { format } from "date-fns";
-import { ToastContainer, toast } from "react-toastify";
-import { localeProduct } from "../TableConfig/TableConfig";
-import useDebounce from "../auth/useDebounce";
 import { IoMdAdd } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import products from "../../configs/products";
 import { handleError } from "../../utils/errorHandler";
+import { localeProduct } from "../TableConfig/TableConfig";
+import { useAuth } from "../auth/AuthContext";
+import useDebounce from "../auth/useDebounce";
 
-import ButtonExportToExcel from "../UI/ButtonExport";
 import { FILE_NAME_EXPORT, LINK_EXPORT } from "../../constants/constants";
 import { getDateTimeNow } from "../../constants/functionContants";
+import ButtonExportToExcel from "../UI/ButtonExport";
 interface TreeDataNode {
   id: string;
   pId: string | null;
@@ -52,7 +52,7 @@ const Products = () => {
   const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [valueSearch, setValueSearch] = useState("");
-  const debounceValue = useDebounce(valueSearch, 700);
+  const debounceValue = useDebounce(valueSearch, 700); //@ts-ignore
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -96,7 +96,7 @@ const Products = () => {
   const getColumnTitle = (title: string, key: string) => (
     <div
       className="table-header"
-      onClick={() => handleHeaderClick(key)}
+      onClick={() => handleHeaderClick(key)} //@ts-ignore
       onMouseEnter={() => setHoveredColumn(key)}
       onMouseLeave={() => setHoveredColumn(null)}
       // style={{ position: "relative", width: width }}
@@ -150,6 +150,7 @@ const Products = () => {
       products
         .getImportFile(formData)
         .then((res) => {
+          //@ts-ignore
           if (res.code === 200) {
             // const data = res.data.file_url;
             console.log("data", res);
@@ -183,7 +184,7 @@ const Products = () => {
     setDeleteItemProduct(record);
   };
   //search product by category
-
+  //@ts-ignore
   const treeData = isCategoryProduct.map((item: any) => ({
     id: item.id,
     pId: null,
@@ -294,7 +295,7 @@ const Products = () => {
     console.log("handleDeleteProduct");
     const keyItemsProduct = deleteItemProduct.key;
     if (keyItemsProduct) {
-      const res = await products.deleteProduct(keyItemsProduct);
+      const res = await products.deleteProduct(keyItemsProduct); //@ts-ignore
       if (res.code === 200) {
         setOpenModalDeleteProduct(!openModalDeleteProduct);
         toast.success("Đã xóa sản phẩm thành công");
@@ -323,7 +324,9 @@ const Products = () => {
   };
   const fetchDataSearchProduct = async () => {
     setLoading(true);
-    const res = await products.getDataSearchNameProductNotIsActive(debounceValue);
+    const res = await products.getDataSearchNameProductNotIsActive(
+      debounceValue
+    ); //@ts-ignore
     if (res.code === 200) {
       setDataProduct(res.data);
       setLoading(false);
@@ -344,7 +347,9 @@ const Products = () => {
   const fetchSearchDataCategory = async () => {
     if (idSearchCategory.id_category) {
       // Check if idSearchCategory is not empty
-      const res = await products.getDataSearchProduct(idSearchCategory.id_category);
+      const res = await products.getDataSearchProduct(
+        idSearchCategory.id_category
+      ); //@ts-ignore
       if (res.code === 200) {
         console.log(res.data);
         setDataProduct(res.data);
@@ -380,7 +385,9 @@ const Products = () => {
 
   const fetchSearchDataActive = async () => {
     if (stateActiveProduct.is_active) {
-      const res = await products.getDataSearchProductActive(stateActiveProduct.is_active);
+      const res = await products.getDataSearchProductActive(
+        stateActiveProduct.is_active
+      ); //@ts-ignore
       if (res.code === 200) {
         console.log(res.data);
         setDataProduct(res.data);
@@ -405,7 +412,10 @@ const Products = () => {
     const fetchSortDataProduct = async () => {
       if (sortedColumn.key) {
         // Check if idSearchCategory is not empty
-        const res = await products.getDataSortProduct(sortedColumn.key, sortedColumn.direction);
+        const res = await products.getDataSortProduct(
+          sortedColumn.key,
+          sortedColumn.direction
+        ); //@ts-ignore
         if (res.code === 200) {
           console.log(res.data);
           setDataProduct(res.data);
@@ -418,7 +428,7 @@ const Products = () => {
     };
     fetchSortDataProduct();
   }, [stateActiveProduct.is_active]);
-
+  //@ts-ignore
   const datatable = dataProduct.items?.map((item: any, index: number) => ({
     stt: index + 1,
     key: item.id,
@@ -451,7 +461,7 @@ const Products = () => {
       title: getColumnTitle(`Mã vạch`, "barcode"),
       dataIndex: "barcode",
       key: "barcode",
-      align: "center",
+      align: "start",
       width: 130,
       fixed: "left",
     },
@@ -489,7 +499,6 @@ const Products = () => {
       dataIndex: "inventory_number",
       key: "inventory_number",
       width: 140,
-      align: "center",
     },
 
     {
@@ -667,7 +676,7 @@ const Products = () => {
         </Modal>
       </div>
       <div className="table-container">
-        <Table
+        <Table //@ts-ignore
           columns={columns}
           height={900}
           dataSource={datatable}
@@ -697,6 +706,7 @@ const Products = () => {
             total={totalItems}
           />
           <span className="total-items" style={{ color: "var(--cl-dark)" }}>
+            {/* @ts-ignore */}
             {`${dataProduct.total || 0} `}sản phẩm
           </span>
         </div>

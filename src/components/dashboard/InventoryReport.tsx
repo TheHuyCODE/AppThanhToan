@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import HeaderInventory from "./HeaderInventory";
 import { Pagination, Table, TableColumnsType, Tag } from "antd";
+import { useEffect, useState } from "react";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
 import products from "../../configs/products";
 import { handleError } from "../../utils/errorHandler";
 import { localeProduct } from "../TableConfig/TableConfig";
+import HeaderInventory from "./HeaderInventory";
 interface RecordType {
   stt: number;
   key: string;
@@ -26,12 +26,15 @@ interface totalType {
 }
 const InventoryReport = () => {
   const [loading, setLoading] = useState(false);
-  const [dataInventory, setDataInventory] = useState([]);
+  const [dataInventory, setDataInventory] = useState([]); //@ts-ignore
   const [dataTotalInventory, setDataTotalInventory] = useState<totalType>({});
-  const [totalProduct, setTotalProduct] = useState(0);
+  const [totalProduct, setTotalProduct] = useState(0); //@ts-ignore
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortedColumn, setSortedColumn] = useState<SortState>({ key: null, direction: null });
+  const [sortedColumn, setSortedColumn] = useState<SortState>({
+    key: null,
+    direction: null,
+  });
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const sortDataInventory = async (colName: string, typeSort: string) => {
     setLoading(true);
@@ -66,6 +69,7 @@ const InventoryReport = () => {
     <div
       className="table-header"
       onClick={() => handleHeaderClick(key)}
+      //@ts-ignore
       onMouseEnter={() => setHoveredColumn(key)}
       onMouseLeave={() => setHoveredColumn(null)}
       // style={{ position: "relative", width: width }}
@@ -167,7 +171,11 @@ const InventoryReport = () => {
         }
         return (
           <Tag color={color}>
-            {status === 0 ? "Hết hàng" : status === 1 ? "Sắp hết hàng" : "Bình thường"}
+            {status === 0
+              ? "Hết hàng"
+              : status === 1
+              ? "Sắp hết hàng"
+              : "Bình thường"}
           </Tag>
         );
       },
@@ -201,17 +209,19 @@ const InventoryReport = () => {
       setLoading(false);
     }
   };
-  const dataTableInventory: RecordType[] = dataInventory.map((item: any, index: number) => ({
-    stt: index + 1,
-    key: item.id,
-    barcode: item.barcode,
-    name: item.name,
-    inventory_number: item.inventory_number,
-    capital_price: item.capital_price.toLocaleString("vi-VN") || 0,
-    price: item.price.toLocaleString("vi-VN") || 0,
-    unit: item.unit,
-    status: item.status,
-  }));
+  const dataTableInventory: RecordType[] = dataInventory.map(
+    (item: any, index: number) => ({
+      stt: index + 1,
+      key: item.id,
+      barcode: item.barcode,
+      name: item.name,
+      inventory_number: item.inventory_number,
+      capital_price: item.capital_price.toLocaleString("vi-VN") || 0,
+      price: item.price.toLocaleString("vi-VN") || 0,
+      unit: item.unit,
+      status: item.status,
+    })
+  );
   const summary = () => {
     return (
       <Table.Summary.Row>
@@ -222,7 +232,9 @@ const InventoryReport = () => {
           <strong>{dataTotalInventory?.total_inventory || 0}</strong>
         </Table.Summary.Cell>
         <Table.Summary.Cell index={5} align="center" colSpan={10}>
-          <strong>{dataTotalInventory?.total_value?.toLocaleString("vi-VN") || 0}</strong>
+          <strong>
+            {dataTotalInventory?.total_value?.toLocaleString("vi-VN") || 0}
+          </strong>
         </Table.Summary.Cell>
       </Table.Summary.Row>
     );
@@ -231,7 +243,12 @@ const InventoryReport = () => {
   return (
     <div className="content">
       <ToastContainer closeOnClick autoClose={5000} />
-      <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+      <h1
+        style={{
+          fontFamily: "var(--kv-font-sans-serif)",
+          color: "var(--color-title)",
+        }}
+      >
         Quản lý tồn kho
       </h1>
       <div className="header-customers">

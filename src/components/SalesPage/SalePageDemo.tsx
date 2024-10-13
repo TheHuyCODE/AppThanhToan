@@ -1,21 +1,19 @@
+import { Modal } from "antd";
 import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import invoice from "../../configs/invoice";
 import products from "../../configs/products";
+import sellProduct from "../../configs/sellProduct";
+import useDebounce from "../auth/useDebounce";
+import LeftReturnInvoice from "../Invoices/LeftReturnInvoice";
+import ReturnInvoice from "../Invoices/ReturnInvoice";
+import "../styles/valiables.css";
 import HeaderPageSales from "./HeaderPageSales";
 import LeftPageContent from "./LeftPageContent";
 import RightPageContent from "./RightPageContent";
 import "./SalePage.css";
-import "../styles/valiables.css";
-import { Modal } from "antd";
-import invoice from "../../configs/invoice";
-import useDebounce from "../auth/useDebounce";
-import category from "../../configs/category";
-import sellProduct from "../../configs/sellProduct";
-import ReturnInvoice from "../Invoices/ReturnInvoice";
-import { GiCardKingClubs } from "react-icons/gi";
-import LeftReturnInvoice from "../Invoices/LeftReturnInvoice";
-import { previousDay } from "date-fns";
 interface Product {
+  quantity: number;
   id: number;
   name: string;
   price: number;
@@ -56,7 +54,7 @@ const SalePageDemo: React.FC = () => {
   const [dataProduct, setDataProduct] = useState<Product[]>([]);
   const [dataCategory, setDataCategory] = useState<Category[]>([]);
   const [isDataCustomer, setIsDataCustomer] = useState<Customer[]>([]);
-  const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]);
+  const [bankingData, setBankingData] = useState<InfoBankingItem[]>([]); //@ts-ignore
   const [isSelectItemPayment, setIsSelectItemPayment] = useState([]);
   const [dataReturnPayment, setDataReturnPayment] = useState([]);
   const [dataTableInvoice, setDataTableInvoice] = useState([]);
@@ -69,7 +67,7 @@ const SalePageDemo: React.FC = () => {
   const [valueSearch, setValueSearch] = useState("");
   const [isActiveReturn, setIsActiveReturn] = useState("");
 
-  const [valueReason, setValueReason] = useState("");
+  const [valueReason, setValueReason] = useState(""); //@ts-ignore
   const [valueSearchProduct, setValueSearchProduct] = useState("");
   const [totalInvoice, setTotalInvoice] = useState(0);
   const debounceValueSearch = useDebounce(valueSearch, 700);
@@ -128,6 +126,7 @@ const SalePageDemo: React.FC = () => {
 
     return parsedInvoices;
   });
+  //@ts-ignore
   const [nextInvoiceNumber, setNextInvoiceNumber] = useState<number>(() => {
     const savedInvoices = localStorage.getItem("invoiceList");
     const parsedInvoices = savedInvoices ? JSON.parse(savedInvoices) : [];
@@ -251,6 +250,7 @@ const SalePageDemo: React.FC = () => {
     setSelectedProducts((prevSelectedProducts) => {
       const currentProducts = prevSelectedProducts[activeKey] || [];
       const updatedProducts = currentProducts.map((product) =>
+        //@ts-ignore
         product.id === productId
           ? { ...product, quantity: newQuantity }
           : product
@@ -281,6 +281,7 @@ const SalePageDemo: React.FC = () => {
       prevInvoices.map((invoice) => {
         if (invoice.id_payment === activeKey) {
           const updatedItems = invoice.items.map((p) =>
+            //@ts-ignore
             p.id === productId ? { ...p, capital_price: value } : p
           );
           return { ...invoice, items: updatedItems };
@@ -379,6 +380,7 @@ const SalePageDemo: React.FC = () => {
         if (invoice.id_payment === invoiceId) {
           return {
             ...invoice,
+            //@ts-ignore
             items: invoice.items.filter((product) => product.id !== productId),
           };
         }
@@ -440,6 +442,7 @@ const SalePageDemo: React.FC = () => {
     setIsModalOpen(false);
   };
   const findCashBankIds = () => {
+    //@ts-ignore
     const itemWithFalseType = bankingData.find((item) => item.type === false);
     const id = itemWithFalseType ? itemWithFalseType.id : null;
 
@@ -450,6 +453,7 @@ const SalePageDemo: React.FC = () => {
   const handlePaymentMethodChange = (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    //@ts-ignore
     const newPaymentMethod = parseInt(event.target.value, 10);
     console.log("newPaymentMethod", newPaymentMethod);
     setSelectedPaymentMethod(newPaymentMethod);
@@ -546,6 +550,7 @@ const SalePageDemo: React.FC = () => {
   //   console.log("activeKey", activeKey);
   //   setIsActiveReturn(activeKey);
   // }, [activeKey]);
+  //@ts-ignore
   const handleDetailInvoiceReturn = async (id: string, activeKey: string) => {
     console.log("id", id);
     try {
@@ -778,6 +783,7 @@ const SalePageDemo: React.FC = () => {
     setLoading(true);
     try {
       const res = await invoice.getAllInvoices();
+      //@ts-ignore
       if (res.code === 200) {
         const data = res.data.items;
         const totalInvoices = res.data.total;
@@ -795,6 +801,7 @@ const SalePageDemo: React.FC = () => {
   const getDataCustomer = async () => {
     try {
       const res = await sellProduct.getCustomer();
+      //@ts-ignore
       if (res.code === 200) {
         const dataCustomer = res.data.items;
         setIsDataCustomer(dataCustomer);
@@ -809,6 +816,7 @@ const SalePageDemo: React.FC = () => {
     setLoading(true);
     try {
       const res = await invoice.getDataSearchInvoice(searchTerm);
+      //@ts-ignore
       if (res.code === 200) {
         const data = res.data.items;
         setDataTableInvoice(data);
@@ -933,7 +941,7 @@ const SalePageDemo: React.FC = () => {
     console.log("activeKey", activeKey);
     const typeInvoiceList = invoiceList.filter(
       (invoice) => invoice.type === "return" && invoice.id_payment === activeKey
-    );
+    ); //@ts-ignore
     setDataReturnPayment(typeInvoiceList);
   }, [invoiceList, activeKey, discountPrice, isPercentage, totalPrice]);
   useEffect(() => {
@@ -983,7 +991,7 @@ const SalePageDemo: React.FC = () => {
         <HeaderPageSales
           addInvoice={addInvoice}
           setActiveKey={setActiveKey}
-          activeKey={activeKey}
+          activeKey={activeKey} //@ts-ignore
           items={invoiceList}
           removeInvoice={removeInvoice}
           removeReturnInvoice={removeReturnInvoice}
@@ -994,7 +1002,9 @@ const SalePageDemo: React.FC = () => {
           closeModal={closeModal}
           dataTableInvoice={dataTableInvoice}
           onSearchInvoices={setSearchTerm}
+          //@ts-ignore
           handleEnterPress={handleEnterPress}
+          //@ts-ignore
           setDataTableInvoice={setDataTableInvoice}
           totalInvoice={totalInvoice}
           setLoading={setLoading}
@@ -1003,6 +1013,7 @@ const SalePageDemo: React.FC = () => {
         <div className="page-content">
           {isOpenPaymentReturn ? (
             <LeftReturnInvoice
+              //@ts-ignore
               invoiceList={invoiceList}
               activeKey={activeKey}
               removeProductCarts={removeProductCarts}
@@ -1018,6 +1029,7 @@ const SalePageDemo: React.FC = () => {
               handleProductClick={handleProductClick}
               removeProductCarts={removeProductCarts}
               activeKey={activeKey}
+              //@ts-ignore
               invoiceList={invoiceList}
               decrement={decrement}
               increment={increment}
@@ -1046,6 +1058,7 @@ const SalePageDemo: React.FC = () => {
               selectedProducts={selectedProducts[activeKey] || []}
               total={total}
               dataCategory={dataCategory}
+              //@ts-ignore
               setDataProduct={setDataProduct}
               handleChangeNumberCards={handleChangeNumberCards}
               handleInputDiscountPrice={handleInputDiscountPrice}

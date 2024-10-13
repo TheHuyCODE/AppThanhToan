@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
-import products, { ProductDetailData } from "../../../configs/products";
+
 import { format } from "date-fns";
 import "../ProductManagement.css";
 import { domain } from "../../TableConfig/TableConfig";

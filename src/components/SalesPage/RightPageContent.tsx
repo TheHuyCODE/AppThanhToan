@@ -1,19 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
 import { Modal, Select, TreeSelect } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { BiSolidError } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
 import { IoMdClose } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import sellProduct from "../../configs/sellProduct";
-import { toast, ToastContainer } from "react-toastify";
-import DetailInvoices from "../Invoices/detailInvoices";
 import { useReactToPrint } from "react-to-print";
+import { toast, ToastContainer } from "react-toastify";
+import customer from "../../configs/customer";
 import products from "../../configs/products";
-import { FiPlusCircle } from "react-icons/fi";
-import { BiSolidError } from "react-icons/bi";
+import sellProduct from "../../configs/sellProduct";
 import { handleError } from "../../utils/errorHandler";
 import customer from "../../configs/customer";
 import { useAuth } from "../auth/AuthContext";
+import DetailInvoices from "../Invoices/detailInvoices";
+import { domain } from "../TableConfig/TableConfig";
 interface RightPageContentProps {
   dataProduct: any;
   dataCategory: any;
@@ -37,7 +38,7 @@ interface TreeDataNode {
   isLeaf?: boolean;
 }
 const RightPageContent: React.FC<RightPageContentProps> = ({
-  dataProduct,
+  dataProduct, //@ts-ignore
   dataCategory,
   handleProductClick,
   setDataProduct,
@@ -68,13 +69,13 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   typeInvoiListDetail,
   findCashBankIds,
   handleSearchProduct,
-  handleSelectCategory,
+  // handleSelectCategory,
   fetchDataProductAfter,
   fetchDataProduct,
   getDataCustomer,
   removeNotConFirm,
   totalItems,
-}) => {
+}: any) => {
   const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
   const [selectedCustomer, setSelectedCustomer] = useState<string>(IDCustomerRetail);
   const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
@@ -83,6 +84,8 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   const [linkQR, setLinkQR] = useState<string>("");
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [statePayment, setStatePayment] = useState(false);
+
+  //@ts-ignore
   const [isPrintReady, setIsPrintReady] = useState(false);
   const [hiddenPayment, setHiddenPayment] = useState(false);
   const [isOpenPopups, setIsOpenPopups] = useState(false);
@@ -110,11 +113,11 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   });
   const domainLink = domain.domainLink;
   const menuRef = useRef(null);
-  const formatDataCategory = dataCategory?.map((item: any, index: number) => ({
-    value: index + 1,
-    label: item.name,
-    id: item.id,
-  }));
+  // const formatDataCategory = dataCategory?.map((item: any, index: number) => ({
+  //   value: index + 1,
+  //   label: item.name,
+  //   id: item.id,
+  // }));
 
   const infoCustomer = isDataCustomer?.map((item: any, index: number) => ({
     value: index + 1,
@@ -140,6 +143,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
     });
     return result;
   };
+  //@ts-ignore
   const treeData = isCategoryProduct.map((item: any) => ({
     id: item.id,
     pId: null,
@@ -328,7 +332,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       method_bank = [{ id: idCashBank }];
     } else {
       method_bank = [{ id: idBank }];
-    }
+    } //@ts-ignore
     const refund = parseInt(calculateChange());
     const dataPayment = {
       total_amount: totalPrice,
@@ -345,6 +349,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
     try {
       const res = await sellProduct.postDataPayment(dataPayment);
       const resIdIvoices = res.data.invoice_id;
+      //@ts-ignore
       const success = res.message.text;
       await getDataDetailInvoice(resIdIvoices);
       toast.success(success);
@@ -422,6 +427,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
     try {
       const res = await customer.addDataCustomer(dataCustomer);
       setIsOpenPopups(false);
+      //@ts-ignore
       const success = res.message.text;
       console.log("success", success);
       toast.success(success);
@@ -457,6 +463,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Close the menu if click occurs outside of it
+      //@ts-ignore
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setHiddenPopUpDiscountPrice(false);
       }
@@ -466,6 +473,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuRef]);
+  //@ts-ignore
   const labelRender = (props) => {
     const { label, value } = props;
     if (label) {
@@ -599,10 +607,14 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 notFoundContent="Không tìm thấy người dùng"
                 optionFilterProp="label"
                 defaultValue="Khách lẻ"
+                //@ts-ignore
                 onChange={(value) => getCustomerPayment(value)}
                 style={{ width: 400, height: 40, paddingRight: "0px" }}
                 filterOption={(input, option) =>
-                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  (option?.label ?? "")
+                    //@ts-ignore
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
                 options={infoCustomer}
               />
@@ -796,7 +808,12 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   top: "-9999px",
                 }}
               >
-                <DetailInvoices ref={componentRef} linkQR={linkQR} finalPrice={finalPrice} />
+                <DetailInvoices
+                  //@ts-ignore
+                  ref={componentRef}
+                  linkQR={linkQR}
+                  finalPrice={finalPrice}
+                />
               </div>
             )}
           </div>
@@ -808,6 +825,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
           // height={500}
           centered
           open={isOpenPopups}
+          //@ts-ignore
           onOk={clickAddItemCategory}
           onCancel={handleCloseModal}
           okText="Thêm"

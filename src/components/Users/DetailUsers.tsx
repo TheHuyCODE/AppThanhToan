@@ -1,18 +1,17 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/valiables.css";
 import "./User.css";
-import { DatePicker, Select } from "antd";
 const DetailUsers = ({}) => {
-  const genders = [
-    { name: "Nam", value: 1 },
-    { name: "Nữ", value: 2 },
-    { name: "Không xác định", value: 3 },
-  ];
-  const onChange = (date, dateString) => {
-    console.log(date, dateString);
-  };
+  // const genders = [
+  //   { name: "Nam", value: 1 },
+  //   { name: "Nữ", value: 2 },
+  //   { name: "Không xác định", value: 3 },
+  // ];
+  // const onChange = (date, dateString) => {
+  //   console.log(date, dateString);
+  // };
   const navigate = useNavigate();
   const params = useParams();
   const usersId = params.userId;
@@ -22,7 +21,7 @@ const DetailUsers = ({}) => {
     navigate("/admin/users/");
   };
   useEffect(() => {}, [usersId]);
-  const fetchDataUsers = () => {};
+  // const fetchDataUsers = () => {};
   return (
     <>
       <div className="detail-users">

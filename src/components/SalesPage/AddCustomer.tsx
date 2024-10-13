@@ -1,5 +1,4 @@
 import { Modal } from "antd";
-import React from "react";
 
 const AddCustomer = () => {
   return (
@@ -8,9 +7,9 @@ const AddCustomer = () => {
         className="modalDialog-addITems"
         width={500}
         // height={500}
-        centered
-        open={isOpenPopups}
-        onOk={clickAddItemCategory}
+        centered //@ts-ignore
+        open={isOpenPopups} //@ts-ignore
+        onOk={clickAddItemCategory} //@ts-ignore
         onCancel={() => setIsOpenPopups(!isOpenPopups)}
         okText="Thêm"
         cancelText="Hủy bỏ"

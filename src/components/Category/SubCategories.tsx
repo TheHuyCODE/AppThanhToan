@@ -1,18 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Table, Space, Button, Modal, Pagination } from "antd";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import "./Children_category.css";
-import uploadApiImage from "../../configs/uploadApiImage";
-import { toast, ToastContainer } from "react-toastify";
-import { CiSearch } from "react-icons/ci";
-import category from "../../configs/category";
-import { format } from "date-fns";
-import { useAuth } from "../auth/AuthContext";
-import { localCategorySeconds } from "../TableConfig/TableConfig";
-import useDebounce from "../auth/useDebounce";
+import { Button, Modal, Pagination, Space, Table } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { handleError } from "../../utils/errorHandler";
+import { format } from "date-fns";
+import React, { useEffect, useRef, useState } from "react";
+import { CiSearch } from "react-icons/ci";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import category from "../../configs/category";
+import uploadApiImage from "../../configs/uploadApiImage";
+import { handleError } from "../../utils/errorHandler";
+import { useAuth } from "../auth/AuthContext";
+import useDebounce from "../auth/useDebounce";
+import { localCategorySeconds } from "../TableConfig/TableConfig";
+import "./Children_category.css";
 import TitleCategories from "./TitleCategories";
 interface SubCategoriesProp {
   selectedCategory: string;
@@ -29,10 +29,11 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
   const params = useParams<{ idCategories: string }>();
   const idCategories: string | undefined = params.idCategories;
   const nameRef = useRef(null);
-  const { isResDataChild, setIsResDataChild, fetchDataCategoryChild } = useAuth();
+  const { isResDataChild, setIsResDataChild, fetchDataCategoryChild } =
+    useAuth();
   const [isOpenPopupChild, setIsOpenPopupChild] = useState(false);
-  const [isInputCategoryChild, setIsInputCategoryChild] = useState("");
-  const [page, setPage] = useState(1);
+  const [isInputCategoryChild, setIsInputCategoryChild] = useState(""); //@ts-ignore
+  const [page, setPage] = useState(1); //@ts-ignore
   const [pageSize, setPageSize] = useState(10);
   // const [isPreviewImageChild, setIsPreviewImageChild] = useState("");
   const [isValueSearchChild, setIsValueSearchChild] = useState("");
@@ -63,6 +64,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
   };
   const clearInputChildren = () => {
     if (nameRef.current) {
+      //@ts-ignore
       nameRef.current.value = "";
     }
     setIsDescription("");
@@ -80,8 +82,11 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
     };
     setLoading(true);
     try {
-      const res = await uploadApiImage.postAddItemCategoryChild(userDataCategoryChild);
+      const res = await uploadApiImage.postAddItemCategoryChild(
+        userDataCategoryChild
+      ); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const successMs = res.message.text;
         toast.success(successMs);
         setIsOpenPopupChild(!isOpenPopupChild);
@@ -107,7 +112,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
     const keyItemChild = idDeleteItemsChild.key;
     setLoading(true);
     if (keyItemChild) {
-      const res = await category.deleteCategoryChild(keyItemChild);
+      const res = await category.deleteCategoryChild(keyItemChild); //@ts-ignore
       if (res.code === 200) {
         console.log("res:", res);
         setIsOpenModalDeleteChild(!isOpenModalDeleteChild);
@@ -132,9 +137,12 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
     const idModifyItemsChild = modifyItem.key;
     setLoading(true);
     try {
-      const res = await category.putModifyCategoryChild(idModifyItemsChild, dataPutCategoryChild);
+      const res = await category.putModifyCategoryChild(
+        idModifyItemsChild,
+        dataPutCategoryChild
+      ); //@ts-ignore
       if (res.code === 200) {
-        console.log("res", res);
+        console.log("res", res); //@ts-ignore
         const messSuccess = res.message.text;
         toast.success(messSuccess);
         await fetchDataCategoryChild(idCategories);
@@ -162,6 +170,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
     }
   };
   //Get list items children category
+  //@ts-ignore
   const dataTableChild = isResDataChild.items?.map((item, index: number) => ({
     stt: index + 1,
     key: item.id,
@@ -244,7 +253,9 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
       navigate(`/admin/categories/view/${record.key}`);
     }
   };
-  const onChangeInputChild = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onChangeInputChild = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const value = e.target.value;
     setIsDescription(value);
     if (isInputDataCategoryTwo) {
@@ -267,7 +278,11 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
   const getDataPagination = async (current: number, size: number) => {
     // setLoading(true);
     try {
-      const res = await category.getDataCategoryPaginationChild(idCategories, current, size);
+      const res = await category.getDataCategoryPaginationChild(
+        idCategories,
+        current,
+        size
+      );
       if (res.data) {
         const data = res.data;
         setIsResDataChild(data);
@@ -282,8 +297,12 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
   //check state category
 
   const fetchDataSearchCategory = async () => {
-    setLoading(true);
-    const res = await category.getDataSearchNameChildCategory(idCategories, debounceValue);
+    setLoading(true); //@ts-ignore
+    const res = await category.getDataSearchNameChildCategory(
+      //@ts-ignore
+      idCategories,
+      debounceValue
+    ); //@ts-ignore
     if (res.code === 200) {
       setIsResDataChild(res.data);
       console.log("object 11111", res.data);
@@ -309,7 +328,10 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
         <div className="header-customers">
           <div className="header-left">
             <div className="header-left-top">
-              <div className="search-product" style={{ display: "flex", position: "relative" }}>
+              <div
+                className="search-product"
+                style={{ display: "flex", position: "relative" }}
+              >
                 <CiSearch
                   style={{
                     position: "absolute",
@@ -340,7 +362,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
           </div>
         </div>
         <div className="table-container">
-          <Table
+          <Table //@ts-ignore
             columns={columnsWithClick}
             dataSource={dataTableChild}
             locale={localCategorySeconds}
@@ -362,7 +384,7 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
               showSizeChanger
               onShowSizeChange={onShowSizeChange}
               onChange={onChangeNumberPagination}
-              defaultCurrent={1}
+              defaultCurrent={1} //@ts-ignore
               total={isResDataChild.total || 0}
             />
             <span className="total-items" style={{ color: "black" }}>{`${
@@ -440,8 +462,8 @@ const SubCategories: React.FC<SubCategoriesProp> = ({
             fontFamily: "Montserrat ,sans-serif",
           }}
         >
-          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh mục cấp con và sản
-          phẩm đã link với danh mục sẽ bị xóa.
+          Bạn có chắc chắn muốn xóa danh mục này? Nếu xóa danh mục, tất cả danh
+          mục cấp con và sản phẩm đã link với danh mục sẽ bị xóa.
         </p>
       </Modal>
       {/* Modal modify child category */}

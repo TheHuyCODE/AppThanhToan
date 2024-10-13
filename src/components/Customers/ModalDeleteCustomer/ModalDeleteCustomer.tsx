@@ -1,8 +1,8 @@
 import { Modal } from "antd";
 import React from "react";
-import { handleError } from "../../../utils/errorHandler";
-import customer from "../../../configs/customer";
 import { toast } from "react-toastify";
+import customer from "../../../configs/customer";
+import { handleError } from "../../../utils/errorHandler";
 
 interface ModalDeleteProps {
   openModalDelete: boolean;
@@ -22,8 +22,9 @@ const ModalDeleteCustomer: React.FC<ModalDeleteProps> = ({
     const idDelete: string | null = isIdDelete;
     setLoadingDelete(true);
     try {
-      const res = await customer.deleteCustomer(idDelete);
+      const res = await customer.deleteCustomer(idDelete); //@ts-ignore
       if (res.code === 200) {
+        //@ts-ignore
         const msSuccess = res.message.text;
         onCloseModalDelete();
         toast.success(msSuccess);

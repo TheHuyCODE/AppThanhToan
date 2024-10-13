@@ -1,6 +1,6 @@
-import React, { useEffect, useState, forwardRef } from "react";
-import "./detailInvoices.css";
+import { forwardRef, useEffect, useState } from "react";
 import "../styles/valiables.css";
+import "./detailInvoices.css";
 // import logoTitle from "../../assets/img/logoTitle.png";
 import logo from "../../../public/Logo.png";
 import { getDate } from "../../constants/functionContants";
@@ -45,7 +45,8 @@ interface DetailInvoicesProps {
 const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
   ({ linkQR, finalPrice }, ref) => {
     const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
-    const [invoiceDataStore, setInvoiceDataStore] = useState<InvoiceStore | null>(null);
+    const [invoiceDataStore, setInvoiceDataStore] =
+      useState<InvoiceStore | null>(null);
     useEffect(() => {
       const data = localStorage.getItem("dataDetailInvoice");
       const dataStore = localStorage.getItem("INFO_USER");
@@ -69,7 +70,8 @@ const DetailInvoices = forwardRef<HTMLDivElement, DetailInvoicesProps>(
       return <div>Loading...</div>;
     }
 
-    const customerName = invoiceData.customer.full_name || "Khách hàng không xác định";
+    const customerName =
+      invoiceData.customer.full_name || "Khách hàng không xác định";
     const adminName = invoiceData.create_user.full_name || "Admin";
     const customerPhone = invoiceData?.customer.phone || "";
     const addressCreated = invoiceDataStore?.address || "";

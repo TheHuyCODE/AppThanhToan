@@ -1,9 +1,9 @@
 import { Table } from "antd";
-import React from "react";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
 
 const Permissions = () => {
+  //@ts-ignore
   const onChangeSearchPermissions = (e) => {
     console.log(e.target.value);
   };
@@ -19,6 +19,7 @@ const Permissions = () => {
       dataIndex: "name",
       key: "name",
       //   filteredValue: [isValueSearch],
+      //@ts-ignore
       onFilter: (value, record) => {
         return (
           String(record.name)
@@ -45,7 +46,7 @@ const Permissions = () => {
     {
       title: "Xem",
       dataIndex: "lookPermissions",
-      key: "lookPermissions",
+      key: "lookPermissions", //@ts-ignore
       render: (text) =>
         text === "Có" ? (
           <AiOutlineCheck style={{ color: "blue" }} />
@@ -56,7 +57,7 @@ const Permissions = () => {
     {
       title: "Thêm",
       dataIndex: "addPermissions",
-      key: "addPermissions",
+      key: "addPermissions", //@ts-ignore
       render: (text) =>
         text === "Có" ? (
           <AiOutlineCheck style={{ color: "blue" }} />
@@ -67,7 +68,7 @@ const Permissions = () => {
     {
       title: "Xửa",
       dataIndex: "modifyPermission",
-      key: "modifyPermission",
+      key: "modifyPermission", //@ts-ignore
       render: (text) =>
         text === "Có" ? (
           <AiOutlineCheck style={{ color: "blue" }} />
@@ -78,7 +79,7 @@ const Permissions = () => {
     {
       title: "Xóa",
       key: "deletePermissions",
-      dataIndex: "deletePermissions",
+      dataIndex: "deletePermissions", //@ts-ignore
       render: (text) =>
         text === "Có" ? (
           <AiOutlineCheck style={{ color: "blue" }} />

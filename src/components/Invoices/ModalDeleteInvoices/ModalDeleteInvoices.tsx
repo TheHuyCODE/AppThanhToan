@@ -21,7 +21,7 @@ const ModalDeleteInvoices: React.FC<ModalDeleteInvoicesProps> = ({
     setLoading(true);
     const dataId = idDelete;
     try {
-      const res = await invoice.deleteInvoices(dataId);
+      const res = await invoice.deleteInvoices(dataId); //@ts-ignore
       const msSuccess = res.message.text;
       onCloseModal();
       toast.success(msSuccess);

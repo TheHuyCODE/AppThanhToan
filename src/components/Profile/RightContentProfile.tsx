@@ -2,8 +2,8 @@ import { Input } from "antd";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import loginApi from "../../configs/loginApi";
-import { useAuth } from "../auth/AuthContext";
 import { handleError } from "../../utils/errorHandler";
+import { useAuth } from "../auth/AuthContext";
 
 interface RightContentProfileProps {
   getDataUser: () => void;
@@ -18,6 +18,7 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
   const [showNewPasswordError, setShowNewPasswordError] = useState(false);
   const [showConfirmPasswordError, setShowConfirmPasswordError] = useState(false);
   const { logout } = useAuth();
+  const [errValidate, setErrValidate] = React.useState(false);
   const REGEX_VALID_PASSWORD = /^(?=.*[0-9])(?=.*[a-zA-Z])(?!.* ).{8,16}$/;
   const [passwords, setPasswords] = useState({
     currentPassword: "",
@@ -70,8 +71,11 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
 
     try {
       const res = await loginApi.changePassword(dataPassword);
+      //@ts-ignore
       if (res.code === 200) {
-        toast.success(res.message.text);
+        //@ts-ignore
+        const msSucess = res.message.text;
+        toast.success(msSucess);
         getDataUser();
         setPasswords({
           currentPassword: "",
@@ -93,7 +97,9 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
   return (
     <>
       <div className="profile-input">
-        <span style={{ fontSize: "18px", fontWeight: "600" }}>Đổi mật khẩu</span>
+        <span style={{ fontSize: "18px", fontWeight: "600" }}>
+          Đổi mật khẩu
+        </span>
       </div>
       <div className="profile-input">
         <label htmlFor="currentPassword">
@@ -111,6 +117,8 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
         <label htmlFor="newPassword">
           Mật khẩu mới(<span>*</span>)
         </label>
+        {/* <Popover placement="bottomLeft" title={text} content={content}> */}
+
         <Input.Password
           placeholder="Nhập mật khẩu mới"
           visibilityToggle={{
@@ -123,6 +131,7 @@ const RightContentProfile: React.FC<RightContentProfileProps> = ({ getDataUser }
           onBlur={handleNewPasswordBlur}
           onFocus={handleNewPasswordFocus}
         />
+        {/* </Popover> */}
       </div>
       {showNewPasswordError && (
         <div className="err-validate">

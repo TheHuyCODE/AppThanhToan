@@ -1,6 +1,5 @@
-import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi";
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi";
 
-import React from "react";
 import { Button } from "antd";
 import { useAuth } from "../auth/AuthContext";
 

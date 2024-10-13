@@ -1,14 +1,16 @@
-import { Select } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
-import useDebounce from "../../auth/useDebounce";
-import invoice from "../../../configs/invoice";
+import { FaArrowAltCircleDown } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import ButtonExportToExcel from "../../UI/ButtonExport";
-import { FILE_NAME_EXPORT_INVOICE, LINK_EXPORT_INVOICE } from "../../../constants/constants";
+import invoice from "../../../configs/invoice";
+import {
+  FILE_NAME_EXPORT_INVOICE,
+  LINK_EXPORT_INVOICE,
+} from "../../../constants/constants";
 import { getDateTimeNow } from "../../../constants/functionContants";
+import useDebounce from "../../auth/useDebounce";
+import ButtonExportToExcel from "../../UI/ButtonExport";
 interface HeaderInvoicesProps {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataTableInvoice: React.Dispatch<React.SetStateAction<any>>;
@@ -58,7 +60,10 @@ const HeaderInvoices: React.FC<HeaderInvoicesProps> = ({
     <>
       <div className="header-left">
         <div className="header-left-top">
-          <div className="search-product" style={{ display: "flex", position: "relative" }}>
+          <div
+            className="search-product"
+            style={{ display: "flex", position: "relative" }}
+          >
             <CiSearch
               style={{
                 position: "absolute",

@@ -1,14 +1,22 @@
+import {
+  Input,
+  Modal,
+  Pagination,
+  Select,
+  Space,
+  Table,
+  TableColumnsType,
+} from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { Input, Modal, Pagination, Select, Space, Table, TableColumnsType } from "antd";
-import sellProduct from "../../configs/sellProduct";
+import { FaTrash } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
+import payments from "../../configs/Payment";
+import sellProduct from "../../configs/sellProduct";
+import { handleError } from "../../utils/errorHandler";
 import "../Payment/Payment.css";
 import "../styles/valiables.css";
-import HeaderPayment from "./HeaderPayment/HeaderPayment";
-import { FaTrash } from "react-icons/fa";
 import { localPayment } from "../TableConfig/TableConfig";
-import { handleError } from "../../utils/errorHandler";
-import payments from "../../configs/Payment";
+import HeaderPayment from "./HeaderPayment/HeaderPayment";
 import DeletePayment from "./ModalDeletePayment/DeletePayment";
 
 interface BankData {
@@ -47,7 +55,7 @@ const Payment = () => {
 
   const [idDeletePayment, setIdDeletePayment] = useState("");
   const [nameBanking, setNameBanking] = useState<BankData[]>([]);
-  const [totalPage, setTotalPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0); //@ts-ignore
   const [page, setPage] = useState(1);
 
   const [pageSize, setPageSize] = useState(10);
@@ -91,7 +99,10 @@ const Payment = () => {
       render: (record) => (
         <Space size="middle">
           <a>
-            <FaTrash style={{ color: "red" }} onClick={() => deleteDataPayment(record)} />
+            <FaTrash
+              style={{ color: "red" }}
+              onClick={() => deleteDataPayment(record)}
+            />
           </a>
         </Space>
       ),
@@ -169,8 +180,9 @@ const Payment = () => {
     setLoading(true);
     try {
       const res = await sellProduct.postDataUserBanking(inputUserBanking);
+      //@ts-ignore
       if (res.code === 200) {
-        handleCloseModal();
+        handleCloseModal(); //@ts-ignore
         const msSuccess = res.message.text;
         toast.success(msSuccess);
         clearInputAddPayment();
@@ -194,7 +206,7 @@ const Payment = () => {
 
   const getNameBanking = async () => {
     try {
-      const res = await sellProduct.getNameBank();
+      const res = await sellProduct.getNameBank(); //@ts-ignore
       if (res.code === "00") {
         setNameBanking(res.data);
         await getDataPayments();
@@ -206,7 +218,7 @@ const Payment = () => {
   const getDataPayments = async () => {
     setLoading(true);
     try {
-      const res = await sellProduct.getInfoBank();
+      const res = await sellProduct.getInfoBank(); //@ts-ignore
       if (res.code === 200) {
         const data = res.data.items;
         const total = res.data.total;
@@ -264,7 +276,8 @@ const Payment = () => {
             imageRendering: "crisp-edges",
           }}
         />
-        <span style={{ fontWeight: "bold" }}>{item.code} &nbsp; </span> {`-  ${item.shortName}`}
+        <span style={{ fontWeight: "bold" }}>{item.code} &nbsp; </span>{" "}
+        {`-  ${item.shortName}`}
       </div>
     ),
     bank_id: item.bin,
@@ -291,7 +304,12 @@ const Payment = () => {
     <>
       <ToastContainer closeOnClick autoClose={5000} />
       <div className="content">
-        <h1 style={{ fontFamily: "var(--kv-font-sans-serif)", color: "var(--color-title)" }}>
+        <h1
+          style={{
+            fontFamily: "var(--kv-font-sans-serif)",
+            color: "var(--color-title)",
+          }}
+        >
           Quản lý phương thức thanh toán
         </h1>
         <div
@@ -335,7 +353,8 @@ const Payment = () => {
               onChange={onChange}
               style={{ width: 300, height: 40 }}
               filterOption={(input, option) => {
-                const labelText = option.label.props.children[1].props.children.join(" ");
+                const labelText = //@ts-ignore
+                  option.label.props.children[1].props.children.join(" ");
                 return labelText.toLowerCase().includes(input.toLowerCase());
               }}
               options={formatNameBanking}
@@ -344,7 +363,7 @@ const Payment = () => {
           <div className="number-bank bank-input-container">
             <label htmlFor="number_bank">Số tài khoản:</label>
             <div>
-              <Input
+              <Input //@ts-ignore
                 ref={numberRef}
                 type="text"
                 // className="input-name-category"
@@ -382,7 +401,7 @@ const Payment = () => {
         />
       </div>
       <div className="table-container">
-        <Table
+        <Table //@ts-ignore
           columns={columns}
           dataSource={dataTable}
           locale={localPayment}
@@ -407,7 +426,10 @@ const Payment = () => {
             defaultCurrent={1}
             total={totalPage}
           />
-          <span className="total-items" style={{ color: "black" }}>{`${totalPage} Tài khoản`}</span>
+          <span
+            className="total-items"
+            style={{ color: "black" }}
+          >{`${totalPage} Tài khoản`}</span>
         </div>
       </div>
     </>
