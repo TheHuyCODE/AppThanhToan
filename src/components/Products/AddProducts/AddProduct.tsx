@@ -213,7 +213,7 @@ const AddProduct = () => {
     }
   };
 
-  const onChangeValuePrice = (e) => {
+  const onChangeValuePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
     if (value === "") {
@@ -230,9 +230,12 @@ const AddProduct = () => {
         capital_price: numericValue,
       }));
     }
+    if (touchedFields.price) {
+      validatePrice();
+    }
   };
 
-  const onChangeValueCapitalPrice = (e) => {
+  const onChangeValueCapitalPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
     value = value.replace(/[^0-9]/g, "");
     if (value === "") {
@@ -277,21 +280,6 @@ const AddProduct = () => {
       resImageProduct !== "" &&
       price >= capital_price &&
       !priceError;
-
-    console.log("Form validation:", {
-      barcode: barcode.trim() !== "",
-      name: name.trim() !== "",
-      price: price > 0,
-      capital_price: capital_price > 0,
-      inventory_number: inventory_number > 0,
-      unit: unit.trim() !== "",
-      category_id: category_id.trim() !== "",
-      resImageProduct: resImageProduct !== "",
-      priceComparison: price >= capital_price,
-      noPriceError: !priceError,
-      isValid: isValid,
-    });
-
     setIsFormValid(isValid);
   }, [inputProduct, resImageProduct, priceError]);
 
@@ -458,6 +446,7 @@ const AddProduct = () => {
                 className="input-form"
                 onChange={onChangeValuePrice}
                 onBlur={() => setTouchedFields((prev) => ({ ...prev, capital_price: true }))}
+                value={inputProduct.capital_price.toLocaleString("vi-VN")}
                 style={{
                   position: "relative",
                 }}
@@ -479,6 +468,7 @@ const AddProduct = () => {
                 className="input-form"
                 onChange={onChangeValueCapitalPrice}
                 onBlur={handlePriceBlur}
+                value={inputProduct.price.toLocaleString("vi-VN")}
                 style={{
                   position: "relative",
                 }}

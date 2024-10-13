@@ -15,11 +15,17 @@ import ButtonExportToExcel from "../UI/ButtonExport";
 import { FILE_NAME_EXPORT_REVENNUE, LINK_EXPORT_REVENUE } from "../../constants/constants";
 import { getDateTimeNow } from "../../constants/functionContants";
 
+const { RangePicker } = DatePicker;
+
 const RevenueReport: React.FC = () => {
-  const { RangePicker } = DatePicker;
   const fileName = `${FILE_NAME_EXPORT_REVENNUE}_${getDateTimeNow()}`;
   const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
-  const [dateType, setDateType] = useState<string>("date");
+  const [dateType, setDateType] = useState<"date" | "month" | "year">("date");
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().startOf("day"),
+    dayjs().endOf("day"),
+  ]);
+  // const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [startDateCustomer, setStartDateCustomer] = useState<Dayjs | null>(null);
@@ -67,16 +73,30 @@ const RevenueReport: React.FC = () => {
     }));
     console.log("valueInputTimeTopSales", valueInputTimeTopSales);
   };
-  const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
-    // Update the type here
+  const handleDateRangeChange = (dates: [Dayjs, Dayjs] | null) => {
     if (dates) {
-      const [startDate, endDate] = dates;
-      const startTimestamp = startDate ? Math.floor(startDate.valueOf() / 1000) : todayTimestamp;
-      const endTimestamp = endDate ? Math.floor(endDate.valueOf() / 1000) : todayTimestamp;
+      setDateRange(dates);
+      let startTimestamp: number, endTimestamp: number;
+
+      switch (dateType) {
+        case "date":
+          startTimestamp = dates[0].startOf("day").unix();
+          endTimestamp = dates[1].endOf("day").unix();
+          break;
+        case "month":
+          startTimestamp = dates[0].startOf("month").unix();
+          endTimestamp = dates[1].endOf("month").unix();
+          break;
+        case "year":
+          startTimestamp = dates[0].startOf("year").unix();
+          endTimestamp = dates[1].endOf("year").unix();
+          break;
+      }
+
       setValueInputTime({
         start_date: startTimestamp,
         end_date: endTimestamp,
-        group_by: valueInputTime.group_by,
+        group_by: dateType === "date" ? 0 : dateType === "month" ? 1 : 2,
       });
     }
   };
@@ -141,8 +161,10 @@ const RevenueReport: React.FC = () => {
     }
   };
 
-  const placementChange = (e: RadioChangeEvent) => {
+  const handleDateTypeChange = (e: RadioChangeEvent) => {
     setDateType(e.target.value);
+    // Reset the date range when changing type
+    handleDateRangeChange([dateRange[0], dateRange[1]]);
   };
   const getDataInvoice = async () => {
     try {
@@ -252,19 +274,22 @@ const RevenueReport: React.FC = () => {
         <h2>Đồ thị doanh thu</h2>
         <div className="header_revenue">
           <div className="header_revenue_date">
-            <Space direction="vertical" size={12} />
-            {dateType === "date" && <RangePicker onChange={handleDateChange} size={"large"} />}
-            {dateType === "month" && (
-              <RangePicker picker="month" onChange={handleDateChange} size={"large"} />
-            )}
-            {dateType === "year" && (
-              <RangePicker picker="year" onChange={handleDateChange} size={"large"} />
-            )}
+            <Space direction="vertical" size={12}>
+              <RangePicker
+                picker={dateType}
+                onChange={handleDateRangeChange}
+                size="large"
+                value={dateRange}
+                format={
+                  dateType === "date" ? "DD/MM/YYYY" : dateType === "month" ? "MM/YYYY" : "YYYY"
+                }
+              />
+            </Space>
             <Radio.Group
               value={dateType}
-              onChange={placementChange}
+              onChange={handleDateTypeChange}
               style={{ color: "black" }}
-              size={"large"}
+              size="large"
             >
               <Radio.Button value="date">Ngày</Radio.Button>
               <Radio.Button value="month">Tháng</Radio.Button>

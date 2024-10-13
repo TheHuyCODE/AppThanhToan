@@ -11,6 +11,7 @@ import { FaBan, FaRegSave } from "react-icons/fa";
 import { AiOutlinePicture } from "react-icons/ai";
 import { unitProductList } from "../../TableConfig/unitProduct";
 import { handleError } from "../../../utils/errorHandler";
+import { domain } from "../../TableConfig/TableConfig";
 interface Product {
   barcode: string;
   name: string;
@@ -41,10 +42,10 @@ const ModifyProduct = () => {
   const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [selectedPath, setSelectedPath] = useState<string>("");
   const [resImageProduct, setResImageProduct] = useState("");
-  const [imgUrl, setImageUrl] = useState("");
-  const domain = "https://cdtn.boot.ai";
+  const [imageUrl, setImageUrl] = useState("");
 
-  // const imageUrl = `${domain}/${inputProduct.image_url}`;
+  const domainLink = domain.domainLink;
+
   const [inputProduct, setInputProduct] = useState({
     barcode: "",
     name: "",
@@ -77,19 +78,21 @@ const ModifyProduct = () => {
       console.error("Error fetching product details:", error);
     }
   };
-  const handleInputImage = (e: any) => {
-    e.preventDefault();
-    const fileImage = e.target.files[0];
-    // setIsImageProduct(fileImage);
-    if (fileImage) {
-      const url = URL.createObjectURL(fileImage);
-      setSelectedFile(fileImage);
-      setImageUrl(url);
+  const handleInputImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-    // setPreviewImageProduct(URL.createObjectURL(fileImage));
   };
   const closePreviewImage = () => {
     setImageUrl("");
+    setSelectedFile(null);
+    setInputProduct((prev) => ({ ...prev, image_url: "" }));
   };
   useEffect(() => {
     if (selectedFile) {
@@ -303,7 +306,8 @@ const ModifyProduct = () => {
         image_url: dataProductModify.image_url || "",
       });
       if (dataProductModify.image_url) {
-        const domainUrl = `${domain}/${dataProductModify.image_url}`;
+        const domainUrl = `${domainLink}${dataProductModify.image_url}`;
+        console.log("domainUrl", domainUrl);
         setImageUrl(domainUrl);
       }
       if (dataProductModify.category_id) {
@@ -542,7 +546,7 @@ const ModifyProduct = () => {
               <label htmlFor="labelUpload" className="title-picture">
                 Ảnh danh mục(<span>*</span>)
               </label>
-              {!imgUrl ? (
+              {!imageUrl ? (
                 <>
                   <label htmlFor="labelUpload" className="label-upload" style={{ marginRight: 0 }}>
                     <AiOutlinePicture style={{ fontSize: "50px" }} />
@@ -570,7 +574,11 @@ const ModifyProduct = () => {
                   <button className="btn-close-image" onClick={closePreviewImage}>
                     <CiCircleRemove />
                   </button>
-                  <img src={imgUrl} alt="Preview" style={{ maxHeight: "100%", maxWidth: "100%" }} />
+                  <img
+                    src={imageUrl}
+                    alt="Preview"
+                    style={{ maxHeight: "100%", maxWidth: "100%" }}
+                  />
                 </div>
               )}
             </div>

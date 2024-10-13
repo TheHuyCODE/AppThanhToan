@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import products, { ProductDetailData } from "../../../configs/products";
 import { format } from "date-fns";
 import "../ProductManagement.css";
+import { domain } from "../../TableConfig/TableConfig";
 
 interface ProductDetailProps {
   label: string;
@@ -28,11 +29,11 @@ const DetailProduct: React.FC = () => {
   const navigate = useNavigate();
   const [dataProductDetail, setDataProductDetail] = useState<ProductDetailData | null>(null);
   const [isReviewImage, setIsReviewImage] = useState<string>("");
-
+  // const domain = "https://postviet.boot.ai";
+  const domainLink = domain.domainLink;
   const onClickBackPageProduct = () => {
     navigate("/admin/products/");
   };
-
   const convertDateProductDetail = (date: number | undefined): string | undefined => {
     if (date) {
       return format(new Date(date * 1000), "dd/MM/yyyy");
@@ -61,7 +62,7 @@ const DetailProduct: React.FC = () => {
   useEffect(() => {
     if (dataProductDetail) {
       console.log("Updated dataProductDetail:", dataProductDetail);
-      const reviewPicture = `https://cdtn.boot.ai${dataProductDetail.image_url}`;
+      const reviewPicture = `${domainLink}${dataProductDetail.image_url}`;
       setIsReviewImage(reviewPicture);
       console.log("Updated review picture:", reviewPicture);
     }

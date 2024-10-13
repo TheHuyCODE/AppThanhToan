@@ -1,23 +1,31 @@
-import { Input, Select } from "antd";
 import React, { useState, useEffect, useRef } from "react";
-import { DataProfile } from "../TableConfig/TableConfig";
+import { Input, Select, Button, Spin } from "antd";
+import { DataProfile, domain } from "../TableConfig/TableConfig";
 import Profiles from "../../configs/profiles";
 import { toast } from "react-toastify";
 import { IoPerson } from "react-icons/io5";
-import { handleError } from "../../utils/errorHandler";
 import { CiCamera } from "react-icons/ci";
+import { LoadingOutlined } from "@ant-design/icons";
+import { handleError } from "../../utils/errorHandler";
 
 interface LeftContentProfileProps {
   dataProfile: DataProfile;
   getDataUser: () => void;
 }
+
 const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, getDataUser }) => {
   const [profile, setProfile] = useState<DataProfile>(dataProfile);
   const [initialProfile, setInitialProfile] = useState<DataProfile>(dataProfile);
-  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(null);
   const [errors, setErrors] = useState<{ full_name?: string }>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const domain = "https://cdtn.boot.ai";
+  const domainLink = domain.domainLink;
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setInitialProfile(dataProfile);
+    setProfile(dataProfile);
+  }, [dataProfile]);
+
   const onChangeProfile = (field: keyof DataProfile, value: string | null) => {
     if (field === "full_name" && (value!.length < 3 || value!.length > 30)) {
       setErrors((prevErrors) => ({
@@ -35,16 +43,22 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
       [field]: value,
     }));
   };
+
   const handleIconClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
+
   const handleCancel = () => {
     setProfile(initialProfile);
     setErrors({});
   };
+
+  const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
   const onModifyProfile = async () => {
+    setIsLoading(true);
     const dataModify = {
       full_name: profile.full_name,
       phone: profile.phone,
@@ -55,53 +69,42 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
     };
     try {
       const res = await Profiles.postProfile(dataModify);
-      const succesMs = res.message.text;
-      toast.success(succesMs);
+      if (res.data && res.data.message) {
+        toast.success(res.data.message.text);
+      } else {
+        toast.success("Sửa thông tin thành công");
+      }
       localStorage.removeItem("INFO_USER");
       await getDataUser();
       localStorage.setItem("INFO_USER", JSON.stringify(profile));
     } catch (err) {
       handleError(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    setInitialProfile(dataProfile);
-    setProfile(dataProfile);
-  }, [dataProfile]);
-  useEffect(() => {
-    console.log("profile updated", profile);
-  }, [profile]);
-  const { email, phone, full_name, age, gender, address, avatar_url } = profile;
-  const onChangeFilePicture = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeFilePicture = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      uploadFormDataImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await Profiles.postImageProfile(formData);
+        const fileImg = res.data.file_url;
+        setProfile((prevProfile) => ({
+          ...prevProfile,
+          avatar_url: fileImg,
+        }));
+      } catch (err) {
+        handleError(err);
+      }
     }
   };
-  const uploadFormDataImage = async (fileImage: any) => {
-    const formData = new FormData();
-    formData.append("file", fileImage);
-    try {
-      const res = await Profiles.postImageProfile(formData);
-      // console.log("res", res.data);
-      const fileImg = res.data.file_url;
-      console.log("fileImage", fileImg);
-      setProfile((prevProfile) => ({
-        ...prevProfile,
-        avatar_url: fileImg,
-      }));
-    } catch (err) {
-      handleError(err);
-    }
-  };
-  const imgUrl = `${domain}${avatar_url}`;
-  console.log("fileUrl", imgUrl);
+
+  const { email, phone, full_name, age, gender, address, avatar_url } = profile;
+  const imgUrl = avatar_url ? `${domainLink}${avatar_url}` : null;
+
   return (
     <>
       <div className="profile-input">
@@ -110,25 +113,16 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
       <div className="profile-input-image">
         <div className="image-profile" onClick={handleIconClick}>
           {imgUrl ? (
-            <div style={{ position: "relative" }}>
-              <img
-                src={imgUrl}
-                alt="Profile"
-                style={{ width: "100%", height: "100%", borderRadius: "50%" }}
-              />
-              <CiCamera
-                style={{
-                  position: "absolute",
-                  right: "5",
-                  bottom: "6",
-                  zIndex: "1",
-                  color: "black",
-                }}
-              />
+            <div className="avatar-container">
+              <img src={imgUrl} alt="Profile" className="avatar-image" />
+              <div className="avatar-overlay">
+                <CiCamera className="camera-icon" />
+              </div>
             </div>
           ) : (
-            // <CiCamera />
-            <IoPerson />
+            <div className="avatar-placeholder">
+              <IoPerson className="person-icon" />
+            </div>
           )}
           <input
             type="file"
@@ -178,7 +172,7 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
           value={age ? age.toString() : ""}
           onChange={(e) => {
             const value = e.target.value.trim(); // Trim any extra whitespace
-            onChangeProfile("age", value ? parseInt(value) : null);
+            onChangeProfile("age", value ? value : null);
           }}
         />
       </div>
@@ -207,12 +201,17 @@ const LeftContentProfile: React.FC<LeftContentProfileProps> = ({ dataProfile, ge
         />
       </div>
       <div className="btn-profile">
-        <button className="btn-clear-input" onClick={handleCancel}>
+        <Button className="btn-clear-input" onClick={handleCancel} disabled={isLoading}>
           Hủy
-        </button>
-        <button className="btn-save-profile" onClick={onModifyProfile}>
-          Lưu
-        </button>
+        </Button>
+        <Button
+          className="btn-save-profile"
+          onClick={onModifyProfile}
+          disabled={isLoading}
+          type="primary"
+        >
+          {isLoading ? <Spin indicator={antIcon} /> : "Lưu"}
+        </Button>
       </div>
     </>
   );

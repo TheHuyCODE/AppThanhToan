@@ -40,7 +40,7 @@ export const paginationConfig = {
 };
 export const REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/;
 export const domain = {
-  domainLink: "https://cdtn.boot.ai",
+  domainLink: "https://postviet.boot.ai",
 };
 
 // src/TableConfig/TableConfig.ts

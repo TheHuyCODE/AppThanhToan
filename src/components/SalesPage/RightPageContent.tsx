@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Modal, Select, TreeSelect } from "antd";
 import { CiSearch } from "react-icons/ci";
 import { domain } from "../TableConfig/TableConfig";
-import { FaArrowRightFromBracket } from "react-icons/fa6";
-import { IoMdAdd, IoMdClose } from "react-icons/io";
+import { IoMdClose } from "react-icons/io";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import sellProduct from "../../configs/sellProduct";
 import { toast, ToastContainer } from "react-toastify";
@@ -77,11 +76,8 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   totalItems,
 }) => {
   const IDCustomerRetail = "af817c62-5885-4b7e-8de7-cf2d200bc19d";
-  const [selectedCustomer, setSelectedCustomer] =
-    useState<string>(IDCustomerRetail);
-  const [idActiveInvoice, setIdActiveInvoice] = useState(
-    localStorage.getItem("idActiveInvoice")
-  );
+  const [selectedCustomer, setSelectedCustomer] = useState<string>(IDCustomerRetail);
+  const [idActiveInvoice, setIdActiveInvoice] = useState(localStorage.getItem("idActiveInvoice"));
   const { fetchDataCategory, isCategoryProduct } = useAuth();
   const [disabledPayment, setDisabledPayment] = useState(false);
   const [linkQR, setLinkQR] = useState<string>("");
@@ -92,9 +88,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   const [isOpenPopups, setIsOpenPopups] = useState(false);
   const [hiddenErr, setHiddenErr] = useState(false);
   const [numberPage, setNumberPage] = useState(1);
-  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedKeys, setSelectedKeys] = useState<string | undefined>(undefined);
   const [idSearchCategory, setIdSearchCategory] = useState({
     id_category: "",
   });
@@ -169,9 +163,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   }));
   const fetchSearchDataCategory = async () => {
     try {
-      const res = await products.getDataSearchProductIsActive(
-        idSearchCategory.id_category
-      );
+      const res = await products.getDataSearchProductIsActive(idSearchCategory.id_category);
       setDataProduct(res.data.items);
     } catch (err) {
       console.log("err", err);
@@ -204,9 +196,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
   };
   const filterTreeNode = (inputValue: string, treeNode: any) => {
     if (!treeNode.children) {
-      return (
-        treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-      );
+      return treeNode.title.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0;
     }
     return false;
   };
@@ -221,9 +211,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       resolve();
     });
   };
-  const defaultCustomer = infoCustomer.find(
-    (customer: any) => customer.label === "Khách lẻ"
-  );
+  const defaultCustomer = infoCustomer.find((customer: any) => customer.label === "Khách lẻ");
   useEffect(() => {
     console.log("defaultCustomer", defaultCustomer);
   }, [defaultCustomer]);
@@ -240,9 +228,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
         name: `${item.bank_name} - ${item.account_no} - ${item.account_name}`,
       })) || [];
   const getCustomerPayment = (value: number) => {
-    const isActiveCustomer = infoCustomer.find(
-      (item: any) => item.value === value
-    );
+    const isActiveCustomer = infoCustomer.find((item: any) => item.value === value);
     if (isActiveCustomer) {
       const IDCustomer = isActiveCustomer.id;
       setSelectedCustomer(IDCustomer);
@@ -426,9 +412,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
       });
     }
   };
-  const clickAddItemCategory = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const clickAddItemCategory = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const dataCustomer = {
       full_name: inputCustomer.full_name,
@@ -551,11 +535,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
         <div className="right-page-content-container">
           <ul className="list-product">
             {dataProduct?.map((product: any, index: any) => (
-              <li
-                key={index}
-                className="box-product"
-                onClick={() => handleProductClick(product)}
-              >
+              <li key={index} className="box-product" onClick={() => handleProductClick(product)}>
                 <div className="product-info-img">
                   <img
                     src={`${domainLink}${product.image_url}`}
@@ -571,9 +551,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   </div>
                 </div>
                 <div className="product-inventory">
-                  <span style={{ marginTop: "1.5rem" }}>
-                    SL:{product.inventory_number || 0}
-                  </span>
+                  <span style={{ marginTop: "1.5rem" }}>SL:{product.inventory_number || 0}</span>
                 </div>
               </li>
             ))}
@@ -600,18 +578,11 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
               <MdKeyboardArrowRight className="icon" />
             </button>
           </div>
-          <button
-            className="btn-pay"
-            onClick={toggleSidebar}
-            disabled={disabledPayment}
-          >
+          <button className="btn-pay" onClick={toggleSidebar} disabled={disabledPayment}>
             THANH TOÁN
           </button>
         </div>
-        <div
-          className={`overlay ${isSidebarVisible ? "show" : ""}`}
-          onClick={toggleSidebar}
-        ></div>
+        <div className={`overlay ${isSidebarVisible ? "show" : ""}`} onClick={toggleSidebar}></div>
         <div className={`sidebar ${isSidebarVisible ? "show" : ""}`}>
           <div className="header-sidebar-bank">
             <span>Thanh toán hóa đơn {activeKey}</span>
@@ -631,9 +602,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 onChange={(value) => getCustomerPayment(value)}
                 style={{ width: 400, height: 40, paddingRight: "0px" }}
                 filterOption={(input, option) =>
-                  (option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
+                  (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                 }
                 options={infoCustomer}
               />
@@ -674,17 +643,13 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                     onChange={handleDiscountChange}
                   />
                   <button
-                    className={`discount-button ${
-                      !isPercentage ? "active" : ""
-                    }`}
+                    className={`discount-button ${!isPercentage ? "active" : ""}`}
                     onClick={handleVNDClick}
                   >
                     VND
                   </button>
                   <button
-                    className={`discount-button ${
-                      isPercentage ? "active" : ""
-                    }`}
+                    className={`discount-button ${isPercentage ? "active" : ""}`}
                     onClick={handlePercentageClick}
                   >
                     %
@@ -692,10 +657,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 </div>
               )}
               <div className="payment-invoice__total-after-discount">
-                <label
-                  className="payment-invoice__label"
-                  style={{ fontWeight: "600" }}
-                >
+                <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
                   Khách cần trả
                 </label>
                 <div className="payment-invoice__price">
@@ -705,10 +667,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 </div>
               </div>
               <div className="payment-invoice__guest-pays">
-                <label
-                  className="payment-invoice__label"
-                  style={{ fontWeight: "600" }}
-                >
+                <label className="payment-invoice__label" style={{ fontWeight: "600" }}>
                   Khách thanh toán
                 </label>
                 <input
@@ -749,10 +708,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                     checked={selectedPaymentMethod === 1}
                     onChange={handlePaymentMethodChange}
                   />
-                  <label
-                    className="payment-invoice__label"
-                    htmlFor="internetmoney"
-                  >
+                  <label className="payment-invoice__label" htmlFor="internetmoney">
                     Chuyển khoản
                   </label>
                 </div>
@@ -811,13 +767,9 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                 </div>
               )}
               <div className="payment-invoice__money-return">
-                <label className="payment-invoice__label">
-                  Tiền thừa trả khách
-                </label>
+                <label className="payment-invoice__label">Tiền thừa trả khách</label>
                 <div className="payment-invoice__return-amount">
-                  <p className="payment-invoice__price-amount">
-                    {calculateChange()}
-                  </p>
+                  <p className="payment-invoice__price-amount">{calculateChange()}</p>
                 </div>
               </div>
             </div>
@@ -844,11 +796,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
                   top: "-9999px",
                 }}
               >
-                <DetailInvoices
-                  ref={componentRef}
-                  linkQR={linkQR}
-                  finalPrice={finalPrice}
-                />
+                <DetailInvoices ref={componentRef} linkQR={linkQR} finalPrice={finalPrice} />
               </div>
             )}
           </div>
@@ -895,9 +843,7 @@ const RightPageContent: React.FC<RightPageContentProps> = ({
               />
               <br />
               {errorAddCustomer && (
-                <span style={{ color: "red", fontSize: "12px" }}>
-                  {errorAddCustomer.message}
-                </span>
+                <span style={{ color: "red", fontSize: "12px" }}>{errorAddCustomer.message}</span>
               )}
             </div>
           </div>
